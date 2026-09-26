@@ -14,6 +14,7 @@ export interface Choice {
   affection?: number
   anxiety?: number
   spirit?: number
+  danger?: number
   memory?: MemoryId
   unlessMemory?: MemoryId
   requiresAllMemories?: boolean
@@ -82,12 +83,14 @@ export const story: Record<string, Scene> = {
     lines: [
       n('几天后，公寓里多了两副餐具，也多了一个总想帮忙的身影。', 'A few days later, my apartment had a second place setting, and someone always eager to help.'),
       say('早餐好啦！形状有一点奇怪，但味道我有信心。', 'Breakfast is ready! The shape is a little odd, but I’m confident about the taste.'),
+      n('我送它一只画着小星星的杯子。奶蛙把杯子捧了很久，后来每天都用它喝热牛奶。', 'I gave it a mug with little stars on it. naiwa held it for ages and used it for warm milk every day after that.'),
     ], next: 'p04b',
   },
   p04b: {
     image: 'P04B', mood: 'real', chapter: b('序章 · 新的日常', 'Prologue · A new routine'),
     lines: [
       n('它哼着不成调的歌打扫房间。阳光落在地板上，雨夜像是很久以前的事了。', 'It hummed off-key while cleaning. Sunlight spread across the floor, and the rainy night felt far away.'),
+      n('那只旧木马玩具跟着它轻轻叮当。奶蛙总把玩具放在餐桌边，说它也是家里的一员。', 'Its worn carousel toy jingled softly as it moved. naiwa always kept it by the table and called it part of the family.'),
       say('和你一起住，平凡的一天也会变得很好。', 'Even an ordinary day feels wonderful when I’m here with you.'),
     ], next: 'p05',
   },
@@ -114,6 +117,7 @@ export const story: Record<string, Scene> = {
     image: 'A01', mood: 'real', chapter: b('第一幕 · 两人份的晚餐', 'Act I · Dinner for two'),
     lines: [
       n('这天我临时加班，回家比平时晚了很多。推开门时，奶蛙正把两人份的晚饭重新热好。', 'An unexpected late shift kept me out much longer than usual. When I opened the door, naiwa was reheating dinner for two.'),
+      n('窗边还摆着我们的合照。那天阳光太亮，我的脸几乎被照得看不清，奶蛙却笑得很开心。', 'Our photo still stood by the window. The sunlight had washed out my face that day, while naiwa had smiled without a care.'),
       say('你回来啦！饭刚热好。先坐下歇一会儿，今天很累吧？', 'You’re home! I just warmed up dinner. Sit down and rest a little. Rough day?'),
       n('我正要回答，手机又亮了。朋友问：“你们才认识不久，真的想清楚了吗？”我看了看奶蛙，决定怎么开口。', 'I was about to answer when my phone lit up. A friend asked, “You’ve only known each other a short while. Are you sure about this?” I looked at naiwa and considered what to say.'),
     ], choices: [
@@ -222,48 +226,93 @@ export const story: Record<string, Scene> = {
       n('我停在它能看见、却不会吓到它的地方。', 'I stopped where it could see me without feeling cornered.'),
       say('奶蛙，我在这里。我先听你说。', 'naiwa, I’m here. I’m listening.', '我', 'Me'),
       n('那张执拗的笑脸终于松动。它哭着说，自己害怕再被留下。怪偶暂时安静下来。', 'Its fixed smile finally gave way. It cried that it was afraid of being left behind. The dolls fell still.'),
-      diary('找回我们共同记得的三样东西。让它看见，爱不需要一把锁。', 'Find three things you remember together. Show it that love needs no lock.'),
+      diary('游乐园里藏着三件回忆。先看清线索，再认出真正属于我们的东西。玩偶会追逐犹豫太久的人。', 'Three memories are hidden in the fairground. Study the clues before choosing what truly belongs to us. The dolls pursue anyone who lingers too long.'),
     ], next: 'm06',
   },
   m06: {
     image: 'M06', mood: 'dream', chapter: b('第一层 · 回忆的碎片', 'Layer One · Pieces of memory'),
     lines: [
-      n('雾里浮现一条岔路。日记的字提醒我：回忆可能藏在我们曾一起做过的事里。', 'A path emerged through the mist. The journal hinted that memories might hide in things we once did together.'),
+      n('雾里浮现几条路：木马、礼物摊、照相亭，以及一间亮着灯的日记亭。玩偶在身后慢慢靠近。', 'Several paths appeared in the mist: a carousel, a gift stall, a photo booth, and a lit journal kiosk. The dolls edged closer behind me.'),
     ], choices: [
-      c('循着旧玩具的声音寻找', 'Follow the sound of an old toy', 'find_toy', { spirit: -10, memory: 'toy', unlessMemory: 'toy' }),
-      c('寻找第一次交换礼物的暖光', 'Seek the warmth of our first gift', 'find_gift', { spirit: -10, memory: 'gift', unlessMemory: 'gift' }),
-      c('追随映在积水里的两个人影', 'Follow two figures reflected in a puddle', 'find_photo', { spirit: -10, memory: 'photo', unlessMemory: 'photo' }),
-      c('追逐玩偶传来的陌生呼声', 'Chase a stranger’s voice among the dolls', 'false_trail', { spirit: -20 }),
+      c('前往旋转木马', 'Go to the carousel', 'explore_toy', { spirit: -10, danger: 1, unlessMemory: 'toy' }),
+      c('前往礼物摊', 'Go to the gift stall', 'explore_gift', { spirit: -10, danger: 1, unlessMemory: 'gift' }),
+      c('前往照相亭', 'Go to the photo booth', 'explore_photo', { spirit: -10, danger: 1, unlessMemory: 'photo' }),
+      c('进入日记亭寻找提示', 'Search the journal kiosk for clues', 'diary_kiosk', { spirit: -10, danger: 1 }),
       c('带着三件回忆物回到奶蛙身边', 'Return to naiwa with all three memories', 'm07', { spirit: -10, requiresAllMemories: true }),
     ],
+  },
+  explore_toy: {
+    image: 'M03', mood: 'dream', chapter: b('探索 · 旋转木马', 'Explore · The carousel'),
+    lines: [
+      n('木马忽快忽慢地转着。两只玩具被挂在不同的马鞍上，其中一只发出熟悉的叮当声。', 'The carousel lurched between slow and fast. Two toys hung from different saddles; one made a familiar jingle.'),
+      n('我必须在木马再次加速前认出奶蛙最爱的那只。', 'I had to recognize naiwa’s favorite before the carousel sped up again.'),
+    ], choices: [
+      c('取下磨旧的木马玩具', 'Take the worn carousel toy', 'find_toy', { memory: 'toy' }),
+      c('取下崭新的小丑玩偶', 'Take the new clown doll', 'wrong_toy', { spirit: -15, danger: 2 }),
+      c('先回到岔路', 'Return to the crossroads', 'm06'),
+    ],
+  },
+  explore_gift: {
+    image: 'M06', mood: 'dream', chapter: b('探索 · 礼物摊', 'Explore · The gift stall'),
+    lines: [
+      n('摊位上有许多包装相似的盒子。奶蛙收到第一份礼物时，说以后每天都会用到它。', 'The stall was full of similar wrapped boxes. When naiwa received my first gift, it had said it would use it every day.'),
+      n('包装会骗人，真正的线索是我们一起度过的清晨。', 'The wrapping could mislead me. The real clue was in the mornings we had shared.'),
+    ], choices: [
+      c('拿起画着星星的杯子', 'Choose the star-patterned mug', 'find_gift', { memory: 'gift' }),
+      c('拿起闪亮的新戒指', 'Choose the glittering new ring', 'wrong_gift', { spirit: -15, danger: 2 }),
+      c('先回到岔路', 'Return to the crossroads', 'm06'),
+    ],
+  },
+  explore_photo: {
+    image: 'M06', mood: 'dream', chapter: b('探索 · 照相亭', 'Explore · The photo booth'),
+    lines: [
+      n('一排照片在潮湿的墙上轻轻晃动。有些照片过于完美，像是这个世界替我们编造的。', 'A row of photographs swayed against the damp wall. Some looked too perfect, as though this world had invented them for us.'),
+      n('真正的合照并不完美，但那天我们确实并肩站在一起。', 'Our real photo was imperfect, but we had stood together that day.'),
+    ], choices: [
+      c('取下窗边逆光、看不清我脸的合照', 'Take the backlit photo by the window, with my face washed out', 'find_photo', { memory: 'photo' }),
+      c('取下两人面容都清晰无瑕的照片', 'Take the flawless photo of both our faces', 'wrong_photo', { spirit: -15, danger: 2 }),
+      c('先回到岔路', 'Return to the crossroads', 'm06'),
+    ],
+  },
+  diary_kiosk: {
+    image: 'M01', mood: 'dream', chapter: b('探索 · 日记亭', 'Explore · The journal kiosk'),
+    lines: [
+      n('亭子里没有人，日记却自己翻到了几页被雨浸湿的记录。', 'The kiosk was empty, but the journal turned by itself to pages damp with rain.'),
+      diary('餐桌边的旧木马，清晨盛着热牛奶的星星杯，还有窗边那张被阳光照花的合照。假的东西总比记忆完美。', 'The worn carousel toy by our table. The starry mug filled with warm milk each morning. The sun-washed photo by the window. The false things are always more perfect than memory.'),
+      diary('如果玩偶围上来，别跟着它们的声音跑。躲到停转的木马背后，等它们走过。', 'If the dolls surround you, do not run toward their voices. Hide behind the still carousel until they pass.'),
+    ], next: 'm06',
   },
   find_toy: {
     image: 'M06', mood: 'dream', chapter: b('回忆 · 最爱的玩具', 'Memory · A favorite toy'),
     lines: [
-      n('旧木马上，一只磨得发亮的小玩具正发出熟悉的轻响。', 'On the old carousel, a well-loved little toy made a familiar sound.'),
+      n('我取下磨旧的木马玩具。那声不成调的叮当，确实来自我们的餐桌。', 'I took down the worn carousel toy. Its off-key jingle really was the one from our table.'),
       n('奶蛙曾把它放在餐桌边，说这样我们吃饭时就像有了第三位朋友。', 'naiwa used to put it beside us at dinner and say we had a third friend at the table.'),
     ], next: 'm06',
   },
   find_gift: {
     image: 'M06', mood: 'dream', chapter: b('回忆 · 第一份礼物', 'Memory · The first gift'),
     lines: [
-      n('褪色的彩灯下，躺着我第一次送给奶蛙的小礼物。', 'Beneath faded carnival lights lay the first little gift I had given naiwa.'),
-      n('它当时抱着礼物转了好几个圈，却仍先问我，花了多少钱，会不会太破费。', 'It had spun around with joy, then immediately asked whether I had spent too much.'),
+      n('盒子里是画着小星星的杯子。即使在这片雨里，我仿佛还闻得到清晨热牛奶的香气。', 'Inside was the mug with little stars. Even in the rain, I could almost smell warm milk from our mornings together.'),
+      n('奶蛙当时抱着杯子转了好几个圈，还问我会不会太破费。', 'naiwa had spun around holding it, then asked whether I had spent too much.'),
     ], next: 'm06',
   },
   find_photo: {
     image: 'M06', mood: 'dream', chapter: b('回忆 · 两人的合照', 'Memory · Our photo'),
     lines: [
-      n('长椅旁的相框里，我们并排坐着。我的脸被阳光遮住，奶蛙笑得很坦然。', 'In a frame beside a bench, we sat together. Sunlight hid my face, while naiwa smiled freely.'),
+      n('照片里，我们站在窗边。我的脸被阳光照得模糊，奶蛙却笑得很坦然。', 'In the photo, we stood by the window. Sunlight washed out my face, while naiwa smiled freely.'),
       n('照片定格的是那一天，而不是任何永远不会改变的承诺。', 'The photo held one day we had shared, not a promise that nothing would ever change.'),
     ], next: 'm06',
   },
-  false_trail: {
-    image: 'M03', mood: 'dream', chapter: b('第一层 · 错误的路', 'Layer One · A false trail'),
-    lines: [
-      n('呼声把我带回原地。玩偶的笑脸在雨里靠近，精神力被雾吞去一截。', 'The voice led me in a circle. Doll faces drew closer in the rain, and the mist drained my spirit.'),
-      diary('不要追逐它们制造的声音。想一想，我们真正留下过什么。', 'Do not follow voices the dolls make. Remember what we truly shared.'),
-    ], next: 'm06',
+  wrong_toy: { image: 'M03', mood: 'dream', chapter: b('误判 · 小丑玩偶', 'Mistake · The clown doll'), lines: [n('小丑玩偶突然睁眼。我松开手，它落进水里，玩偶们的脚步更近了。', 'The clown doll opened its eyes. I dropped it into the water, and the other dolls moved closer.')], next: 'm06' },
+  wrong_gift: { image: 'M03', mood: 'dream', chapter: b('误判 · 陌生的戒指', 'Mistake · The unfamiliar ring'), lines: [n('戒指在掌心里化成冷灰。奶蛙从没用它喝过热牛奶；我追逐的是这个世界造出的漂亮谎言。', 'The ring turned to cold ash in my hand. naiwa had never used it for warm milk. I had followed this world’s pretty lie.')], next: 'm06' },
+  wrong_photo: { image: 'M03', mood: 'dream', chapter: b('误判 · 完美的照片', 'Mistake · The perfect photograph'), lines: [n('照片里的人影转向我，露出一模一样的笑。真正的那张没有如此清晰的脸。', 'The figures in the photo turned toward me with identical smiles. Our real picture had never shown my face so clearly.')], next: 'm06' },
+  doll_hunt: {
+    image: 'M03', mood: 'dream', chapter: b('危机 · 玩偶逼近', 'Danger · The dolls approach'),
+    lines: [n('我刚迈出一步，四周的玩偶同时抬头。细碎的脚步声从雨幕里包围过来。', 'As I took another step, every doll looked up. Tiny footsteps surrounded me through the rain.'), n('出口在远处晃动。日记里的提醒忽然变得重要。', 'The exit shimmered in the distance. The journal’s warning suddenly mattered.')],
+    choices: [
+      c('躲到停转的木马背后，等玩偶走过', 'Hide behind the still carousel and wait', 'm06', { spirit: -10, danger: -3 }),
+      c('朝出口全力奔跑', 'Run straight toward the exit', 'be02', { spirit: -10 }),
+    ],
   },
   m07: {
     image: 'M07', mood: 'dream', chapter: b('第一层 · 我来接你回家', 'Layer One · I came to bring you home'),

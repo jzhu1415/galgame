@@ -10,10 +10,11 @@ type GameState = {
   affection: number
   anxiety: number
   spirit: number
+  danger: number
   memories: MemoryId[]
   history: LogEntry[]
 }
-type Checkpoint = Pick<GameState, 'sceneId' | 'affection' | 'anxiety' | 'spirit' | 'memories'>
+type Checkpoint = Pick<GameState, 'sceneId' | 'affection' | 'anxiety' | 'spirit' | 'danger' | 'memories'>
 type Progress = { version: 1; checkpoints: Record<string, Checkpoint>; endings: string[] }
 
 const STORAGE_KEY = 'naiwa-origin-save-v1'
@@ -27,7 +28,7 @@ let preferredLanguage: Language = state?.language ?? 'zh'
 let imageGeneration = 0
 
 const MAP_WIDTH = 1100
-const MAP_HEIGHT = 2530
+const MAP_HEIGHT = 2750
 const mapNodes: Record<string, { x: number; y: number }> = {
   p01: { x: 550, y: 80 }, p02: { x: 550, y: 195 },
   p03a: { x: 280, y: 310 }, p03b: { x: 820, y: 310 },
@@ -39,10 +40,14 @@ const mapNodes: Record<string, { x: number; y: number }> = {
   m04: { x: 550, y: 1560 }, be01: { x: 280, y: 1690 },
   m05: { x: 550, y: 1690 }, be02: { x: 820, y: 1690 },
   m06: { x: 550, y: 1810 },
-  find_toy: { x: 160, y: 1950 }, find_gift: { x: 420, y: 1950 },
-  find_photo: { x: 680, y: 1950 }, false_trail: { x: 940, y: 1950 },
-  m07: { x: 550, y: 2110 }, exhausted: { x: 940, y: 2110 },
-  m08: { x: 550, y: 2220 }, e01: { x: 550, y: 2330 }, e02: { x: 550, y: 2440 },
+  explore_toy: { x: 160, y: 1940 }, explore_gift: { x: 420, y: 1940 },
+  explore_photo: { x: 680, y: 1940 }, diary_kiosk: { x: 940, y: 1940 },
+  find_toy: { x: 160, y: 2060 }, find_gift: { x: 420, y: 2060 },
+  find_photo: { x: 680, y: 2060 }, doll_hunt: { x: 940, y: 2060 },
+  wrong_toy: { x: 220, y: 2180 }, wrong_gift: { x: 500, y: 2180 },
+  wrong_photo: { x: 780, y: 2180 },
+  m07: { x: 550, y: 2310 }, exhausted: { x: 940, y: 2310 },
+  m08: { x: 550, y: 2430 }, e01: { x: 550, y: 2550 }, e02: { x: 550, y: 2670 },
 }
 
 const ui = {
@@ -51,7 +56,7 @@ const ui = {
     start: '开始故事', continue: '继续故事', restart: '重新开始', log: '回顾', routes: '剧情树', menu: '菜单',
     fullscreen: '全屏', exitFullscreen: '退出全屏',
     language: 'EN', languageLabel: 'Switch to English', close: '关闭', next: '点击画面或按空格继续',
-    select: '选择你的回答', spirit: '精神力', memories: '回忆', ending: '故事到此告一段落',
+    select: '选择你的回答', spirit: '精神力', memories: '回忆', danger: '玩偶警戒', found: '已找回', ending: '故事到此告一段落',
     finish: '《奶之救赎：缘起》完', replay: '再玩一次', returnTitle: '返回标题',
     confirmRestart: '确定重新开始吗？当前进度会被覆盖。', emptyLog: '故事开始后，对话会显示在这里。',
     introNote: '一段关于相遇、信任与内心世界的互动故事', saveNote: '进度自动保存在此浏览器',
@@ -60,13 +65,14 @@ const ui = {
     routesHint: '拖动画布查看剧情。点击已解锁节点可从这里重新开始；灰色节点尚未解锁。', endingGallery: '结局图鉴',
     unlocked: '已解锁', locked: '未解锁', routeConfirm: '从这里重新开始？当前进行中的剧情会被覆盖，已解锁的分支和结局会保留。',
     zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
+    exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
   },
   en: {
     title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
     start: 'Begin story', continue: 'Continue', restart: 'Start over', log: 'History', routes: 'Story map', menu: 'Menu',
     fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen',
     language: '中文', languageLabel: '切换到中文', close: 'Close', next: 'Click the scene or press Space to continue',
-    select: 'Choose your response', spirit: 'Spirit', memories: 'Memories', ending: 'This path ends here',
+    select: 'Choose your response', spirit: 'Spirit', memories: 'Memories', danger: 'Doll alert', found: 'Recovered', ending: 'This path ends here',
     finish: 'The End · naiwa: Origin', replay: 'Play again', returnTitle: 'Return to title',
     confirmRestart: 'Start over? Your current progress will be replaced.', emptyLog: 'Dialogue will appear here once the story begins.',
     introNote: 'An interactive story of meeting, trust, and the world within', saveNote: 'Progress saves automatically in this browser',
@@ -75,6 +81,7 @@ const ui = {
     routesHint: 'Drag to explore. Select any unlocked node to restart there; dimmed nodes are still locked.', endingGallery: 'Ending gallery',
     unlocked: 'Unlocked', locked: 'Locked', routeConfirm: 'Restart from here? Your current run will be replaced, while unlocked routes and endings remain.',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
+    exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
   },
 } as const
 
@@ -85,13 +92,15 @@ function loadSave(): GameState | null {
     const saved: unknown = JSON.parse(raw)
     if (!saved || typeof saved !== 'object') return null
     const data = saved as Partial<GameState>
-    if (data.version !== 1 || !data.sceneId || !Object.hasOwn(story, data.sceneId) || !Number.isInteger(data.lineIndex)) return null
+    const sceneId = data.sceneId === 'false_trail' ? 'm06' : data.sceneId
+    if (data.version !== 1 || !sceneId || !Object.hasOwn(story, sceneId) || !Number.isInteger(data.lineIndex)) return null
     if (data.language !== 'zh' && data.language !== 'en') return null
     return {
-      version: 1, sceneId: data.sceneId, lineIndex: Math.max(0, data.lineIndex ?? 0), language: data.language,
+      version: 1, sceneId, lineIndex: data.sceneId === 'false_trail' ? 0 : Math.max(0, data.lineIndex ?? 0), language: data.language,
       affection: Number.isFinite(data.affection) ? data.affection! : 0,
       anxiety: Number.isFinite(data.anxiety) ? data.anxiety! : 0,
       spirit: Number.isFinite(data.spirit) ? data.spirit! : 100,
+      danger: Number.isFinite(data.danger) ? Math.max(0, data.danger!) : 0,
       memories: Array.isArray(data.memories) ? data.memories.filter((m): m is MemoryId => m === 'toy' || m === 'gift' || m === 'photo') : [],
       history: Array.isArray(data.history) ? data.history.filter((entry): entry is LogEntry => !!entry && typeof entry.sceneId === 'string' && !!story[entry.sceneId] && Number.isInteger(entry.index)).slice(-120) : [],
     }
@@ -113,6 +122,7 @@ function loadProgress(): Progress {
         sceneId: id, affection: Number.isFinite(snapshot.affection) ? snapshot.affection : 0,
         anxiety: Number.isFinite(snapshot.anxiety) ? snapshot.anxiety : 0,
         spirit: Number.isFinite(snapshot.spirit) ? snapshot.spirit : 100,
+        danger: Number.isFinite(snapshot.danger) ? Math.max(0, snapshot.danger) : 0,
         memories: Array.isArray(snapshot.memories) ? snapshot.memories.filter((m): m is MemoryId => m === 'toy' || m === 'gift' || m === 'photo') : [],
       }
     }
@@ -132,7 +142,7 @@ function unlockScene() {
   if (!progress.checkpoints[id]) {
     progress.checkpoints[id] = {
       sceneId: id, affection: state.affection, anxiety: state.anxiety,
-      spirit: state.spirit, memories: [...state.memories],
+      spirit: state.spirit, danger: state.danger, memories: [...state.memories],
     }
   }
   if (story[id].ending && !progress.endings.includes(id)) progress.endings.push(id)
@@ -142,7 +152,7 @@ function unlockScene() {
 function migrateProgressFromSave() {
   if (!state || Object.keys(progress.checkpoints).length) return
   const sequence = state.history.filter(entry => entry.index === 0).map(entry => entry.sceneId)
-  const draft: Checkpoint = { sceneId: firstScene, affection: 0, anxiety: 0, spirit: 100, memories: [] }
+  const draft: Checkpoint = { sceneId: firstScene, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [] }
   let previous: string | null = null
   for (const id of sequence) {
     if (!Object.hasOwn(story, id)) continue
@@ -151,6 +161,7 @@ function migrateProgressFromSave() {
       draft.affection = Math.max(0, draft.affection + (choice.affection ?? 0))
       draft.anxiety = Math.max(0, draft.anxiety + (choice.anxiety ?? 0))
       draft.spirit = Math.max(0, draft.spirit + (choice.spirit ?? 0))
+      draft.danger = Math.max(0, draft.danger + (choice.danger ?? 0))
       if (choice.memory && !draft.memories.includes(choice.memory)) draft.memories.push(choice.memory)
     } else if (id === 'exhausted') draft.spirit = 0
     draft.sceneId = id
@@ -160,7 +171,7 @@ function migrateProgressFromSave() {
   }
   if (!progress.checkpoints[state.sceneId]) progress.checkpoints[state.sceneId] = {
     sceneId: state.sceneId, affection: state.affection, anxiety: state.anxiety,
-    spirit: state.spirit, memories: [...state.memories],
+    spirit: state.spirit, danger: state.danger, memories: [...state.memories],
   }
   if (story[state.sceneId].ending && !progress.endings.includes(state.sceneId)) progress.endings.push(state.sceneId)
   saveProgress()
@@ -204,7 +215,7 @@ function recordLine() {
 }
 
 function start() {
-  state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, memories: [], history: [] }
+  state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [], history: [] }
   active = true
   modal = null
   recordLine()
@@ -248,11 +259,13 @@ function select(index: number) {
   const choices = availableChoices(scene)
   const choice = choices[index]
   if (!choice) return
+  const leavingCrossroads = state.sceneId === 'm06' && choice.next !== 'm07'
   state.affection = Math.max(0, state.affection + (choice.affection ?? 0))
   state.anxiety = Math.max(0, state.anxiety + (choice.anxiety ?? 0))
   state.spirit = Math.max(0, state.spirit + (choice.spirit ?? 0))
+  state.danger = Math.max(0, state.danger + (choice.danger ?? 0))
   if (choice.memory && !state.memories.includes(choice.memory)) state.memories.push(choice.memory)
-  enter(state.spirit <= 0 ? 'exhausted' : choice.next)
+  enter(state.spirit <= 0 ? 'exhausted' : leavingCrossroads && state.danger >= 4 ? 'doll_hunt' : choice.next)
 }
 
 function availableChoices(scene: Scene) {
@@ -348,6 +361,20 @@ async function toggleFullscreen() {
   updateFullscreenButton()
 }
 
+function renderExplorationMap(scene: Scene, choices: NonNullable<Scene['choices']>, lang: Language) {
+  if (!state) return ''
+  const t = ui[lang]
+  const sites = (scene.choices ?? []).slice(0, 4).map((choice, index) => {
+    const found = !!choice.unlessMemory && state!.memories.includes(choice.unlessMemory)
+    const choiceIndex = choices.indexOf(choice)
+    return `<button class="explore-site ${found ? 'is-found' : ''}" ${found ? 'disabled' : `data-choice="${choiceIndex}"`}><span class="explore-site-number">0${index + 1}</span><span class="explore-site-name">${esc(choice.text[lang])}</span><span class="explore-site-status">${esc(found ? t.found : `−10 ${t.spirit}`)}</span></button>`
+  }).join('')
+  const finalChoice = (scene.choices ?? []).at(-1)!
+  const canReturn = state.memories.length === 3
+  const finalIndex = choices.indexOf(finalChoice)
+  return `<div class="exploration-map" aria-label="${esc(t.exploreMap)}"><div class="explore-map-heading"><span>${esc(t.exploreMap)}</span><span>${esc(t.memories)} ${state.memories.length}/3</span></div><div class="explore-sites">${sites}<span class="explore-crossroads" aria-hidden="true">✦</span></div><button class="explore-return ${canReturn ? 'is-ready' : ''}" ${canReturn ? `data-choice="${finalIndex}"` : 'disabled'}><span>${esc(finalChoice.text[lang])}</span><span>${esc(canReturn ? `−10 ${t.spirit}` : t.needMemories)}</span></button></div>`
+}
+
 function renderGame() {
   if (!state) return
   let game = root.querySelector<HTMLElement>(':scope > .game')
@@ -415,7 +442,7 @@ function renderGame() {
   updateFullscreenButton()
   const hud = game.querySelector<HTMLElement>('#hud')!
   hud.hidden = !inDream
-  hud.innerHTML = inDream ? `<span>${esc(t.spirit)} <strong>${state.spirit}</strong><span class="hud-track"><i style="width:${state.spirit}%"></i></span></span><span>${esc(t.memories)} <strong>${state.memories.length}/3</strong></span>` : ''
+  hud.innerHTML = inDream ? `<span>${esc(t.spirit)} <strong>${state.spirit}</strong><span class="hud-track"><i style="width:${state.spirit}%"></i></span></span><span>${esc(t.memories)} <strong>${state.memories.length}/3</strong></span><span class="danger-hud ${state.danger >= 3 ? 'is-high' : ''}">${esc(t.danger)} <strong>${Math.min(state.danger, 4)}/4</strong></span>` : ''
   game.querySelector<HTMLElement>('#dialogue-zone')!.innerHTML = `
     <div class="dialogue-meta"><span class="scene-counter">${String(state.lineIndex + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</span><span class="scene-rule"></span><span>NAIWA · ORIGIN</span></div>
     <div class="dialogue-box" aria-live="polite">
@@ -423,7 +450,7 @@ function renderGame() {
       <p>${esc(line.text[lang])}</p>
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>
-    ${choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
+    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
   game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
 }
@@ -447,9 +474,10 @@ function renderMindMap(lang: Language) {
   const t = ui[lang]
   const links: { from: string; to: string; risk?: boolean }[] = []
   for (const [id, scene] of Object.entries(story)) {
-    if (scene.next) links.push({ from: id, to: scene.next })
-    for (const choice of scene.choices ?? []) links.push({ from: id, to: choice.next })
+    if (scene.next && scene.next !== 'm06') links.push({ from: id, to: scene.next })
+    for (const choice of scene.choices ?? []) if (choice.next !== 'm06') links.push({ from: id, to: choice.next })
   }
+  links.push({ from: 'm06', to: 'doll_hunt', risk: true })
   links.push({ from: 'm06', to: 'exhausted', risk: true })
   const paths = links.map(({ from, to, risk }) => {
     const d = mapPath(from, to)
@@ -463,13 +491,13 @@ function renderMindMap(lang: Language) {
     { y: 760, zh: '第一幕 / 恋人', en: 'ACT I / TOGETHER' },
     { y: 1110, zh: '第二幕 / 意外', en: 'ACT II / THE ACCIDENT' },
     { y: 1510, zh: '第一层 / 迷雾', en: 'LAYER ONE / THE MIST' },
-    { y: 2340, zh: '终幕 / 回应', en: 'EPILOGUE / RESPONSE' },
+    { y: 2550, zh: '终幕 / 回应', en: 'EPILOGUE / RESPONSE' },
   ].map(tag => `<span class="map-chapter" style="top:${tag.y}px">${esc(tag[lang])}</span>`).join('')
   const nodes = Object.entries(mapNodes).map(([id, point]) => {
     const unlocked = !!progress.checkpoints[id]
     const ending = !!story[id].ending
     const currentNode = state?.sceneId === id
-    return `<button class="mind-node ${unlocked ? 'is-unlocked' : 'is-locked'} ${ending ? 'is-ending' : ''} ${currentNode ? 'is-current' : ''}" style="left:${point.x}px;top:${point.y}px" data-route="${id}" ${unlocked ? '' : 'disabled'} ${currentNode ? 'aria-current="step"' : ''} aria-label="${esc(unlocked ? `${story[id].chapter[lang]} · ${t.unlocked}` : `${id.toUpperCase()} · ${t.locked}`)}"><span class="mind-code">${esc(id.toUpperCase())}</span><span class="mind-title">${esc(unlocked ? story[id].chapter[lang] : '???')}</span>${ending ? '<span class="mind-ending-mark" aria-hidden="true">✦</span>' : ''}</button>`
+    return `<button class="mind-node ${unlocked ? 'is-unlocked' : 'is-locked'} ${ending ? 'is-ending' : ''} ${currentNode ? 'is-current' : ''}" style="left:${point.x}px;top:${point.y}px" data-route="${id}" ${unlocked ? '' : 'disabled'} ${currentNode ? 'aria-current="step"' : ''} aria-label="${esc(unlocked ? `${story[id].chapter[lang]} · ${t.unlocked}` : `${id.toUpperCase()} · ${t.locked}`)}"><span class="mind-code">${esc(id.toUpperCase())}</span><span class="mind-title">${esc(unlocked ? story[id].chapter[lang] : '???')}</span>${ending ? '<span class="mind-ending-mark" aria-hidden="true">✦</span>' : ''}${story[id].next === 'm06' ? '<span class="mind-return-mark" aria-hidden="true">↻</span>' : ''}</button>`
   }).join('')
   return `<div class="map-viewport" id="map-viewport" role="region" tabindex="0" aria-label="${esc(t.mapLabel)}"><div class="map-scaled" id="map-scaled"><div class="mindmap" id="mindmap"><div class="map-grid"></div><svg class="map-lines" width="${MAP_WIDTH}" height="${MAP_HEIGHT}" viewBox="0 0 ${MAP_WIDTH} ${MAP_HEIGHT}" aria-hidden="true">${paths}</svg>${chapterTags}${nodes}</div></div></div>`
 }

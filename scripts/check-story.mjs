@@ -21,13 +21,13 @@ for (const [id, scene] of Object.entries(story)) {
   }
 }
 
-const queue = [{ id: firstScene, spirit: 100, memories: [] }]
+const queue = [{ id: firstScene, spirit: 100, danger: 0, memories: [] }]
 const seen = new Set()
 const visitedScenes = new Set()
 const visitedEndings = new Set()
 while (queue.length) {
   const state = queue.shift()
-  const key = `${state.id}|${state.spirit}|${state.memories.join(',')}`
+  const key = `${state.id}|${state.spirit}|${state.danger}|${state.memories.join(',')}`
   if (seen.has(key)) continue
   seen.add(key)
   const scene = story[state.id]
@@ -38,8 +38,10 @@ while (queue.length) {
     if (choice.unlessMemory && state.memories.includes(choice.unlessMemory)) continue
     if (choice.requiresAllMemories && state.memories.length !== 3) continue
     const spirit = Math.max(0, state.spirit + (choice.spirit ?? 0))
+    const danger = Math.max(0, state.danger + (choice.danger ?? 0))
     const memories = choice.memory ? [...state.memories, choice.memory].sort() : state.memories
-    queue.push({ id: spirit === 0 ? 'exhausted' : choice.next, spirit, memories })
+    const id = spirit === 0 ? 'exhausted' : state.id === 'm06' && choice.next !== 'm07' && danger >= 4 ? 'doll_hunt' : choice.next
+    queue.push({ id, spirit, danger, memories })
   }
 }
 
