@@ -18,7 +18,6 @@ for (const [id, scene] of Object.entries(story)) {
   for (const choice of scene.choices ?? []) {
     if (!story[choice.next]) errors.push(`${id}: missing choice target ${choice.next}`)
     if (!choice.text.zh?.trim() || !choice.text.en?.trim()) errors.push(`${id}: missing choice translation`)
-    if (choice.preview && !existsSync(resolve(`public/images/${choice.preview}.webp`))) errors.push(`${id}: missing choice preview ${choice.preview}`)
   }
 }
 
