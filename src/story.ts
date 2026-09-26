@@ -243,13 +243,13 @@ export const story: Record<string, Scene> = {
     ],
   },
   explore_toy: {
-    image: 'M03', mood: 'dream', chapter: b('探索 · 旋转木马', 'Explore · The carousel'),
+    image: 'M03_CAROUSEL_TOYS', mood: 'dream', chapter: b('探索 · 旋转木马', 'Explore · The carousel'),
     lines: [
       n('木马忽快忽慢地转着。两只玩具被挂在不同的马鞍上，其中一只发出熟悉的叮当声。', 'The carousel lurched between slow and fast. Two toys hung from different saddles; one made a familiar jingle.'),
       n('我必须在木马再次加速前认出奶蛙最爱的那只。', 'I had to recognize naiwa’s favorite before the carousel sped up again.'),
     ], choices: [
-      c('取下磨旧的木马玩具', 'Take the worn carousel toy', 'find_toy', { memory: 'toy' }),
-      c('取下崭新的小丑玩偶', 'Take the new clown doll', 'wrong_toy', { spirit: -15, danger: 2 }),
+      c('取下磨旧的木马玩具', 'Take the worn carousel toy', 'find_toy', { memory: 'toy', preview: 'TOY_HORSE' }),
+      c('取下崭新的小丑玩偶', 'Take the new clown doll', 'wrong_toy', { spirit: -15, danger: 2, preview: 'TOY_CLOWN' }),
       c('先回到岔路', 'Return to the crossroads', 'm06'),
     ],
   },
@@ -284,7 +284,7 @@ export const story: Record<string, Scene> = {
     ], next: 'm06',
   },
   find_toy: {
-    image: 'M06', mood: 'dream', chapter: b('回忆 · 最爱的玩具', 'Memory · A favorite toy'),
+    image: 'M03_CAROUSEL_TOYS', mood: 'dream', chapter: b('回忆 · 最爱的玩具', 'Memory · A favorite toy'),
     lines: [
       n('我取下磨旧的木马玩具。那声不成调的叮当，确实来自我们的餐桌。', 'I took down the worn carousel toy. Its off-key jingle really was the one from our table.'),
       n('奶蛙曾把它放在餐桌边，说这样我们吃饭时就像有了第三位朋友。', 'naiwa used to put it beside us at dinner and say we had a third friend at the table.'),
@@ -304,7 +304,7 @@ export const story: Record<string, Scene> = {
       n('照片定格的是那一天，而不是任何永远不会改变的承诺。', 'The photo held one day we had shared, not a promise that nothing would ever change.'),
     ], next: 'm06',
   },
-  wrong_toy: { image: 'M03', mood: 'dream', chapter: b('误判 · 小丑玩偶', 'Mistake · The clown doll'), lines: [n('小丑玩偶突然睁眼。我松开手，它落进水里，玩偶们的脚步更近了。', 'The clown doll opened its eyes. I dropped it into the water, and the other dolls moved closer.')], next: 'm06' },
+  wrong_toy: { image: 'M03_CAROUSEL_TOYS', mood: 'dream', chapter: b('误判 · 小丑玩偶', 'Mistake · The clown doll'), lines: [n('小丑玩偶突然睁眼。我松开手，它落进水里，玩偶们的脚步更近了。', 'The clown doll opened its eyes. I dropped it into the water, and the other dolls moved closer.')], next: 'm06' },
   wrong_gift: { image: 'M06_GIFT_STALL', mood: 'dream', chapter: b('误判 · 陌生的戒指', 'Mistake · The unfamiliar ring'), lines: [n('戒指在掌心里化成冷灰。我们的清晨从来没有它；我追逐的是这个世界造出的漂亮谎言。', 'The ring turned to cold ash in my hand. It had never been part of our mornings. I had followed this world’s pretty lie.')], next: 'm06' },
   wrong_photo: { image: 'M03', mood: 'dream', chapter: b('误判 · 完美的照片', 'Mistake · The perfect photograph'), lines: [n('照片里的人影转向我，露出一模一样的笑。真正的那张没有如此清晰的脸。', 'The figures in the photo turned toward me with identical smiles. Our real picture had never shown my face so clearly.')], next: 'm06' },
   doll_hunt: {

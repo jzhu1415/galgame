@@ -66,6 +66,7 @@ const ui = {
     unlocked: '已解锁', locked: '未解锁', routeConfirm: '从这里重新开始？当前进行中的剧情会被覆盖，已解锁的分支和结局会保留。',
     zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
     exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
+    pickGift: '将鼠标移到物品上并点击 · 手机可直接点选',
   },
   en: {
     title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
@@ -82,6 +83,7 @@ const ui = {
     unlocked: 'Unlocked', locked: 'Locked', routeConfirm: 'Restart from here? Your current run will be replaced, while unlocked routes and endings remain.',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
+    pickGift: 'Hover over an item and click · Tap an item on mobile',
   },
 } as const
 
@@ -342,6 +344,26 @@ function updateSceneImage(layer: HTMLElement, image: string, alt: string) {
   }
 }
 
+function positionGiftHotspots(stage: HTMLElement) {
+  const buttons = stage.querySelectorAll<HTMLButtonElement>('.gift-hotspot')
+  if (!buttons.length) return
+  const { width, height } = stage.getBoundingClientRect()
+  const scale = Math.max(width / 1672, height / 941)
+  const offsetX = (width - 1672 * scale) / 2
+  const offsetY = (height - 941 * scale) * (window.matchMedia('(max-width: 800px)').matches ? .28 : .5)
+  const bounds = [
+    { x: 694, y: 292, width: 234, height: 174 },
+    { x: 920, y: 333, width: 163, height: 140 },
+  ]
+  buttons.forEach((button, index) => {
+    const box = bounds[index]
+    button.style.left = `${offsetX + box.x * scale}px`
+    button.style.top = `${offsetY + box.y * scale}px`
+    button.style.width = `${box.width * scale}px`
+    button.style.height = `${box.height * scale}px`
+  })
+}
+
 function updateFullscreenButton() {
   const button = document.querySelector<HTMLButtonElement>('#fullscreen')
   if (!button) return
@@ -425,6 +447,7 @@ function renderGame() {
   const line = lines[state.lineIndex]
   const finalLine = state.lineIndex === lines.length - 1
   const choices = finalLine ? availableChoices(scene) : []
+  const giftChoiceScene = state.sceneId === 'explore_gift' && finalLine
   const ended = finalLine && !!scene.ending
   const inDream = scene.mood === 'dream' || (scene.mood === 'ending' && state.sceneId !== 'n01' && state.sceneId !== 'e02')
   game.className = `game ${scene.mood} ${state.anxiety >= 20 && inDream ? 'uneasy' : ''} ${state.sceneId === 'be02' || state.sceneId === 'exhausted' ? 'fractured' : ''}`
@@ -448,10 +471,16 @@ function renderGame() {
     <div class="dialogue-box" aria-live="polite">
       <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
       <p>${esc(line.text[lang])}</p>
+      ${giftChoiceScene ? `<div class="gift-controls"><span>${esc(t.pickGift)}</span><button class="gift-return" data-choice="2">← ${esc(choices[2].text[lang])}</button></div>` : ''}
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>
-    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice ${choice.preview ? 'has-preview' : ''}" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span>${choice.preview ? `<img class="choice-preview" src="/images/${esc(choice.preview)}.webp" alt="" loading="eager">` : ''}<span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
+    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : giftChoiceScene ? '' : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice ${choice.preview ? 'has-preview' : ''}" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span>${choice.preview ? `<img class="choice-preview" src="/images/${esc(choice.preview)}.webp" alt="" loading="eager">` : ''}<span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
+  stage.querySelector('#gift-hotspots')?.remove()
+  if (giftChoiceScene) {
+    stage.insertAdjacentHTML('beforeend', `<div class="gift-hotspots" id="gift-hotspots" aria-label="${esc(t.select)}">${choices.slice(0, 2).map((choice, index) => `<button class="gift-hotspot" data-choice="${index}" aria-label="${esc(choice.text[lang])}"><span class="gift-hotspot-label">${index === 0 ? lang === 'zh' ? '星星杯' : 'Star mug' : lang === 'zh' ? '戒指' : 'Ring'}</span><span class="gift-detail"><img src="/images/${esc(choice.preview!)}.webp" alt=""><strong>${esc(choice.text[lang])}</strong></span></button>`).join('')}</div>`)
+    positionGiftHotspots(stage)
+  }
   game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
 }
 
@@ -604,4 +633,8 @@ document.addEventListener('keydown', event => {
 
 migrateProgressFromSave()
 document.addEventListener('fullscreenchange', updateFullscreenButton)
+window.addEventListener('resize', () => {
+  const stage = root.querySelector<HTMLElement>('#stage')
+  if (stage) positionGiftHotspots(stage)
+})
 render()

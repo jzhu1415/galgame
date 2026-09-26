@@ -26,6 +26,20 @@
 @media(max-width:800px){.choice.has-preview{min-height:62px;padding:5px 9px 5px 6px}.choice-preview{width:72px;height:50px}}
 @media(max-width:420px){.choice.has-preview{gap:7px}.choice-preview{width:62px;height:46px}}
 
+.gift-hotspots{position:absolute;inset:0;z-index:1;pointer-events:none}
+.gift-hotspot{position:absolute;display:block;pointer-events:auto;touch-action:manipulation;border:1px solid rgba(255,220,150,.45);border-radius:18px;background:rgba(255,214,137,.045);box-shadow:inset 0 0 28px rgba(255,210,132,.08),0 0 16px rgba(6,12,20,.18);color:#fff4dc;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s}
+.gift-hotspot:hover,.gift-hotspot:focus-visible{background:rgba(255,215,142,.14);border-color:#ffe0a4;box-shadow:inset 0 0 30px rgba(255,218,150,.24),0 0 30px rgba(255,196,100,.4);transform:scale(1.035)}
+.gift-hotspot-label{position:absolute;top:-27px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:4px 9px;background:rgba(10,23,31,.88);border:1px solid rgba(245,206,141,.75);font-size:.72rem;font-weight:700;letter-spacing:.04em;box-shadow:0 4px 14px #0007}
+.gift-detail{position:absolute;left:50%;bottom:calc(100% + 32px);width:160px;padding:6px;background:#14232b;border:1px solid #e8bd79;box-shadow:0 14px 30px #000b;opacity:0;visibility:hidden;transform:translate(-50%,8px);transition:opacity .18s,transform .18s,visibility .18s;pointer-events:none}
+.gift-detail img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.gift-detail strong{display:block;padding:7px 2px 2px;font-size:.7rem;line-height:1.35}
+.gift-hotspot:hover .gift-detail,.gift-hotspot:focus-visible .gift-detail{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.gift-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;color:#ecd4ad;font-size:.75rem;line-height:1.45}
+.gift-return{flex:none;padding:6px 9px;border:1px solid rgba(242,207,151,.55);background:rgba(29,45,51,.78);color:#ffe2ae;font-size:.73rem}
+.gift-return:hover,.gift-return:focus-visible{border-color:#ffe2ae;background:#31434a}
+@media(max-width:800px){.gift-hotspot-label{font-size:.68rem;top:-25px}.gift-controls{font-size:.68rem;gap:8px}.gift-return{font-size:.68rem}}
+@media(hover:none){.gift-detail{display:none}}
+
 .game:fullscreen{width:100vw;height:100dvh;min-height:0;overflow:hidden}
 .game:fullscreen .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
 .game:fullscreen .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
