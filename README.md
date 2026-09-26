@@ -26,7 +26,7 @@ npm run dev
 
 - `src/story.ts`：中英文剧情、选择及场景关系。
 - `src/main.ts`：对话、分支、存档、语言切换及游戏界面。
-- `assets/images/`：用户完成的原始 PNG 插画；`public/images/`：网页加载用 WebP 图片。
+- `assets/images/`：原始 PNG 插画及新增的礼物摊、星星杯、戒指特写；`public/images/`：网页加载用 WebP 图片。原版 `M06.png` 保留未覆盖。
 - `docs/world-bible.md`：世界观设定；`docs/origin-storyboard-prompts.md`：创作时的分镜文档。
 
 分镜文档记述了制作图片前的预案，因此其中的“尚未生图”和“待确定”描述仅反映该文档编写时的阶段。网页中的正式对话、英文文本和轻量玩法已在本版实现。后续层级与组织动机仍是故事伏笔。

@@ -11,6 +11,7 @@ export interface Line {
 export interface Choice {
   text: Bilingual
   next: string
+  preview?: string
   affection?: number
   anxiety?: number
   spirit?: number
@@ -253,13 +254,13 @@ export const story: Record<string, Scene> = {
     ],
   },
   explore_gift: {
-    image: 'M06', mood: 'dream', chapter: b('探索 · 礼物摊', 'Explore · The gift stall'),
+    image: 'M06_GIFT_STALL', mood: 'dream', chapter: b('探索 · 礼物摊', 'Explore · The gift stall'),
     lines: [
-      n('摊位上有许多包装相似的盒子。奶蛙收到第一份礼物时，说以后每天都会用到它。', 'The stall was full of similar wrapped boxes. When naiwa received my first gift, it had said it would use it every day.'),
-      n('包装会骗人，真正的线索是我们一起度过的清晨。', 'The wrapping could mislead me. The real clue was in the mornings we had shared.'),
+      n('潮湿的摊台上，一只画着星星的杯子与一枚闪亮的戒指并排放着。奶蛙收到第一份礼物时，说以后每天都会用到它。', 'On the damp counter sat a star-patterned mug and a glittering ring. When naiwa received my first gift, it said it would use it every day.'),
+      n('光亮会骗人，真正的线索是我们一起度过的清晨。', 'Shine could mislead me. The real clue was in the mornings we shared.'),
     ], choices: [
-      c('拿起画着星星的杯子', 'Choose the star-patterned mug', 'find_gift', { memory: 'gift' }),
-      c('拿起闪亮的新戒指', 'Choose the glittering new ring', 'wrong_gift', { spirit: -15, danger: 2 }),
+      c('拿起画着星星的杯子', 'Choose the star-patterned mug', 'find_gift', { memory: 'gift', preview: 'GIFT_MUG' }),
+      c('拿起闪亮的新戒指', 'Choose the glittering new ring', 'wrong_gift', { spirit: -15, danger: 2, preview: 'GIFT_RING' }),
       c('先回到岔路', 'Return to the crossroads', 'm06'),
     ],
   },
@@ -290,9 +291,9 @@ export const story: Record<string, Scene> = {
     ], next: 'm06',
   },
   find_gift: {
-    image: 'M06', mood: 'dream', chapter: b('回忆 · 第一份礼物', 'Memory · The first gift'),
+    image: 'M06_GIFT_STALL', mood: 'dream', chapter: b('回忆 · 第一份礼物', 'Memory · The first gift'),
     lines: [
-      n('盒子里是画着小星星的杯子。即使在这片雨里，我仿佛还闻得到清晨热牛奶的香气。', 'Inside was the mug with little stars. Even in the rain, I could almost smell warm milk from our mornings together.'),
+      n('我拿起画着小星星的杯子。即使在这片雨里，我仿佛还闻得到清晨热牛奶的香气。', 'I picked up the mug with little stars. Even in the rain, I could almost smell warm milk from our mornings together.'),
       n('奶蛙当时抱着杯子转了好几个圈，还问我会不会太破费。', 'naiwa had spun around holding it, then asked whether I had spent too much.'),
     ], next: 'm06',
   },
@@ -304,7 +305,7 @@ export const story: Record<string, Scene> = {
     ], next: 'm06',
   },
   wrong_toy: { image: 'M03', mood: 'dream', chapter: b('误判 · 小丑玩偶', 'Mistake · The clown doll'), lines: [n('小丑玩偶突然睁眼。我松开手，它落进水里，玩偶们的脚步更近了。', 'The clown doll opened its eyes. I dropped it into the water, and the other dolls moved closer.')], next: 'm06' },
-  wrong_gift: { image: 'M03', mood: 'dream', chapter: b('误判 · 陌生的戒指', 'Mistake · The unfamiliar ring'), lines: [n('戒指在掌心里化成冷灰。奶蛙从没用它喝过热牛奶；我追逐的是这个世界造出的漂亮谎言。', 'The ring turned to cold ash in my hand. naiwa had never used it for warm milk. I had followed this world’s pretty lie.')], next: 'm06' },
+  wrong_gift: { image: 'M06_GIFT_STALL', mood: 'dream', chapter: b('误判 · 陌生的戒指', 'Mistake · The unfamiliar ring'), lines: [n('戒指在掌心里化成冷灰。我们的清晨从来没有它；我追逐的是这个世界造出的漂亮谎言。', 'The ring turned to cold ash in my hand. It had never been part of our mornings. I had followed this world’s pretty lie.')], next: 'm06' },
   wrong_photo: { image: 'M03', mood: 'dream', chapter: b('误判 · 完美的照片', 'Mistake · The perfect photograph'), lines: [n('照片里的人影转向我，露出一模一样的笑。真正的那张没有如此清晰的脸。', 'The figures in the photo turned toward me with identical smiles. Our real picture had never shown my face so clearly.')], next: 'm06' },
   doll_hunt: {
     image: 'M03', mood: 'dream', chapter: b('危机 · 玩偶逼近', 'Danger · The dolls approach'),

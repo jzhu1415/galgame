@@ -450,7 +450,7 @@ function renderGame() {
       <p>${esc(line.text[lang])}</p>
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>
-    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
+    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice ${choice.preview ? 'has-preview' : ''}" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span>${choice.preview ? `<img class="choice-preview" src="/images/${esc(choice.preview)}.webp" alt="" loading="eager">` : ''}<span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
   game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
 }
