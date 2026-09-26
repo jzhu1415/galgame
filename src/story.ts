@@ -113,9 +113,9 @@ export const story: Record<string, Scene> = {
   a01: {
     image: 'A01', mood: 'real', chapter: b('第一幕 · 两人份的晚餐', 'Act I · Dinner for two'),
     lines: [
-      n('从那以后，回家时总有一盏灯为我亮着。', 'From then on, there was always a light waiting for me at home.'),
-      say('你回来啦！先坐一会儿，饭还是热的。今天累吗？', 'You’re home! Sit down; dinner is still warm. Long day?'),
-      n('手机里，朋友刚发来一条关于这段关系的担忧。奶蛙看着我，等我开口。', 'A friend had just messaged me with concerns about our relationship. naiwa looked at me and waited.'),
+      n('这天我临时加班，回家比平时晚了很多。推开门时，奶蛙正把两人份的晚饭重新热好。', 'An unexpected late shift kept me out much longer than usual. When I opened the door, naiwa was reheating dinner for two.'),
+      say('你回来啦！饭刚热好。先坐下歇一会儿，今天很累吧？', 'You’re home! I just warmed up dinner. Sit down and rest a little. Rough day?'),
+      n('我正要回答，手机又亮了。朋友问：“你们才认识不久，真的想清楚了吗？”我看了看奶蛙，决定怎么开口。', 'I was about to answer when my phone lit up. A friend asked, “You’ve only known each other a short while. Are you sure about this?” I looked at naiwa and considered what to say.'),
     ], choices: [
       c('解释晚归，约定下次提前报平安', 'Explain the delay and promise to check in next time', 'a02a', { affection: 15, anxiety: -10 }),
       c('暂时回避，不谈今天的事', 'Avoid the conversation for now', 'a02b', { affection: -5, anxiety: 20 }),

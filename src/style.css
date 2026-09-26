@@ -14,3 +14,68 @@
 @media(max-width:420px){.game-tools .small-btn{font-size:.68rem;padding:7px}.wordmark-btn{font-size:.58rem}.intro h1{font-size:3rem}.intro-actions{gap:9px}.stage-foot{display:none}.stage{height:calc(100dvh - 103px);height:calc(100svh - 103px)}.dialogue-zone{padding-bottom:10px}.dialogue-box{min-height:119px}.dialogue-box p{font-size:.95rem}.choice{font-size:.75rem}.hud{font-size:.6rem}}
 @media(max-height:690px) and (min-width:801px){.stage{min-height:0;height:calc(100dvh - 158px);aspect-ratio:auto}.dialogue-box{min-height:120px}.dialogue-zone{padding-bottom:18px}.dialogue-box p{font-size:1rem}.choices{gap:4px}.choice{min-height:42px;padding:6px 12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Keep the scene mounted while dialogue changes; crossfade only when the image changes. */
+.image-layer{position:absolute;inset:0;z-index:-3;overflow:hidden}
+.scene-image{z-index:auto;opacity:0;animation:none;transition:opacity .55s ease}
+.scene-image.active{opacity:1}
+.hud[hidden],button[hidden]{display:none!important}
+
+.game:fullscreen{width:100vw;height:100dvh;min-height:0;overflow:hidden}
+.game:fullscreen .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
+.game:fullscreen .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
+.game:fullscreen .chapter-line{flex:none}
+.game:fullscreen .stage-foot{flex:none}
+
+.route-dialog{width:min(760px,calc(100vw - 28px))}
+.routes-content{padding:18px 28px 28px;max-height:calc(82dvh - 89px);overflow:auto}
+.routes-hint{font-size:.83rem;line-height:1.6;color:#bac6c3;margin:0 0 24px}
+.ending-gallery,.route-group{margin:0 0 25px}
+.ending-gallery h3,.route-group h3{font-family:'Noto Serif SC',serif;font-size:1rem;letter-spacing:.04em;color:#f2d19d;font-weight:600;margin:0 0 11px}
+.ending-gallery h3 small{font:600 .7rem 'DM Sans',sans-serif;letter-spacing:.08em;color:#aebdbb;margin-left:8px}
+.ending-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ending-badge{display:flex;align-items:center;gap:9px;min-height:42px;padding:7px 11px;border:1px solid #61706d;font-size:.78rem;line-height:1.4}
+.ending-badge span:first-child{color:#e4c384;font-size:1.1rem}
+.ending-badge.is-locked{opacity:.47}
+.route-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.route-node{display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;text-align:left;color:#f2eee6;background:#22323a;border:1px solid #596c70;font-size:.79rem;line-height:1.35;transition:background .2s,border-color .2s}
+.route-node.is-unlocked:hover{background:#344750;border-color:#e9c887}
+.route-node.is-locked{opacity:.42;background:#17232a}
+.route-id{color:#e7c689;font-weight:700;font-size:.67rem;min-width:48px;letter-spacing:.07em}
+.route-state{color:#aabbb9;font-size:.65rem;margin-left:auto;white-space:nowrap}
+@media(max-width:600px){.routes-content{padding:16px}.ending-grid,.route-list{grid-template-columns:1fr}.route-dialog .dialog-head{padding:17px}.route-node{min-height:44px}.game:fullscreen .game-layout{padding:0}.game:fullscreen .stage-foot{padding:7px 12px}}
+@media(max-width:480px){.game-tools{gap:3px}.game-tools .small-btn{padding:6px;font-size:.62rem;letter-spacing:0}.wordmark-btn{font-size:.53rem}.game-top{padding:8px 9px}}
+
+/* Branching story mind map */
+.route-dialog{width:min(1160px,calc(100vw - 20px));max-height:90dvh}
+.route-dialog .routes-content{max-height:calc(90dvh - 86px);padding:18px 24px 26px}
+.map-intro{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:13px}
+.map-intro .routes-hint{margin:0;max-width:66ch}
+.map-zoom-tools{display:flex;align-items:center;gap:9px;flex:none}
+.map-zoom-tools .small-btn{width:42px;padding:6px;font-size:1.25rem;line-height:1}
+.map-zoom-tools span{color:#efd8b0;font-size:.75rem;min-width:38px;text-align:center}
+.map-viewport{height:min(58dvh,620px);overflow:auto;position:relative;background:#101e28;border:1px solid #617072;box-shadow:inset 0 0 70px #071018;cursor:grab;scrollbar-color:#7e8e8a #172731;scrollbar-width:thin;overscroll-behavior:contain}
+.map-viewport.is-dragging{cursor:grabbing}
+.map-viewport:focus-visible{outline:3px solid #f5cb82;outline-offset:2px}
+.map-scaled{position:relative;overflow:hidden}
+.mindmap{position:relative;width:1100px;height:2530px;transform-origin:top left;isolation:isolate;background:radial-gradient(ellipse at 50% 17%,#253845 0%,transparent 35%),radial-gradient(ellipse at 50% 68%,#253848 0%,transparent 38%),#101e28}
+.map-grid{position:absolute;inset:0;pointer-events:none;opacity:.34;background-image:radial-gradient(#8fa3a1 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.map-lines{position:absolute;inset:0;z-index:1;pointer-events:none}
+.map-link{fill:none;stroke:#53676b;stroke-width:2.2;opacity:.68}
+.map-link.is-open{stroke:#d8b576;stroke-width:2.6;opacity:.9}
+.map-link.is-return{stroke-dasharray:6 7;stroke-width:1.5;opacity:.5}
+.map-link.is-risk{stroke:#b77783;stroke-dasharray:4 7}
+.map-link.is-risk.is-locked{opacity:.35}
+.map-chapter{position:absolute;left:25px;z-index:2;transform:translateY(-50%);padding:9px 12px;border-left:2px solid #d2ad74;background:rgba(12,27,35,.72);color:#e6c795;font-size:.78rem;font-weight:700;letter-spacing:.16em;white-space:nowrap}
+.mind-node{position:absolute;z-index:3;transform:translate(-50%,-50%);width:190px;min-height:70px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;padding:10px 14px;text-align:left;color:#f8f2e8;background:#20323d;border:1px solid #889696;border-left:3px solid #d4b478;box-shadow:0 9px 23px #071118b8;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s;user-select:none}
+.mind-node.is-unlocked:hover{background:#354b52;border-color:#f3d29a;box-shadow:0 12px 28px #030a10;transform:translate(-50%,-50%) scale(1.04)}
+.mind-node.is-locked{color:#8a9c9d;background:#182832;border-color:#50646a;opacity:.7;box-shadow:none}
+.mind-node.is-current{outline:2px solid #f5d99e;outline-offset:4px}
+.mind-node.is-ending{border-left-color:#bd7e85}
+.mind-node.is-ending.is-unlocked{background:#40323a}
+.mind-code{font-size:.66rem;font-weight:700;letter-spacing:.15em;color:#edc786}
+.mind-node.is-locked .mind-code{color:#8da0a0}
+.mind-title{font-family:'Noto Serif SC',serif;font-size:.82rem;line-height:1.35;font-weight:600}
+.mind-ending-mark{position:absolute;right:10px;top:8px;color:#e4b2b7}
+.route-dialog .ending-gallery{margin:22px 0 0}
+@media(max-width:600px){.route-dialog .routes-content{padding:14px;max-height:calc(90dvh - 72px)}.map-intro{align-items:flex-start;flex-direction:column;gap:10px}.map-viewport{height:53dvh}.route-dialog .dialog-head{padding:17px}.ending-grid{grid-template-columns:1fr}}

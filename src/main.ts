@@ -13,18 +13,43 @@ type GameState = {
   memories: MemoryId[]
   history: LogEntry[]
 }
+type Checkpoint = Pick<GameState, 'sceneId' | 'affection' | 'anxiety' | 'spirit' | 'memories'>
+type Progress = { version: 1; checkpoints: Record<string, Checkpoint>; endings: string[] }
 
 const STORAGE_KEY = 'naiwa-origin-save-v1'
+const PROGRESS_KEY = 'naiwa-origin-progress-v1'
 const root = document.querySelector<HTMLDivElement>('#app')!
 let state: GameState | null = loadSave()
+let progress: Progress = loadProgress()
 let active = false
-let modal: 'log' | 'menu' | null = null
+let modal: 'log' | 'menu' | 'routes' | null = null
 let preferredLanguage: Language = state?.language ?? 'zh'
+let imageGeneration = 0
+
+const MAP_WIDTH = 1100
+const MAP_HEIGHT = 2530
+const mapNodes: Record<string, { x: number; y: number }> = {
+  p01: { x: 550, y: 80 }, p02: { x: 550, y: 195 },
+  p03a: { x: 280, y: 310 }, p03b: { x: 820, y: 310 },
+  p04a: { x: 550, y: 430 }, p04b: { x: 550, y: 540 }, p05: { x: 550, y: 650 },
+  n01: { x: 280, y: 770 }, a01: { x: 550, y: 770 },
+  a02a: { x: 280, y: 890 }, a02b: { x: 550, y: 890 }, a02c: { x: 820, y: 890 },
+  a03: { x: 550, y: 1010 }, a04: { x: 550, y: 1120 },
+  m01: { x: 550, y: 1230 }, m02: { x: 550, y: 1340 }, m03: { x: 550, y: 1450 },
+  m04: { x: 550, y: 1560 }, be01: { x: 280, y: 1690 },
+  m05: { x: 550, y: 1690 }, be02: { x: 820, y: 1690 },
+  m06: { x: 550, y: 1810 },
+  find_toy: { x: 160, y: 1950 }, find_gift: { x: 420, y: 1950 },
+  find_photo: { x: 680, y: 1950 }, false_trail: { x: 940, y: 1950 },
+  m07: { x: 550, y: 2110 }, exhausted: { x: 940, y: 2110 },
+  m08: { x: 550, y: 2220 }, e01: { x: 550, y: 2330 }, e02: { x: 550, y: 2440 },
+}
 
 const ui = {
   zh: {
     title: '奶之救赎', subtitle: '缘起', tagline: '那场雨之后，我走进了你的世界。',
-    start: '开始故事', continue: '继续故事', restart: '重新开始', log: '回顾', menu: '菜单',
+    start: '开始故事', continue: '继续故事', restart: '重新开始', log: '回顾', routes: '剧情树', menu: '菜单',
+    fullscreen: '全屏', exitFullscreen: '退出全屏',
     language: 'EN', languageLabel: 'Switch to English', close: '关闭', next: '点击画面或按空格继续',
     select: '选择你的回答', spirit: '精神力', memories: '回忆', ending: '故事到此告一段落',
     finish: '《奶之救赎：缘起》完', replay: '再玩一次', returnTitle: '返回标题',
@@ -32,10 +57,14 @@ const ui = {
     introNote: '一段关于相遇、信任与内心世界的互动故事', saveNote: '进度自动保存在此浏览器',
     controls: '空格 / Enter 推进 · 点击选项作出选择 · Esc 关闭菜单',
     allFound: '三件回忆物已集齐',
+    routesHint: '拖动画布查看剧情。点击已解锁节点可从这里重新开始；灰色节点尚未解锁。', endingGallery: '结局图鉴',
+    unlocked: '已解锁', locked: '未解锁', routeConfirm: '从这里重新开始？当前进行中的剧情会被覆盖，已解锁的分支和结局会保留。',
+    zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
   },
   en: {
     title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
-    start: 'Begin story', continue: 'Continue', restart: 'Start over', log: 'History', menu: 'Menu',
+    start: 'Begin story', continue: 'Continue', restart: 'Start over', log: 'History', routes: 'Story map', menu: 'Menu',
+    fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen',
     language: '中文', languageLabel: '切换到中文', close: 'Close', next: 'Click the scene or press Space to continue',
     select: 'Choose your response', spirit: 'Spirit', memories: 'Memories', ending: 'This path ends here',
     finish: 'The End · naiwa: Origin', replay: 'Play again', returnTitle: 'Return to title',
@@ -43,6 +72,9 @@ const ui = {
     introNote: 'An interactive story of meeting, trust, and the world within', saveNote: 'Progress saves automatically in this browser',
     controls: 'Space / Enter to advance · Choose with a click · Esc to close the menu',
     allFound: 'All three memories found',
+    routesHint: 'Drag to explore. Select any unlocked node to restart there; dimmed nodes are still locked.', endingGallery: 'Ending gallery',
+    unlocked: 'Unlocked', locked: 'Locked', routeConfirm: 'Restart from here? Your current run will be replaced, while unlocked routes and endings remain.',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
   },
 } as const
 
@@ -53,7 +85,7 @@ function loadSave(): GameState | null {
     const saved: unknown = JSON.parse(raw)
     if (!saved || typeof saved !== 'object') return null
     const data = saved as Partial<GameState>
-    if (data.version !== 1 || !data.sceneId || !story[data.sceneId] || !Number.isInteger(data.lineIndex)) return null
+    if (data.version !== 1 || !data.sceneId || !Object.hasOwn(story, data.sceneId) || !Number.isInteger(data.lineIndex)) return null
     if (data.language !== 'zh' && data.language !== 'en') return null
     return {
       version: 1, sceneId: data.sceneId, lineIndex: Math.max(0, data.lineIndex ?? 0), language: data.language,
@@ -66,6 +98,72 @@ function loadSave(): GameState | null {
   } catch {
     return null
   }
+}
+
+function loadProgress(): Progress {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY)
+    if (!raw) return { version: 1, checkpoints: {}, endings: [] }
+    const value = JSON.parse(raw) as Partial<Progress>
+    if (value.version !== 1 || !value.checkpoints || !Array.isArray(value.endings)) throw new Error('Invalid progress')
+    const checkpoints: Record<string, Checkpoint> = {}
+    for (const [id, snapshot] of Object.entries(value.checkpoints)) {
+      if (!Object.hasOwn(story, id) || !snapshot || snapshot.sceneId !== id) continue
+      checkpoints[id] = {
+        sceneId: id, affection: Number.isFinite(snapshot.affection) ? snapshot.affection : 0,
+        anxiety: Number.isFinite(snapshot.anxiety) ? snapshot.anxiety : 0,
+        spirit: Number.isFinite(snapshot.spirit) ? snapshot.spirit : 100,
+        memories: Array.isArray(snapshot.memories) ? snapshot.memories.filter((m): m is MemoryId => m === 'toy' || m === 'gift' || m === 'photo') : [],
+      }
+    }
+    return { version: 1, checkpoints, endings: value.endings.filter(id => Object.hasOwn(story, id) && !!story[id].ending) }
+  } catch {
+    return { version: 1, checkpoints: {}, endings: [] }
+  }
+}
+
+function saveProgress() {
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+}
+
+function unlockScene() {
+  if (!state) return
+  const id = state.sceneId
+  if (!progress.checkpoints[id]) {
+    progress.checkpoints[id] = {
+      sceneId: id, affection: state.affection, anxiety: state.anxiety,
+      spirit: state.spirit, memories: [...state.memories],
+    }
+  }
+  if (story[id].ending && !progress.endings.includes(id)) progress.endings.push(id)
+  saveProgress()
+}
+
+function migrateProgressFromSave() {
+  if (!state || Object.keys(progress.checkpoints).length) return
+  const sequence = state.history.filter(entry => entry.index === 0).map(entry => entry.sceneId)
+  const draft: Checkpoint = { sceneId: firstScene, affection: 0, anxiety: 0, spirit: 100, memories: [] }
+  let previous: string | null = null
+  for (const id of sequence) {
+    if (!Object.hasOwn(story, id)) continue
+    const choice = previous ? story[previous].choices?.find(option => option.next === id) : undefined
+    if (choice) {
+      draft.affection = Math.max(0, draft.affection + (choice.affection ?? 0))
+      draft.anxiety = Math.max(0, draft.anxiety + (choice.anxiety ?? 0))
+      draft.spirit = Math.max(0, draft.spirit + (choice.spirit ?? 0))
+      if (choice.memory && !draft.memories.includes(choice.memory)) draft.memories.push(choice.memory)
+    } else if (id === 'exhausted') draft.spirit = 0
+    draft.sceneId = id
+    if (!progress.checkpoints[id]) progress.checkpoints[id] = { ...draft, memories: [...draft.memories] }
+    if (story[id].ending && !progress.endings.includes(id)) progress.endings.push(id)
+    previous = id
+  }
+  if (!progress.checkpoints[state.sceneId]) progress.checkpoints[state.sceneId] = {
+    sceneId: state.sceneId, affection: state.affection, anxiety: state.anxiety,
+    spirit: state.spirit, memories: [...state.memories],
+  }
+  if (story[state.sceneId].ending && !progress.endings.includes(state.sceneId)) progress.endings.push(state.sceneId)
+  saveProgress()
 }
 
 function save() {
@@ -86,10 +184,11 @@ function current() {
 }
 
 function enter(sceneId: string) {
-  if (!state || !story[sceneId]) return
+  if (!state || !Object.hasOwn(story, sceneId)) return
   state.sceneId = sceneId
   state.lineIndex = 0
   recordLine()
+  unlockScene()
   save()
   render()
 }
@@ -106,6 +205,21 @@ function recordLine() {
 
 function start() {
   state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, memories: [], history: [] }
+  active = true
+  modal = null
+  recordLine()
+  unlockScene()
+  save()
+  render()
+}
+
+function restartFrom(sceneId: string) {
+  const snapshot = progress.checkpoints[sceneId]
+  if (!snapshot) return
+  state = {
+    version: 1, ...snapshot, memories: [...snapshot.memories],
+    lineIndex: 0, language: preferredLanguage, history: [],
+  }
   active = true
   modal = null
   recordLine()
@@ -172,6 +286,7 @@ function renderIntro() {
         <p class="intro-note">${esc(t.introNote)}</p>
         <div class="intro-actions">
           ${state ? `<button class="primary-btn" id="continue">${esc(t.continue)} <span aria-hidden="true">↗</span></button><button class="secondary-btn" id="start">${esc(t.restart)}</button>` : `<button class="primary-btn" id="start">${esc(t.start)} <span aria-hidden="true">↗</span></button>`}
+          ${Object.keys(progress.checkpoints).length ? `<button class="secondary-btn" id="routes-intro">${esc(t.routes)}</button>` : ''}
         </div>
         <p class="save-note">${esc(t.saveNote)}</p>
       </main>
@@ -180,10 +295,101 @@ function renderIntro() {
   document.querySelector('#language')?.addEventListener('click', toggleLanguage)
   document.querySelector('#continue')?.addEventListener('click', () => { active = true; render() })
   document.querySelector('#start')?.addEventListener('click', () => { if (!state || window.confirm(t.confirmRestart)) start() })
+  document.querySelector('#routes-intro')?.addEventListener('click', () => { modal = 'routes'; renderModal() })
+}
+
+function updateSceneImage(layer: HTMLElement, image: string, alt: string) {
+  if (layer.dataset.image === image) {
+    layer.querySelectorAll<HTMLImageElement>('img').forEach(img => { img.alt = alt })
+    return
+  }
+  const generation = ++imageGeneration
+  layer.querySelectorAll<HTMLImageElement>('.scene-image:not(.active)').forEach(img => img.remove())
+  const outgoing = layer.querySelector<HTMLImageElement>('.scene-image.active')
+  const incoming = document.createElement('img')
+  incoming.className = `scene-image${outgoing ? '' : ' active'}`
+  incoming.src = imageUrl(image)
+  incoming.alt = alt
+  layer.dataset.image = image
+  layer.append(incoming)
+  if (!outgoing) return
+  const reveal = () => {
+    if (generation !== imageGeneration || !incoming.isConnected) return
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (generation !== imageGeneration || !incoming.isConnected) return
+      incoming.classList.add('active')
+      outgoing.classList.remove('active')
+      window.setTimeout(() => outgoing.remove(), 650)
+    }))
+  }
+  if (incoming.complete) reveal()
+  else {
+    incoming.addEventListener('load', reveal, { once: true })
+    incoming.addEventListener('error', () => { incoming.remove(); layer.dataset.image = outgoing.src.split('/').at(-1)?.replace('.webp', '') ?? '' }, { once: true })
+  }
+}
+
+function updateFullscreenButton() {
+  const button = document.querySelector<HTMLButtonElement>('#fullscreen')
+  if (!button) return
+  const lang = state?.language ?? preferredLanguage
+  button.textContent = document.fullscreenElement ? ui[lang].exitFullscreen : ui[lang].fullscreen
+}
+
+async function toggleFullscreen() {
+  const game = root.querySelector<HTMLElement>('.game')
+  if (!game || !document.fullscreenEnabled) return
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen()
+    else await game.requestFullscreen()
+  } catch (error) {
+    console.warn('Fullscreen unavailable:', error)
+  }
+  updateFullscreenButton()
 }
 
 function renderGame() {
   if (!state) return
+  let game = root.querySelector<HTMLElement>(':scope > .game')
+  if (!game) {
+    root.innerHTML = `
+      <div class="game">
+        <header class="game-top">
+          <button class="wordmark wordmark-btn" id="title">NAIWA <span>·</span> ORIGIN</button>
+          <div class="game-tools">
+            <button class="small-btn" id="log"></button>
+            <button class="small-btn" id="routes"></button>
+            <button class="small-btn" id="language"></button>
+            <button class="small-btn" id="fullscreen"></button>
+            <button class="small-btn" id="menu"></button>
+          </div>
+        </header>
+        <main class="game-layout">
+          <div class="chapter-line"><span class="chapter-number">CHAPTER 01</span><span class="chapter-divider"></span><span id="chapter-name"></span></div>
+          <section class="stage" id="stage"><div class="image-layer" id="image-layer"></div><div class="scene-scrim"></div><div class="hud" id="hud"></div><div class="dialogue-zone" id="dialogue-zone"></div></section>
+          <div class="stage-foot" id="stage-foot"></div>
+        </main>
+      </div>`
+    game = root.querySelector<HTMLElement>(':scope > .game')!
+    game.querySelector('#title')?.addEventListener('click', () => { active = false; render() })
+    game.querySelector('#language')?.addEventListener('click', toggleLanguage)
+    game.querySelector('#log')?.addEventListener('click', () => { modal = 'log'; renderModal() })
+    game.querySelector('#routes')?.addEventListener('click', () => { modal = 'routes'; renderModal() })
+    game.querySelector('#menu')?.addEventListener('click', () => { modal = 'menu'; renderModal() })
+    game.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
+    game.querySelector('#stage')?.addEventListener('click', event => {
+      const target = event.target as HTMLElement
+      const choice = target.closest<HTMLButtonElement>('[data-choice]')
+      if (choice) { select(Number(choice.dataset.choice)); return }
+      if (target.closest('#replay')) {
+        const t = ui[state?.language ?? preferredLanguage]
+        if (window.confirm(t.confirmRestart)) start()
+        return
+      }
+      if (target.closest('.choices, .ending-actions')) return
+      advance()
+    })
+  }
   const scene = current()
   const lang = state.language
   const t = ui[lang]
@@ -194,42 +400,115 @@ function renderGame() {
   const choices = finalLine ? availableChoices(scene) : []
   const ended = finalLine && !!scene.ending
   const inDream = scene.mood === 'dream' || (scene.mood === 'ending' && state.sceneId !== 'n01' && state.sceneId !== 'e02')
-  root.innerHTML = `
-    <div class="game ${scene.mood} ${state.anxiety >= 20 && inDream ? 'uneasy' : ''} ${state.sceneId === 'be02' || state.sceneId === 'exhausted' ? 'fractured' : ''}">
-      <header class="game-top">
-        <button class="wordmark wordmark-btn" id="title" aria-label="${esc(t.returnTitle)}">NAIWA <span>·</span> ORIGIN</button>
-        <div class="game-tools"><button class="small-btn" id="log">${esc(t.log)}</button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button><button class="small-btn" id="menu">${esc(t.menu)} <span aria-hidden="true">☰</span></button></div>
-      </header>
-      <main class="game-layout">
-        <div class="chapter-line"><span class="chapter-number">CHAPTER 01</span><span class="chapter-divider"></span><span>${esc(scene.chapter[lang])}</span></div>
-        <section class="stage" id="stage" aria-label="${esc(scene.chapter[lang])}">
-          <img class="scene-image" src="${imageUrl(scene.image)}" alt="${esc(scene.chapter[lang])}" />
-          <div class="scene-scrim"></div>
-          ${inDream ? `<div class="hud"><span>${esc(t.spirit)} <strong>${state.spirit}</strong><span class="hud-track"><i style="width:${state.spirit}%"></i></span></span><span>${esc(t.memories)} <strong>${state.memories.length}/3</strong></span></div>` : ''}
-          <div class="dialogue-zone">
-            <div class="dialogue-meta"><span class="scene-counter">${String(state.lineIndex + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</span><span class="scene-rule"></span><span>NAIWA · ORIGIN</span></div>
-            <div class="dialogue-box" aria-live="polite">
-              <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
-              <p>${esc(line.text[lang])}</p>
-              ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
-            </div>
-            ${choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
-            ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}
-          </div>
-        </section>
-        <div class="stage-foot"><span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}</div>
-      </main>
-    </div>`
-  document.querySelector('#title')?.addEventListener('click', () => { active = false; render() })
-  document.querySelector('#language')?.addEventListener('click', toggleLanguage)
-  document.querySelector('#log')?.addEventListener('click', () => { modal = 'log'; renderModal() })
-  document.querySelector('#menu')?.addEventListener('click', () => { modal = 'menu'; renderModal() })
-  document.querySelector('#replay')?.addEventListener('click', () => { if (window.confirm(t.confirmRestart)) start() })
-  document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); select(Number(button.dataset.choice)) }))
-  document.querySelector('#stage')?.addEventListener('click', event => {
-    if ((event.target as HTMLElement).closest('button, .choices, .ending-actions')) return
-    advance()
+  game.className = `game ${scene.mood} ${state.anxiety >= 20 && inDream ? 'uneasy' : ''} ${state.sceneId === 'be02' || state.sceneId === 'exhausted' ? 'fractured' : ''}`
+  game.querySelector<HTMLElement>('#chapter-name')!.textContent = scene.chapter[lang]
+  const stage = game.querySelector<HTMLElement>('#stage')!
+  stage.setAttribute('aria-label', scene.chapter[lang])
+  updateSceneImage(game.querySelector<HTMLElement>('#image-layer')!, scene.image, scene.chapter[lang])
+  game.querySelector<HTMLElement>('#title')!.setAttribute('aria-label', t.returnTitle)
+  for (const id of ['log', 'routes', 'menu'] as const) game.querySelector<HTMLElement>(`#${id}`)!.textContent = t[id]
+  const languageButton = game.querySelector<HTMLElement>('#language')!
+  languageButton.textContent = t.language
+  languageButton.setAttribute('aria-label', t.languageLabel)
+  const fullscreenButton = game.querySelector<HTMLButtonElement>('#fullscreen')!
+  fullscreenButton.hidden = !document.fullscreenEnabled
+  updateFullscreenButton()
+  const hud = game.querySelector<HTMLElement>('#hud')!
+  hud.hidden = !inDream
+  hud.innerHTML = inDream ? `<span>${esc(t.spirit)} <strong>${state.spirit}</strong><span class="hud-track"><i style="width:${state.spirit}%"></i></span></span><span>${esc(t.memories)} <strong>${state.memories.length}/3</strong></span>` : ''
+  game.querySelector<HTMLElement>('#dialogue-zone')!.innerHTML = `
+    <div class="dialogue-meta"><span class="scene-counter">${String(state.lineIndex + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</span><span class="scene-rule"></span><span>NAIWA · ORIGIN</span></div>
+    <div class="dialogue-box" aria-live="polite">
+      <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
+      <p>${esc(line.text[lang])}</p>
+      ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
+    </div>
+    ${choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
+    ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
+  game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
+}
+
+function mapPath(fromId: string, toId: string) {
+  const from = mapNodes[fromId]
+  const to = mapNodes[toId]
+  if (!from || !to) return ''
+  if (to.y <= from.y) {
+    const side = from.x < 550 ? -1 : 1
+    const detour = side < 0 ? 52 : 1048
+    return `M ${from.x + side * 96} ${from.y} C ${detour} ${from.y + 18}, ${detour} ${to.y - 18}, ${to.x + side * 96} ${to.y}`
+  }
+  const startY = from.y + 35
+  const endY = to.y - 35
+  const bend = Math.max(28, (endY - startY) * .48)
+  return `M ${from.x} ${startY} C ${from.x} ${startY + bend}, ${to.x} ${endY - bend}, ${to.x} ${endY}`
+}
+
+function renderMindMap(lang: Language) {
+  const t = ui[lang]
+  const links: { from: string; to: string; risk?: boolean }[] = []
+  for (const [id, scene] of Object.entries(story)) {
+    if (scene.next) links.push({ from: id, to: scene.next })
+    for (const choice of scene.choices ?? []) links.push({ from: id, to: choice.next })
+  }
+  links.push({ from: 'm06', to: 'exhausted', risk: true })
+  const paths = links.map(({ from, to, risk }) => {
+    const d = mapPath(from, to)
+    if (!d) return ''
+    const unlocked = !!progress.checkpoints[from] && !!progress.checkpoints[to]
+    const returning = mapNodes[to].y <= mapNodes[from].y
+    return `<path d="${d}" class="map-link ${unlocked ? 'is-open' : 'is-locked'} ${returning ? 'is-return' : ''} ${risk ? 'is-risk' : ''}"/>`
+  }).join('')
+  const chapterTags = [
+    { y: 75, zh: '序章 / 相遇', en: 'PROLOGUE / MEETING' },
+    { y: 760, zh: '第一幕 / 恋人', en: 'ACT I / TOGETHER' },
+    { y: 1110, zh: '第二幕 / 意外', en: 'ACT II / THE ACCIDENT' },
+    { y: 1510, zh: '第一层 / 迷雾', en: 'LAYER ONE / THE MIST' },
+    { y: 2340, zh: '终幕 / 回应', en: 'EPILOGUE / RESPONSE' },
+  ].map(tag => `<span class="map-chapter" style="top:${tag.y}px">${esc(tag[lang])}</span>`).join('')
+  const nodes = Object.entries(mapNodes).map(([id, point]) => {
+    const unlocked = !!progress.checkpoints[id]
+    const ending = !!story[id].ending
+    const currentNode = state?.sceneId === id
+    return `<button class="mind-node ${unlocked ? 'is-unlocked' : 'is-locked'} ${ending ? 'is-ending' : ''} ${currentNode ? 'is-current' : ''}" style="left:${point.x}px;top:${point.y}px" data-route="${id}" ${unlocked ? '' : 'disabled'} ${currentNode ? 'aria-current="step"' : ''} aria-label="${esc(unlocked ? `${story[id].chapter[lang]} · ${t.unlocked}` : `${id.toUpperCase()} · ${t.locked}`)}"><span class="mind-code">${esc(id.toUpperCase())}</span><span class="mind-title">${esc(unlocked ? story[id].chapter[lang] : '???')}</span>${ending ? '<span class="mind-ending-mark" aria-hidden="true">✦</span>' : ''}</button>`
+  }).join('')
+  return `<div class="map-viewport" id="map-viewport" role="region" tabindex="0" aria-label="${esc(t.mapLabel)}"><div class="map-scaled" id="map-scaled"><div class="mindmap" id="mindmap"><div class="map-grid"></div><svg class="map-lines" width="${MAP_WIDTH}" height="${MAP_HEIGHT}" viewBox="0 0 ${MAP_WIDTH} ${MAP_HEIGHT}" aria-hidden="true">${paths}</svg>${chapterTags}${nodes}</div></div></div>`
+}
+
+function setupMindMap(dialog: HTMLDialogElement) {
+  const viewport = dialog.querySelector<HTMLElement>('#map-viewport')
+  const scaled = dialog.querySelector<HTMLElement>('#map-scaled')
+  const map = dialog.querySelector<HTMLElement>('#mindmap')
+  if (!viewport || !scaled || !map) return
+  let zoom = window.innerWidth < 600 ? 1 : .9
+  const applyZoom = (next: number, initial = false) => {
+    const worldX = initial ? 550 : (viewport.scrollLeft + viewport.clientWidth / 2) / zoom
+    const worldY = initial ? (mapNodes[state?.sceneId ?? 'p01']?.y ?? 80) : (viewport.scrollTop + viewport.clientHeight / 2) / zoom
+    zoom = Math.max(.55, Math.min(1.25, next))
+    scaled.style.width = `${MAP_WIDTH * zoom}px`
+    scaled.style.height = `${MAP_HEIGHT * zoom}px`
+    map.style.transform = `scale(${zoom})`
+    dialog.querySelector<HTMLElement>('#map-zoom')!.textContent = `${Math.round(zoom * 100)}%`
+    viewport.scrollLeft = worldX * zoom - viewport.clientWidth / 2
+    viewport.scrollTop = worldY * zoom - viewport.clientHeight / 2
+  }
+  requestAnimationFrame(() => applyZoom(zoom, true))
+  dialog.querySelector('#zoom-in')?.addEventListener('click', () => applyZoom(zoom + .15))
+  dialog.querySelector('#zoom-out')?.addEventListener('click', () => applyZoom(zoom - .15))
+  let drag: { x: number; y: number; left: number; top: number } | null = null
+  viewport.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'mouse' || (event.target as HTMLElement).closest('button')) return
+    drag = { x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop }
+    viewport.classList.add('is-dragging')
+    viewport.setPointerCapture(event.pointerId)
   })
+  viewport.addEventListener('pointermove', event => {
+    if (!drag) return
+    viewport.scrollLeft = drag.left - (event.clientX - drag.x)
+    viewport.scrollTop = drag.top - (event.clientY - drag.y)
+  })
+  const finishDrag = () => { drag = null; viewport.classList.remove('is-dragging') }
+  viewport.addEventListener('pointerup', finishDrag)
+  viewport.addEventListener('pointercancel', finishDrag)
 }
 
 function renderModal() {
@@ -239,24 +518,39 @@ function renderModal() {
   const t = ui[lang]
   const dialog = document.createElement('dialog')
   dialog.id = 'app-dialog'
-  dialog.className = 'app-dialog'
+  dialog.className = `app-dialog${modal === 'routes' ? ' route-dialog' : ''}`
+  dialog.dataset.kind = modal
   if (modal === 'log') {
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.log)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="log-list">${state?.history.length ? state.history.map(entry => {
       const scene = story[entry.sceneId]
       const line = sceneLinesForLog(scene, state!, entry.index)
       return line ? `<article class="log-entry"><small>${esc(scene.chapter[lang])} · ${esc(line.speaker?.[lang] ?? (lang === 'zh' ? '旁白' : 'Narration'))}</small><p>${esc(line.text[lang])}</p></article>` : ''
     }).join('') : `<p>${esc(t.emptyLog)}</p>`}</div>`
+  } else if (modal === 'routes') {
+    const endingIds = ['n01', 'be01', 'be02', 'exhausted', 'e02']
+    dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.routes)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div>
+      <div class="routes-content">
+        <div class="map-intro"><p class="routes-hint">${esc(t.routesHint)}</p><div class="map-zoom-tools"><button class="small-btn" id="zoom-out" aria-label="${esc(t.zoomOut)}">−</button><span id="map-zoom">90%</span><button class="small-btn" id="zoom-in" aria-label="${esc(t.zoomIn)}">+</button></div></div>
+        ${renderMindMap(lang)}
+        <section class="ending-gallery"><h3>${esc(t.endingGallery)} <small>${progress.endings.length}/5</small></h3><div class="ending-grid">${endingIds.map(id => `<div class="ending-badge ${progress.endings.includes(id) ? 'is-unlocked' : 'is-locked'}"><span>${progress.endings.includes(id) ? '✦' : '◇'}</span><span>${esc(progress.endings.includes(id) ? story[id].chapter[lang] : '???')}</span></div>`).join('')}</div></section>
+      </div>`
   } else {
-    dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.menu)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="menu-continue" class="primary-btn">${esc(t.continue)} ↗</button><button id="menu-restart" class="secondary-btn">${esc(t.restart)}</button><button id="menu-title" class="secondary-btn">${esc(t.returnTitle)}</button></div><p class="modal-note">${esc(t.saveNote)}</p>`
+    dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.menu)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="menu-continue" class="primary-btn">${esc(t.continue)} ↗</button><button id="menu-routes" class="secondary-btn">${esc(t.routes)}</button><button id="menu-restart" class="secondary-btn">${esc(t.restart)}</button><button id="menu-title" class="secondary-btn">${esc(t.returnTitle)}</button></div><p class="modal-note">${esc(t.saveNote)}</p>`
   }
   root.append(dialog)
-  dialog.addEventListener('close', () => { modal = null; dialog.remove() })
+  dialog.addEventListener('close', () => { if (modal === dialog.dataset.kind) modal = null; dialog.remove() })
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close() })
   dialog.querySelector('#close-dialog')?.addEventListener('click', () => dialog.close())
   dialog.querySelector('#menu-continue')?.addEventListener('click', () => dialog.close())
+  dialog.querySelector('#menu-routes')?.addEventListener('click', () => { dialog.close(); modal = 'routes'; renderModal() })
   dialog.querySelector('#menu-title')?.addEventListener('click', () => { dialog.close(); active = false; render() })
   dialog.querySelector('#menu-restart')?.addEventListener('click', () => { if (window.confirm(t.confirmRestart)) { dialog.close(); start() } })
+  dialog.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button => button.addEventListener('click', () => {
+    const id = button.dataset.route
+    if (id && progress.checkpoints[id] && window.confirm(t.routeConfirm)) { dialog.close(); restartFrom(id) }
+  }))
   dialog.showModal()
+  if (modal === 'routes') setupMindMap(dialog)
 }
 
 function sceneLinesForLog(scene: Scene, saved: GameState, index: number) {
@@ -280,4 +574,6 @@ document.addEventListener('keydown', event => {
   advance()
 })
 
+migrateProgressFromSave()
+document.addEventListener('fullscreenchange', updateFullscreenButton)
 render()
