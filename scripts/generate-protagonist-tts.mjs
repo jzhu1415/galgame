@@ -15,7 +15,7 @@ mkdirSync(output, { recursive: true })
 try {
   for (const scene of Object.values(story)) {
     for (const line of scene.lines) {
-      if (!line.sound?.startsWith('hero-')) continue
+      if (!line.sound?.startsWith('protagonist-')) continue
       if (line.speaker?.zh !== '我' || line.speaker?.en !== 'Me') throw new Error(`${line.sound} is not spoken by the protagonist`)
       for (const lang of ['zh', 'en']) {
         const aiff = join(temporary, `${line.sound}-${lang}.aiff`)

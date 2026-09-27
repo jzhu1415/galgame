@@ -78,7 +78,7 @@ const ui = {
     zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
     exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
     pickObject: '将鼠标移到画面中的物品上并点击 · 手机可直接点选',
-    laughPlaying: '奶蛙的笑声', heroPlaying: '主角男声', soundSkip: '跳过', soundRetry: '重新播放',
+    laughPlaying: '奶蛙的笑声', naiwaSpeaking: '奶蛙的声音', heroPlaying: '主角男声', soundSkip: '跳过', soundRetry: '重新播放',
     ambientOff: '关闭笑声', ambientOn: '开启笑声', ambientRetry: '播放笑声',
   },
   en: {
@@ -97,7 +97,7 @@ const ui = {
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
     pickObject: 'Hover over an item and click · Tap an item on mobile',
-    laughPlaying: 'naiwa’s laugh', heroPlaying: 'Protagonist voice', soundSkip: 'Skip', soundRetry: 'Replay',
+    laughPlaying: 'naiwa’s laugh', naiwaSpeaking: 'naiwa’s voice', heroPlaying: 'Protagonist voice', soundSkip: 'Skip', soundRetry: 'Replay',
     ambientOff: 'Turn off laughter', ambientOn: 'Turn on laughter', ambientRetry: 'Play laughter',
   },
 } as const
@@ -280,10 +280,10 @@ function syncSound() {
   if (!state) return
   const line = sceneLines(current())[state.lineIndex]
   if (!line?.sound) { stopSound(); return }
-  const key = `${state.sceneId}:${state.lineIndex}:${line.sound === 'laugh' ? '' : state.language}`
+  const key = `${state.sceneId}:${state.lineIndex}:${line.sound.startsWith('protagonist-') ? state.language : ''}`
   if (soundPlayback?.key === key) return
   stopSound()
-  const audio = new Audio(line.sound === 'laugh' ? '/audio/naiwa-laugh.m4a' : `/audio/${line.sound}-${state.language}.m4a`)
+  const audio = new Audio(line.sound.startsWith('protagonist-') ? `/audio/${line.sound}-${state.language}.m4a` : `/audio/${line.sound}.m4a`)
   const playback: SoundPlayback = { key, audio, status: 'playing' }
   soundPlayback = playback
   audio.addEventListener('ended', () => {
@@ -596,7 +596,7 @@ function renderGame() {
     <div class="dialogue-box" aria-live="polite">
       <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
       <p>${esc(line.text[lang])}</p>
-      ${line.sound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(line.sound === 'laugh' ? t.laughPlaying : t.heroPlaying)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : line.sound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
+      ${line.sound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(line.sound === 'naiwa-laugh' ? t.laughPlaying : line.sound.startsWith('naiwa-') ? t.naiwaSpeaking : t.heroPlaying)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : line.sound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
       ${objectChoiceScene ? `<div class="object-controls"><span>${esc(t.pickObject)}</span><button class="object-return" data-choice="2">← ${esc(choices[2].text[lang])}</button></div>` : ''}
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>

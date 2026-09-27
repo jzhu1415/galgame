@@ -6,7 +6,7 @@ export interface Line {
   speaker?: Bilingual
   text: Bilingual
   when?: 'uneasy' | 'secure'
-  sound?: 'laugh' | 'hero-listen' | 'hero-home' | 'hero-choice'
+  sound?: 'naiwa-laugh' | 'naiwa-speech' | 'naiwa-short-reply' | 'protagonist-listen' | 'protagonist-home' | 'protagonist-choice'
 }
 
 export interface Choice {
@@ -33,10 +33,11 @@ export interface Scene {
 
 const b = (zh: string, en: string): Bilingual => ({ zh, en })
 const n = (zh: string, en: string): Line => ({ text: b(zh, en) })
-const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en) })
+const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en), ...(nameZh === '奶蛙' ? { sound: 'naiwa-speech' as const } : {}) })
 const diary = (zh: string, en: string): Line => ({ speaker: b('奶蛙观察日记', 'naiwa’s journal'), text: b(zh, en) })
-const laugh = (line: Line): Line => ({ ...line, sound: 'laugh' })
-const heroVoice = (line: Line, sound: 'hero-listen' | 'hero-home' | 'hero-choice'): Line => ({ ...line, sound })
+const laugh = (line: Line): Line => ({ ...line, sound: 'naiwa-laugh' })
+const shortSay = (zh: string, en: string): Line => ({ ...say(zh, en), sound: 'naiwa-short-reply' })
+const heroVoice = (line: Line, sound: 'protagonist-listen' | 'protagonist-home' | 'protagonist-choice'): Line => ({ ...line, sound })
 const c = (zh: string, en: string, next: string, effects: Partial<Choice> = {}): Choice => ({ text: b(zh, en), next, ...effects })
 
 export const memoryNames: Record<MemoryId, Bilingual> = {
@@ -247,7 +248,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('某个雨夜，我们走在回家的路上。路口忽然亮起刺眼的车灯。', 'One rainy night, we were walking home when headlights blazed across the intersection.'),
       n('远处有人影。还没来得及看清，奶蛙已经挡在我身前。', 'There were figures in the distance. Before I could make them out, naiwa stepped in front of me.'),
-      say('别怕。看着我。', 'Don’t be afraid. Look at me.'),
+      shortSay('别怕。看着我。', 'Don’t be afraid. Look at me.'),
     ], next: 'a04',
   },
   a04: {
@@ -255,7 +256,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('光从奶蛙身上涌出，将道路和那些模糊的身影一同吞没。', 'Light burst from naiwa, swallowing the road and the shadowy figures.'),
       n('等光散去，它倒在我怀里。刚才还温暖的手，慢慢失去了力气。', 'When the light faded, it collapsed into my arms. The hand that had felt so warm went still.'),
-      say('你没事……就好。', 'You’re safe… that’s enough.'),
+      shortSay('你没事……就好。', 'You’re safe… that’s enough.'),
     ], next: 'm01',
   },
   m01: {
@@ -316,7 +317,7 @@ export const story: Record<string, Scene> = {
     image: 'M05', mood: 'dream', chapter: b('第一层 · 一点微光', 'Layer One · A small light'),
     lines: [
       n('我停在它能看见、却不会吓到它的地方。', 'I stopped where it could see me without feeling cornered.'),
-      heroVoice(say('奶蛙，我在这里。我先听你说。', 'naiwa, I’m here. I’m listening.', '我', 'Me'), 'hero-listen'),
+      heroVoice(say('奶蛙，我在这里。我先听你说。', 'naiwa, I’m here. I’m listening.', '我', 'Me'), 'protagonist-listen'),
       n('那张执拗的笑脸终于松动。它哭着说，自己害怕再被留下。怪偶暂时安静下来。', 'Its fixed smile finally gave way. It cried that it was afraid of being left behind. The dolls fell still.'),
       diary('游乐园里藏着三件回忆。先看清线索，再认出真正属于我们的东西。玩偶会追逐犹豫太久的人。', 'Three memories are hidden in the fairground. Study the clues before choosing what truly belongs to us. The dolls pursue anyone who lingers too long.'),
     ], next: 'm06',
@@ -410,10 +411,10 @@ export const story: Record<string, Scene> = {
     image: 'M07', mood: 'dream', chapter: b('第一层 · 我来接你回家', 'Layer One · I came to bring you home'),
     lines: [
       n('我把三件回忆物放在奶蛙面前，仍然给它留出选择的距离。', 'I placed the three memories before naiwa, leaving it room to choose whether to come closer.'),
-      heroVoice(say('我不会丢下你。我来接你回家了。', 'I won’t abandon you. I came to bring you home.', '我', 'Me'), 'hero-home'),
-      heroVoice(say('但我们都可以自由选择。害怕的时候，告诉我。不要把自己困在这里。', 'But we are both free to choose. When you’re afraid, tell me. You don’t have to lock yourself in here.', '我', 'Me'), 'hero-choice'),
+      heroVoice(say('我不会丢下你。我来接你回家了。', 'I won’t abandon you. I came to bring you home.', '我', 'Me'), 'protagonist-home'),
+      heroVoice(say('但我们都可以自由选择。害怕的时候，告诉我。不要把自己困在这里。', 'But we are both free to choose. When you’re afraid, tell me. You don’t have to lock yourself in here.', '我', 'Me'), 'protagonist-choice'),
       n('它看着那张照片，慢慢松开了攥紧的手。旋转木马终于放缓。', 'It looked at the photo and slowly unclenched its hands. The carousel began to slow.'),
-      say('原来……你真的还记得。', 'You… really do remember.'),
+      shortSay('原来……你真的还记得。', 'You… really do remember.'),
     ], next: 'm08',
   },
   m08: {

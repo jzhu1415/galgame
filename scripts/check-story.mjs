@@ -15,11 +15,13 @@ for (const [id, scene] of Object.entries(story)) {
   for (const line of scene.lines) {
     if (!line.text.zh?.trim() || !line.text.en?.trim()) errors.push(`${id}: missing translation`)
     if (line.sound) {
-      const files = line.sound === 'laugh' ? ['naiwa-laugh.m4a'] : [`${line.sound}-zh.m4a`, `${line.sound}-en.m4a`]
+      const files = line.sound.startsWith('protagonist-') ? [`${line.sound}-zh.m4a`, `${line.sound}-en.m4a`] : [`${line.sound}.m4a`]
       for (const file of files) if (!existsSync(resolve(`public/audio/${file}`))) errors.push(`${id}: missing sound ${file}`)
-      if (line.sound.startsWith('hero-') && (line.speaker?.zh !== '我' || line.speaker?.en !== 'Me')) errors.push(`${id}: protagonist voice on another speaker`)
+      if (line.sound.startsWith('protagonist-') && (line.speaker?.zh !== '我' || line.speaker?.en !== 'Me')) errors.push(`${id}: protagonist voice on another speaker`)
+      if ((line.sound === 'naiwa-speech' || line.sound === 'naiwa-short-reply') && line.speaker?.zh !== '奶蛙') errors.push(`${id}: naiwa voice on another speaker`)
     }
-    if (line.speaker?.zh === '我' && !line.sound?.startsWith('hero-')) errors.push(`${id}: protagonist line without voice`)
+    if (line.speaker?.zh === '我' && !line.sound?.startsWith('protagonist-')) errors.push(`${id}: protagonist line without voice`)
+    if (line.speaker?.zh === '奶蛙' && !line.sound) errors.push(`${id}: naiwa line without voice`)
   }
   for (const choice of scene.choices ?? []) {
     if (!story[choice.next]) errors.push(`${id}: missing choice target ${choice.next}`)
