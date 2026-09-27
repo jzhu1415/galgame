@@ -101,7 +101,7 @@ export const story: Record<string, Scene> = {
       say('你……可以做我的对象吗？我会把最好的都给你。', 'Would you… be my partner? I want to give you the best of everything.'),
       n('它没有靠近，只安静等着我的回答。', 'It stayed where it was and quietly waited for my answer.'),
     ], choices: [
-      c('答应奶蛙，握住它的手', 'Say yes and take naiwa’s hand', 'a01', { affection: 20 }),
+      c('答应奶蛙，握住它的手', 'Say yes and take naiwa’s hand', 'r01', { affection: 20 }),
       c('温柔地拒绝', 'Decline gently', 'n01'),
     ],
   },
@@ -112,6 +112,95 @@ export const story: Record<string, Scene> = {
       say('我明白了。谢谢你认真告诉我。', 'I understand. Thank you for telling me honestly.'),
       n('它为我让开路。我们依然记得那个雨夜，只是故事从这里走向了不同的方向。', 'It stepped aside for me. We would both remember that rainy night, even though our stories now led in different directions.'),
     ], ending: 'missed',
+  },
+  r01: {
+    image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 周末的约会', 'Act I · Our first weekend out'),
+    lines: [
+      n('成为恋人后的第一个周末，我们没有订什么特别的行程，只拎着一个空布袋逛街角集市。', 'On our first weekend as a couple, we made no grand plans. We took an empty tote to the neighborhood market.'),
+      say('那边有风铃！不过你想先去哪儿？今天我们慢慢逛。', 'There are wind chimes over there! Where would you like to go first? We have all day.'),
+      n('奶蛙停在摊位前等我，眼睛却忍不住往那些叮当作响的小玩意儿上瞟。', 'naiwa waited beside the stall, though its eyes kept drifting toward the little things that chimed.'),
+    ], choices: [
+      c('先陪它挑一只风铃', 'Help naiwa choose a wind chime first', 'r01a', { affection: 8 }),
+      c('提议先挑一盆窗边的植物', 'Suggest picking a plant for the window first', 'r01b', { affection: 8 }),
+    ],
+  },
+  r01a: {
+    image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 风铃', 'Act I · Wind chimes'),
+    lines: [
+      n('我们挨个轻轻拨动风铃。奶蛙挑中一只声音很轻的，说这样不会吵醒晚归的我。', 'We listened to the chimes one by one. naiwa chose a quiet one, so it would not wake me after a late shift.'),
+      say('你听，像不像雨快停的时候？', 'Listen. Doesn’t it sound like rain letting up?'),
+      n('我把风铃放进布袋。它没有赶着去下一处，只牵着我沿摊位慢慢走。', 'I tucked it into the tote. naiwa took my hand, and we wandered on without hurrying.'),
+    ], next: 'r02',
+  },
+  r01b: {
+    image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 窗边的绿意', 'Act I · A plant for the window'),
+    lines: [
+      n('我指向一盆小小的迷迭香。奶蛙认真闻了闻，打了个轻轻的喷嚏。', 'I pointed to a little rosemary plant. naiwa sniffed it carefully and gave a tiny sneeze.'),
+      say('就它吧！以后我们轮流浇水。你挑的东西，我也想好好照顾。', 'Let’s take it home! We can water it in turns. I want to care for something you chose.'),
+      n('我们把花盆安稳地放进布袋，走到风铃摊时又停下来听了一会儿。', 'We settled the pot safely in the tote, then stopped to listen at the wind chime stall.'),
+    ], next: 'r02',
+  },
+  r02: {
+    image: 'R02_KITCHEN', mood: 'real', chapter: b('第一幕 · 一起做早餐', 'Act I · Breakfast together'),
+    lines: [
+      n('下一个周日，奶蛙宣布要做松饼。我负责搅面糊，它负责翻面；第一张却歪得像一朵云。', 'The next Sunday, naiwa declared it pancake day. I mixed the batter and it worked the pan; the first pancake came out shaped like a cloud.'),
+      say('嗯……这张算试做。你想怎么处理？', 'Well… that was a trial run. What should we do with it?'),
+    ], choices: [
+      c('一起再试一张，做成两人份', 'Try again together and make enough for two', 'r02a', { affection: 10, anxiety: -5 }),
+      c('先尝尝这张，形状不重要', 'Taste this one first; the shape can wait', 'r02b', { affection: 8, anxiety: -5 }),
+    ],
+  },
+  r02a: {
+    image: 'R02_KITCHEN', mood: 'real', chapter: b('第一幕 · 第二张松饼', 'Act I · The second pancake'),
+    lines: [
+      n('我重新搅匀面糊，奶蛙在旁边数着时间。这回松饼圆了一些，边缘还是翘起一点。', 'I mixed a fresh bowl while naiwa counted the seconds. The next pancake was rounder, though one edge still curled up.'),
+      say('成功一半！另一半就当是我们自己的形状。', 'Half a success! Let’s call the other half our signature shape.'),
+      n('我们分着吃掉那张歪松饼，谁也没提要把它藏起来。', 'We shared the crooked one too. Neither of us suggested hiding it.'),
+    ], next: 'r03',
+  },
+  r02b: {
+    image: 'R02_KITCHEN', mood: 'real', chapter: b('第一幕 · 歪松饼', 'Act I · The crooked pancake'),
+    lines: [
+      n('我切下一角尝了尝。奶蛙盯着我的表情，直到我点头，才放心地咬了一口。', 'I cut off a corner to taste. naiwa watched my face, then took a bite when I nodded.'),
+      say('是真的好吃，还是你在安慰我？', 'Is it really good, or are you being kind?'),
+      n('我说口感还可以，下次少放一点糖。它把这条建议认真记在食谱边上。', 'I said the texture was good, but we could use less sugar next time. It wrote that beside the recipe.'),
+    ], next: 'r03',
+  },
+  r03: {
+    image: 'R03_PHOTO', mood: 'real', chapter: b('第一幕 · 窗边的合照', 'Act I · The window photograph'),
+    lines: [
+      n('又过了几天，我们在窗边架起一台旧相机。快门响起时，阳光正好从我身后照进来。', 'A few days later, we set an old camera by the window. The shutter clicked just as sunlight spilled in behind me.'),
+      n('相纸慢慢显影。奶蛙笑得很清楚，我的脸却被逆光照得模糊。', 'The print slowly developed. naiwa’s smile was clear, while the backlight washed out my face.'),
+      say('要重拍吗？还是……你喜欢这张？', 'Should we take another? Or… do you like this one?'),
+    ], choices: [
+      c('留下这张，它记住了今天', 'Keep it; it remembers this day', 'r03a', { affection: 10, anxiety: -5 }),
+      c('再拍一张清楚的，也留下这一张', 'Take a clearer one too, and keep this one', 'r03b', { affection: 8 }),
+    ],
+  },
+  r03a: {
+    image: 'R03_PHOTO', mood: 'real', chapter: b('第一幕 · 不完美的照片', 'Act I · An imperfect photo'),
+    lines: [
+      n('我把相片放到窗边。奶蛙凑近看了又看，手指停在那道过亮的光上。', 'I set the print by the window. naiwa leaned in, its finger resting on the bright flare.'),
+      say('脸是看不清，可我记得拍照时你在笑。', 'I can’t see your face, but I remember you smiling when we took it.'),
+      n('窗台从此多了一张有点歪的合照。', 'From then on, a slightly crooked photo lived on the windowsill.'),
+    ], next: 'r04',
+  },
+  r03b: {
+    image: 'R03_PHOTO', mood: 'real', chapter: b('第一幕 · 两张照片', 'Act I · Two photographs'),
+    lines: [
+      n('我们又拍了一张。第二张清楚些，奶蛙还是把第一张放到了窗边。', 'We took another. The second came out clearer, but naiwa still placed the first by the window.'),
+      say('这张是我们没准备好的样子。我想留着。', 'This is how we looked when we weren’t ready. I want to keep it.'),
+      n('我点了点头。那道逆光留在相片上，也留在我们共同的记忆里。', 'I nodded. The patch of sunlight stayed in the print, and in our shared memory.'),
+    ], next: 'r04',
+  },
+  r04: {
+    image: 'R04_QUIET', mood: 'real', chapter: b('第一幕 · 各自的夜晚', 'Act I · A quiet evening'),
+    lines: [
+      n('后来我们也不总把夜晚排成约会。奶蛙写它的观察日记，我在沙发上读书。', 'Later, we stopped trying to make every evening a date. naiwa wrote in its journal while I read on the sofa.'),
+      say('我想把今天记下来。你先看书，等会儿再讲给你听。', 'I want to write about today. Keep reading; I’ll tell you about it when I’m done.'),
+      n('星星杯放在它手边，热牛奶冒着细细的白气。屋里很安静，却一点也不空。', 'The starry mug sat beside it, warm milk sending up a thin curl of steam. The room was quiet without feeling empty.'),
+      n('几周就这样过去了。我们开始熟悉彼此的节奏，也知道有事可以开口商量。', 'Weeks passed this way. We learned each other’s rhythms, and learned we could talk when something mattered.'),
+    ], next: 'a01',
   },
   a01: {
     image: 'A01', mood: 'real', chapter: b('第一幕 · 两人份的晚餐', 'Act I · Dinner for two'),

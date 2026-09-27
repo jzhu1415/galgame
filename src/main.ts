@@ -28,26 +28,32 @@ let preferredLanguage: Language = state?.language ?? 'zh'
 let imageGeneration = 0
 
 const MAP_WIDTH = 1100
-const MAP_HEIGHT = 2750
+const MAP_HEIGHT = 3600
 const mapNodes: Record<string, { x: number; y: number }> = {
   p01: { x: 550, y: 80 }, p02: { x: 550, y: 195 },
   p03a: { x: 280, y: 310 }, p03b: { x: 820, y: 310 },
   p04a: { x: 550, y: 430 }, p04b: { x: 550, y: 540 }, p05: { x: 550, y: 650 },
-  n01: { x: 280, y: 770 }, a01: { x: 550, y: 770 },
-  a02a: { x: 280, y: 890 }, a02b: { x: 550, y: 890 }, a02c: { x: 820, y: 890 },
-  a03: { x: 550, y: 1010 }, a04: { x: 550, y: 1120 },
-  m01: { x: 550, y: 1230 }, m02: { x: 550, y: 1340 }, m03: { x: 550, y: 1450 },
-  m04: { x: 550, y: 1560 }, be01: { x: 280, y: 1690 },
-  m05: { x: 550, y: 1690 }, be02: { x: 820, y: 1690 },
-  m06: { x: 550, y: 1810 },
-  explore_toy: { x: 160, y: 1940 }, explore_gift: { x: 420, y: 1940 },
-  explore_photo: { x: 680, y: 1940 }, diary_kiosk: { x: 940, y: 1940 },
-  find_toy: { x: 160, y: 2060 }, find_gift: { x: 420, y: 2060 },
-  find_photo: { x: 680, y: 2060 }, doll_hunt: { x: 940, y: 2060 },
-  wrong_toy: { x: 220, y: 2180 }, wrong_gift: { x: 500, y: 2180 },
-  wrong_photo: { x: 780, y: 2180 },
-  m07: { x: 550, y: 2310 }, exhausted: { x: 940, y: 2310 },
-  m08: { x: 550, y: 2430 }, e01: { x: 550, y: 2550 }, e02: { x: 550, y: 2670 },
+  n01: { x: 180, y: 770 }, r01: { x: 550, y: 770 },
+  r01a: { x: 350, y: 890 }, r01b: { x: 750, y: 890 },
+  r02: { x: 550, y: 1010 },
+  r02a: { x: 350, y: 1130 }, r02b: { x: 750, y: 1130 },
+  r03: { x: 550, y: 1250 },
+  r03a: { x: 350, y: 1370 }, r03b: { x: 750, y: 1370 },
+  r04: { x: 550, y: 1490 }, a01: { x: 550, y: 1610 },
+  a02a: { x: 280, y: 1730 }, a02b: { x: 550, y: 1730 }, a02c: { x: 820, y: 1730 },
+  a03: { x: 550, y: 1850 }, a04: { x: 550, y: 1960 },
+  m01: { x: 550, y: 2070 }, m02: { x: 550, y: 2180 }, m03: { x: 550, y: 2290 },
+  m04: { x: 550, y: 2400 }, be01: { x: 280, y: 2530 },
+  m05: { x: 550, y: 2530 }, be02: { x: 820, y: 2530 },
+  m06: { x: 550, y: 2650 },
+  explore_toy: { x: 160, y: 2780 }, explore_gift: { x: 420, y: 2780 },
+  explore_photo: { x: 680, y: 2780 }, diary_kiosk: { x: 940, y: 2780 },
+  find_toy: { x: 160, y: 2900 }, find_gift: { x: 420, y: 2900 },
+  find_photo: { x: 680, y: 2900 }, doll_hunt: { x: 940, y: 2900 },
+  wrong_toy: { x: 220, y: 3020 }, wrong_gift: { x: 500, y: 3020 },
+  wrong_photo: { x: 780, y: 3020 },
+  m07: { x: 550, y: 3150 }, exhausted: { x: 940, y: 3150 },
+  m08: { x: 550, y: 3270 }, e01: { x: 550, y: 3390 }, e02: { x: 550, y: 3510 },
 }
 
 const ui = {
@@ -535,9 +541,9 @@ function renderMindMap(lang: Language) {
   const chapterTags = [
     { y: 75, zh: '序章 / 相遇', en: 'PROLOGUE / MEETING' },
     { y: 760, zh: '第一幕 / 恋人', en: 'ACT I / TOGETHER' },
-    { y: 1110, zh: '第二幕 / 意外', en: 'ACT II / THE ACCIDENT' },
-    { y: 1510, zh: '第一层 / 迷雾', en: 'LAYER ONE / THE MIST' },
-    { y: 2550, zh: '终幕 / 回应', en: 'EPILOGUE / RESPONSE' },
+    { y: 1840, zh: '第二幕 / 意外', en: 'ACT II / THE ACCIDENT' },
+    { y: 2290, zh: '第一层 / 迷雾', en: 'LAYER ONE / THE MIST' },
+    { y: 3390, zh: '终幕 / 回应', en: 'EPILOGUE / RESPONSE' },
   ].map(tag => `<span class="map-chapter" style="top:${tag.y}px">${esc(tag[lang])}</span>`).join('')
   const nodes = Object.entries(mapNodes).map(([id, point]) => {
     const unlocked = !!progress.checkpoints[id]
