@@ -118,3 +118,7 @@
 .sound-status button{border:0;background:transparent;color:inherit;padding:0;text-align:left;text-decoration:underline;text-underline-offset:3px}
 .sound-pulse{font-size:1.1rem;animation:bob 1.5s infinite}
 @media(max-width:420px){.sound-status{font-size:.67rem;padding:5px 8px;margin-top:8px}}
+.ambient-control{position:absolute;top:24px;right:28px;z-index:3;min-height:38px;padding:8px 12px;border:1px solid rgba(238,221,189,.62);background:rgba(12,21,30,.76);color:#f8e4bb;font-size:.76rem;font-weight:600;backdrop-filter:blur(10px)}
+.ambient-control[hidden]{display:none}
+.ambient-control:hover{background:rgba(46,61,67,.92);border-color:#f2c77f}
+@media(max-width:800px){.ambient-control{top:14px;right:12px;min-height:36px;padding:7px 10px;font-size:.7rem}}

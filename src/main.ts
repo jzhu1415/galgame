@@ -28,6 +28,9 @@ let preferredLanguage: Language = state?.language ?? 'zh'
 let imageGeneration = 0
 type SoundPlayback = { key: string; audio: HTMLAudioElement; status: 'playing' | 'finished' | 'error' }
 let soundPlayback: SoundPlayback | null = null
+let ambientLaugh: HTMLAudioElement | null = null
+let ambientEnabled = true
+let ambientError = false
 
 const MAP_WIDTH = 1100
 const MAP_HEIGHT = 3600
@@ -76,6 +79,7 @@ const ui = {
     exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
     pickObject: '将鼠标移到画面中的物品上并点击 · 手机可直接点选',
     laughPlaying: '奶蛙的笑声', heroPlaying: '主角男声', soundSkip: '跳过', soundRetry: '重新播放',
+    ambientOff: '关闭笑声', ambientOn: '开启笑声', ambientRetry: '播放笑声',
   },
   en: {
     title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
@@ -94,6 +98,7 @@ const ui = {
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
     pickObject: 'Hover over an item and click · Tap an item on mobile',
     laughPlaying: 'naiwa’s laugh', heroPlaying: 'Protagonist voice', soundSkip: 'Skip', soundRetry: 'Replay',
+    ambientOff: 'Turn off laughter', ambientOn: 'Turn on laughter', ambientRetry: 'Play laughter',
   },
 } as const
 
@@ -231,6 +236,36 @@ function stopSound() {
   soundPlayback = null
 }
 
+function stopAmbientLaugh() {
+  if (!ambientLaugh) return
+  ambientLaugh.pause()
+  ambientLaugh.src = ''
+  ambientLaugh = null
+}
+
+function syncAmbientLaugh() {
+  if (!state || !['e01', 'e02'].includes(state.sceneId) || !ambientEnabled) {
+    stopAmbientLaugh()
+    return
+  }
+  if (ambientLaugh) return
+  const audio = new Audio('/audio/naiwa-laugh.m4a')
+  audio.volume = 0.16
+  audio.loop = true
+  ambientLaugh = audio
+  ambientError = false
+  audio.addEventListener('error', () => {
+    if (ambientLaugh !== audio) return
+    ambientError = true
+    renderGame()
+  })
+  void audio.play().catch(() => {
+    if (ambientLaugh !== audio) return
+    ambientError = true
+    renderGame()
+  })
+}
+
 function playSound(playback: SoundPlayback) {
   playback.status = 'playing'
   playback.audio.currentTime = 0
@@ -286,6 +321,8 @@ function recordLine() {
 
 function start() {
   stopSound()
+  stopAmbientLaugh()
+  ambientEnabled = true
   state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [], history: [] }
   active = true
   modal = null
@@ -299,6 +336,8 @@ function restartFrom(sceneId: string) {
   const snapshot = progress.checkpoints[sceneId]
   if (!snapshot) return
   stopSound()
+  stopAmbientLaugh()
+  ambientEnabled = true
   state = {
     version: 1, ...snapshot, memories: [...snapshot.memories],
     lineIndex: 0, language: preferredLanguage, history: [],
@@ -361,6 +400,7 @@ function imageUrl(id: string) { return `/images/${id}.webp` }
 
 function renderIntro() {
   stopSound()
+  stopAmbientLaugh()
   const t = ui[preferredLanguage]
   root.innerHTML = `
     <div class="intro" style="--intro-image:url('${imageUrl('P02')}')">
@@ -483,7 +523,7 @@ function renderGame() {
         </header>
         <main class="game-layout">
           <div class="chapter-line"><span class="chapter-number">CHAPTER 01</span><span class="chapter-divider"></span><span id="chapter-name"></span></div>
-          <section class="stage" id="stage"><div class="image-layer" id="image-layer"></div><div class="scene-scrim"></div><div class="hud" id="hud"></div><div class="dialogue-zone" id="dialogue-zone"></div></section>
+          <section class="stage" id="stage"><div class="image-layer" id="image-layer"></div><div class="scene-scrim"></div><div class="hud" id="hud"></div><button class="ambient-control" id="ambient-toggle" type="button" hidden></button><div class="dialogue-zone" id="dialogue-zone"></div></section>
           <div class="stage-foot" id="stage-foot"></div>
         </main>
       </div>`
@@ -496,6 +536,12 @@ function renderGame() {
     game.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
     game.querySelector('#stage')?.addEventListener('click', event => {
       const target = event.target as HTMLElement
+      if (target.closest('#ambient-toggle')) {
+        ambientEnabled = !ambientEnabled || ambientError
+        stopAmbientLaugh()
+        renderGame()
+        return
+      }
       if (target.closest('#sound-retry')) { if (soundPlayback) playSound(soundPlayback); renderGame(); return }
       if (target.closest('#sound-skip')) { if (soundPlayback) { soundPlayback.audio.pause(); soundPlayback.status = 'finished' }; renderGame(); return }
       if (target.closest('.sound-status')) return
@@ -517,6 +563,7 @@ function renderGame() {
   state.lineIndex = Math.min(state.lineIndex, lines.length - 1)
   const line = lines[state.lineIndex]
   syncSound()
+  syncAmbientLaugh()
   const soundStatus = soundPlayback?.status
   const finalLine = state.lineIndex === lines.length - 1
   const choices = finalLine ? availableChoices(scene) : []
@@ -528,6 +575,10 @@ function renderGame() {
   const stage = game.querySelector<HTMLElement>('#stage')!
   stage.setAttribute('aria-label', scene.chapter[lang])
   stage.dataset.objectScene = objectChoiceScene ? state.sceneId : ''
+  const ambientButton = game.querySelector<HTMLButtonElement>('#ambient-toggle')!
+  ambientButton.hidden = state.sceneId !== 'e01' && state.sceneId !== 'e02'
+  ambientButton.textContent = ambientEnabled ? ambientError ? t.ambientRetry : t.ambientOff : t.ambientOn
+  ambientButton.setAttribute('aria-label', ambientButton.textContent)
   updateSceneImage(game.querySelector<HTMLElement>('#image-layer')!, scene.image, scene.chapter[lang])
   game.querySelector<HTMLElement>('#title')!.setAttribute('aria-label', t.returnTitle)
   for (const id of ['log', 'routes', 'menu'] as const) game.querySelector<HTMLElement>(`#${id}`)!.textContent = t[id]
