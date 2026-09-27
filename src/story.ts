@@ -6,6 +6,7 @@ export interface Line {
   speaker?: Bilingual
   text: Bilingual
   when?: 'uneasy' | 'secure'
+  sound?: 'laugh'
 }
 
 export interface Choice {
@@ -34,6 +35,7 @@ const b = (zh: string, en: string): Bilingual => ({ zh, en })
 const n = (zh: string, en: string): Line => ({ text: b(zh, en) })
 const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en) })
 const diary = (zh: string, en: string): Line => ({ speaker: b('奶蛙观察日记', 'naiwa’s journal'), text: b(zh, en) })
+const laugh = (line: Line): Line => ({ ...line, sound: 'laugh' })
 const c = (zh: string, en: string, next: string, effects: Partial<Choice> = {}): Choice => ({ text: b(zh, en), next, ...effects })
 
 export const memoryNames: Record<MemoryId, Bilingual> = {
@@ -47,13 +49,13 @@ export const story: Record<string, Scene> = {
     image: 'P01', mood: 'real', chapter: b('序章 · 雨夜', 'Prologue · A rainy night'),
     lines: [
       n('加班后的城市，只剩雨声陪我走回家。', 'After another late shift, the rain was my only company on the way home.'),
-      n('巷口的纸箱轻轻动了一下。', 'A cardboard box stirred at the mouth of the alley.'),
+      laugh(n('雨声里忽然传来一阵开怀的笑声。我循着声音走进巷口，看见一个纸箱轻轻动了一下。', 'A bright laugh rang out through the rain. I followed it into the alley, where a cardboard box stirred.')),
     ], next: 'p02',
   },
   p02: {
     image: 'P02', mood: 'real', chapter: b('序章 · 相遇', 'Prologue · The meeting'),
     lines: [
-      n('我掀开纸箱。里面坐着一个浑身湿透的小家伙，冷得发抖，却先冲我笑了。', 'I lifted the box. The little creature inside was soaked and shivering, yet it smiled at me first.'),
+      n('我掀开纸箱。里面坐着一个浑身湿透的小家伙，冷得发抖。我认出了刚才的笑声。', 'I lifted the box. The little creature inside was soaked and shivering. I recognized the laugh I had just heard.'),
       say('吓到你了吗？抱歉！我只是想躲一会儿雨。', 'Did I startle you? Sorry! I was only hiding from the rain.'),
       say('我叫奶蛙。流浪有一阵子啦，不过今晚好像运气不错。', 'I’m naiwa. I’ve been wandering for a while, but tonight might be my lucky night.'),
       n('它说得轻松，手却冻得发僵。', 'It sounded cheerful, though its hands were stiff with cold.'),
@@ -66,14 +68,14 @@ export const story: Record<string, Scene> = {
     image: 'P03A', mood: 'real', chapter: b('序章 · 一条毛巾', 'Prologue · A towel'),
     lines: [
       n('我伸出手，奶蛙愣了半秒，随即用两只短手接过毛巾。', 'I reached out. naiwa paused for a moment, then took the towel in both small hands.'),
-      say('真的可以跟你回去？太好了！我会尽量不添麻烦的。', 'I can really come with you? Thank you! I’ll try not to be a bother.'),
+      laugh(say('真的可以跟你回去？太好了！我会尽量不添麻烦的。', 'I can really come with you? Thank you! I’ll try not to be a bother.')),
     ], next: 'p04a',
   },
   p03b: {
     image: 'P03B', mood: 'real', chapter: b('序章 · 留下的伞', 'Prologue · The umbrella'),
     lines: [
       n('我把伞留在纸箱旁。奶蛙撑起伞，朝我用力挥手。', 'I left my umbrella beside the box. naiwa opened it and waved with all its might.'),
-      say('谢谢你！明天也要顺利呀！', 'Thank you! I hope tomorrow is kind to you!'),
+      laugh(say('谢谢你！明天也要顺利呀！', 'Thank you! I hope tomorrow is kind to you!')),
       n('走出几步后，我又回了头。那把伞还停在雨中，像一盏小小的灯。', 'A few steps later, I looked back. The umbrella was still there, a tiny lantern in the rain.'),
       n('第二天，我再次经过巷口。它认出了我，我们聊了很久。后来，奶蛙走进了我的生活。', 'The next day, I passed the alley again. It remembered me. We talked for a long time, and soon naiwa became part of my life.'),
     ], next: 'p04a',
@@ -82,7 +84,7 @@ export const story: Record<string, Scene> = {
     image: 'P04A', mood: 'real', chapter: b('序章 · 新的日常', 'Prologue · A new routine'),
     lines: [
       n('几天后，公寓里多了两副餐具，也多了一个总想帮忙的身影。', 'A few days later, my apartment had a second place setting, and someone always eager to help.'),
-      say('早餐好啦！形状有一点奇怪，但味道我有信心。', 'Breakfast is ready! The shape is a little odd, but I’m confident about the taste.'),
+      laugh(say('早餐好啦！形状有一点奇怪，但味道我有信心。', 'Breakfast is ready! The shape is a little odd, but I’m confident about the taste.')),
       n('我送它一只画着小星星的杯子。奶蛙把杯子捧了很久，后来每天都用它喝热牛奶。', 'I gave it a mug with little stars on it. naiwa held it for ages and used it for warm milk every day after that.'),
     ], next: 'p04b',
   },
@@ -91,7 +93,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('它哼着不成调的歌打扫房间。阳光落在地板上，雨夜像是很久以前的事了。', 'It hummed off-key while cleaning. Sunlight spread across the floor, and the rainy night felt far away.'),
       n('那只旧木马玩具跟着它轻轻叮当。奶蛙总把玩具放在餐桌边，说它也是家里的一员。', 'Its worn carousel toy jingled softly as it moved. naiwa always kept it by the table and called it part of the family.'),
-      say('和你一起住，平凡的一天也会变得很好。', 'Even an ordinary day feels wonderful when I’m here with you.'),
+      laugh(say('和你一起住，平凡的一天也会变得很好。', 'Even an ordinary day feels wonderful when I’m here with you.')),
     ], next: 'p05',
   },
   p05: {
@@ -117,7 +119,7 @@ export const story: Record<string, Scene> = {
     image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 周末的约会', 'Act I · Our first weekend out'),
     lines: [
       n('成为恋人后的第一个周末，我们没有订什么特别的行程，只拎着一个空布袋逛街角集市。', 'On our first weekend as a couple, we made no grand plans. We took an empty tote to the neighborhood market.'),
-      say('那边有风铃！不过你想先去哪儿？今天我们慢慢逛。', 'There are wind chimes over there! Where would you like to go first? We have all day.'),
+      laugh(say('那边有风铃！不过你想先去哪儿？今天我们慢慢逛。', 'There are wind chimes over there! Where would you like to go first? We have all day.')),
       n('奶蛙停在摊位前等我，眼睛却忍不住往那些叮当作响的小玩意儿上瞟。', 'naiwa waited beside the stall, though its eyes kept drifting toward the little things that chimed.'),
     ], choices: [
       c('先陪它挑一只风铃', 'Help naiwa choose a wind chime first', 'r01a', { affection: 8 }),
@@ -128,7 +130,7 @@ export const story: Record<string, Scene> = {
     image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 风铃', 'Act I · Wind chimes'),
     lines: [
       n('我们挨个轻轻拨动风铃。奶蛙挑中一只声音很轻的，说这样不会吵醒晚归的我。', 'We listened to the chimes one by one. naiwa chose a quiet one, so it would not wake me after a late shift.'),
-      say('你听，像不像雨快停的时候？', 'Listen. Doesn’t it sound like rain letting up?'),
+      laugh(say('你听，像不像雨快停的时候？', 'Listen. Doesn’t it sound like rain letting up?')),
       n('我把风铃放进布袋。它没有赶着去下一处，只牵着我沿摊位慢慢走。', 'I tucked it into the tote. naiwa took my hand, and we wandered on without hurrying.'),
     ], next: 'r02',
   },
@@ -136,7 +138,7 @@ export const story: Record<string, Scene> = {
     image: 'R01_MARKET', mood: 'real', chapter: b('第一幕 · 窗边的绿意', 'Act I · A plant for the window'),
     lines: [
       n('我指向一盆小小的迷迭香。奶蛙认真闻了闻，打了个轻轻的喷嚏。', 'I pointed to a little rosemary plant. naiwa sniffed it carefully and gave a tiny sneeze.'),
-      say('就它吧！以后我们轮流浇水。你挑的东西，我也想好好照顾。', 'Let’s take it home! We can water it in turns. I want to care for something you chose.'),
+      laugh(say('就它吧！以后我们轮流浇水。你挑的东西，我也想好好照顾。', 'Let’s take it home! We can water it in turns. I want to care for something you chose.')),
       n('我们把花盆安稳地放进布袋，走到风铃摊时又停下来听了一会儿。', 'We settled the pot safely in the tote, then stopped to listen at the wind chime stall.'),
     ], next: 'r02',
   },
@@ -154,7 +156,7 @@ export const story: Record<string, Scene> = {
     image: 'R02_KITCHEN', mood: 'real', chapter: b('第一幕 · 第二张松饼', 'Act I · The second pancake'),
     lines: [
       n('我重新搅匀面糊，奶蛙在旁边数着时间。这回松饼圆了一些，边缘还是翘起一点。', 'I mixed a fresh bowl while naiwa counted the seconds. The next pancake was rounder, though one edge still curled up.'),
-      say('成功一半！另一半就当是我们自己的形状。', 'Half a success! Let’s call the other half our signature shape.'),
+      laugh(say('成功一半！另一半就当是我们自己的形状。', 'Half a success! Let’s call the other half our signature shape.')),
       n('我们分着吃掉那张歪松饼，谁也没提要把它藏起来。', 'We shared the crooked one too. Neither of us suggested hiding it.'),
     ], next: 'r03',
   },
@@ -181,7 +183,7 @@ export const story: Record<string, Scene> = {
     image: 'R03_PHOTO', mood: 'real', chapter: b('第一幕 · 不完美的照片', 'Act I · An imperfect photo'),
     lines: [
       n('我把相片放到窗边。奶蛙凑近看了又看，手指停在那道过亮的光上。', 'I set the print by the window. naiwa leaned in, its finger resting on the bright flare.'),
-      say('脸是看不清，可我记得拍照时你在笑。', 'I can’t see your face, but I remember you smiling when we took it.'),
+      laugh(say('脸是看不清，可我记得拍照时你在笑。', 'I can’t see your face, but I remember you smiling when we took it.')),
       n('窗台从此多了一张有点歪的合照。', 'From then on, a slightly crooked photo lived on the windowsill.'),
     ], next: 'r04',
   },
@@ -189,7 +191,7 @@ export const story: Record<string, Scene> = {
     image: 'R03_PHOTO', mood: 'real', chapter: b('第一幕 · 两张照片', 'Act I · Two photographs'),
     lines: [
       n('我们又拍了一张。第二张清楚些，奶蛙还是把第一张放到了窗边。', 'We took another. The second came out clearer, but naiwa still placed the first by the window.'),
-      say('这张是我们没准备好的样子。我想留着。', 'This is how we looked when we weren’t ready. I want to keep it.'),
+      laugh(say('这张是我们没准备好的样子。我想留着。', 'This is how we looked when we weren’t ready. I want to keep it.')),
       n('我点了点头。那道逆光留在相片上，也留在我们共同的记忆里。', 'I nodded. The patch of sunlight stayed in the print, and in our shared memory.'),
     ], next: 'r04',
   },
@@ -207,7 +209,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('这天我临时加班，回家比平时晚了很多。推开门时，奶蛙正把两人份的晚饭重新热好。', 'An unexpected late shift kept me out much longer than usual. When I opened the door, naiwa was reheating dinner for two.'),
       n('窗边还摆着我们的合照。那天阳光太亮，我的脸几乎被照得看不清，奶蛙却笑得很开心。', 'Our photo still stood by the window. The sunlight had washed out my face that day, while naiwa had smiled without a care.'),
-      say('你回来啦！饭刚热好。先坐下歇一会儿，今天很累吧？', 'You’re home! I just warmed up dinner. Sit down and rest a little. Rough day?'),
+      laugh(say('你回来啦！饭刚热好。先坐下歇一会儿，今天很累吧？', 'You’re home! I just warmed up dinner. Sit down and rest a little. Rough day?')),
       n('我正要回答，手机又亮了。朋友问：“你们才认识不久，真的想清楚了吗？”我看了看奶蛙，决定怎么开口。', 'I was about to answer when my phone lit up. A friend asked, “You’ve only known each other a short while. Are you sure about this?” I looked at naiwa and considered what to say.'),
     ], choices: [
       c('解释晚归，约定下次提前报平安', 'Explain the delay and promise to check in next time', 'a02a', { affection: 15, anxiety: -10 }),
