@@ -75,7 +75,7 @@ const ui = {
     zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
     exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
     pickObject: '将鼠标移到画面中的物品上并点击 · 手机可直接点选',
-    soundPlaying: '奶蛙正在笑 · 听完后继续', soundRetry: '点击播放笑声，听完后继续',
+    laughPlaying: '奶蛙的笑声', heroPlaying: '主角男声', soundSkip: '跳过', soundRetry: '重新播放',
   },
   en: {
     title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
@@ -93,7 +93,7 @@ const ui = {
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
     pickObject: 'Hover over an item and click · Tap an item on mobile',
-    soundPlaying: 'naiwa is laughing · Listen before continuing', soundRetry: 'Play the laugh to continue',
+    laughPlaying: 'naiwa’s laugh', heroPlaying: 'Protagonist voice', soundSkip: 'Skip', soundRetry: 'Replay',
   },
 } as const
 
@@ -244,11 +244,11 @@ function playSound(playback: SoundPlayback) {
 function syncSound() {
   if (!state) return
   const line = sceneLines(current())[state.lineIndex]
-  if (line?.sound !== 'laugh') { stopSound(); return }
-  const key = `${state.sceneId}:${state.lineIndex}`
+  if (!line?.sound) { stopSound(); return }
+  const key = `${state.sceneId}:${state.lineIndex}:${line.sound === 'laugh' ? '' : state.language}`
   if (soundPlayback?.key === key) return
   stopSound()
-  const audio = new Audio('/audio/naiwa-laugh.m4a')
+  const audio = new Audio(line.sound === 'laugh' ? '/audio/naiwa-laugh.m4a' : `/audio/${line.sound}-${state.language}.m4a`)
   const playback: SoundPlayback = { key, audio, status: 'playing' }
   soundPlayback = playback
   audio.addEventListener('ended', () => {
@@ -262,10 +262,6 @@ function syncSound() {
     renderGame()
   })
   playSound(playback)
-}
-
-function soundIsBlocking() {
-  return !!state && sceneLines(current())[state.lineIndex]?.sound === 'laugh' && soundPlayback?.status !== 'finished'
 }
 
 function enter(sceneId: string) {
@@ -316,7 +312,6 @@ function restartFrom(sceneId: string) {
 
 function advance() {
   if (!active || !state || modal) return
-  if (soundIsBlocking()) return
   const scene = current()
   const lines = sceneLines(scene)
   if (state.lineIndex < lines.length - 1) {
@@ -331,7 +326,6 @@ function advance() {
 
 function select(index: number) {
   if (!state || !active || modal) return
-  if (soundIsBlocking()) return
   const scene = current()
   if (state.lineIndex < sceneLines(scene).length - 1) return
   const choices = availableChoices(scene)
@@ -503,6 +497,7 @@ function renderGame() {
     game.querySelector('#stage')?.addEventListener('click', event => {
       const target = event.target as HTMLElement
       if (target.closest('#sound-retry')) { if (soundPlayback) playSound(soundPlayback); renderGame(); return }
+      if (target.closest('#sound-skip')) { if (soundPlayback) { soundPlayback.audio.pause(); soundPlayback.status = 'finished' }; renderGame(); return }
       if (target.closest('.sound-status')) return
       const choice = target.closest<HTMLButtonElement>('[data-choice]')
       if (choice) { select(Number(choice.dataset.choice)); return }
@@ -522,7 +517,7 @@ function renderGame() {
   state.lineIndex = Math.min(state.lineIndex, lines.length - 1)
   const line = lines[state.lineIndex]
   syncSound()
-  const soundBlocked = soundIsBlocking()
+  const soundStatus = soundPlayback?.status
   const finalLine = state.lineIndex === lines.length - 1
   const choices = finalLine ? availableChoices(scene) : []
   const objectChoiceScene = finalLine && !!objectScenes[state.sceneId]
@@ -550,11 +545,11 @@ function renderGame() {
     <div class="dialogue-box" aria-live="polite">
       <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
       <p>${esc(line.text[lang])}</p>
-      ${soundBlocked ? `<div class="sound-status" role="status">${soundPlayback?.status === 'error' ? `<button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button>` : `<span class="sound-pulse" aria-hidden="true">♪</span> ${esc(t.soundPlaying)}`}</div>` : ''}
+      ${line.sound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(line.sound === 'laugh' ? t.laughPlaying : t.heroPlaying)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : line.sound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
       ${objectChoiceScene ? `<div class="object-controls"><span>${esc(t.pickObject)}</span><button class="object-return" data-choice="2">← ${esc(choices[2].text[lang])}</button></div>` : ''}
-      ${(!finalLine || scene.next) && !soundBlocked ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
+      ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>
-    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : objectChoiceScene ? '' : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}" ${soundBlocked ? 'disabled' : ''}><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
+    ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : objectChoiceScene ? '' : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
   stage.querySelector('#object-hotspots')?.remove()
   if (objectChoiceScene) {
