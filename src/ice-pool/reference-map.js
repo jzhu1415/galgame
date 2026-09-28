@@ -2531,6 +2531,8 @@ function showSettings() {
 }
 
 function requestGameFullscreen() {
+  // The chapter owns fullscreen. Fullscreening this iframe hides its parent UI.
+  if (window.self !== window.top) return;
   if (document.fullscreenElement || document.webkitFullscreenElement) return;
   const root = document.documentElement;
   try {
@@ -2649,6 +2651,9 @@ window.addEventListener('naiwa-story-pause', () => {
   keys.clear();
   resetTouchInputs();
   if (touchPlaying) setTouchPlaying(false);
+});
+window.addEventListener('naiwa-story-resume', () => {
+  if (touchInputEnabled && hasEntered && settingsMenu.hidden) setTouchPlaying(true);
 });
 window.addEventListener('blur', () => {
   keys.clear();

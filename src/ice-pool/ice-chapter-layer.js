@@ -46,7 +46,7 @@ const COPY = {
     core: '三件镜面物证与两段路线均已确认。靠近镜心并按 E。',
     coreTouch: '靠近镜心后点击「进入镜心」', collect: '查看物证', enter: '进入镜心',
     collected: '已归档', locked: '镜心仍封闭：需要三件物证与完整路线。', exit: '离开镜馆',
-    hint: 'WASD / 方向键移动 · 触屏方向键 · E 查看 · Esc 离开',
+    hint: 'WASD / 方向键移动 · 触屏摇杆 · E 查看 · Esc 离开',
     noteDecode: '便笺密码', noteCode: '○　●　○　●', noteKey: '霜印旁的注记：空心圆代表「前」，实心圆代表「左」。',
     noteAnswer: '解码后：前 · 左 · 前 · 左', notePhysical: '薄纸被水浸透，折痕间夹着一枚发暗的镜粉。',
     cipherForward: '前', cipherLeft: '左', cipherClear: '清除', cipherPrompt: '按纸条顺序选择四个方向。', cipherWrong: '顺序不对。擦去霜痕，再试一次。', cipherSolved: '密码解开。沿四枚地面镜记前进。',
@@ -73,7 +73,7 @@ const COPY = {
     core: 'Three mirror exhibits and both routes are confirmed. Press E at the core.',
     coreTouch: 'Approach the core, then tap “Enter core”.', collect: 'Inspect evidence', enter: 'Enter core',
     collected: 'archived', locked: 'The core remains sealed: three exhibits and the complete route are required.', exit: 'Leave hall',
-    hint: 'WASD / arrows move · touch arrows · E inspect · Esc leave',
+    hint: 'WASD / arrows move · touch joystick · E inspect · Esc leave',
     noteDecode: 'NOTE CIPHER', noteCode: '○　●　○　●', noteKey: 'Margin note: an open circle means “forward”; a filled circle means “left”.',
     noteAnswer: 'Decoded: forward · left · forward · left', notePhysical: 'The thin paper is waterlogged; dark mirror dust clings to its folds.',
     cipherForward: 'Forward', cipherLeft: 'Left', cipherClear: 'Clear', cipherPrompt: 'Choose four directions in the note’s order.', cipherWrong: 'That sequence is wrong. Clear the frost and try again.', cipherSolved: 'Cipher solved. Follow the four floor marks.',
@@ -602,7 +602,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   }
   function setStoryPaused(paused) {
     storyPaused = paused;
-    if (paused) window.dispatchEvent(new Event('naiwa-story-pause'));
+    window.dispatchEvent(new Event(paused ? 'naiwa-story-pause' : 'naiwa-story-resume'));
     if (paused && document.pointerLockElement) document.exitPointerLock();
   }
   function progressRoute() {
