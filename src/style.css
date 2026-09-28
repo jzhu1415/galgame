@@ -30,11 +30,11 @@
 .object-return:hover,.object-return:focus-visible{border-color:#ffe2ae;background:#31434a}
 @media(max-width:800px){.object-hotspot-label{font-size:.68rem;top:-25px}.object-controls{font-size:.68rem;gap:8px}.object-return{font-size:.68rem}}
 
-.game:fullscreen{width:100vw;height:100dvh;min-height:0;overflow:hidden}
-.game:fullscreen .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
-.game:fullscreen .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
-.game:fullscreen .chapter-line{flex:none}
-.game:fullscreen .stage-foot{flex:none}
+#app:fullscreen{width:100vw;height:100dvh;overflow:auto;background:#111923}
+#app:fullscreen .game{width:100%;height:100dvh;min-height:0;overflow:hidden}
+#app:fullscreen .game .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
+#app:fullscreen .game .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
+#app:fullscreen .game .chapter-line,#app:fullscreen .game .stage-foot{flex:none}
 
 .route-dialog{width:min(760px,calc(100vw - 28px))}
 .routes-content{padding:18px 28px 28px;max-height:calc(82dvh - 89px);overflow:auto}
@@ -52,7 +52,7 @@
 .route-node.is-locked{opacity:.42;background:#17232a}
 .route-id{color:#e7c689;font-weight:700;font-size:.67rem;min-width:48px;letter-spacing:.07em}
 .route-state{color:#aabbb9;font-size:.65rem;margin-left:auto;white-space:nowrap}
-@media(max-width:600px){.routes-content{padding:16px}.ending-grid,.route-list{grid-template-columns:1fr}.route-dialog .dialog-head{padding:17px}.route-node{min-height:44px}.game:fullscreen .game-layout{padding:0}.game:fullscreen .stage-foot{padding:7px 12px}}
+@media(max-width:600px){.routes-content{padding:16px}.ending-grid,.route-list{grid-template-columns:1fr}.route-dialog .dialog-head{padding:17px}.route-node{min-height:44px}#app:fullscreen .game .game-layout{padding:0}#app:fullscreen .game .stage-foot{padding:7px 12px}}
 @media(max-width:480px){.game-tools{gap:3px}.game-tools .small-btn{padding:6px;font-size:.62rem;letter-spacing:0}.wordmark-btn{font-size:.53rem}.game-top{padding:8px 9px}}
 
 /* Branching story mind map */
@@ -122,3 +122,11 @@
 .ambient-control[hidden]{display:none}
 .ambient-control:hover{background:rgba(46,61,67,.92);border-color:#f2c77f}
 @media(max-width:800px){.ambient-control{top:14px;right:12px;min-height:36px;padding:7px 10px;font-size:.7rem}}
+
+/* Series chapter selection */
+.chapter-select{min-height:100dvh;display:flex;flex-direction:column;color:#f5eee2;background:radial-gradient(ellipse at 78% 48%,#36758b44,transparent 40%),linear-gradient(100deg,#0a1924f7,#0d2530e8 55%,#0e2635d8),var(--cover) center 36%/cover no-repeat,#091923}.chapter-select-top,.chapter-select-bottom{display:flex;align-items:center;justify-content:space-between;padding:20px clamp(22px,5vw,76px)}.chapter-select-top{border-bottom:1px solid #d9d5be48}.chapter-select-bottom{margin-top:auto;color:#c9d2cf8c;font-size:.7rem;letter-spacing:.15em;border-top:1px solid #d9d5be30}.chapter-select-main{width:min(1320px,100%);margin:auto;padding:clamp(35px,7vh,90px) clamp(22px,5vw,76px)}.chapter-select-heading>span{font-size:.7rem;letter-spacing:.28em;color:#e7c78d}.chapter-select-heading h1{font:500 clamp(3.5rem,8vw,8rem)/1.1 'Noto Serif SC',serif;letter-spacing:.12em;margin:12px 0 9px;white-space:nowrap}.chapter-select-heading p{font:1rem/1.6 'Noto Serif SC',serif;color:#d6d7cf;margin:0 0 40px}.chapter-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,28px)}.chapter-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:335px;padding:clamp(24px,3vw,43px);text-align:left;color:#f8f4eb;background:linear-gradient(135deg,#344142e8,#142631ee 70%);border:1px solid #cfbc94a1;box-shadow:0 22px 60px #0007;cursor:pointer;overflow:hidden;transition:transform .24s,border-color .24s,box-shadow .24s}.chapter-card::after{content:'01';position:absolute;right:-10px;bottom:-52px;font:200 13rem/1 'DM Sans',sans-serif;letter-spacing:-.15em;color:#f9e3af0b;pointer-events:none}.chapter-card.second{background:radial-gradient(circle at 85% 15%,#7bd9ee4f,transparent 36%),linear-gradient(135deg,#14384aef,#091b29f5 75%);border-color:#9bdbe6a6}.chapter-card.second::after{content:'02';color:#b7f1fc0c}.chapter-card:hover,.chapter-card:focus-visible{transform:translateY(-7px);border-color:#ffdfaa;box-shadow:0 31px 75px #0009}.chapter-card.second:hover,.chapter-card.second:focus-visible{border-color:#c8f5ff}.card-overline{color:#e6c38b;font-size:.7rem;font-weight:700;letter-spacing:.2em}.second .card-overline{color:#aee8f2}.chapter-card strong{font:500 clamp(2rem,3.5vw,3.7rem)/1.18 'Noto Serif SC',serif;letter-spacing:.06em;margin:27px 0 12px;white-space:nowrap}.chapter-card.second strong{font-size:clamp(1.8rem,3vw,3.1rem)}.card-description{font:1rem/1.6 'Noto Serif SC',serif;color:#e3e5df;max-width:32ch}.card-action{display:block;margin-top:auto;padding-top:32px;color:#f6d29b;font-size:.84rem;font-weight:700;letter-spacing:.08em}.second .card-action{color:#b8effa}.chapter-select-note{color:#c0c9c9;font-size:.73rem;letter-spacing:.08em;margin:25px 0 0}.chapter-select button:focus-visible{outline:3px solid #f5d49e;outline-offset:4px}@media(max-width:750px){.chapter-select-main{padding:36px 18px}.chapter-select-top,.chapter-select-bottom{padding:15px 18px}.chapter-select-heading h1{font-size:3.5rem}.chapter-select-heading p{margin-bottom:26px}.chapter-cards{grid-template-columns:1fr}.chapter-card{min-height:225px;padding:23px}.chapter-card strong,.chapter-card.second strong{font-size:2.3rem;margin:16px 0 7px}.card-action{padding-top:18px}.chapter-card::after{font-size:10rem;bottom:-40px}}@media(max-width:400px){.chapter-select-heading h1{font-size:3rem}.chapter-card strong,.chapter-card.second strong{font-size:2rem}}
+.chapter-card.second{background:linear-gradient(90deg,#071b28db,#0c2b3d92),url('/images/chapter-02-ice-hall.webp') center/cover no-repeat;border-color:#9bdbe6a6}
+.intro-tools,.chapter-select-tools{display:flex;align-items:center;gap:8px}
+.chapter-select-top,.intro-top{gap:14px}
+@media(max-width:750px){.chapter-select-top,.intro-top{flex-wrap:wrap}.chapter-select-tools,.intro-tools{flex-wrap:wrap;justify-content:flex-end}.chapter-select-tools .small-btn,.intro-tools .small-btn{padding:8px 10px}}
+@media(max-width:480px){.chapter-select-top,.intro-top{align-items:flex-start}.chapter-select-tools,.intro-tools{width:100%;justify-content:flex-start}.chapter-select-tools .small-btn,.intro-tools .small-btn{min-height:40px;font-size:.7rem}}

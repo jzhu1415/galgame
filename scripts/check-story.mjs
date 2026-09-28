@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { execFileSync } from 'node:child_process'
 import ts from 'typescript'
 
 const source = readFileSync(resolve('src/story.ts'), 'utf8')
@@ -56,8 +57,15 @@ while (queue.length) {
 for (const id of Object.keys(story)) if (!visitedScenes.has(id)) errors.push(`${id}: unreachable scene`)
 for (const ending of ['missed', 'embrace', 'escape', 'exhausted', 'true']) if (!visitedEndings.has(ending)) errors.push(`${ending}: unreachable ending`)
 
+const ttsManifest = JSON.parse(execFileSync(process.execPath, ['scripts/tts-manifest.mjs'], { encoding: 'utf8' }))
+const ttsHashes = existsSync(resolve('public/audio/tts/manifest.json')) ? JSON.parse(readFileSync(resolve('public/audio/tts/manifest.json'), 'utf8')) : {}
+for (const entry of ttsManifest) {
+  if (!existsSync(resolve('public/audio', entry.path))) errors.push(`missing TTS ${entry.path}`)
+  else if (ttsHashes[entry.path] !== entry.hash) errors.push(`stale TTS ${entry.path}`)
+}
+
 if (errors.length) {
   console.error(errors.join('\n'))
   process.exit(1)
 }
-console.log(`Story OK: ${visitedScenes.size} scenes, ${visitedEndings.size} endings, Chinese and English text, images and routes checked.`)
+console.log(`Story OK: ${visitedScenes.size} scenes, ${visitedEndings.size} endings, ${ttsManifest.length} TTS files, Chinese and English text, images and routes checked.`)

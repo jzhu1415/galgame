@@ -1,5 +1,7 @@
 import './style.css'
-import { firstScene, memoryNames, story, type Language, type MemoryId, type Scene } from './story'
+import { firstScene, memoryNames, story, type Language, type Line, type MemoryId, type Scene } from './story'
+import { chapterTwoStatus, mountChapterTwo } from './chapter-two'
+import { characterVoiceSequence } from './character-voice'
 
 type LogEntry = { sceneId: string; index: number }
 type GameState = {
@@ -19,18 +21,35 @@ type Progress = { version: 1; checkpoints: Record<string, Checkpoint>; endings: 
 
 const STORAGE_KEY = 'naiwa-origin-save-v1'
 const PROGRESS_KEY = 'naiwa-origin-progress-v1'
+const LANGUAGE_OVERRIDE_KEY = 'naiwa-language-override-v1'
+
+function systemLanguage(): Language {
+  const locale = navigator.languages?.[0] || navigator.language || ''
+  return locale.toLowerCase().split(/[-_]/)[0] === 'zh' ? 'zh' : 'en'
+}
+
+function languageOverride(): Language | null {
+  try {
+    const value = localStorage.getItem(LANGUAGE_OVERRIDE_KEY)
+    return value === 'zh' || value === 'en' ? value : null
+  } catch { return null }
+}
+
 const root = document.querySelector<HTMLDivElement>('#app')!
 let state: GameState | null = loadSave()
 let progress: Progress = loadProgress()
 let active = false
 let modal: 'log' | 'menu' | 'routes' | null = null
-let preferredLanguage: Language = state?.language ?? 'zh'
+let preferredLanguage: Language = languageOverride() ?? systemLanguage()
+if (state) state.language = preferredLanguage
 let imageGeneration = 0
-type SoundPlayback = { key: string; audio: HTMLAudioElement; status: 'playing' | 'finished' | 'error' }
+type SoundPlayback = { key: string; audio: HTMLAudioElement; clips: string[]; clipIndex: number; status: 'playing' | 'finished' | 'error' }
 let soundPlayback: SoundPlayback | null = null
 let ambientLaugh: HTMLAudioElement | null = null
 let ambientEnabled = true
 let ambientError = false
+let selectedChapter: 0 | 1 | 2 = 0
+let chapterTwoController: ReturnType<typeof mountChapterTwo> | null = null
 
 const MAP_WIDTH = 1100
 const MAP_HEIGHT = 3600
@@ -78,7 +97,7 @@ const ui = {
     zoomIn: '放大', zoomOut: '缩小', mapLabel: '剧情分支思维导图',
     exploreMap: '迷雾游乐园地图', needMemories: '集齐三件回忆物后开放',
     pickObject: '将鼠标移到画面中的物品上并点击 · 手机可直接点选',
-    laughPlaying: '奶蛙的笑声', naiwaSpeaking: '奶蛙的声音', heroPlaying: '主角男声', soundSkip: '跳过', soundRetry: '重新播放',
+    laughPlaying: '奶蛙的笑声', naiwaSpeaking: '奶蛙的声音', heroPlaying: '主角男声', narratorPlaying: '旁白', soundSkip: '跳过', soundRetry: '重新播放',
     ambientOff: '关闭笑声', ambientOn: '开启笑声', ambientRetry: '播放笑声',
   },
   en: {
@@ -97,7 +116,7 @@ const ui = {
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
     pickObject: 'Hover over an item and click · Tap an item on mobile',
-    laughPlaying: 'naiwa’s laugh', naiwaSpeaking: 'naiwa’s voice', heroPlaying: 'Protagonist voice', soundSkip: 'Skip', soundRetry: 'Replay',
+    laughPlaying: 'naiwa’s laugh', naiwaSpeaking: 'naiwa’s voice', heroPlaying: 'Protagonist voice', narratorPlaying: 'Narration', soundSkip: 'Skip', soundRetry: 'Replay',
     ambientOff: 'Turn off laughter', ambientOn: 'Turn on laughter', ambientRetry: 'Play laughter',
   },
 } as const
@@ -276,18 +295,39 @@ function playSound(playback: SoundPlayback) {
   })
 }
 
+function longNaiwaLine(line: Line) {
+  return (line.text.zh.match(/\p{Script=Han}/gu)?.length ?? 0) >= 20
+}
+
+function soundClips(sceneId: string, line: Line, language: Language): string[] {
+  if (!line.speaker) {
+    const index = story[sceneId].lines.indexOf(line)
+    const narration = `/audio/tts/narration-01-${sceneId}-${index}-${language}.mp3`
+    return line.sound === 'naiwa-laugh' ? ['/audio/naiwa-laugh.m4a', narration] : [narration]
+  }
+  if (!line.sound) return []
+  if (line.sound === 'naiwa-speech' || line.sound === 'naiwa-short-reply') return characterVoiceSequence(line.sound === 'naiwa-speech' && longNaiwaLine(line))
+  return [line.sound.startsWith('protagonist-') ? `/audio/tts/hero-${line.sound.slice('protagonist-'.length)}-${language}.mp3` : `/audio/${line.sound}.m4a`]
+}
+
 function syncSound() {
   if (!state) return
   const line = sceneLines(current())[state.lineIndex]
-  if (!line?.sound) { stopSound(); return }
-  const key = `${state.sceneId}:${state.lineIndex}:${line.sound.startsWith('protagonist-') ? state.language : ''}`
+  if (!line || (!line.sound && line.speaker)) { stopSound(); return }
+  const key = `${state.sceneId}:${state.lineIndex}:${!line.speaker || line.sound?.startsWith('protagonist-') ? state.language : ''}`
   if (soundPlayback?.key === key) return
   stopSound()
-  const audio = new Audio(line.sound.startsWith('protagonist-') ? `/audio/${line.sound}-${state.language}.m4a` : `/audio/${line.sound}.m4a`)
-  const playback: SoundPlayback = { key, audio, status: 'playing' }
+  const clips = soundClips(state.sceneId, line, state.language)
+  const audio = new Audio(clips[0])
+  const playback: SoundPlayback = { key, audio, clips, clipIndex: 0, status: 'playing' }
   soundPlayback = playback
   audio.addEventListener('ended', () => {
     if (soundPlayback !== playback) return
+    if (playback.clipIndex < playback.clips.length - 1) {
+      audio.src = playback.clips[++playback.clipIndex]
+      playSound(playback)
+      return
+    }
     playback.status = 'finished'
     renderGame()
   })
@@ -324,6 +364,7 @@ function start() {
   stopAmbientLaugh()
   ambientEnabled = true
   state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [], history: [] }
+  selectedChapter = 1
   active = true
   modal = null
   recordLine()
@@ -342,6 +383,7 @@ function restartFrom(sceneId: string) {
     version: 1, ...snapshot, memories: [...snapshot.memories],
     lineIndex: 0, language: preferredLanguage, history: [],
   }
+  selectedChapter = 1
   active = true
   modal = null
   recordLine()
@@ -386,17 +428,46 @@ function availableChoices(scene: Scene) {
   )
 }
 
-function toggleLanguage() {
-  preferredLanguage = preferredLanguage === 'zh' ? 'en' : 'zh'
+function setPreferredLanguage(language: Language) {
+  preferredLanguage = language
+  try {
+    if (language === systemLanguage()) localStorage.removeItem(LANGUAGE_OVERRIDE_KEY)
+    else localStorage.setItem(LANGUAGE_OVERRIDE_KEY, language)
+  } catch { /* The current session can still switch languages without storage. */ }
   if (state) {
     state.language = preferredLanguage
     save()
   }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
+}
+
+function toggleLanguage() {
+  setPreferredLanguage(preferredLanguage === 'zh' ? 'en' : 'zh')
   render()
 }
 
 function imageUrl(id: string) { return `/images/${id}.webp` }
+
+function renderChapterSelect() {
+  stopSound()
+  stopAmbientLaugh()
+  const lang = preferredLanguage
+  const status = chapterTwoStatus()
+  root.innerHTML = `<div class="chapter-select" style="--cover:url('${imageUrl('P02')}')">
+    <header class="chapter-select-top"><span class="wordmark">NAIWA <span>·</span> ${lang === 'zh' ? '奶之救赎' : 'THE REDEMPTION'}</span><div class="chapter-select-tools"><button class="small-btn" id="routes-select" type="button">${esc(ui[lang].routes)}</button>${state ? `<button class="small-btn" id="replay-select" type="button">${esc(ui[lang].restart)}</button>` : ''}<button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${ui[lang].languageLabel}">${ui[lang].language}</button></div></header>
+    <main class="chapter-select-main"><div class="chapter-select-heading"><span>AN INTERACTIVE STORY / 2026</span><h1>${lang === 'zh' ? '奶之救赎' : 'naiwa'}</h1><p>${lang === 'zh' ? '选择章节，走进奶蛙的世界。' : 'Choose a chapter and step into naiwa’s world.'}</p></div>
+      <div class="chapter-cards"><button class="chapter-card first" id="chapter-one" type="button"><span class="card-overline">CHAPTER 01 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '缘起' : 'Origin'}</strong><span class="card-description">${lang === 'zh' ? '雨夜相遇，走进迷雾游乐园，找回遗失的回忆。' : 'A rainy meeting leads into the mistbound fairground.'}</span><span class="card-action">${state ? ui[lang].continue : ui[lang].start} ↗</span></button>
+      <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
+      <p class="chapter-select-note">${lang === 'zh' ? '章节分别保存进度 · 可随时返回切换' : 'Each chapter saves separately · Switch at any time'}</p>
+    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><span>01 — 02</span></footer></div>`
+  root.querySelector('#language')?.addEventListener('click', toggleLanguage)
+  root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
+  root.querySelector('#routes-select')?.addEventListener('click', () => { modal = 'routes'; renderModal() })
+  root.querySelector('#replay-select')?.addEventListener('click', () => { if (window.confirm(ui[preferredLanguage].confirmRestart)) { selectedChapter = 1; start() } })
+  root.querySelector('#chapter-one')?.addEventListener('click', () => { enterFullscreen(); selectedChapter = 1; render() })
+  root.querySelector('#chapter-two')?.addEventListener('click', () => { enterFullscreen(); selectedChapter = 2; active = false; render() })
+  updateFullscreenButton()
+}
 
 function renderIntro() {
   stopSound()
@@ -404,7 +475,7 @@ function renderIntro() {
   const t = ui[preferredLanguage]
   root.innerHTML = `
     <div class="intro" style="--intro-image:url('${imageUrl('P02')}')">
-      <header class="intro-top"><span class="wordmark">NAIWA <span>·</span> ORIGIN</span><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></header>
+      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ORIGIN</button><div class="intro-tools"><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
       <main class="intro-body">
         <div class="intro-kicker">A VISUAL NOVEL <span>✦</span> 01 / 01</div>
         <h1>${esc(t.title)}<small>${esc(t.subtitle)}</small></h1>
@@ -412,16 +483,20 @@ function renderIntro() {
         <p class="intro-note">${esc(t.introNote)}</p>
         <div class="intro-actions">
           ${state ? `<button class="primary-btn" id="continue">${esc(t.continue)} <span aria-hidden="true">↗</span></button><button class="secondary-btn" id="start">${esc(t.restart)}</button>` : `<button class="primary-btn" id="start">${esc(t.start)} <span aria-hidden="true">↗</span></button>`}
-          ${Object.keys(progress.checkpoints).length ? `<button class="secondary-btn" id="routes-intro">${esc(t.routes)}</button>` : ''}
+          <button class="secondary-btn" id="routes-intro">${esc(t.routes)}</button>
         </div>
         <p class="save-note">${esc(t.saveNote)}</p>
       </main>
       <footer class="intro-bottom"><span>© NAIWA / 2026</span><span>CHAPTER ONE · THE BEGINNING</span></footer>
     </div>`
   document.querySelector('#language')?.addEventListener('click', toggleLanguage)
-  document.querySelector('#continue')?.addEventListener('click', () => { active = true; render() })
-  document.querySelector('#start')?.addEventListener('click', () => { if (!state || window.confirm(t.confirmRestart)) start() })
+  document.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
+  document.querySelector('#chapter-home')?.addEventListener('click', () => { selectedChapter = 0; render() })
+  document.querySelector('#continue')?.addEventListener('click', () => { enterFullscreen(); active = true; render() })
+  document.querySelector('#start')?.addEventListener('click', () => { if (!state || window.confirm(t.confirmRestart)) { enterFullscreen(); start() } })
   document.querySelector('#routes-intro')?.addEventListener('click', () => { modal = 'routes'; renderModal() })
+  document.querySelector('#routes-intro-top')?.addEventListener('click', () => { modal = 'routes'; renderModal() })
+  updateFullscreenButton()
 }
 
 function updateSceneImage(layer: HTMLElement, image: string, alt: string) {
@@ -479,12 +554,15 @@ function updateFullscreenButton() {
   button.textContent = document.fullscreenElement ? ui[lang].exitFullscreen : ui[lang].fullscreen
 }
 
+function enterFullscreen() {
+  if (document.fullscreenElement || !document.fullscreenEnabled) return
+  void root.requestFullscreen().catch(error => console.warn('Fullscreen unavailable:', error))
+}
+
 async function toggleFullscreen() {
-  const game = root.querySelector<HTMLElement>('.game')
-  if (!game || !document.fullscreenEnabled) return
   try {
     if (document.fullscreenElement) await document.exitFullscreen()
-    else await game.requestFullscreen()
+    else await root.requestFullscreen()
   } catch (error) {
     console.warn('Fullscreen unavailable:', error)
   }
@@ -565,6 +643,8 @@ function renderGame() {
   syncSound()
   syncAmbientLaugh()
   const soundStatus = soundPlayback?.status
+  const hasLineSound = !!line.sound || !line.speaker
+  const soundLabel = !line.speaker ? line.sound === 'naiwa-laugh' && soundPlayback?.clipIndex === 0 ? t.laughPlaying : t.narratorPlaying : line.sound?.startsWith('naiwa-') ? t.naiwaSpeaking : t.heroPlaying
   const finalLine = state.lineIndex === lines.length - 1
   const choices = finalLine ? availableChoices(scene) : []
   const objectChoiceScene = finalLine && !!objectScenes[state.sceneId]
@@ -585,8 +665,6 @@ function renderGame() {
   const languageButton = game.querySelector<HTMLElement>('#language')!
   languageButton.textContent = t.language
   languageButton.setAttribute('aria-label', t.languageLabel)
-  const fullscreenButton = game.querySelector<HTMLButtonElement>('#fullscreen')!
-  fullscreenButton.hidden = !document.fullscreenEnabled
   updateFullscreenButton()
   const hud = game.querySelector<HTMLElement>('#hud')!
   hud.hidden = !inDream
@@ -596,7 +674,7 @@ function renderGame() {
     <div class="dialogue-box" aria-live="polite">
       <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
       <p>${esc(line.text[lang])}</p>
-      ${line.sound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(line.sound === 'naiwa-laugh' ? t.laughPlaying : line.sound.startsWith('naiwa-') ? t.naiwaSpeaking : t.heroPlaying)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : line.sound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
+      ${hasLineSound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(soundLabel)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : hasLineSound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
       ${objectChoiceScene ? `<div class="object-controls"><span>${esc(t.pickObject)}</span><button class="object-return" data-choice="2">← ${esc(choices[2].text[lang])}</button></div>` : ''}
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
     </div>
@@ -744,8 +822,13 @@ function sceneLinesForLog(scene: Scene, saved: GameState, index: number) {
 
 function render() {
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
-  document.title = preferredLanguage === 'zh' ? '奶之救赎：缘起 | naiwa' : 'naiwa: Origin'
-  if (!active) renderIntro()
+  document.title = preferredLanguage === 'zh' ? selectedChapter === 2 ? '奶之救赎：冰镜疑凶 | naiwa' : '奶之救赎 | naiwa' : selectedChapter === 2 ? 'naiwa: The Culprit in the Ice' : 'naiwa'
+  if (selectedChapter !== 2 && chapterTwoController) { chapterTwoController.dispose(); chapterTwoController = null }
+  if (selectedChapter === 2) {
+    if (!chapterTwoController) chapterTwoController = mountChapterTwo(root, preferredLanguage, language => { setPreferredLanguage(language); chapterTwoController?.dispose(); chapterTwoController = null; selectedChapter = 0; render() }, setPreferredLanguage)
+    else chapterTwoController.setLanguage(preferredLanguage)
+  } else if (selectedChapter === 0) renderChapterSelect()
+  else if (!active) renderIntro()
   else renderGame()
   if (modal) renderModal()
 }
@@ -759,6 +842,12 @@ document.addEventListener('keydown', event => {
 })
 
 migrateProgressFromSave()
+window.addEventListener('languagechange', () => {
+  if (languageOverride()) return
+  preferredLanguage = systemLanguage()
+  if (state) { state.language = preferredLanguage; save() }
+  render()
+})
 document.addEventListener('fullscreenchange', updateFullscreenButton)
 window.addEventListener('resize', () => {
   const stage = root.querySelector<HTMLElement>('#stage')

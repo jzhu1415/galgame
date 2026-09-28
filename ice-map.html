@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#132e48" />
+    <meta name="description" content="进入冰封镜馆，探索池厅式镜面空间并找回三条线索。" />
+    <title>冰封镜馆 · 第二章</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #789eae; }
+      body { font-family: "Avenir Next Condensed", "Helvetica Neue", sans-serif; overscroll-behavior: none; }
+      #reference-world { display: block; width: 100vw; height: 100%; height: 100vh; height: 100dvh; touch-action: none; }
+      #underwater-filter {
+        position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
+        background:
+          radial-gradient(ellipse at 50% 42%, rgba(82, 181, 187, .04) 0 28%, rgba(4, 39, 50, .28) 100%),
+          linear-gradient(rgba(24, 119, 131, .18), rgba(5, 61, 75, .28));
+        box-shadow: inset 0 0 10rem rgba(0, 28, 39, .42);
+        -webkit-backdrop-filter: blur(2.5px) saturate(.72) contrast(.94) brightness(.88);
+        backdrop-filter: blur(2.5px) saturate(.72) contrast(.94) brightness(.88);
+        transition: opacity .1s linear;
+      }
+      #reference-entry {
+        position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; cursor: pointer;
+        color: rgba(240, 251, 250, .92); background: rgba(24, 54, 61, .18);
+        transition: opacity .7s ease, visibility .7s ease; user-select: none;
+      }
+      #reference-entry.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+      .entry-copy { text-align: center; letter-spacing: .38em; text-indent: .38em; text-transform: uppercase; }
+      .entry-copy strong { display: block; white-space: nowrap; font: 400 clamp(1.7rem, 4vw, 4.8rem)/1 Georgia, serif; letter-spacing: .18em; }
+      .entry-copy small { display: block; max-width: 90vw; margin: 1.2rem auto 0; line-height: 1.8; font-size: .56rem; opacity: .48; }
+      #reference-settings {
+        position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 1.5rem;
+        color: rgba(242, 255, 254, .94); background: rgba(4, 17, 22, .12);
+        -webkit-backdrop-filter: brightness(.86); backdrop-filter: brightness(.86);
+        transition: opacity .22s ease, visibility .22s ease;
+      }
+      #reference-settings[hidden] { display: grid; opacity: 0; visibility: hidden; pointer-events: none; }
+      .settings-panel {
+        position: relative; width: min(94vw, 34rem); padding: clamp(1.35rem, 4vw, 2.15rem);
+        max-height: calc(100dvh - 3rem); overflow-x: hidden; overflow-y: auto;
+        overscroll-behavior: contain; scrollbar-width: thin;
+        border: 1px double rgba(230, 255, 253, .16); border-radius: 2rem;
+        background: rgba(233, 255, 254, .04);
+        -webkit-backdrop-filter: blur(2px) saturate(1.12); backdrop-filter: blur(2px) saturate(1.12);
+        box-shadow:
+          inset 2px -2px 1px -1px rgba(255, 255, 255, .72),
+          inset -2px 2px 1px -1px rgba(255, 255, 255, .72),
+          inset 6px -6px 1px -6px rgba(255, 255, 255, .5),
+          inset -6px 6px 1px -6px rgba(255, 255, 255, .5),
+          inset 0 0 2px rgba(0, 0, 0, .72),
+          0 .5rem 1.8rem rgba(0, 11, 15, .3);
+      }
+      .settings-panel::before {
+        content: ""; position: absolute; z-index: 0; top: 35%; right: 8px; bottom: 8px; left: 8px; pointer-events: none;
+        border: 1px solid rgba(0, 13, 17, .72); border-radius: calc(2rem - 8px); filter: blur(8px);
+      }
+      .settings-panel::after {
+        content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none;
+        border-radius: inherit; filter: blur(3px);
+        background: linear-gradient(45deg, rgba(255, 255, 255, .62) 0%, transparent 24%, transparent 76%, rgba(255, 255, 255, .54) 100%);
+      }
+      .settings-panel > * { position: relative; z-index: 2; }
+      .settings-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+      .settings-kicker {
+        margin: 0 0 .45rem; color: rgba(218, 247, 246, .58); font-size: .58rem;
+        font-weight: 700; letter-spacing: .3em; text-transform: uppercase;
+      }
+      .settings-panel h1 {
+        margin: 0; color: rgba(245, 255, 254, .96); font: 600 clamp(1.85rem, 6vw, 2.7rem)/1 "Avenir Next Condensed", "Helvetica Neue", sans-serif;
+        letter-spacing: .08em; text-shadow: 0 1px 1px rgba(0, 22, 28, .28), 0 0 1.2rem rgba(212, 255, 252, .12); white-space: nowrap;
+      }
+      .settings-rule {
+        width: 100%; height: 1px; margin: 1.35rem 0 1.1rem;
+        background: linear-gradient(90deg, transparent, rgba(222, 255, 252, .26), transparent);
+      }
+      .setting-row {
+        display: grid; grid-template-columns: 3.1rem minmax(0, 1fr); gap: 1rem; margin-top: .9rem; padding: 1rem;
+        border: 1px double rgba(235, 255, 253, .12); border-radius: 1.25rem;
+        background: rgba(255, 255, 255, .035); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+        box-shadow:
+          inset 1px -1px 1px rgba(255, 255, 255, .38), inset -1px 1px 1px rgba(255, 255, 255, .25),
+          inset 4px -4px 1px -4px rgba(255, 255, 255, .36), inset -4px 4px 1px -4px rgba(255, 255, 255, .36),
+          inset 0 0 2px rgba(0, 0, 0, .58), 0 4px 8px rgba(0, 0, 0, .13);
+      }
+      .setting-icon {
+        display: grid; place-items: center; align-self: center; width: 3rem; height: 3rem; border-radius: .85rem;
+        border: 1px double rgba(239, 255, 253, .14); color: rgba(230, 253, 251, .82);
+        background: rgba(255, 255, 255, .04); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+        box-shadow:
+          inset 2px -2px 1px -1px rgba(255, 255, 255, .56), inset -2px 2px 1px -1px rgba(255, 255, 255, .56),
+          inset 0 0 2px rgba(0, 0, 0, .58), 0 4px 8px rgba(0, 0, 0, .17);
+        font: 400 1.15rem/1 Georgia, serif; text-shadow: 0 0 .8rem rgba(219, 255, 252, .35);
+      }
+      .setting-control { display: grid; gap: .58rem; min-width: 0; }
+      .setting-label { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+      .setting-label label { color: rgba(238, 255, 253, .86); font-size: .75rem; font-weight: 700; letter-spacing: .12em; }
+      .setting-label output {
+        min-width: 3.2rem; padding: .32rem .45rem; border: 1px solid rgba(235, 255, 253, .1); border-radius: .55rem;
+        color: rgba(229, 251, 250, .72); background: rgba(255, 255, 255, .025);
+        box-shadow: inset 1px 1px 3px rgba(0, 22, 27, .35), inset -1px -1px 2px rgba(255, 255, 255, .16);
+        font: 700 .63rem/1 "SFMono-Regular", Consolas, monospace; text-align: center;
+      }
+      .setting-scale { display: flex; justify-content: space-between; color: rgba(218, 244, 242, .42); font-size: .49rem; font-weight: 600; letter-spacing: .08em; }
+      input[type="range"] {
+        width: 100%; height: 1.25rem; margin: 0; cursor: pointer; appearance: none; background: transparent;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: .42rem; border: 1px solid rgba(225, 255, 252, .12); border-radius: 99px;
+        background: rgba(121, 183, 189, .15); box-shadow: inset .16rem .16rem .34rem rgba(0, 28, 34, .28), inset -.14rem -.14rem .3rem rgba(236, 255, 253, .08);
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 1.15rem; height: 1.15rem; margin-top: -.37rem; appearance: none; border: 1px solid rgba(255, 255, 255, .8);
+        border-radius: 50%; background: radial-gradient(circle at 32% 26%, rgba(250, 255, 255, .95), rgba(156, 222, 223, .82) 38%, rgba(76, 150, 157, .86));
+        box-shadow: 0 .18rem .5rem rgba(0, 24, 30, .34), 0 0 0 .22rem rgba(180, 240, 238, .1), 0 0 1rem rgba(177, 244, 241, .2);
+      }
+      input[type="range"]::-moz-range-track {
+        height: .42rem; border: 0; border-radius: 99px; background: rgba(121, 183, 189, .15);
+        box-shadow: inset .16rem .16rem .34rem rgba(0, 28, 34, .28), inset -.14rem -.14rem .3rem rgba(236, 255, 253, .08);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 1.15rem; height: 1.15rem; border: 1px solid rgba(255, 255, 255, .8); border-radius: 50%;
+        background: radial-gradient(circle at 32% 26%, #faffff, #9cdedf 38%, #4c969d); box-shadow: 0 .18rem .5rem rgba(0, 24, 30, .34);
+      }
+      input[type="range"]:focus-visible { outline: 2px solid rgba(74, 123, 126, .5); outline-offset: .28rem; border-radius: 99px; }
+      .setting-toggle-row {
+        min-height: 4.4rem; cursor: pointer;
+        transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+      }
+      .setting-toggle-row:hover { border-color: rgba(208, 255, 252, .24); background: rgba(255, 255, 255, .052); }
+      .setting-toggle-row:focus-within {
+        border-color: rgba(143, 206, 207, .42);
+        box-shadow:
+          inset 1px -1px 1px rgba(255, 255, 255, .42), inset -1px 1px 1px rgba(255, 255, 255, .28),
+          inset 0 0 2px rgba(0, 0, 0, .58), 0 0 0 .16rem rgba(143, 206, 207, .12), 0 4px 8px rgba(0, 0, 0, .13);
+      }
+      .setting-toggle-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 2.2rem; }
+      .setting-toggle-title { color: rgba(238, 255, 253, .86); font-size: .75rem; font-weight: 700; letter-spacing: .12em; }
+      .setting-switch {
+        position: relative; flex: 0 0 auto; width: 3.65rem; height: 2rem; margin: 0; padding: 0; appearance: none; -webkit-appearance: none;
+        border: 1px solid rgba(235, 255, 253, .2); border-radius: 99px; cursor: pointer;
+        background: rgba(26, 61, 67, .72); box-shadow: inset .18rem .18rem .42rem rgba(0, 20, 26, .4), inset -.12rem -.12rem .28rem rgba(235, 255, 253, .06);
+        transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+      }
+      .setting-switch::before {
+        content: ""; position: absolute; top: .26rem; left: .26rem; width: 1.38rem; height: 1.38rem; border-radius: 50%;
+        background: radial-gradient(circle at 32% 25%, rgba(252, 255, 255, .98), rgba(164, 220, 220, .84) 42%, rgba(72, 137, 143, .88));
+        box-shadow: 0 .15rem .42rem rgba(0, 20, 25, .42), 0 0 0 .18rem rgba(178, 239, 237, .08);
+        transition: transform .18s cubic-bezier(.2, .9, .2, 1), background .16s ease;
+      }
+      .setting-switch:checked {
+        border-color: rgba(159, 231, 228, .46); background: linear-gradient(135deg, rgba(51, 128, 132, .78), rgba(73, 159, 158, .58));
+        box-shadow: inset .1rem .1rem .3rem rgba(4, 38, 43, .28), inset -.12rem -.12rem .3rem rgba(232, 255, 252, .13), 0 0 .9rem rgba(92, 201, 196, .14);
+      }
+      .setting-switch:checked::before { transform: translateX(1.65rem); background: radial-gradient(circle at 32% 25%, #ffffff, #b9f0eb 42%, #68aaa7 88%); }
+      .setting-switch:focus-visible { outline: 2px solid rgba(170, 241, 237, .78); outline-offset: .24rem; }
+      .quality-select {
+        width: 100%; min-height: 2.55rem; padding: .55rem 2.2rem .55rem .8rem;
+        border: 1px solid rgba(235, 255, 253, .14); border-radius: .72rem;
+        color: rgba(238, 255, 253, .88); background-color: rgba(40, 79, 84, .92);
+        font: 700 .68rem/1.2 "Avenir Next Condensed", "Helvetica Neue", sans-serif;
+        letter-spacing: .08em; cursor: pointer;
+      }
+      .quality-select:focus-visible { outline: 2px solid rgba(143, 206, 207, .62); outline-offset: .18rem; }
+      .quality-note { margin: 0; color: rgba(218, 244, 242, .46); font-size: .5rem; line-height: 1.45; letter-spacing: .055em; }
+      .settings-actions { display: grid; grid-template-columns: .9fr 1.4fr; gap: .85rem; margin-top: 1.25rem; }
+      .settings-actions button {
+        min-height: 3.15rem; padding: .8rem 1rem; border: 1px solid rgba(237, 255, 253, .2); border-radius: 1rem 1.2rem 1rem 1.15rem;
+        color: rgba(239, 255, 253, .86); font: 700 .66rem/1 "Avenir Next Condensed", "Helvetica Neue", sans-serif;
+        letter-spacing: .14em; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease;
+      }
+      .settings-actions button:hover { transform: translateY(-2px); }
+      .settings-actions button:active { transform: translateY(0); }
+      .settings-reset {
+        background: rgba(255, 255, 255, .028); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+        box-shadow: inset 2px 2px 5px rgba(0, 22, 27, .28), inset -1px -1px 2px rgba(255, 255, 255, .2);
+      }
+      .settings-continue {
+        background: rgba(255, 255, 255, .04); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+        box-shadow:
+          inset 2px -2px 1px -1px rgba(255, 255, 255, .52), inset -2px 2px 1px -1px rgba(255, 255, 255, .52),
+          inset 0 0 2px rgba(0, 0, 0, .55), 0 4px 8px rgba(0, 0, 0, .18);
+      }
+      .settings-continue:active { box-shadow: inset .22rem .22rem .6rem rgba(0, 29, 35, .24), inset -.2rem -.2rem .55rem rgba(242, 255, 254, .1); }
+      .setting-label output { flex-shrink: 0; }
+      .settings-hint { margin: .95rem 0 0; color: rgba(220, 246, 244, .45); font-size: .52rem; font-weight: 600; letter-spacing: .1em; text-align: center; }
+
+      /* Latin text needs a larger reading size than the compact Chinese UI. */
+      html:lang(en) .settings-panel { width: min(94vw, 38rem); }
+      html:lang(en) .settings-panel h1 { font-size: clamp(2.2rem, 6vw, 3rem); }
+      html:lang(en) .settings-kicker { font-size: .8rem; letter-spacing: .16em; }
+      html:lang(en) .setting-label { gap: .6rem; flex-wrap: wrap; }
+      html:lang(en) .setting-label label { font-size: 1rem; letter-spacing: .025em; line-height: 1.4; }
+      html:lang(en) .setting-toggle-title { font-size: 1rem; letter-spacing: .025em; line-height: 1.4; }
+      html:lang(en) .setting-label output { font-size: .85rem; line-height: 1.2; }
+      html:lang(en) .quality-select { min-width: 0; font-size: 1rem; line-height: 1.4; letter-spacing: .025em; }
+      html:lang(en) .quality-note { font-size: .8rem; line-height: 1.6; letter-spacing: .015em; color: rgba(218, 244, 242, .7); }
+      html:lang(en) .setting-scale { gap: .5rem; font-size: .75rem; line-height: 1.4; letter-spacing: .02em; color: rgba(218, 244, 242, .65); }
+      html:lang(en) .settings-actions button { font-size: .95rem; line-height: 1.4; letter-spacing: .04em; }
+      html:lang(en) .settings-hint { font-size: .8rem; line-height: 1.6; letter-spacing: .025em; color: rgba(220, 246, 244, .7); }
+      html:lang(en) .entry-copy strong { font-size: clamp(2rem, 5vw, 5.6rem); }
+      html:lang(en) .entry-copy small { font-size: .85rem; letter-spacing: .08em; text-indent: 0; text-transform: none; opacity: .7; }
+
+      /* Touch controls use one low-contrast expanding ring, echoing the reference UI. */
+      #touch-hud {
+        --touch-control-bottom: max(28%, calc(env(safe-area-inset-bottom) + 5.25rem));
+        position: fixed; inset: 0; z-index: 12; display: none; pointer-events: none;
+        user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      }
+      .touch-ui-enabled #touch-hud.is-playing { display: block; }
+      .touch-menu {
+        position: absolute; top: max(1.3rem, calc(env(safe-area-inset-top) + 1rem)); right: max(1.3rem, calc(env(safe-area-inset-right) + 1rem));
+        width: 2.5rem; height: 2.5rem; padding: 0; border: 1px solid rgba(245, 255, 252, .09); border-radius: 50%;
+        color: rgba(245, 255, 252, .3); background: rgba(236, 255, 252, .018);
+        font: 400 1rem/1 Georgia, serif; letter-spacing: -.08em; pointer-events: auto; touch-action: none;
+      }
+      .touch-stick-zone {
+        --stick-x: 0px; --stick-y: 0px; --stick-angle: 0deg; --stick-scale: .34; --stick-opacity: .055;
+        --stick-outer-x: calc(max(2.4rem, calc(env(safe-area-inset-left) + 4vw)) + 5.375rem);
+        --stick-outer-y: calc(max(2rem, calc(env(safe-area-inset-bottom) + 4vh)) + 5.375rem);
+        /* Halfway between the former edge placement and the inward placement. */
+        position: absolute; left: calc((max(32%, calc(env(safe-area-inset-left) + 5.375rem)) + var(--stick-outer-x)) / 2);
+        bottom: calc((var(--touch-control-bottom) + var(--stick-outer-y)) / 2);
+        width: min(10.75rem, 44vw); height: min(10.75rem, 44vw); transform: translate(-50%, 50%);
+        pointer-events: auto; touch-action: none;
+      }
+      .touch-stick {
+        position: absolute; left: 50%; top: 50%; width: 7rem; height: 7rem; border-radius: 50%;
+        opacity: var(--stick-opacity); transform: translate(-50%, -50%) scale(var(--stick-scale));
+        transition: transform .24s cubic-bezier(.16, 1, .3, 1), opacity .2s ease;
+        will-change: transform, opacity;
+      }
+      .touch-stick::before {
+        content: ""; position: absolute; inset: 0; border: 2px solid rgba(248, 255, 253, .7); border-radius: inherit;
+        box-shadow: 0 0 .75rem rgba(239, 255, 252, .09), inset 0 0 .85rem rgba(245, 255, 253, .035);
+      }
+      .touch-stick::after {
+        content: ""; position: absolute; inset: -.12rem; border-radius: inherit;
+        background: conic-gradient(from -21deg, rgba(252, 255, 254, .96) 0deg 42deg, transparent 43deg 360deg);
+        -webkit-mask: radial-gradient(circle, transparent 0 43%, #000 44.5% 51.5%, transparent 53%);
+        mask: radial-gradient(circle, transparent 0 43%, #000 44.5% 51.5%, transparent 53%);
+        opacity: 0; transform: rotate(var(--stick-angle)); transition: opacity .15s ease;
+      }
+      .touch-stick-core {
+        position: absolute; left: 50%; top: 50%; width: 1.15rem; height: 1.15rem; border: 1px solid rgba(249, 255, 253, .52); border-radius: 50%;
+        background: rgba(245, 255, 253, .025); transform: translate(calc(-50% + var(--stick-x)), calc(-50% + var(--stick-y)));
+      }
+      .touch-stick-zone.is-active .touch-stick { transition-duration: .08s; }
+      .touch-stick-zone.is-active .touch-stick::after { opacity: .52; }
+      .touch-actions {
+        --actions-outer-x: calc(max(2.6rem, calc(env(safe-area-inset-right) + 4vw)) + 2.125rem);
+        --actions-outer-y: calc(max(2.2rem, calc(env(safe-area-inset-bottom) + 4vh)) + 2.125rem);
+        position: absolute; right: calc((max(28%, calc(env(safe-area-inset-right) + 2.5rem)) + var(--actions-outer-x)) / 2);
+        bottom: max(calc((var(--touch-control-bottom) + var(--actions-outer-y)) / 2), calc(env(safe-area-inset-bottom) + 5.25rem));
+        display: flex; flex-direction: column; align-items: center; gap: 1rem; transform: translate(50%, 50%);
+      }
+      .touch-action {
+        position: relative; display: grid; place-items: center; width: 4.25rem; height: 4.25rem; padding: 0; appearance: none;
+        border: 1px solid rgba(248, 255, 253, .105); border-radius: 50%; color: rgba(248, 255, 253, .34);
+        background: radial-gradient(circle, rgba(242, 255, 252, .025), transparent 68%);
+        box-shadow: inset 0 0 1.15rem rgba(247, 255, 253, .018); pointer-events: auto; touch-action: none;
+        transition: transform .15s cubic-bezier(.2, .9, .2, 1), border-color .15s ease, color .15s ease, opacity .2s ease;
+      }
+      .touch-action-icon { font: 400 1.25rem/1 Georgia, serif; }
+      .touch-rise .touch-action-icon { visibility: hidden; }
+      .touch-action.is-pressed { transform: scale(1.13); border-color: rgba(251, 255, 254, .18); color: rgba(252, 255, 254, .5); }
+      .touch-dive { display: none; }
+      .ice-touch-dpad {
+        position: absolute; right: max(1rem, calc(env(safe-area-inset-right) + .7rem)); top: 48%;
+        display: grid; grid-template-columns: repeat(3, 3rem); grid-template-rows: repeat(2, 3rem); gap: .42rem;
+        transform: translateY(-50%); pointer-events: auto; touch-action: none;
+      }
+      .ice-touch-dpad button {
+        display: grid; place-items: center; min-width: 2.8rem; min-height: 2.8rem; padding: 0;
+        border: 1px solid rgba(227, 247, 250, .2); border-radius: .72rem; color: rgba(239, 251, 253, .72);
+        background: rgba(8, 29, 42, .28); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+        font: 600 1.1rem/1 Georgia, serif; box-shadow: inset 0 1px rgba(255,255,255,.12);
+      }
+      .ice-touch-dpad button:active, .ice-touch-dpad button.is-pressed { color: #fff; border-color: rgba(212, 246, 252, .7); background: rgba(96, 165, 181, .48); }
+      .ice-touch-dpad button:focus-visible { outline: 2px solid #d9f8ff; outline-offset: 2px; }
+      .ice-touch-dpad [data-move="KeyW"] { grid-column: 2; grid-row: 1; }
+      .ice-touch-dpad [data-move="KeyA"] { grid-column: 1; grid-row: 2; }
+      .ice-touch-dpad [data-move="KeyS"] { grid-column: 2; grid-row: 2; }
+      .ice-touch-dpad [data-move="KeyD"] { grid-column: 3; grid-row: 2; }
+      #touch-hud.is-swimming .touch-dive { display: grid; }
+      #touch-hud.is-swimming .touch-rise .touch-action-icon { visibility: visible; }
+      @media (max-width: 520px) {
+        .settings-panel { padding: 1.2rem; border-radius: 1.35rem; }
+        .settings-header { gap: .75rem; }
+        .setting-row { grid-template-columns: 2.65rem minmax(0, 1fr); gap: .75rem; padding: .85rem; }
+        .setting-icon { width: 2.6rem; height: 2.6rem; }
+        .settings-actions { grid-template-columns: 1fr; }
+        .settings-reset { order: 2; }
+        .setting-toggle-topline { gap: .7rem; }
+        /* Use the decorative icon column for text on narrow English layouts. */
+        html:lang(en) .setting-row { grid-template-columns: minmax(0, 1fr); }
+        html:lang(en) .setting-icon { display: none; }
+      }
+      @media (pointer: coarse) and (max-height: 480px) {
+        #reference-settings { place-items: start center; overflow-y: auto; }
+        .settings-panel { margin-block: .7rem; }
+        .touch-stick-zone {
+          --stick-outer-x: calc(max(2rem, calc(env(safe-area-inset-left) + 3vw)) + 4.5rem);
+          --stick-outer-y: calc(max(1.25rem, calc(env(safe-area-inset-bottom) + 2vh)) + 4.5rem);
+          width: min(9rem, 44vw); height: min(9rem, 44vw);
+        }
+        .touch-stick { width: 6rem; height: 6rem; }
+        .touch-actions {
+          --actions-outer-x: calc(max(1.75rem, calc(env(safe-area-inset-right) + 3vw)) + 1.925rem);
+          --actions-outer-y: calc(max(1.2rem, calc(env(safe-area-inset-bottom) + 2vh)) + 1.925rem);
+        }
+        .touch-action { width: 3.85rem; height: 3.85rem; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #reference-entry, #reference-settings, .settings-actions button, .touch-stick, .touch-action, .touch-dive { transition: none; }
+      }
+    </style>
+    <link rel="stylesheet" href="/src/ice-map.css" />
+  </head>
+  <body>
+    <canvas id="reference-world" aria-label="冰封镜馆三维地图"></canvas>
+    <div id="underwater-filter" aria-hidden="true"></div>
+    <div id="touch-hud" class="is-playing" aria-hidden="false">
+      <button class="touch-menu" id="touch-menu" type="button" data-i18n-aria-label="touch.menu" aria-label="打开场景设置">•••</button>
+      <div class="touch-stick-zone" id="touch-stick-zone" data-i18n-aria-label="touch.stick" aria-label="移动摇杆">
+        <div class="touch-stick" aria-hidden="true"><span class="touch-stick-core"></span></div>
+      </div>
+      <div class="touch-actions">
+        <button class="touch-action touch-rise" id="touch-rise" type="button" data-i18n-aria-label="touch.jump" aria-label="跳跃">
+          <span class="touch-action-icon" aria-hidden="true">↑</span>
+        </button>
+        <button class="touch-action touch-dive" id="touch-dive" type="button" data-i18n-aria-label="touch.dive" aria-label="下潜">
+          <span class="touch-action-icon" aria-hidden="true">↓</span>
+        </button>
+      </div>
+      <div class="ice-touch-dpad" aria-label="方向控制">
+        <button type="button" data-move="KeyW" aria-label="向前">↑</button>
+        <button type="button" data-move="KeyA" aria-label="向左">←</button>
+        <button type="button" data-move="KeyS" aria-label="向后">↓</button>
+        <button type="button" data-move="KeyD" aria-label="向右">→</button>
+      </div>
+    </div>
+    <section id="reference-entry" class="is-hidden" aria-label="进入冰封镜馆">
+      <div class="entry-copy">
+        <strong data-i18n="game.title">泳池空间</strong>
+        <small id="entry-hint" data-i18n="entry.keyboard">WASD 移动 · Space 跳跃/上浮 · Shift 加速/下潜 · Esc 设置</small>
+      </div>
+    </section>
+    <section id="reference-settings" aria-labelledby="settings-title" aria-modal="true" role="dialog" hidden>
+      <div class="settings-panel">
+        <div class="settings-header">
+          <div>
+            <p class="settings-kicker" data-i18n="settings.kicker">环境调节</p>
+            <h1 id="settings-title" data-i18n="settings.title">场景设置</h1>
+          </div>
+        </div>
+        <div class="settings-rule"></div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">⌘</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="map-selection" data-i18n="map.label">地图</label>
+            </div>
+            <select class="quality-select" id="map-selection" name="map-selection" autocomplete="off" aria-describedby="map-note" disabled aria-disabled="true">
+              <option value="reference" selected data-i18n="map.reference">参考版（默认）</option>
+            </select>
+            <p class="quality-note" id="map-note">冰封镜馆固定使用参考版池厅空间。</p>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">◎</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="language-preference" data-i18n="language.label">语言</label>
+            </div>
+            <select class="quality-select" id="language-preference" name="language-preference" data-language-select autocomplete="off" aria-describedby="language-note">
+              <option value="auto" selected data-i18n="language.auto">跟随系统</option>
+              <option value="zh" lang="zh-CN" data-i18n="language.zh">中文</option>
+              <option value="en" lang="en" data-i18n="language.en">English</option>
+            </select>
+            <p class="quality-note" id="language-note" data-i18n="language.note">立即生效并记住选择；跟随系统会自动识别语言。</p>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">◇</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="quality-preset" data-i18n="quality.label">画质</label>
+            </div>
+            <select class="quality-select" id="quality-preset" name="quality-preset" autocomplete="off" aria-describedby="quality-note">
+              <option value="high" data-i18n="quality.high">高画质</option>
+              <option value="balanced" selected data-i18n="quality.balanced">平衡（推荐）</option>
+              <option value="performance" data-i18n="quality.performance">性能优先</option>
+            </select>
+            <p class="quality-note" id="quality-note" data-i18n="quality.note">调整分辨率、水体刷新与光照数量，场景布局和材质保持不变。</p>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">♫</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="master-volume" data-i18n="volume.label">环境音量</label>
+              <output id="master-volume-value" for="master-volume">65%</output>
+            </div>
+            <input id="master-volume" type="range" min="0" max="100" value="65" step="1" />
+            <div class="setting-scale"><span data-i18n="volume.low">静音</span><span data-i18n="volume.high">清晰</span></div>
+            <p class="quality-note" data-i18n="volume.note">控制脚步、水声和镜馆环境音。</p>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">✦</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="light-brightness" data-i18n="light.label">光源亮度</label>
+              <output id="light-brightness-value" for="light-brightness">100%</output>
+            </div>
+            <input id="light-brightness" type="range" min="30" max="180" value="100" step="1" />
+            <div class="setting-scale"><span data-i18n="light.low">幽暗</span><span data-i18n="light.high">明亮</span></div>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">▥</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="surface-reflection" data-i18n="reflection.label">地板与墙壁反光</label>
+              <output id="surface-reflection-value" for="surface-reflection">80%</output>
+            </div>
+            <input id="surface-reflection" type="range" min="0" max="100" value="80" step="1" />
+            <div class="setting-scale"><span data-i18n="reflection.low">无反光</span><span data-i18n="reflection.high">强反光</span></div>
+          </div>
+        </div>
+
+        <label class="setting-row setting-toggle-row" for="multicolor-tiles">
+          <span class="setting-icon" aria-hidden="true">▦</span>
+          <span class="setting-control">
+            <span class="setting-toggle-topline">
+              <span class="setting-toggle-title" data-i18n="tiles.multicolor.label">多色瓷砖</span>
+              <input class="setting-switch" id="multicolor-tiles" name="multicolor-tiles" type="checkbox" role="switch" checked aria-describedby="multicolor-tiles-note" />
+            </span>
+            <span class="quality-note" id="multicolor-tiles-note" data-i18n="tiles.multicolor.note">显示零散的蓝色与黑色瓷砖。</span>
+          </span>
+        </label>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">↗</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="movement-speed" data-i18n="speed.label">移动速度</label>
+              <output id="movement-speed-value" for="movement-speed">100%</output>
+            </div>
+            <input id="movement-speed" type="range" min="25" max="300" value="100" step="5" />
+            <div class="setting-scale"><span data-i18n="speed.low">缓慢 · 25%</span><span data-i18n="speed.high">快速 · 300%</span></div>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-icon" aria-hidden="true">↓</div>
+          <div class="setting-control">
+            <div class="setting-label">
+              <label for="gravity-strength" data-i18n="gravity.label">重力</label>
+              <output id="gravity-strength-value" for="gravity-strength">100%</output>
+            </div>
+            <input id="gravity-strength" type="range" min="25" max="200" value="100" step="5" />
+            <div class="setting-scale"><span data-i18n="gravity.low">轻盈 · 25%</span><span data-i18n="gravity.high">沉重 · 200%</span></div>
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button class="settings-reset" id="settings-reset" type="button" data-i18n="settings.reset">恢复默认</button>
+          <button class="settings-continue" id="settings-continue" type="button" data-i18n="settings.continue">继续探索</button>
+        </div>
+        <p class="settings-hint" data-i18n="settings.hint">再次按 ESC 或选择“继续探索”返回场景</p>
+      </div>
+    </section>
+    <div id="ice-map-overlay" aria-live="polite">
+      <header class="ice-map-heading">
+        <p class="ice-map-kicker">CHAPTER TWO · ICE ARCHIVE</p>
+        <h1 id="ice-map-title">冰封镜馆 · 第二层</h1>
+        <p id="ice-map-subtitle">找回三条被裁切的证词，再走向镜心。</p>
+      </header>
+      <div class="ice-map-status" aria-label="线索进度">
+        <span class="ice-map-status-label">证词归档</span>
+        <strong id="ice-map-clues">已收集 0/3</strong>
+        <div class="ice-map-clue-list" role="list">
+          <span class="ice-map-clue" data-ice-clue="footage" role="listitem">监控胶片</span>
+          <span class="ice-map-clue" data-ice-clue="shard" role="listitem">镜片</span>
+          <span class="ice-map-clue" data-ice-clue="echo" role="listitem">声纹 / 录音</span>
+        </div>
+      </div>
+      <aside class="ice-nav-map" aria-label="镜馆地图">
+        <div class="ice-nav-head"><strong id="ice-nav-title">镜馆地图</strong><span>N ↑</span></div>
+        <canvas id="ice-nav-canvas" width="240" height="236" aria-hidden="true"></canvas>
+        <div class="ice-nav-footer"><span id="ice-nav-target">当前目标：入口便笺</span><b id="ice-nav-distance">—</b></div>
+      </aside>
+      <section class="ice-route-readout" id="ice-route-readout" aria-live="polite" hidden>
+        <p class="ice-route-label">NAVIGATION NOTE · 04</p>
+        <ol class="ice-route-steps">
+          <li data-route-step="0">前</li><li data-route-step="1">左</li><li data-route-step="2">前</li><li data-route-step="3">左</li>
+        </ol>
+        <p id="ice-route-status"></p>
+      </section>
+      <aside class="ice-archive" id="ice-archive" aria-label="镜面物证档案">
+        <p class="ice-archive-kicker">CASE FILE · 02 / MIRROR HALL</p>
+        <h2 id="ice-archive-title">镜面物证档案</h2>
+        <p class="ice-archive-intro">靠近并收取后，展开条目查看物证细节。</p>
+        <details class="ice-evidence-record">
+          <summary><span class="record-index">01</span><span data-ice-clue="footage">监控胶片</span><span class="record-state"></span></summary>
+          <p data-ice-detail="footage" hidden></p>
+        </details>
+        <details class="ice-evidence-record">
+          <summary><span class="record-index">02</span><span data-ice-clue="shard">镜片</span><span class="record-state"></span></summary>
+          <p data-ice-detail="shard" hidden></p>
+        </details>
+        <details class="ice-evidence-record">
+          <summary><span class="record-index">03</span><span data-ice-clue="echo">声纹 / 录音</span><span class="record-state"></span></summary>
+          <p data-ice-detail="echo" hidden></p>
+        </details>
+        <div class="ice-evidence-record ice-note-record"><span class="record-index">04</span><span>入口便笺</span><span id="ice-note-status">未取得</span></div>
+        <div class="ice-evidence-record ice-note-record"><span class="record-index">05</span><span>四步路线</span><span id="ice-route-archive">待解码</span></div>
+        <div class="ice-note-cipher" id="ice-note-cipher" hidden>
+          <span class="cipher-label" id="ice-cipher-title">便笺密码 / NOTE CIPHER</span>
+          <strong id="ice-cipher-code">○　●　○　●</strong>
+          <p data-cipher-hint>霜印旁的注记：空心圆代表「前」，实心圆代表「左」。</p>
+          <div class="ice-cipher-input" id="ice-cipher-input">
+            <output id="ice-cipher-slots" aria-live="polite">□ · □ · □ · □</output>
+            <div class="ice-cipher-actions"><button type="button" data-cipher-dir="forward">前</button><button type="button" data-cipher-dir="left">左</button><button type="button" data-cipher-dir="right">右</button><button type="button" id="ice-cipher-clear">清除</button></div>
+            <p id="ice-cipher-feedback" aria-live="polite">按纸条顺序选择四个方向。</p>
+          </div>
+          <small data-cipher-answer hidden>解码后：前 · 左 · 前 · 左</small>
+        </div>
+      </aside>
+      <div class="ice-map-prompt" id="ice-map-prompt" hidden>
+        <p id="ice-map-prompt-text"></p>
+        <button id="ice-interact" type="button"></button>
+      </div>
+      <p id="ice-map-hint" class="ice-map-hint">WASD 移动 · 点击画面锁定视角 · E 收取 · Esc 离开</p>
+      <button id="ice-exit" class="ice-map-exit" type="button">离开镜馆</button>
+    </div>
+    <script type="module" src="/src/ice-pool/ice-map-main.js"></script>
+  </body>
+</html>
