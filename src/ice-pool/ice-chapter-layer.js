@@ -4,8 +4,12 @@ import { Reflector } from 'three/addons/objects/Reflector.js';
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
 const CORE_POSITION = new THREE.Vector3(7.5, 1.35, 82.5);
-const ROUTE_LENGTH = 5.2;
-const ROUTES = [['forward', 'left', 'forward', 'left'], ['right', 'forward', 'right', 'forward']];
+// A fixed, walkable room owns the route marks. Camera-relative placement could
+// send a mark through the Pool map's walls when the player faced a side wall.
+export const ROUTE_POINTS = [
+  [[12.1, 31.9], [12.1, 36.9], [7.1, 36.9], [7.1, 41.9], [2.1, 41.9]],
+  [[2.1, 31.9], [7.1, 31.9], [7.1, 36.9], [12.1, 36.9], [12.1, 41.9]],
+];
 const CLUES = [
   {
     id: 'footage', position: new THREE.Vector3(7.5, 0.72, 22.5), color: 0xb9dbe6,
@@ -35,6 +39,7 @@ const COPY = {
     notePrompt: '入口附近有一张压在碎镜下的纸条。它记录了通往镜心的四步口令。',
     noteAction: '读取纸条', noteTitle: '纸条已展开',
     routeStart: '符号已解读：前 · 左 · 前 · 左。按顺序走到四个地面镜记，每一步都要实际移动。',
+    routeApproach: '先按地图前往干燥房间的起点镜记，再依次走完四步。',
     routeStep: ['向前走到第一枚镜记', '向左走到第二枚镜记', '再向前走到第三枚镜记', '再向左走到最后一枚镜记'],
     routeWrong: '方向不对，镜面没有回应。回到这一步的正确方向再走。',
     routeDone: '两段镜记已走完。继续寻找远处的镜面物证。', routeProgress: '路线',
@@ -62,6 +67,7 @@ const COPY = {
     notePrompt: 'A note is pinned beneath broken glass near the entrance. It records a four-part route to the mirror core.',
     noteAction: 'Read the note', noteTitle: 'Note unfolded',
     routeStart: 'Decoded: forward · left · forward · left. Walk to four floor marks in order; each step requires movement.',
+    routeApproach: 'Follow the map to the starting mark in the dry room, then walk the four steps.',
     routeStep: ['Walk forward to the first mirror mark', 'Walk left to the second mirror mark', 'Walk forward to the third mirror mark', 'Walk left to the final mirror mark'],
     routeWrong: 'Wrong direction. The mirror stays dark. Correct your course and try this leg again.',
     routeDone: 'Both mirror routes are complete. Seek the distant exhibits.', routeProgress: 'Route',
@@ -239,15 +245,11 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   let disposed = false;
   let storyPaused = false;
   let routeStep = 0;
-  let routeOrigin = null;
-  let routeForward = null;
+  let routeAtStart = false;
   let routeStarted = false;
   let cipherOpen = false;
   let cipherInput = [];
   let cipherFeedback = '';
-  let routeWrongDistance = 0;
-  let lastPosition = camera.position.clone();
-  let wrongFeedbackUntil = 0;
   let lastNavAt = -Infinity;
   const routeMarkers = [];
   const noteTrail = [];
@@ -261,23 +263,20 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   function isTouch() { return navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches; }
   function clueCount() { return CLUES.reduce((count, item) => count + Number(found.has(item.id)), 0); }
   function routeIndex() { return found.has('routeOne') ? 1 : 0; }
-  function routeTurns() { return ROUTES[routeIndex()]; }
-  function routeDirection(step) {
-    const forward = routeForward.clone();
-    const turn = routeTurns()[step];
-    return turn === 'left' || turn === 'right'
-      ? forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), turn === 'left' ? Math.PI / 2 : -Math.PI / 2).normalize()
-      : forward;
+  function routePoint(index) {
+    const [x, z] = ROUTE_POINTS[routeIndex()][index];
+    return new THREE.Vector3(x, .02, z);
   }
+  function floorDistance(position) { return Math.hypot(camera.position.x - position.x, camera.position.z - position.z); }
   function makeRouteMarkers() {
     routeMarkers.forEach(marker => scene.remove(marker));
     routeMarkers.length = 0;
-    if (!routeStarted || found.has('route') || !routeOrigin || !routeForward) return;
-    const point = routeOrigin.clone();
-    for (let i = routeStep; i < routeTurns().length; i += 1) {
-      point.addScaledVector(routeDirection(i), ROUTE_LENGTH);
-      const marker = makeRouteMarker(); marker.position.set(point.x, .02, point.z);
-      marker.userData.routeIndex = i; marker.visible = i === routeStep;
+    if (!routeStarted || found.has('route')) return;
+    const nextPoint = routeAtStart ? routeStep + 1 : 0;
+    for (let i = nextPoint; i < ROUTE_POINTS[routeIndex()].length; i += 1) {
+      const marker = makeRouteMarker(); marker.position.copy(routePoint(i));
+      marker.userData.routeIndex = i - 1; marker.visible = i === nextPoint;
+      if (i === 0) marker.scale.setScalar(1.3);
       scene.add(marker); routeMarkers.push(marker);
     }
   }
@@ -360,14 +359,14 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     routeReadout.hidden = !routeStarted || found.has('route');
     routeStatus.textContent = found.has('route')
       ? copy.routeDone
-      : performance.now() < wrongFeedbackUntil ? copy.routeWrong
+      : !routeAtStart ? copy.routeApproach
       : `${copy.routeProgress} ${routeIndex() + 1} · ${routeStep + 1}/4 · ${(routeIndex() ? copy.secondRouteStep : copy.routeStep)[routeStep]}`;
-    routeReadout.dataset.wrong = String(performance.now() < wrongFeedbackUntil);
+    routeReadout.dataset.wrong = 'false';
     const steps = routeReadout.querySelectorAll('[data-route-step]');
     steps.forEach((step, index) => {
       step.textContent = routeIndex() ? (language === 'zh' ? ['右', '前', '右', '前'] : ['RIGHT', 'FWD', 'RIGHT', 'FWD'])[index] : copy.routeLabels[index];
       step.classList.toggle('is-complete', found.has('route') || index < routeStep);
-      step.classList.toggle('is-current', !found.has('route') && index === routeStep && routeStarted);
+      step.classList.toggle('is-current', !found.has('route') && index === routeStep && routeStarted && routeAtStart);
       step.setAttribute('aria-label', `${copy.routeLabels[index]} ${index < routeStep || found.has('route') ? '✓' : ''}`);
     });
   }
@@ -375,7 +374,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (!found.has('note')) return { position: notePosition, label: language === 'zh' ? '入口便笺' : 'Entrance note' };
     if (routeStarted && !found.has('route')) {
       const marker = routeMarkers[0];
-      if (marker) return { position: marker.position, label: COPY[language].navRoute };
+      if (marker) return { position: marker.position, label: routeAtStart ? COPY[language].navRoute : COPY[language].routeApproach };
     }
     if (found.has('routeOne') && !found.has('route')) return { position: camera.position, label: COPY[language].navCipher };
     for (const id of ['footage', 'shard', 'echo']) {
@@ -388,7 +387,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (!navCanvas) return;
     const copy = COPY[language];
     const target = navigationTarget();
-    const distance = camera.position.distanceTo(target.position);
+    const distance = floorDistance(target.position);
     if (navTitle) navTitle.textContent = copy.navTitle;
     if (navTarget) navTarget.textContent = `${copy.navGoal} · ${target.label}`;
     if (navDistance) navDistance.textContent = distance < .5 ? '●' : `${Math.round(distance)} m`;
@@ -418,12 +417,31 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
       const y = mapPoint({ x: 0, z: worldZ }).y;
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
     }
+    const drawFloor = (x0, z0, x1, z1) => {
+      const topLeft = mapPoint({ x: x0, z: z1 });
+      const bottomRight = mapPoint({ x: x1, z: z0 });
+      ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+    };
+    ctx.fillStyle = 'rgba(103, 188, 210, .24)';
+    drawFloor(0, 0, 15, 15);
+    drawFloor(6, 15, 9, 30);
+    drawFloor(0, 30, 15, 45);
+    drawFloor(6, 45, 9, 60);
+    drawFloor(5, 60, 10, 75);
+    drawFloor(6, 75, 9, 90);
     const hallStart = mapPoint({ x: 7.5, z: 2.5 });
     const hallEnd = mapPoint(CORE_POSITION);
-    ctx.strokeStyle = 'rgba(103, 188, 210, .24)'; ctx.lineWidth = 34;
-    ctx.beginPath(); ctx.moveTo(hallStart.x, hallStart.y); ctx.lineTo(hallEnd.x, hallEnd.y); ctx.stroke();
     ctx.strokeStyle = 'rgba(181, 233, 240, .56)'; ctx.lineWidth = 2; ctx.setLineDash([5, 8]);
     ctx.beginPath(); ctx.moveTo(hallStart.x, hallStart.y); ctx.lineTo(hallEnd.x, hallEnd.y); ctx.stroke(); ctx.setLineDash([]);
+    if (routeStarted && !found.has('route')) {
+      ctx.strokeStyle = 'rgba(236, 247, 187, .88)'; ctx.lineWidth = 2; ctx.setLineDash([3, 4]);
+      ROUTE_POINTS[routeIndex()].forEach(([x, z], index) => {
+        const point = mapPoint({ x, z });
+        if (index === 0) { ctx.beginPath(); ctx.moveTo(point.x, point.y); }
+        else ctx.lineTo(point.x, point.y);
+      });
+      ctx.stroke(); ctx.setLineDash([]);
+    }
     for (const [index, spec] of CLUES.entries()) {
       const point = mapPoint(spec.position);
       if (point.y < 10 || point.y > height - 10) continue;
@@ -490,7 +508,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
       interact.textContent = isTouch() ? copy.collect : `E · ${copy.collect}`;
       interact.hidden = false;
     } else if (found.has('note') && routeStarted && !found.has('route')) {
-      promptText.textContent = performance.now() < wrongFeedbackUntil ? copy.routeWrong : copy.routeStep[routeStep];
+      promptText.textContent = !routeAtStart ? copy.routeApproach : (routeIndex() ? copy.secondRouteStep : copy.routeStep)[routeStep];
       interact.hidden = true;
     } else if (clueCount() === CLUES.length && found.has('route') && found.has('note')) {
       promptText.textContent = isTouch() ? copy.coreTouch : copy.core;
@@ -527,11 +545,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
       const second = found.has('routeOne');
       if (cipherInput.join(',') === (second ? 'right,forward,right,forward' : 'forward,left,forward,left')) {
         if (!second) { found.add('note'); post('clue', 'note'); }
-        routeStarted = true; routeStep = 0; cipherOpen = false;
-        routeOrigin = camera.position.clone();
-        routeForward = camera.getWorldDirection(new THREE.Vector3()); routeForward.y = 0; routeForward.normalize();
-        if (routeForward.lengthSq() < .5) routeForward.set(0, 0, -1);
-        lastPosition.copy(camera.position); routeWrongDistance = 0;
+        routeStarted = true; routeStep = 0; routeAtStart = false; cipherOpen = false;
         cipherFeedback = second ? COPY[language].secondCodeSolved : COPY[language].cipherSolved;
         makeRouteMarkers();
         const note = groups.get('note'); if (note) note.visible = false;
@@ -593,10 +607,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (found.has('route')) { routeStep = 4; routeStarted = true; }
     else if (found.has('routeOne')) { routeStep = 0; routeStarted = false; cipherOpen = true; }
     else if (found.has('note')) {
-      routeStarted = true; routeStep = 0; routeOrigin = camera.position.clone();
-      routeForward = camera.getWorldDirection(new THREE.Vector3()); routeForward.y = 0; routeForward.normalize();
-      if (routeForward.lengthSq() < .5) routeForward.set(0, 0, -1);
-      lastPosition.copy(camera.position); makeRouteMarkers();
+      routeStarted = true; routeStep = 0; routeAtStart = false; makeRouteMarkers();
     }
     updateLabels(); updatePrompt();
   }
@@ -606,43 +617,28 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (paused && document.pointerLockElement) document.exitPointerLock();
   }
   function progressRoute() {
-    if (!routeStarted || found.has('route') || !routeOrigin || !routeForward) return;
-    const displacement = camera.position.clone().sub(routeOrigin); displacement.y = 0;
-    const direction = routeDirection(routeStep);
-    const along = displacement.dot(direction);
-    const lateral = displacement.clone().addScaledVector(direction, -along).length();
-    const moved = camera.position.distanceTo(lastPosition);
-    if (moved > .004 && lateral > 2.35) {
-      wrongFeedbackUntil = performance.now() + 2600;
-      routeWrongDistance = 0;
-      updateRouteReadout(); updatePrompt();
-    } else if (moved > .004 && along < -.9) {
-      wrongFeedbackUntil = performance.now() + 2600;
-      routeWrongDistance = 0;
-      updateRouteReadout(); updatePrompt();
-    } else if (along >= ROUTE_LENGTH && lateral < 1.85) {
-      routeStep += 1; routeOrigin.copy(camera.position); routeWrongDistance = 0;
-      if (routeStep >= routeTurns().length) {
-        if (!found.has('routeOne')) {
-          found.add('routeOne'); post('clue', 'routeOne');
-          routeStarted = false; cipherOpen = true; cipherInput = [];
-          cipherFeedback = COPY[language].secondCodeFound;
-          updateLabels(); updatePrompt();
-          if (document.pointerLockElement) document.exitPointerLock();
-        } else {
-          found.add('route'); post('clue', 'route');
-          groups.get('shard').visible = !found.has('shard');
-        }
-        routeMarkers.forEach(marker => { marker.visible = false; });
-      } else {
-        makeRouteMarkers();
-      }
+    if (!routeStarted || found.has('route') || !routeMarkers.length) return;
+    if (floorDistance(routeMarkers[0].position) > 1.25) return;
+    if (!routeAtStart) {
+      routeAtStart = true;
+      makeRouteMarkers();
       updateLabels(); updatePrompt();
-    } else if (moved > .004 && lateral > 1.1) {
-      wrongFeedbackUntil = performance.now() + 2600;
-      updateRouteReadout(); updatePrompt();
+      return;
     }
-    lastPosition.copy(camera.position);
+    routeStep += 1;
+    if (routeStep >= 4) {
+      if (!found.has('routeOne')) {
+        found.add('routeOne'); post('clue', 'routeOne');
+        routeStarted = false; cipherOpen = true; cipherInput = [];
+        cipherFeedback = COPY[language].secondCodeFound;
+        if (document.pointerLockElement) document.exitPointerLock();
+      } else {
+        found.add('route'); post('clue', 'route');
+        groups.get('shard').visible = !found.has('shard');
+      }
+      routeMarkers.forEach(marker => { marker.visible = false; });
+    } else makeRouteMarkers();
+    updateLabels(); updatePrompt();
   }
   function update(delta, time) {
     if (disposed) return;
