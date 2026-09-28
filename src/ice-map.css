@@ -143,6 +143,7 @@ body {
   -webkit-backdrop-filter: blur(9px);
   backdrop-filter: blur(9px);
 }
+.ice-archive-toggle{display:none}
 .ice-nav-head,.ice-nav-footer { display:flex;align-items:center;justify-content:space-between;gap:.5rem }
 .ice-nav-head { margin-bottom:.45rem;color:#e8fbff;font:700 .68rem/1.2 "Noto Sans SC",sans-serif;letter-spacing:.08em }
 .ice-nav-head span { color:#91d8e8;font:.64rem/1 monospace }
@@ -414,6 +415,50 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
 }
 
 @media (max-width:600px) and (max-height:650px){.ice-nav-map{top:10.7rem;width:8.4rem}#ice-nav-canvas{height:6.6rem}}
+
+@media(max-width:700px){
+  #ice-map-overlay{padding:max(.55rem,env(safe-area-inset-top)) max(.55rem,env(safe-area-inset-right)) max(.55rem,env(safe-area-inset-bottom)) max(.55rem,env(safe-area-inset-left))}
+  .ice-map-heading{max-width:calc(100vw - 7.2rem);padding:.42rem .58rem}
+  .ice-map-kicker,#ice-map-subtitle{display:none}
+  #ice-map-title{font-size:clamp(.95rem,4vw,1.18rem);white-space:nowrap}
+  .ice-map-status{width:auto;max-width:52vw;margin-top:.25rem;padding:.32rem .55rem}
+  .ice-map-status-label,.ice-map-clue-list{display:none}
+  #ice-map-clues{font-size:.68rem;white-space:nowrap}
+  .ice-map-exit{top:max(.55rem,env(safe-area-inset-top));right:max(.55rem,env(safe-area-inset-right));min-height:36px;padding:5px 8px;font-size:.63rem}
+  .ice-archive-toggle{position:absolute;top:max(3rem,calc(env(safe-area-inset-top) + 2.65rem));right:max(.55rem,env(safe-area-inset-right));display:block;min-height:38px;padding:6px 10px;border:1px solid rgba(178,229,238,.68);background:#11384bcf;color:#effbff;font-size:.7rem;pointer-events:auto}
+  .ice-nav-map{top:max(5.8rem,calc(env(safe-area-inset-top) + 5.3rem));bottom:auto;left:max(.55rem,env(safe-area-inset-left));width:min(9rem,43vw);padding:.38rem}
+  #ice-nav-canvas{height:min(7.1rem,18dvh)}
+  .ice-nav-head{font-size:.55rem;margin-bottom:.28rem}
+  .ice-nav-footer{font-size:.53rem;margin-top:.3rem}
+  .ice-route-readout{top:max(6rem,calc(env(safe-area-inset-top) + 5.5rem));right:max(.55rem,env(safe-area-inset-right));bottom:auto;left:auto;width:min(9rem,43vw);padding:.43rem .52rem;transform:none}
+  .ice-route-label{font-size:.43rem}
+  .ice-route-steps{gap:2px;margin:.28rem 0}
+  .ice-route-steps li{width:1.6rem;height:1.6rem;font-size:.65rem}
+  #ice-route-status{font-size:.6rem;line-height:1.4}
+  .ice-archive:not(.is-solving):not(.is-mobile-open){display:none}
+  .ice-archive,.ice-archive.is-solving{top:max(5.7rem,calc(env(safe-area-inset-top) + 5.2rem));right:max(.55rem,env(safe-area-inset-right));bottom:auto;left:max(.55rem,env(safe-area-inset-left));width:auto;max-height:calc(100dvh - 13rem);padding:.7rem .8rem;z-index:5}
+  .ice-archive.is-solving{max-height:calc(100dvh - 8rem)}
+  #ice-map-overlay.is-archive-open .ice-nav-map,#ice-map-overlay.is-archive-open .ice-route-readout{display:none}
+  #ice-map-overlay.is-solving .ice-archive-toggle{display:none}
+  .ice-map-prompt{left:50%;bottom:max(17.5rem,calc(env(safe-area-inset-bottom) + 17rem));width:calc(100vw - 1.1rem);padding:.55rem .6rem .55rem .8rem}
+  #ice-map-prompt-text{font-size:.66rem}
+  #ice-interact{min-height:42px;font-size:.68rem}
+  .ice-map-hint{display:none}
+  /* The Pool joystick stays in control; leave a clear touch lane above the chapter footer. */
+  .touch-stick-zone{bottom:max(10rem,calc(env(safe-area-inset-bottom) + 9rem))}
+  .touch-actions{bottom:max(10rem,calc(env(safe-area-inset-bottom) + 9rem))}
+  .touch-action{border-color:rgba(248,255,253,.3);color:rgba(248,255,253,.75);background:rgba(9,35,49,.3)}
+}
+@media(max-width:700px) and (max-height:560px){
+  .ice-map-heading,.ice-map-status{display:none}
+  .ice-nav-map{top:max(.55rem,env(safe-area-inset-top));width:min(7rem,28vw)}
+  #ice-nav-canvas{height:4.7rem}
+  .ice-archive-toggle{top:max(.55rem,env(safe-area-inset-top));right:5.7rem}
+  .ice-route-readout{top:4.7rem;width:min(9rem,32vw)}
+  .ice-archive,.ice-archive.is-solving{top:3.5rem;max-height:calc(100dvh - 4.2rem)}
+  .ice-map-prompt{bottom:max(11rem,calc(env(safe-area-inset-bottom) + 10.5rem));max-width:52vw}
+  .touch-stick-zone,.touch-actions{bottom:max(7.8rem,calc(env(safe-area-inset-bottom) + 7.3rem))}
+}
 
 @media (prefers-reduced-motion: reduce) {
   .ice-map-clue { transition: none; }

@@ -227,6 +227,8 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   const routeReadout = document.querySelector('#ice-route-readout');
   const routeStatus = document.querySelector('#ice-route-status');
   const archive = document.querySelector('#ice-archive');
+  const archiveToggle = document.querySelector('#ice-archive-toggle');
+  const overlay = document.querySelector('#ice-map-overlay');
   const navCanvas = document.querySelector('#ice-nav-canvas');
   const navTarget = document.querySelector('#ice-nav-target');
   const navDistance = document.querySelector('#ice-nav-distance');
@@ -331,6 +333,13 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (clearCipher) clearCipher.textContent = copy.cipherClear;
     updateCipherInput();
     if (archive) { archive.classList.toggle('has-note', found.has('note')); archive.classList.toggle('is-solving', cipherOpen); }
+    overlay?.classList.toggle('is-solving', cipherOpen);
+    overlay?.classList.toggle('is-archive-open', !!archive?.classList.contains('is-mobile-open') || cipherOpen);
+    if (archiveToggle) {
+      const open = archive?.classList.contains('is-mobile-open') || cipherOpen;
+      archiveToggle.textContent = open ? language === 'zh' ? '收起线索' : 'Close clues' : language === 'zh' ? '查看线索' : 'Clues';
+      archiveToggle.setAttribute('aria-expanded', String(!!open));
+    }
     const archiveTitle = document.querySelector('#ice-archive-title');
     const archiveIntro = document.querySelector('.ice-archive-intro');
     if (archiveTitle) archiveTitle.textContent = copy.archive;
@@ -657,11 +666,9 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     canvas.removeEventListener('click', handleClick);
     interact?.removeEventListener('click', interactWithTarget);
     exit?.removeEventListener('click', handleExit);
+    archiveToggle?.removeEventListener('click', handleArchiveToggle);
     cipherButtons.forEach(button => button.removeEventListener('click', handleCipherClick));
     clearCipher?.removeEventListener('click', clearCipherInput);
-    touchMoveButtons.forEach(button => button.removeEventListener('pointerdown', pressTouchMove));
-    for (const code of heldTouchKeys) window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
-    heldTouchKeys.clear();
     scene.remove(coreGroup); scene.remove(noteGroup);
     noteTrail.forEach(flake => scene.remove(flake));
     for (const group of groups.values()) scene.remove(group);
@@ -678,37 +685,21 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     routeMarkers.forEach(disposeObject);
   }
   function handleExit() { post('exit'); }
+  function handleArchiveToggle() {
+    archive?.classList.toggle('is-mobile-open');
+    updateLabels();
+  }
   const cipherButtons = [...document.querySelectorAll('[data-cipher-dir]')];
   const clearCipher = document.querySelector('#ice-cipher-clear');
   function handleCipherClick(event) { chooseCipher(event.currentTarget.dataset.cipherDir); }
   function clearCipherInput() { cipherInput = []; cipherFeedback = ''; updateCipherInput(); }
   cipherButtons.forEach(button => button.addEventListener('click', handleCipherClick));
   clearCipher?.addEventListener('click', clearCipherInput);
-  const touchMoveButtons = [...document.querySelectorAll('.ice-touch-dpad [data-move]')];
-  const heldTouchKeys = new Set();
-  function releaseTouchMove(button) {
-    const code = button.dataset.move;
-    if (!heldTouchKeys.delete(code)) return;
-    button.classList.remove('is-pressed');
-    window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
-  }
-  function pressTouchMove(event) {
-    const button = event.currentTarget;
-    event.preventDefault();
-    const code = button.dataset.move;
-    heldTouchKeys.add(code); button.classList.add('is-pressed');
-    window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
-    const release = () => releaseTouchMove(button);
-    button.addEventListener('pointerup', release, { once: true });
-    button.addEventListener('pointercancel', release, { once: true });
-    button.addEventListener('lostpointercapture', release, { once: true });
-    button.setPointerCapture?.(event.pointerId);
-  }
-  touchMoveButtons.forEach(button => button.addEventListener('pointerdown', pressTouchMove));
   window.addEventListener('keydown', handleKey);
   canvas.addEventListener('click', handleClick);
   interact?.addEventListener('click', interactWithTarget);
   exit?.addEventListener('click', handleExit);
+  archiveToggle?.addEventListener('click', handleArchiveToggle);
   updateLabels(); updatePrompt();
   return { setInit, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose };
 }

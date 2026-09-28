@@ -2,6 +2,7 @@ import './style.css'
 import { firstScene, memoryNames, story, type Language, type Line, type MemoryId, type Scene } from './story'
 import { chapterTwoStatus, mountChapterTwo } from './chapter-two'
 import { characterVoiceSequence } from './character-voice'
+import { enterAppFullscreen, isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
 
 type LogEntry = { sceneId: string; index: number }
 type GameState = {
@@ -551,21 +552,16 @@ function updateFullscreenButton() {
   const button = document.querySelector<HTMLButtonElement>('#fullscreen')
   if (!button) return
   const lang = state?.language ?? preferredLanguage
-  button.textContent = document.fullscreenElement ? ui[lang].exitFullscreen : ui[lang].fullscreen
+  button.textContent = isAppFullscreen(root) ? ui[lang].exitFullscreen : ui[lang].fullscreen
+  button.setAttribute('aria-pressed', String(isAppFullscreen(root)))
 }
 
 function enterFullscreen() {
-  if (document.fullscreenElement || !document.fullscreenEnabled) return
-  void root.requestFullscreen().catch(error => console.warn('Fullscreen unavailable:', error))
+  void enterAppFullscreen(root)
 }
 
 async function toggleFullscreen() {
-  try {
-    if (document.fullscreenElement) await document.exitFullscreen()
-    else await root.requestFullscreen()
-  } catch (error) {
-    console.warn('Fullscreen unavailable:', error)
-  }
+  await toggleAppFullscreen(root)
   updateFullscreenButton()
 }
 
@@ -849,6 +845,7 @@ window.addEventListener('languagechange', () => {
   render()
 })
 document.addEventListener('fullscreenchange', updateFullscreenButton)
+window.addEventListener('appimmersivechange', updateFullscreenButton)
 window.addEventListener('resize', () => {
   const stage = root.querySelector<HTMLElement>('#stage')
   if (stage) positionObjectHotspots(stage)

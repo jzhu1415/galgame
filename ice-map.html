@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#132e48" />
     <meta name="description" content="进入冰封镜馆，探索池厅式镜面空间并找回三条线索。" />
     <title>冰封镜馆 · 第二章</title>
@@ -217,7 +217,7 @@
         font: 400 1rem/1 Georgia, serif; letter-spacing: -.08em; pointer-events: auto; touch-action: none;
       }
       .touch-stick-zone {
-        --stick-x: 0px; --stick-y: 0px; --stick-angle: 0deg; --stick-scale: .34; --stick-opacity: .055;
+        --stick-x: 0px; --stick-y: 0px; --stick-angle: 0deg; --stick-scale: .34; --stick-opacity: .34;
         --stick-outer-x: calc(max(2.4rem, calc(env(safe-area-inset-left) + 4vw)) + 5.375rem);
         --stick-outer-y: calc(max(2rem, calc(env(safe-area-inset-bottom) + 4vh)) + 5.375rem);
         /* Halfway between the former edge placement and the inward placement. */
@@ -267,23 +267,6 @@
       .touch-rise .touch-action-icon { visibility: hidden; }
       .touch-action.is-pressed { transform: scale(1.13); border-color: rgba(251, 255, 254, .18); color: rgba(252, 255, 254, .5); }
       .touch-dive { display: none; }
-      .ice-touch-dpad {
-        position: absolute; right: max(1rem, calc(env(safe-area-inset-right) + .7rem)); top: 48%;
-        display: grid; grid-template-columns: repeat(3, 3rem); grid-template-rows: repeat(2, 3rem); gap: .42rem;
-        transform: translateY(-50%); pointer-events: auto; touch-action: none;
-      }
-      .ice-touch-dpad button {
-        display: grid; place-items: center; min-width: 2.8rem; min-height: 2.8rem; padding: 0;
-        border: 1px solid rgba(227, 247, 250, .2); border-radius: .72rem; color: rgba(239, 251, 253, .72);
-        background: rgba(8, 29, 42, .28); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
-        font: 600 1.1rem/1 Georgia, serif; box-shadow: inset 0 1px rgba(255,255,255,.12);
-      }
-      .ice-touch-dpad button:active, .ice-touch-dpad button.is-pressed { color: #fff; border-color: rgba(212, 246, 252, .7); background: rgba(96, 165, 181, .48); }
-      .ice-touch-dpad button:focus-visible { outline: 2px solid #d9f8ff; outline-offset: 2px; }
-      .ice-touch-dpad [data-move="KeyW"] { grid-column: 2; grid-row: 1; }
-      .ice-touch-dpad [data-move="KeyA"] { grid-column: 1; grid-row: 2; }
-      .ice-touch-dpad [data-move="KeyS"] { grid-column: 2; grid-row: 2; }
-      .ice-touch-dpad [data-move="KeyD"] { grid-column: 3; grid-row: 2; }
       #touch-hud.is-swimming .touch-dive { display: grid; }
       #touch-hud.is-swimming .touch-rise .touch-action-icon { visibility: visible; }
       @media (max-width: 520px) {
@@ -334,12 +317,6 @@
         <button class="touch-action touch-dive" id="touch-dive" type="button" data-i18n-aria-label="touch.dive" aria-label="下潜">
           <span class="touch-action-icon" aria-hidden="true">↓</span>
         </button>
-      </div>
-      <div class="ice-touch-dpad" aria-label="方向控制">
-        <button type="button" data-move="KeyW" aria-label="向前">↑</button>
-        <button type="button" data-move="KeyA" aria-label="向左">←</button>
-        <button type="button" data-move="KeyS" aria-label="向后">↓</button>
-        <button type="button" data-move="KeyD" aria-label="向右">→</button>
       </div>
     </div>
     <section id="reference-entry" class="is-hidden" aria-label="进入冰封镜馆">
@@ -495,6 +472,7 @@
           <span class="ice-map-clue" data-ice-clue="echo" role="listitem">声纹 / 录音</span>
         </div>
       </div>
+      <button class="ice-archive-toggle" id="ice-archive-toggle" type="button" aria-controls="ice-archive" aria-expanded="false">线索</button>
       <aside class="ice-nav-map" aria-label="镜馆地图">
         <div class="ice-nav-head"><strong id="ice-nav-title">镜馆地图</strong><span>N ↑</span></div>
         <canvas id="ice-nav-canvas" width="240" height="236" aria-hidden="true"></canvas>

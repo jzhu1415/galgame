@@ -2344,7 +2344,7 @@ function resetTouchStickVisual() {
   touchStickZone.style.setProperty('--stick-x', '0px');
   touchStickZone.style.setProperty('--stick-y', '0px');
   touchStickZone.style.setProperty('--stick-scale', '.34');
-  touchStickZone.style.setProperty('--stick-opacity', '.055');
+  touchStickZone.style.setProperty('--stick-opacity', '.34');
 }
 
 function resetTouchInputs() {
@@ -2382,7 +2382,7 @@ function updateTouchStick(clientX, clientY) {
   touchStickZone.style.setProperty('--stick-y', `${(directionY * coreTravel).toFixed(1)}px`);
   touchStickZone.style.setProperty('--stick-angle', `${THREE.MathUtils.radToDeg(Math.atan2(dy, dx)) + 90}deg`);
   touchStickZone.style.setProperty('--stick-scale', (0.38 + rawStrength * 0.68).toFixed(3));
-  touchStickZone.style.setProperty('--stick-opacity', (0.065 + rawStrength * 0.065).toFixed(3));
+  touchStickZone.style.setProperty('--stick-opacity', (0.34 + rawStrength * 0.28).toFixed(3));
 }
 
 function startTouchStick(event) {

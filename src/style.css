@@ -30,11 +30,13 @@
 .object-return:hover,.object-return:focus-visible{border-color:#ffe2ae;background:#31434a}
 @media(max-width:800px){.object-hotspot-label{font-size:.68rem;top:-25px}.object-controls{font-size:.68rem;gap:8px}.object-return{font-size:.68rem}}
 
-#app:fullscreen{width:100vw;height:100dvh;overflow:auto;background:#111923}
-#app:fullscreen .game{width:100%;height:100dvh;min-height:0;overflow:hidden}
-#app:fullscreen .game .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
-#app:fullscreen .game .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
-#app:fullscreen .game .chapter-line,#app:fullscreen .game .stage-foot{flex:none}
+html.immersive-active,html.immersive-active body{overflow:hidden}
+#app:is(:fullscreen,.is-immersive){width:100vw;height:100dvh;overflow:auto;background:#111923}
+#app.is-immersive{position:fixed;inset:0;z-index:1000;overscroll-behavior:contain}
+#app:is(:fullscreen,.is-immersive) .game{width:100%;height:100dvh;min-height:0;overflow:hidden}
+#app:is(:fullscreen,.is-immersive) .game .game-layout{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px 8px}
+#app:is(:fullscreen,.is-immersive) .game .stage{width:100%;flex:1;min-height:0;height:auto;aspect-ratio:auto}
+#app:is(:fullscreen,.is-immersive) .game .chapter-line,#app:is(:fullscreen,.is-immersive) .game .stage-foot{flex:none}
 
 .route-dialog{width:min(760px,calc(100vw - 28px))}
 .routes-content{padding:18px 28px 28px;max-height:calc(82dvh - 89px);overflow:auto}
@@ -52,7 +54,7 @@
 .route-node.is-locked{opacity:.42;background:#17232a}
 .route-id{color:#e7c689;font-weight:700;font-size:.67rem;min-width:48px;letter-spacing:.07em}
 .route-state{color:#aabbb9;font-size:.65rem;margin-left:auto;white-space:nowrap}
-@media(max-width:600px){.routes-content{padding:16px}.ending-grid,.route-list{grid-template-columns:1fr}.route-dialog .dialog-head{padding:17px}.route-node{min-height:44px}#app:fullscreen .game .game-layout{padding:0}#app:fullscreen .game .stage-foot{padding:7px 12px}}
+@media(max-width:600px){.routes-content{padding:16px}.ending-grid,.route-list{grid-template-columns:1fr}.route-dialog .dialog-head{padding:17px}.route-node{min-height:44px}#app:is(:fullscreen,.is-immersive) .game .game-layout{padding:0}#app:is(:fullscreen,.is-immersive) .game .stage-foot{padding:7px 12px}}
 @media(max-width:480px){.game-tools{gap:3px}.game-tools .small-btn{padding:6px;font-size:.62rem;letter-spacing:0}.wordmark-btn{font-size:.53rem}.game-top{padding:8px 9px}}
 
 /* Branching story mind map */
@@ -130,3 +132,23 @@
 .chapter-select-top,.intro-top{gap:14px}
 @media(max-width:750px){.chapter-select-top,.intro-top{flex-wrap:wrap}.chapter-select-tools,.intro-tools{flex-wrap:wrap;justify-content:flex-end}.chapter-select-tools .small-btn,.intro-tools .small-btn{padding:8px 10px}}
 @media(max-width:480px){.chapter-select-top,.intro-top{align-items:flex-start}.chapter-select-tools,.intro-tools{width:100%;justify-content:flex-start}.chapter-select-tools .small-btn,.intro-tools .small-btn{min-height:40px;font-size:.7rem}}
+
+@media(max-width:700px){
+  .game{height:100dvh;min-height:0;overflow:hidden}
+  .game-top{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;height:auto;min-height:0;padding:max(7px,env(safe-area-inset-top)) 8px 5px}
+  .game-top .wordmark-btn{min-height:25px;padding:0;font-size:.59rem}
+  .game-tools{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:100%}
+  .game-tools .small-btn{min-width:0;min-height:38px;padding:5px 2px;font-size:.59rem;letter-spacing:0;white-space:nowrap}
+  .game-layout,#app:is(:fullscreen,.is-immersive) .game .game-layout{display:flex;flex:1;flex-direction:column;min-height:0;width:100%;padding:0}
+  .chapter-line{flex:none;padding:0 10px;margin:3px 0 5px}
+  .stage,#app:is(:fullscreen,.is-immersive) .game .stage{flex:1;min-height:0;height:auto;aspect-ratio:auto}
+  .stage-foot{display:none}
+  .dialogue-zone{max-height:min(68%,500px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:0 9px max(9px,env(safe-area-inset-bottom))}
+  .dialogue-box{min-height:0;padding:12px 13px 28px}
+  .dialogue-box p{font-size:clamp(.88rem,3.8vw,1rem);line-height:1.52}
+  .choices{gap:5px}
+  .choice{min-height:44px;padding:7px 9px}
+  .hud{top:8px;right:8px;left:8px;font-size:.59rem}
+  .hud>span{padding:5px 6px}
+}
+@media(max-width:380px){.game-tools .small-btn{font-size:.54rem}.chapter-select-heading h1{font-size:2.7rem}.intro h1{font-size:2.8rem}}
