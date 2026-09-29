@@ -95,3 +95,11 @@
 .ice-panel-menu button:hover{background:#24566d}
 @media(max-width:700px){.ice-top-tools{grid-template-columns:repeat(3,minmax(0,1fr))}.ice-top-action,.ice-restart,.ice-language{min-height:36px}}
 @media(max-width:380px){.ice-top-tools button{font-size:.56rem}.ice-top>span{display:none}.ice-fragment-top strong{font-size:1rem}}
+
+/* Keep translated actions legible at narrow widths. */
+.ice-fragment-dialogue button{max-width:100%;white-space:normal;text-align:left;gap:12px}
+.ice-memory-replays button{white-space:normal;text-align:left}
+@media(max-width:700px){
+  .ice-top-tools button{min-height:44px;white-space:normal;line-height:1.15;text-wrap:balance;font-size:.68rem;padding:5px 4px}
+  .ice-fragment-top strong{min-width:0;white-space:normal;text-wrap:balance}
+}

@@ -420,7 +420,7 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
   #ice-map-overlay{padding:max(.55rem,env(safe-area-inset-top)) max(.55rem,env(safe-area-inset-right)) max(.55rem,env(safe-area-inset-bottom)) max(.55rem,env(safe-area-inset-left))}
   .ice-map-heading{max-width:calc(100vw - 7.2rem);padding:.42rem .58rem}
   .ice-map-kicker,#ice-map-subtitle{display:none}
-  #ice-map-title{font-size:clamp(.95rem,4vw,1.18rem);white-space:nowrap}
+  #ice-map-title{font-size:clamp(.95rem,4vw,1.18rem);white-space:normal;line-height:1.12;text-wrap:balance}
   .ice-map-status{width:auto;max-width:52vw;margin-top:.25rem;padding:.32rem .55rem}
   .ice-map-status-label,.ice-map-clue-list{display:none}
   #ice-map-clues{font-size:.68rem;white-space:nowrap}

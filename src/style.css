@@ -161,3 +161,10 @@ html.immersive-active,html.immersive-active body{overflow:hidden}
   .hud>span{padding:5px 6px}
 }
 @media(max-width:380px){.game-tools .small-btn{font-size:.54rem}.chapter-select-heading h1{font-size:2.7rem}.intro h1{font-size:2.8rem}}
+
+/* Let longer English labels use the available button width instead of clipping. */
+.chapter-card strong{max-width:100%;white-space:normal;text-wrap:balance}
+html[lang="en"] .chapter-card.second strong{font-size:clamp(1.8rem,2.2vw,2.4rem);letter-spacing:.015em}
+@media(max-width:700px){
+  .game-tools .small-btn{min-height:44px;white-space:normal;line-height:1.15;text-wrap:balance}
+}
