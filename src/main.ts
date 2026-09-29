@@ -498,7 +498,7 @@ function renderChapterSelect() {
   const lang = preferredLanguage
   const status = chapterTwoStatus()
   root.innerHTML = `<div class="chapter-select" style="--cover:url('${imageUrl('P02')}')">
-    <header class="chapter-select-top"><span class="wordmark">NAIWA <span>·</span> ${lang === 'zh' ? '奶之救赎' : 'THE REDEMPTION'}</span><div class="chapter-select-tools"><button class="small-btn" id="routes-select" type="button">${esc(ui[lang].routes)}</button><button class="small-btn" id="save-entry" type="button" ${state ? '' : 'disabled'}>${esc(ui[lang].save)}</button><button class="small-btn" id="settings-entry" type="button">${esc(ui[lang].settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(ui[lang].gallery)}</button>${state ? `<button class="small-btn" id="replay-select" type="button">${esc(ui[lang].restart)}</button>` : ''}<button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${ui[lang].languageLabel}">${ui[lang].language}</button></div></header>
+    <header class="chapter-select-top"><span class="wordmark">NAIWA <span>·</span> ${lang === 'zh' ? '奶之救赎' : 'THE REDEMPTION'}</span><div class="chapter-select-tools"><button class="small-btn" id="routes-select" type="button">${esc(ui[lang].routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(ui[lang].settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(ui[lang].gallery)}</button>${state ? `<button class="small-btn" id="replay-select" type="button">${esc(ui[lang].restart)}</button>` : ''}<button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${ui[lang].languageLabel}">${ui[lang].language}</button></div></header>
     <main class="chapter-select-main"><div class="chapter-select-heading"><span>AN INTERACTIVE STORY / 2026</span><h1>${lang === 'zh' ? '奶之救赎' : 'naiwa'}</h1><p>${lang === 'zh' ? '选择章节，走进奶蛙的世界。' : 'Choose a chapter and step into naiwa’s world.'}</p></div>
       <div class="chapter-cards"><button class="chapter-card first" id="chapter-one" type="button"><span class="card-overline">CHAPTER 01 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '缘起' : 'Origin'}</strong><span class="card-description">${lang === 'zh' ? '雨夜相遇，走进迷雾游乐园，找回遗失的回忆。' : 'A rainy meeting leads into the mistbound fairground.'}</span><span class="card-action">${state ? ui[lang].continue : ui[lang].start} ↗</span></button>
       <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
@@ -507,7 +507,6 @@ function renderChapterSelect() {
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   root.querySelector('#routes-select')?.addEventListener('click', () => openModal('routes'))
-  root.querySelector('#save-entry')?.addEventListener('click', manualSave)
   root.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
   root.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
   root.querySelector('#replay-select')?.addEventListener('click', () => confirmRestart(() => { selectedChapter = 1; start() }))
@@ -522,7 +521,7 @@ function renderIntro() {
   const t = ui[preferredLanguage]
   root.innerHTML = `
     <div class="intro" style="--intro-image:url('${imageUrl('P02')}')">
-      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ORIGIN</button><div class="intro-tools"><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="save-entry" type="button" ${state ? '' : 'disabled'}>${esc(t.save)}</button><button class="small-btn" id="settings-entry" type="button">${esc(t.settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(t.gallery)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
+      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ORIGIN</button><div class="intro-tools"><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(t.settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(t.gallery)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
       <main class="intro-body">
         <div class="intro-kicker">A VISUAL NOVEL <span>✦</span> 01 / 01</div>
         <h1>${esc(t.title)}<small>${esc(t.subtitle)}</small></h1>
@@ -543,7 +542,6 @@ function renderIntro() {
   document.querySelector('#start')?.addEventListener('click', () => { if (!state) { enterFullscreen(); start() } else confirmRestart(() => { enterFullscreen(); start() }) })
   document.querySelector('#routes-intro')?.addEventListener('click', () => openModal('routes'))
   document.querySelector('#routes-intro-top')?.addEventListener('click', () => openModal('routes'))
-  document.querySelector('#save-entry')?.addEventListener('click', manualSave)
   document.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
   document.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
   updateFullscreenButton()
