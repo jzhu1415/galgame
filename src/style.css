@@ -69,7 +69,7 @@ html.immersive-active,html.immersive-active body{overflow:hidden}
 .map-viewport.is-dragging{cursor:grabbing}
 .map-viewport:focus-visible{outline:3px solid #f5cb82;outline-offset:2px}
 .map-scaled{position:relative;overflow:hidden}
-.mindmap{position:relative;width:1100px;height:2750px;transform-origin:top left;isolation:isolate;background:radial-gradient(ellipse at 50% 17%,#253845 0%,transparent 35%),radial-gradient(ellipse at 50% 68%,#253848 0%,transparent 38%),#101e28}
+.mindmap{position:relative;width:1100px;height:3600px;transform-origin:top left;isolation:isolate;background:radial-gradient(ellipse at 50% 17%,#253845 0%,transparent 35%),radial-gradient(ellipse at 50% 68%,#253848 0%,transparent 38%),#101e28}
 .map-grid{position:absolute;inset:0;pointer-events:none;opacity:.34;background-image:radial-gradient(#8fa3a1 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .map-lines{position:absolute;inset:0;z-index:1;pointer-events:none}
 .map-link{fill:none;stroke:#53676b;stroke-width:2.2;opacity:.68}
@@ -91,6 +91,15 @@ html.immersive-active,html.immersive-active body{overflow:hidden}
 .mind-return-mark{position:absolute;right:10px;top:8px;color:#a7d4cb;font-size:1rem}
 .route-dialog .ending-gallery{margin:22px 0 0}
 @media(max-width:600px){.route-dialog .routes-content{padding:14px;max-height:calc(90dvh - 72px)}.map-intro{align-items:flex-start;flex-direction:column;gap:10px}.map-viewport{height:53dvh}.route-dialog .dialog-head{padding:17px}.ending-grid{grid-template-columns:1fr}}
+
+.small-btn:disabled{opacity:.45;cursor:not-allowed}
+.game-tools .small-btn[aria-pressed="true"]{border-color:#f3c47a;background:#67502f;color:#fff1d5}
+.confirm-message{margin:0;padding:25px 28px 4px;line-height:1.7}
+.confirm-actions{display:flex;justify-content:flex-end;gap:10px;padding:22px 28px 28px}
+.confirm-actions button{min-width:100px}
+.gallery-content{padding:20px 28px 28px}
+.gallery-content>p{margin:0 0 16px;color:#e9c686}
+@media(max-width:800px){.game-tools{flex-wrap:wrap;justify-content:flex-end}.game-tools .small-btn{flex:0 0 auto}}
 
 /* First-layer exploration */
 .danger-hud.is-high{border-color:#d27d86;background:rgba(91,25,37,.76);color:#ffe2e2}

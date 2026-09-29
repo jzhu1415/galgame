@@ -3,14 +3,15 @@ import { mountPoolIceWorld, type IceClueId } from './pool-ice-world'
 import type { Language } from './story'
 import { characterVoiceSequence } from './character-voice'
 import { isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
+import { confirmInApp } from './ui-confirm'
 
 type Phase = 'hospital' | 'threshold' | 'map' | 'core' | 'ending'
 type FragmentId = 'footage' | 'shard' | 'echo'
-type ChapterSave = { version: 1; phase: Phase; line: number; clues: IceClueId[]; approach: 'chase' | 'restore' | 'comfort' | null; response?: 'trust' | 'question' | null; completed: boolean; pendingFragment: { id: FragmentId; line: number } | null }
+type ChapterSave = { version: 1; phase: Phase; line: number; clues: IceClueId[]; approach: 'chase' | 'restore' | 'comfort' | null; response?: 'trust' | 'question' | null; completed: boolean; pendingFragment: { id: FragmentId; line: number } | null; history: { phase: Exclude<Phase, 'map'>; line: number }[] }
 const KEY = 'naiwa-chapter-two-v1'
 const clues: IceClueId[] = ['footage', 'shard', 'echo', 'note', 'routeOne', 'route']
 const fragmentIds: FragmentId[] = ['footage', 'shard', 'echo']
-const blank = (): ChapterSave => ({ version: 1, phase: 'hospital', line: 0, clues: [], approach: null, response: null, completed: false, pendingFragment: null })
+const blank = (): ChapterSave => ({ version: 1, phase: 'hospital', line: 0, clues: [], approach: null, response: null, completed: false, pendingFragment: null, history: [] })
 function load(): ChapterSave {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<ChapterSave> | null
@@ -20,12 +21,13 @@ function load(): ChapterSave {
     const pending = raw.pendingFragment
     const pendingFragment = pending && fragmentIds.includes(pending.id) && found.includes(pending.id)
       ? { id: pending.id, line: Math.max(0, Number(pending.line) || 0) } : null
-    return { version: 1, phase: raw.phase!, line: Math.max(0, Number(raw.line) || 0), clues: found, approach: raw.approach === 'chase' || raw.approach === 'restore' || raw.approach === 'comfort' ? raw.approach : null, response: raw.response === 'trust' || raw.response === 'question' ? raw.response : null, completed: !!raw.completed, pendingFragment }
+    const history = Array.isArray(raw.history) ? raw.history.filter((entry): entry is ChapterSave['history'][number] => !!entry && ['hospital', 'threshold', 'core', 'ending'].includes(entry.phase) && Number.isInteger(entry.line)).slice(-100) : []
+    return { version: 1, phase: raw.phase!, line: Math.max(0, Number(raw.line) || 0), clues: found, approach: raw.approach === 'chase' || raw.approach === 'restore' || raw.approach === 'comfort' ? raw.approach : null, response: raw.response === 'trust' || raw.response === 'question' ? raw.response : null, completed: !!raw.completed, pendingFragment, history }
   } catch { return blank() }
 }
 const copy = {
   zh: {
-    back: '返回章节', chapter: '第二章', title: '冰镜疑凶', subtitle: '第二层 · 冰封镜馆', next: '继续', enter: '进入冰封镜馆', resume: '继续探索', restart: '重玩第二章', restartConfirm: '重新开始第二章？本章线索和进度将被清除。', fullscreen: '进入全屏', exitFullscreen: '退出全屏', routes: '剧情树', routesTitle: '冰镜剧情树', close: '关闭', locked: '尚未抵达', visited: '已抵达',
+    back: '返回章节', chapter: '第二章', title: '冰镜疑凶', subtitle: '第二层 · 冰封镜馆', next: '继续', enter: '进入冰封镜馆', resume: '继续探索', restart: '重玩第二章', restartConfirm: '重新开始第二章？本章线索和进度将被清除。', fullscreen: '进入全屏', exitFullscreen: '退出全屏', routes: '剧情树', routesTitle: '冰镜剧情树', close: '关闭', locked: '尚未抵达', visited: '已抵达', log: '回顾', menu: '菜单', routeHint: '点击已抵达的节点返回该段剧情。',
     map: '探索镜馆', clues: '探索记录', clueNames: { footage: '残缺监控', shard: '冰蓝晶片', echo: '被封住的声音', note: '密码纸条', routeOne: '第一段路线', route: '第二段路线' },
     hospital: [
       ['旁白', '从游乐园回来，奶蛙的心跳终于稳了一点。我在病床边睡着过一次，醒来时手还攥着他的被角。窗外的雨下了一整夜。'],
@@ -78,7 +80,7 @@ const copy = {
     complete: '第二章 · 完', completeNote: '冰镜已融，真相仍藏在下一层。', choose: '选择进入镜馆的方式', mapHint: '看左下角地图：先走「前左前左」，再解第二枚碎片的密码。', skipToMap: '返回镜馆', voicePlay: '播放奶鼠原声片段', voiceStop: '停止播放', voiceError: '音频暂时无法播放', characterVoicePlay: '播放奶霸声音', characterVoiceStop: '跳过声音', narratorVoicePlay: '播放旁白',
   },
   en: {
-    back: 'Chapters', chapter: 'Chapter two', title: 'The Culprit in the Ice', subtitle: 'Layer two · The Frozen Mirror Hall', next: 'Continue', enter: 'Enter the mirror hall', resume: 'Resume exploration', restart: 'Replay chapter two', restartConfirm: 'Restart chapter two? This chapter’s clues and progress will be cleared.', fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen', routes: 'Story tree', routesTitle: 'Frozen mirror story tree', close: 'Close', locked: 'Not reached', visited: 'Reached',
+    back: 'Chapters', chapter: 'Chapter two', title: 'The Culprit in the Ice', subtitle: 'Layer two · The Frozen Mirror Hall', next: 'Continue', enter: 'Enter the mirror hall', resume: 'Resume exploration', restart: 'Replay chapter two', restartConfirm: 'Restart chapter two? This chapter’s clues and progress will be cleared.', fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen', routes: 'Story tree', routesTitle: 'Frozen mirror story tree', close: 'Close', locked: 'Not reached', visited: 'Reached', log: 'History', menu: 'Menu', routeHint: 'Select a reached node to revisit that part of the story.',
     map: 'Explore the hall', clues: 'Clues', clueNames: { footage: 'Broken footage', shard: 'Blue crystal', echo: 'The sealed voice', note: 'Cipher note', routeOne: 'First route', route: 'Second route' },
     hospital: [
       ['Narration', 'Naiwa’s pulse had steadied since the fairground. I fell asleep beside his bed once and woke with a fistful of blanket in my hand. Rain kept tapping at the window.'],
@@ -181,7 +183,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
   let mapController: ReturnType<typeof mountPoolIceWorld> | null = null
   let mouseVoice: HTMLAudioElement | null = null
   let characterVoice: HTMLAudioElement | null = null
-  let routesOpen = false
+  let panelOpen = false
   const persist = () => localStorage.setItem(KEY, JSON.stringify(save))
   const clearMap = () => { mapController?.dispose(); mapController = null }
   const stopVoice = () => { if (mouseVoice) { mouseVoice.pause(); mouseVoice.onended = null; mouseVoice.currentTime = 0; mouseVoice = null } }
@@ -216,15 +218,22 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     clearMap()
     stopVoice()
     stopCharacterVoice()
+    panelOpen = false
     const t = copy[language]
     const isMap = save.phase === 'map'
     const lines = isMap ? [] : t[save.phase]
     const line = lines?.[Math.min(save.line, Math.max(0, lines.length - 1))]
+    if (!isMap && line) {
+      const entry = { phase: save.phase as Exclude<Phase, 'map'>, line: save.line }
+      const last = save.history.at(-1)
+      if (!last || last.phase !== entry.phase || last.line !== entry.line) { save.history.push(entry); save.history = save.history.slice(-100); persist() }
+    }
     const lineText = save.phase === 'core' && save.line === 1 && save.approach ? t.approachLines[save.approach] : save.phase === 'ending' && save.line === 0 && save.response ? t.responseLines[save.response] : line?.[1] ?? ''
-    const showVoice = save.phase === 'core' && (save.line === 0 || save.line === 8)
+    const audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
+    const showVoice = audioEnabled && save.phase === 'core' && (save.line === 0 || save.line === 8)
     const showCharacterVoice = line?.[0] === '奶霸' || line?.[0] === 'Naiba'
     const showNarrationVoice = line?.[0] === '旁白' || line?.[0] === 'Narration'
-    const showSpokenVoice = showCharacterVoice || showNarrationVoice
+    const showSpokenVoice = audioEnabled && (showCharacterVoice || showNarrationVoice)
     const artByPhase: Record<Phase, string[]> = {
       hospital: ['chapter-02-hospital', 'chapter-02-journal', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-hospital'],
       threshold: ['chapter-02-elevator', 'chapter-02-ice-hall', 'chapter-02-elevator', 'chapter-02-ice-hall', 'chapter-02-ice-hall'],
@@ -235,9 +244,9 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     const art = isMap ? 'chapter-02-ice-hall' : artByPhase[save.phase][Math.min(save.line, artByPhase[save.phase].length - 1)]
     const rank: Record<Phase, number> = { hospital: 0, threshold: 1, map: 2, core: 3, ending: 4 }
     const reached = (phase: Phase) => save.completed || rank[save.phase] >= rank[phase]
-    const node = (phase: Phase, title: string, detail = '') => `<div class="ice-route-node ${reached(phase) ? 'is-reached' : 'is-locked'}"><span class="ice-route-dot">${reached(phase) ? '✓' : '·'}</span><div><strong>${title}</strong>${detail ? `<small>${detail}</small>` : ''}</div><em>${reached(phase) ? t.visited : t.locked}</em></div>`
+    const node = (phase: Phase, title: string, detail = '') => `<button type="button" data-ice-route="${phase}" class="ice-route-node ${reached(phase) ? 'is-reached' : 'is-locked'}" ${reached(phase) ? '' : 'disabled'}><span class="ice-route-dot">${reached(phase) ? '✓' : '·'}</span><span class="ice-route-description"><strong>${title}</strong>${detail ? `<small>${detail}</small>` : ''}</span><em>${reached(phase) ? t.visited : t.locked}</em></button>`
     const routeTree = `<div class="ice-route-tree"><div class="ice-route-spine"><span class="ice-route-kicker">01</span><div class="ice-route-branches"><div class="ice-route-branch">${node('hospital', language === 'zh' ? '医院病房' : 'Hospital ward', language === 'zh' ? '日记残页 · 冷藏电梯' : 'Journal page · cold lift')}<div class="ice-route-link"></div>${node('threshold', language === 'zh' ? '镜馆入口' : 'Hall entrance', language === 'zh' ? '选择进入方式' : 'Choose an approach')}<div class="ice-route-link"></div><div class="ice-route-choice-title">${language === 'zh' ? '三种进入方式' : 'Three approaches'}</div><div class="ice-route-choice-grid">${t.approaches.map(([name, desc], i) => `<div class="ice-route-choice ${save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-selected' : ''} ${save.approach ? (save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-reached' : 'is-locked') : reached('map') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.approach === (['chase','restore','comfort'] as const)[i] ? `<em>${language === 'zh' ? '当前路线' : 'Selected'}</em>` : ''}</div>`).join('')}</div><div class="ice-route-link"></div>${node('map', language === 'zh' ? '镜馆探索' : 'Hall exploration', `${t.clues} ${save.clues.length}/6 · ${save.clues.map(id => t.clueNames[id]).join(' / ') || (language === 'zh' ? '尚无线索' : 'No clues yet')}`)}<div class="ice-route-link"></div>${node('core', language === 'zh' ? '镜心对质' : 'Confrontation', language === 'zh' ? '三段记忆与路线合流' : 'Memories and route converge')}<div class="ice-route-choice-grid ice-response-branches">${t.responses.map(([name, desc], i) => { const id = (['trust','question'] as const)[i]; return `<div class="ice-route-choice ${save.response === id ? 'is-selected is-reached' : reached('ending') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.response === id ? `<em>${language === 'zh' ? '当前结局' : 'Selected'}</em>` : ''}</div>` }).join('')}</div><div class="ice-route-link"></div>${node('ending', language === 'zh' ? '冰镜结局' : 'The thawing', language === 'zh' ? '通往第三层' : 'A path to layer three')}</div></div></div>`
-    root.innerHTML = `<div class="chapter-two ${isMap ? 'is-map' : ''}"><header class="ice-top"><button class="ice-back" id="ice-back" type="button">← ${t.back}</button><span>NAIWA <i>✦</i> ${t.chapter}</span><div class="ice-top-tools"><button class="ice-restart" id="ice-restart" type="button">${t.restart}</button><button class="ice-top-action" id="ice-routes" type="button">⌘ ${t.routes}</button><button class="ice-top-action ice-fullscreen" id="ice-fullscreen" type="button" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen}</button><button class="ice-language" id="ice-language" type="button">${language === 'zh' ? 'EN' : '中文'}</button></div></header><main class="ice-layout"><div class="ice-heading"><span>${t.chapter.toUpperCase()} / 02</span><h1>${t.title}</h1><p>${t.subtitle}</p></div>${isMap ? `<div class="ice-world" id="ice-world"></div><div class="ice-map-foot"><span>${t.mapHint}</span><strong>${t.clues} ${save.clues.length}/6</strong></div>` : `<section class="ice-narrative" style="--ice-art:url('/images/${art}.webp')"><div class="ice-atmosphere" aria-hidden="true"></div><div class="ice-copy"><div class="ice-index">${String(save.line + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</div><div class="ice-speaker">${line?.[0] ?? ''}</div><p>${lineText}</p>${showVoice ? `<button class="ice-voice" id="ice-voice" type="button">♪ ${t.voicePlay}</button>` : ''}${showSpokenVoice ? `<button class="ice-voice" id="ice-character-voice" type="button">♪ ${t.characterVoiceStop}</button>` : ''}${save.phase === 'threshold' && save.line === lines.length - 1 ? `<div class="ice-approaches" role="group" aria-label="${t.choose}">${t.approaches.map(([name, description], i) => `<button data-approach="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'core' && save.line === lines.length - 1 ? `<div class="ice-approaches ice-response-options" role="group" aria-label="${t.choose}">${t.responses.map(([name, description], i) => `<button data-response="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'ending' && save.line === lines.length - 1 ? `<div class="ice-end"><strong>${t.complete}</strong><span>${t.completeNote}</span><button id="ice-finish" type="button">${t.back} →</button></div>` : `<button class="ice-next" id="ice-next" type="button">${save.phase === 'threshold' ? t.enter : t.next} <span>↗</span></button>`}</div></section>`}${routesOpen ? `<div class="ice-routes-scrim" id="ice-routes-scrim"><section class="ice-routes-dialog" role="dialog" aria-modal="true" aria-labelledby="ice-routes-title"><header><div><span>NAIWA / 02</span><h2 id="ice-routes-title">${t.routesTitle}</h2></div><button id="ice-routes-close" type="button" aria-label="${t.close}">×</button></header>${routeTree}</section></div>` : ''}</main></div>`
+    root.innerHTML = `<div class="chapter-two ${isMap ? 'is-map' : ''}"><header class="ice-top"><button class="ice-back" id="ice-back" type="button">← ${t.back}</button><span>NAIWA <i>✦</i> ${t.chapter}</span><div class="ice-top-tools"><button class="ice-restart" id="ice-restart" type="button">${t.restart}</button><button class="ice-top-action" id="ice-log" type="button">${t.log}</button><button class="ice-top-action" id="ice-routes" type="button">⌘ ${t.routes}</button><button class="ice-top-action" id="ice-menu" type="button">${t.menu}</button><button class="ice-top-action ice-fullscreen" id="ice-fullscreen" type="button" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen}</button><button class="ice-language" id="ice-language" type="button">${language === 'zh' ? 'EN' : 'ZH'}</button></div></header><main class="ice-layout"><div class="ice-heading"><span>${t.chapter.toUpperCase()} / 02</span><h1>${t.title}</h1><p>${t.subtitle}</p></div>${isMap ? `<div class="ice-world" id="ice-world"></div><div class="ice-map-foot"><span>${t.mapHint}</span><strong>${t.clues} ${save.clues.length}/6</strong></div>` : `<section class="ice-narrative" style="--ice-art:url('/images/${art}.webp')"><div class="ice-atmosphere" aria-hidden="true"></div><div class="ice-copy"><div class="ice-index">${String(save.line + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</div><div class="ice-speaker">${line?.[0] ?? ''}</div><p>${lineText}</p>${showVoice ? `<button class="ice-voice" id="ice-voice" type="button">♪ ${t.voicePlay}</button>` : ''}${showSpokenVoice ? `<button class="ice-voice" id="ice-character-voice" type="button">♪ ${t.characterVoiceStop}</button>` : ''}${save.phase === 'threshold' && save.line === lines.length - 1 ? `<div class="ice-approaches" role="group" aria-label="${t.choose}">${t.approaches.map(([name, description], i) => `<button data-approach="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'core' && save.line === lines.length - 1 ? `<div class="ice-approaches ice-response-options" role="group" aria-label="${t.choose}">${t.responses.map(([name, description], i) => `<button data-response="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'ending' && save.line === lines.length - 1 ? `<div class="ice-end"><strong>${t.complete}</strong><span>${t.completeNote}</span><button id="ice-finish" type="button">${t.back} →</button></div>` : `<button class="ice-next" id="ice-next" type="button">${save.phase === 'threshold' ? t.enter : t.next} <span>↗</span></button>`}</div></section>`}</main></div>`
     if (isMap) {
       root.querySelector('.ice-map-foot strong')?.insertAdjacentHTML('beforebegin', `<details class="ice-memory-replays"><summary>${language === 'zh' ? '回看碎片记忆' : 'Replay memories'}</summary><div>${fragmentIds.map(id => `<button type="button" data-replay-fragment="${id}" ${save.clues.includes(id) ? '' : 'disabled'}>${t.clueNames[id]}</button>`).join('')}</div></details>`)
       root.querySelectorAll<HTMLButtonElement>('[data-replay-fragment]').forEach(button => button.addEventListener('click', () => {
@@ -249,7 +258,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
         renderFragment()
       }))
     }
-    if (showSpokenVoice && !routesOpen) {
+    if (showSpokenVoice) {
       const longLine = (lineText.match(/\p{Script=Han}/gu)?.length ?? 0) >= 20 || lineText.length >= 80
       const variant = save.phase === 'core' && save.line === 1 ? save.approach : save.phase === 'ending' && save.line === 0 ? save.response : null
       const narrationUrl = `/audio/tts/narration-02-${save.phase}-${save.line}${variant ? `-${variant}` : ''}-${language}.mp3`
@@ -281,23 +290,48 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       })
       play()
     }
+    const restartChapter = () => { stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(); render() }
+    const askRestart = () => confirmInApp(root, t.restartConfirm, language, restartChapter)
+    const closePanel = () => { panelOpen = false; root.querySelector('#ice-routes-scrim')?.remove(); mapController?.setStoryPaused(!!save.pendingFragment) }
+    const openPanel = (kind: 'routes' | 'log' | 'menu') => {
+      if (panelOpen) closePanel()
+      panelOpen = true
+      stopVoice(); stopCharacterVoice()
+      mapController?.setStoryPaused(true)
+      const title = kind === 'routes' ? t.routesTitle : kind === 'log' ? t.log : t.menu
+      const content = kind === 'routes' ? `<p class="ice-panel-hint">${t.routeHint}</p>${routeTree}` : kind === 'log'
+        ? `<div class="ice-history-list">${save.history.length ? save.history.map(entry => { const item = t[entry.phase][entry.line]; return item ? `<article><small>${t.chapter} · ${entry.phase}</small><strong>${item[0]}</strong><p>${item[1]}</p></article>` : '' }).join('') : `<p>${language === 'zh' ? '还没有可回顾的对话。' : 'No dialogue to review yet.'}</p>`}</div>`
+        : `<div class="ice-panel-menu"><button type="button" data-panel-action="continue">${t.next}</button><button type="button" data-panel-action="log">${t.log}</button><button type="button" data-panel-action="routes">${t.routes}</button><button type="button" data-panel-action="restart">${t.restart}</button><button type="button" data-panel-action="chapters">${t.back}</button></div>`
+      root.querySelector('.ice-layout')?.insertAdjacentHTML('beforeend', `<div class="ice-routes-scrim" id="ice-routes-scrim"><section class="ice-routes-dialog" role="dialog" aria-modal="true" aria-labelledby="ice-routes-title"><header><div><span>NAIWA / 02</span><h2 id="ice-routes-title">${title}</h2></div><button id="ice-routes-close" type="button" aria-label="${t.close}">×</button></header>${content}</section></div>`)
+      root.querySelector('#ice-routes-close')?.addEventListener('click', closePanel)
+      root.querySelector('#ice-routes-scrim')?.addEventListener('click', event => { if (event.target === event.currentTarget) closePanel() })
+      root.querySelectorAll<HTMLButtonElement>('[data-ice-route]').forEach(button => button.addEventListener('click', () => {
+        const phase = button.dataset.iceRoute as Phase
+        if (!reached(phase)) return
+        closePanel()
+        save.phase = phase; save.line = 0; save.pendingFragment = null
+        persist(); render()
+      }))
+      root.querySelectorAll<HTMLButtonElement>('[data-panel-action]').forEach(button => button.addEventListener('click', () => {
+        const action = button.dataset.panelAction
+        if (action === 'continue') closePanel()
+        else if (action === 'restart') { closePanel(); askRestart() }
+        else if (action === 'chapters') { closePanel(); onBack(language) }
+        else if (action === 'routes' || action === 'log') openPanel(action)
+      }))
+    }
     root.querySelector('#ice-back')?.addEventListener('click', () => { stopVoice(); stopCharacterVoice(); clearMap(); onBack(language) })
-    root.querySelector('#ice-restart')?.addEventListener('click', () => { if (window.confirm(t.restartConfirm)) { stopVoice(); clearMap(); save = blank(); persist(); render() } })
-    const closeRoutes = () => { routesOpen = false; root.querySelector('#ice-routes-scrim')?.remove() }
-    root.querySelector('#ice-routes')?.addEventListener('click', () => {
-      if (routesOpen) return
-      routesOpen = true
-      root.querySelector('.ice-layout')?.insertAdjacentHTML('beforeend', `<div class="ice-routes-scrim" id="ice-routes-scrim"><section class="ice-routes-dialog" role="dialog" aria-modal="true" aria-labelledby="ice-routes-title"><header><div><span>NAIWA / 02</span><h2 id="ice-routes-title">${t.routesTitle}</h2></div><button id="ice-routes-close" type="button" aria-label="${t.close}">×</button></header>${routeTree}</section></div>`)
-      root.querySelector('#ice-routes-close')?.addEventListener('click', closeRoutes)
-      root.querySelector('#ice-routes-scrim')?.addEventListener('click', event => { if (event.target === event.currentTarget) closeRoutes() })
-    })
+    root.querySelector('#ice-restart')?.addEventListener('click', askRestart)
+    root.querySelector('#ice-routes')?.addEventListener('click', () => openPanel('routes'))
+    root.querySelector('#ice-log')?.addEventListener('click', () => openPanel('log'))
+    root.querySelector('#ice-menu')?.addEventListener('click', () => openPanel('menu'))
     root.querySelector('#ice-fullscreen')?.addEventListener('click', async () => {
       const target = root.ownerDocument.getElementById('app') ?? root
       await toggleAppFullscreen(target)
       updateFullscreenLabel()
     })
     const mouseButton = root.querySelector<HTMLButtonElement>('#ice-voice')
-    if (mouseButton && !routesOpen) {
+    if (mouseButton) {
       const audio = new Audio('/audio/second-plane-mouse-line.m4a')
       audio.preload = 'auto'
       mouseVoice = audio
