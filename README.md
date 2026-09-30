@@ -1,6 +1,36 @@
 # 奶之救赎 · naiwa
 
-以奶蛙为中心的中英双语网页 Galgame。玩家从雨夜相遇开始，通过选择建立关系，并进入奶蛙精神世界的第一层“迷雾游乐园”。现实中的奶蛙开朗、真诚；第一层碎片承载它被抛弃的恐惧。
+一场雨夜的相遇，一段逐渐靠近的关系，和一个等待被找回的内心世界。**《奶之救赎》**是一款中英双语网页视觉小说，将恋爱日常、分支选择和探索解谜串成一段关于信任与记忆的故事。
+
+**[在线试玩](https://galgame-ashy.vercel.app)** · [English overview](#english-overview) · [本地运行](#运行)
+
+![奶之救赎场景插画](public/images/P02.webp)
+
+## 故事与玩法
+
+第一章 **《缘起》**从雨夜遇见奶蛙开始。玩家经历相处与约会，再走进迷雾游乐园，寻找散落的回忆。你的选择会影响关系、精神力和最终抵达的结局。
+
+第二章 **《冰镜疑凶》**接续医院里的异样线索。穿过冰封的镜馆，解读纸条上的密码，沿导航寻找镜片与物证，让每一块碎片中的记忆补上真相的一角。
+
+- **双语剧情**：中文与英文可随时切换，保留当前剧情位置。
+- **分支与回顾**：剧情树记录已解锁节点，可回看对话、重玩章节与探索不同结局。
+- **3D 镜馆**：基于 Three.js 的第一人称探索，结合小地图、路线密码和拾取后的碎片剧情。
+- **插画与声音**：场景 CG、角色录音，以及中英文主角与旁白语音。
+- **桌面与触屏**：支持键鼠、触屏摇杆、全屏显示和浏览器本地存档。
+
+项目持续开发中，目前可游玩前两章；后续位面的故事仍在扩展。
+
+## English overview
+
+**naiwa — The Redemption** is a bilingual browser visual novel about trust, memory, and finding a way back to someone you love. A meeting on a rainy night grows into a relationship, then leads into Naiwa’s inner world.
+
+In **Chapter One: Origin**, follow the couple’s everyday moments and search a mistbound fairground for lost memories. In **Chapter Two: The Culprit in the Ice**, explore a frozen mirror hall, decipher route clues, and uncover the memories held inside each fragment.
+
+The game includes branching choices, a story map, dialogue history, illustrated scenes, Chinese and English voice tracks, and a Three.js exploration level. Progress is saved locally in your browser. Desktop and touch controls are supported.
+
+**[Play in your browser](https://galgame-ashy.vercel.app)**. The first two chapters are available; the project is still in development.
+
+Built with **TypeScript, Vite, and Three.js**.
 
 ## 运行
 
@@ -16,8 +46,8 @@ npm run dev
 ## 游玩
 
 - 首页可选第一章《缘起》或第二章《冰镜疑凶》；两章分别保存进度。
-- 第二章先调查医院里的紫色身影，再选择追影、拼镜片或安抚碎片的进入方式。冰晶世界直接复用本地 pool 项目的参考版地图，加入冰晶、三处记忆线索和镜心。用 WASD 移动、鼠标转向，靠近线索按 E 收取；触屏可使用摇杆与按钮。集齐三条线索后进入镜心，继续第二章剧情。
-- 第二章奶鼠出场时可点击播放用户提供的原声片段。录音已裁掉开头和结尾的静音；因没有可靠转写，片段作为独立试听，不与页面文字逐字对应。
+- 第二章先调查医院里的紫色身影，再选择追影、拼镜片或安抚碎片的进入方式。冰晶世界直接复用本地 pool 项目的参考版地图，加入冰晶、三处记忆线索和镜心。用 WASD 移动、鼠标转向，靠近线索按 E 收取；触屏使用原地图的摇杆与触控视角。根据纸条密码走完导航路线，收集三件物证；首次拾取会播放对应的碎片记忆，完成探索后进入镜心继续剧情。
+- 第二章奶鼠出场时会尝试自动播放原声片段，浏览器拦截播放时可点击按钮重试。录音已裁掉开头和结尾的静音；因没有可靠转写，片段作为独立试听，不与页面文字逐字对应。
 - 点击画面或按空格／Enter 推进对话；在分支处点击选项。
 - 雨夜里，玩家循着奶蛙的笑声找到它。奶蛙开心的片段会播放用户提供的笑声，可以点击“跳过”或直接继续剧情。主角与旁白会自动播放对应语言的神经语音；主角保留男声，旁白使用另一种沉稳男声。若浏览器阻止播放，可点击“重新播放”。
 - 奶蛙和奶霸的台词共用四段说话音频，每次随机选择，并避免连续重复同一段；较长台词连续播放两段不同音频。可以跳过，也可以重新播放。
