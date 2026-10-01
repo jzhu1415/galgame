@@ -270,6 +270,67 @@ export function createIceLandmarks({ scene }) {
     object.userData.growthSurface = 'floor';
   }
 
+  // Early rooms use smaller growths at the dry arrival perimeter and richer
+  // mineral fans in the first dry mirror chamber. Coordinates follow the map's
+  // 15m room lattice and keep every branch outside the central walking lane.
+  const earlyClusters = [
+    { room: 'arrival', surface: 'floor', name: 'arrival-floor-west', x: 1.95, z: 5.35, entries: [
+      { variantIndex: 1, x: -.12, z: 0, scale: [.27, .26], height: .92, rotation: [.06, .24, -.1] },
+      { variantIndex: 0, x: .2, z: .34, scale: [.2, .21], height: .62, rotation: [-.08, -.2, .19] },
+    ] },
+    { room: 'arrival', surface: 'floor', name: 'arrival-floor-east', x: 13.05, z: 11.45, entries: [
+      { variantIndex: 2, x: .1, z: -.18, scale: [.29, .25], height: 1.02, rotation: [-.07, .12, .08] },
+      { variantIndex: 1, x: -.22, z: .34, scale: [.18, .2], height: .58, rotation: [.1, -.24, -.16] },
+    ] },
+    { room: 'arrival', surface: 'wall', name: 'arrival-wall-west', x: 1.2, z: 9.3, entries: [
+      { variantIndex: 0, x: 0, z: -.18, scale: [.28, .27], height: 1.0, rootY: .45, rotation: [0, .18, -.45] },
+      { variantIndex: 2, x: .2, z: .24, scale: [.18, .2], height: .72, rootY: .62, rotation: [.08, -.14, -.32] },
+    ] },
+    { room: 'arrival', surface: 'wall', name: 'arrival-wall-east', x: 13.8, z: 5.1, entries: [
+      { variantIndex: 1, x: 0, z: -.22, scale: [.26, .25], height: .96, rootY: .5, rotation: [0, -.16, .44] },
+      { variantIndex: 0, x: -.2, z: .26, scale: [.19, .2], height: .7, rootY: .64, rotation: [-.08, .18, .3] },
+    ] },
+    { room: 'mirror', surface: 'floor', name: 'mirror-floor-west', x: 3.55, z: 34.6, entries: [
+      { variantIndex: 2, x: -.2, z: -.38, scale: [.4, .36], height: 1.55, rotation: [.08, .24, -.24] },
+      { variantIndex: 0, x: .26, z: .38, scale: [.31, .29], height: 1.05, rotation: [-.1, -.3, .28] },
+      { variantIndex: 1, x: -.5, z: .48, scale: [.22, .24], height: .82, rotation: [.1, .12, -.12] },
+    ] },
+    { room: 'mirror', surface: 'floor', name: 'mirror-floor-east', x: 11.45, z: 41.0, entries: [
+      { variantIndex: 0, x: .18, z: -.4, scale: [.42, .37], height: 1.72, rotation: [-.1, -.2, .2] },
+      { variantIndex: 2, x: -.25, z: .35, scale: [.32, .3], height: 1.18, rotation: [.12, .3, -.26] },
+      { variantIndex: 1, x: .5, z: .5, scale: [.23, .22], height: .78, rotation: [-.1, -.14, .16] },
+    ] },
+    { room: 'mirror', surface: 'wall', name: 'mirror-wall-west', x: 1.2, z: 34.2, entries: [
+      { variantIndex: 1, x: 0, z: -.4, scale: [.36, .34], height: 1.55, rootY: .82, rotation: [.08, .16, -.52] },
+      { variantIndex: 0, x: .24, z: .42, scale: [.26, .24], height: 1.0, rootY: 1.0, rotation: [-.12, -.24, -.36] },
+      { variantIndex: 2, x: -.12, z: .86, scale: [.2, .21], height: .78, rootY: .68, rotation: [.12, .2, -.24] },
+    ] },
+    { room: 'mirror', surface: 'wall', name: 'mirror-wall-east', x: 13.8, z: 40.7, entries: [
+      { variantIndex: 0, x: 0, z: -.42, scale: [.38, .35], height: 1.65, rootY: .84, rotation: [-.08, -.18, .52] },
+      { variantIndex: 2, x: -.23, z: .4, scale: [.25, .24], height: .96, rootY: 1.0, rotation: [.12, .22, .34] },
+      { variantIndex: 1, x: .14, z: .82, scale: [.2, .2], height: .75, rootY: .7, rotation: [-.1, -.18, .25] },
+    ] },
+  ];
+  for (const cluster of earlyClusters) {
+    const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
+    object.name = cluster.name;
+    object.userData.earlyRoom = cluster.room;
+    object.userData.growthSurface = cluster.surface;
+  }
+
+  // A small pair grows off the walls of the long connecting passage without
+  // crossing into the central path or the evidence pickup at z=22.5.
+  for (const [side, x, lean] of [['west', 6.05, -.3], ['east', 8.95, .3]]) {
+    const object = mesh(makeCrystalCluster([{
+      variantIndex: side === 'west' ? 1 : 0, x: 0, z: 0,
+      scale: [.12, .15], height: .65, rootY: .38,
+      rotation: [0, .12, lean], embed: .02,
+    }]), ice, x, 0, 18.6);
+    object.name = `ice-connector-wall-${side}`;
+    object.userData.earlyRoom = 'arrival';
+    object.userData.growthSurface = 'wall';
+  }
+
   scene.add(root);
   let disposed = false;
   return {

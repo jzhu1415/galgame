@@ -9,17 +9,23 @@ const landmarkScene = new THREE.Scene();
 const landmarks = createIceLandmarks({ scene: landmarkScene });
 landmarks.update(.05, 1, { found: new Set(['routeOne']) });
 landmarkScene.updateMatrixWorld(true);
-const walkingLane = new THREE.Box3(new THREE.Vector3(6.5, .2, 30), new THREE.Vector3(8.5, 2.7, 105));
+const walkingLane = new THREE.Box3(new THREE.Vector3(6.5, .2, 0), new THREE.Vector3(8.5, 2.7, 105));
 let meshCount = 0;
 const floatingCrystals = [];
 const growthSurfaces = new Set();
 const growthDirections = [];
+const earlyRoomSurfaces = new Map();
 landmarkScene.traverse(object => {
   if (!object.isMesh) return;
   meshCount++;
   assert.notEqual(object.geometry.type, 'TorusGeometry', 'Landmarks no longer contain ambiguous D-shaped supports');
   if (object.userData.floatingCrystal) floatingCrystals.push(object);
   if (object.userData.growthSurface) growthSurfaces.add(object.userData.growthSurface);
+  if (object.userData.earlyRoom && object.userData.growthSurface) {
+    const surfaces = earlyRoomSurfaces.get(object.userData.earlyRoom) || [];
+    surfaces.push(object.userData.growthSurface);
+    earlyRoomSurfaces.set(object.userData.earlyRoom, surfaces);
+  }
   growthDirections.push(...(object.geometry.userData.growthDirections || []));
   if (object.material.transmission > 0) {
     assert.equal(object.material.metalness, 0, 'Crystal is a dielectric, not painted metal');
@@ -43,6 +49,11 @@ landmarkScene.traverse(object => {
   assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
 });
 assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
+for (const room of ['arrival', 'mirror']) {
+  const surfaces = earlyRoomSurfaces.get(room) || [];
+  assert.ok(surfaces.filter(surface => surface === 'floor').length >= 2 && surfaces.filter(surface => surface === 'wall').length >= 2,
+    `${room} has crystal growth on both floor and walls`);
+}
 for (const side of ['left', 'right']) {
   assert.equal(landmarkScene.getObjectByName(`ice-core-standing-mirror-${side}`), undefined);
   const cluster = landmarkScene.getObjectByName(`ice-core-crystal-${side}`);

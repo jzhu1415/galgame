@@ -9,7 +9,7 @@ export function createIceReflections({ renderer, scene, roots }) {
   });
   const cubeCamera = new THREE.CubeCamera(.1, 40, captureTarget);
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const probes = [33.5, 66.5, 97.5].map(z => ({ z, target: null, materials: new Set() }));
+  const probes = [8.5, 33.5, 66.5, 97.5].map(z => ({ z, target: null, materials: new Set() }));
   const worldPosition = new THREE.Vector3();
   const originalMaps = new Map();
   for (const root of roots.filter(Boolean)) {
