@@ -3,6 +3,7 @@ import { silverMaterial, makeMirrorFragment, makeNote, makeRouteMarker } from '.
 import { hasClearEvidencePath } from './ice-interaction.js';
 import { ICE_LAYOUT, ICE_ROUTES, currentIceStage, canCollectIceEvidence } from './ice-progression.js';
 import { createIceLandmarks } from './ice-landmarks.js';
+import { createIceReflections } from './ice-reflections.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -113,7 +114,7 @@ function disposeObject(root) {
   resources.forEach(resource => resource.dispose());
 }
 
-export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
+export function createIceChapterLayer({ scene, camera, canvas, columnAt, renderer }) {
   const landmarks = createIceLandmarks({ scene });
   const found = new Set();
   const groups = new Map();
@@ -123,7 +124,11 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   coreGroup.position.copy(CORE_POSITION);
   const coreRing = new THREE.Mesh(new THREE.TorusGeometry(1.1, .045, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0x8eb6c2, metalness: .88, roughness: .09, emissive: 0x163241, emissiveIntensity: .2 }));
   coreRing.rotation.x = Math.PI / 2; coreRing.position.y = -1.23; coreGroup.add(coreRing);
-  const coreCrystal = new THREE.Mesh(new THREE.OctahedronGeometry(.85, 1), silverMaterial({ color: 0xc7ecf4 }));
+  const coreCrystal = new THREE.Mesh(new THREE.OctahedronGeometry(.85, 0), new THREE.MeshPhysicalMaterial({
+    color: 0xd8f3fa, metalness: 0, roughness: .025, transmission: .9,
+    ior: 1.46, thickness: 1.15, attenuationColor: 0xbfe8f2, attenuationDistance: 4,
+    envMapIntensity: 1.7, flatShading: true,
+  }));
   coreCrystal.position.y = .96; coreCrystal.scale.set(.6, 1.1, .6); coreGroup.add(coreCrystal);
   const coreLight = new THREE.PointLight(0x9be4f2, 1.35, 8, 2); coreLight.position.y = 1; coreGroup.add(coreLight);
   scene.add(coreGroup);
@@ -138,6 +143,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   noteGroup.userData.clueId = 'note';
   noteGroup.traverse(object => { if (object.isMesh || object.isLineSegments) object.userData.clueId = 'note'; });
   scene.add(noteGroup); groups.set('note', noteGroup);
+  const reflections = createIceReflections({ renderer, scene,
+    roots: [scene.getObjectByName('ice-route-landmarks'), coreGroup, ...groups.values()],
+  });
 
   const title = document.querySelector('#ice-map-title');
   const subtitle = document.querySelector('#ice-map-subtitle');
@@ -702,6 +710,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (disposed) return;
     finishPickup();
     disposed = true;
+    reflections.dispose();
     landmarks.dispose();
     window.removeEventListener('keydown', handleKey);
     canvas.removeEventListener('click', handleClick);
@@ -738,5 +747,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   archiveToggle?.addEventListener('click', handleArchiveToggle);
   refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
-  return { setInit, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose };
+  return { setInit, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
+    refreshReflections: () => reflections.refresh(camera) };
 }

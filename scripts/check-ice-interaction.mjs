@@ -14,6 +14,23 @@ let meshCount = 0;
 landmarkScene.traverse(object => {
   if (!object.isMesh) return;
   meshCount++;
+  if (object.material.transmission > 0) {
+    assert.equal(object.material.metalness, 0, 'Crystal is a dielectric, not painted metal');
+    assert.ok(object.material.transmission >= .9 && object.material.roughness < .06);
+    assert.ok(object.material.attenuationDistance > 0 && object.material.flatShading);
+    assert.equal(object.material.emissive.getHex(), 0, 'Crystal highlights come from lighting, not glow');
+  }
+  if (object.material.ior === 1.31) {
+    const positions = object.geometry.attributes.position;
+    const normals = object.geometry.attributes.normal;
+    for (let index = 0; index < positions.count; index += 3) {
+      const centre = new THREE.Vector3();
+      for (let vertex = 0; vertex < 3; vertex++) centre.add(new THREE.Vector3().fromBufferAttribute(positions, index + vertex));
+      centre.multiplyScalar(1 / 3);
+      assert.ok(centre.dot(new THREE.Vector3().fromBufferAttribute(normals, index)) > 0,
+        'Each crystal facet must face outward for visible reflections and correct refraction');
+    }
+  }
   assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
 });
 assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');

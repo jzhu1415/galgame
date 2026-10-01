@@ -2672,7 +2672,7 @@ canvas.addEventListener('click', () => {
 
 let lastRenderedAt = -Infinity;
 let lastWaterReflectionAt = -Infinity;
-const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt });
+const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
 window.__naiwaIceLayer = iceChapterLayer;
 window.addEventListener('pagehide', () => iceChapterLayer.dispose(), { once: true });
 
@@ -2748,6 +2748,7 @@ function render(frameTime = performance.now()) {
     reflectionDebug.update(reflectionCapture);
     lastWaterReflectionAt = frameTime;
   }
+  iceChapterLayer.refreshReflections();
   composer.render(delta);
   reflectionDebug.render(renderer);
 }

@@ -4,29 +4,32 @@ import * as THREE from 'three';
 export function createIceLandmarks({ scene }) {
   const root = new THREE.Group();
   root.name = 'ice-route-landmarks';
+  root.userData.iceReflective = true;
   const geometries = new Set();
   const materials = new Set();
-  const animated = [];
   const boxGeometries = new Map();
 
   const silver = ownMaterial(new THREE.MeshPhysicalMaterial({
-    color: 0xaebfc2, metalness: 0.84, roughness: 0.22,
-    clearcoat: 1, clearcoatRoughness: 0.12, reflectivity: 0.92,
-    emissive: 0x1b303a, emissiveIntensity: 0.035,
+    color: 0xaebfc2, metalness: 0.97, roughness: 0.08,
+    envMapIntensity: 1.3,
   }));
   const edge = ownMaterial(new THREE.MeshStandardMaterial({
-    color: 0x60777d, metalness: 0.72, roughness: 0.3,
+    color: 0x60777d, metalness: 0.97, roughness: 0.22,
+    envMapIntensity: 1.3,
   }));
   const glass = ownMaterial(new THREE.MeshPhysicalMaterial({
-    color: 0xb9d5d9, metalness: 0.16, roughness: 0.12,
-    transmission: 0.28, thickness: 0.18, clearcoat: 1,
-    clearcoatRoughness: 0.08, side: THREE.DoubleSide,
+    color: 0xd7edf2, metalness: 0, roughness: 0.035,
+    transmission: 0.94, ior: 1.46, thickness: 0.55,
+    attenuationColor: 0xc3e6ee, attenuationDistance: 5,
+    envMapIntensity: 1.5, flatShading: true, side: THREE.DoubleSide,
   }));
   const ice = ownMaterial(new THREE.MeshPhysicalMaterial({
-    color: 0x9dbec5, metalness: 0.22, roughness: 0.18,
-    clearcoat: 1, clearcoatRoughness: 0.08,
-    emissive: 0x152a34, emissiveIntensity: 0.025,
+    color: 0xc2e5ed, metalness: 0, roughness: 0.045,
+    transmission: 0.92, ior: 1.31, thickness: 0.85,
+    attenuationColor: 0xaedbe7, attenuationDistance: 6,
+    envMapIntensity: 1.6, flatShading: true,
   }));
+  for (const material of [silver, edge, glass, ice]) material.userData.iceReflective = true;
 
   function ownMaterial(material) { materials.add(material); return material; }
   function ownGeometry(geometry) { geometries.add(geometry); return geometry; }
@@ -73,7 +76,39 @@ export function createIceLandmarks({ scene }) {
   }
 
   // 2. Lateral ice clusters, with suspended shards kept above the walking camera.
-  const crystalGeometry = ownGeometry(new THREE.ConeGeometry(1, 1, 5, 1));
+  // A broad, six-sided crystal body with a short hexagonal crown. Non-indexed
+  // triangles keep the individual planes optically crisp under env reflections.
+  const crystalPositions = [];
+  const ring = (y, radius, index) => new THREE.Vector3(
+    Math.cos(index * Math.PI / 3) * radius, y,
+    Math.sin(index * Math.PI / 3) * radius,
+  );
+  function triangle(a, b, c) { crystalPositions.push(...a.toArray(), ...c.toArray(), ...b.toArray()); }
+  const bottom = Array.from({ length: 6 }, (_, i) => ring(-0.5, 1, i));
+  const shoulder = Array.from({ length: 6 }, (_, i) => ring(0.12, 1, i));
+  const tip = new THREE.Vector3(0, 0.5, 0);
+  for (let i = 0; i < 6; i++) {
+    const next = (i + 1) % 6;
+    triangle(bottom[i], bottom[next], shoulder[next]);
+    triangle(bottom[i], shoulder[next], shoulder[i]);
+    triangle(shoulder[i], shoulder[next], tip);
+    triangle(new THREE.Vector3(0, -0.5, 0), bottom[next], bottom[i]);
+  }
+  const crystalGeometry = ownGeometry(new THREE.BufferGeometry());
+  crystalGeometry.setAttribute('position', new THREE.Float32BufferAttribute(crystalPositions, 3));
+  crystalGeometry.computeVertexNormals();
+  const fissureGeometry = ownGeometry(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-.33, -.22, .12), new THREE.Vector3(-.12, .13, .18),
+    new THREE.Vector3(-.12, .13, .18), new THREE.Vector3(.02, .49, .02),
+    new THREE.Vector3(.28, -.15, -.04), new THREE.Vector3(.1, .24, -.1),
+    new THREE.Vector3(.1, .24, -.1), new THREE.Vector3(.02, .49, .02),
+  ]));
+  const fissureMaterial = ownMaterial(new THREE.LineBasicMaterial({
+    color: 0xe5f8ff, transparent: true, opacity: 0.23, depthWrite: false,
+  }));
+  function addFissures(parent) {
+    parent.add(new THREE.LineSegments(fissureGeometry, fissureMaterial));
+  }
   const crystalSpecs = [
     [3.5, 1.35, 62.4, .62, 1.5, .55, -.14], [3.8, 1.0, 65.0, .42, 1.1, .38, .28],
     [3.35, 1.2, 68.2, .56, 1.4, .48, -.32], [3.8, 1.05, 72.2, .48, 1.2, .45, .2],
@@ -84,7 +119,7 @@ export function createIceLandmarks({ scene }) {
     const c = mesh(crystalGeometry, ice, x, y, z);
     c.scale.set(sx, y * 2, sz);
     c.rotation.set(0, ry, (x < 7.5 ? 1 : -1) * .12);
-    animated.push({ object: c, phase: z * .71, amount: 0.018, baseRotation: c.rotation.z });
+    addFissures(c);
   }
   for (const [x, z, size, turn] of [
     [5.1, 61.8, .36, .18], [9.9, 63.5, .29, -.24],
@@ -93,7 +128,7 @@ export function createIceLandmarks({ scene }) {
     const hanger = mesh(crystalGeometry, glass, x, 3.27, z);
     hanger.scale.set(size * .62, size * 1.55, size * .62);
     hanger.rotation.set(0, turn, Math.PI);
-    animated.push({ object: hanger, phase: z * .53, amount: 0.012, baseRotation: hanger.rotation.z });
+    addFissures(hanger);
   }
   // Narrow side-wall mirror slivers distinguish this chamber from the doorway.
   for (const [x, z, angle] of [[3.13, 63.6, -.15], [11.87, 67.0, .15], [3.12, 71.0, .12], [11.88, 62.0, -.12]]) {
@@ -129,14 +164,9 @@ export function createIceLandmarks({ scene }) {
   return {
     update(delta, time, { found = new Set(), camera } = {}) {
       if (disposed) return;
-      const routeSeen = found.has('routeOne') || found.has('route');
-      const target = routeSeen ? 0.16 : 0.035;
-      const blend = 1 - Math.exp(-Math.max(0, delta) * 1.7);
-      silver.emissiveIntensity += (target - silver.emissiveIntensity) * blend;
-      ice.emissiveIntensity = (routeSeen ? 0.07 : 0.025) + 0.012 * (0.5 + 0.5 * Math.sin(time * 0.72));
-      for (const { object, phase, amount, baseRotation } of animated) {
-        object.rotation.z = baseRotation + Math.sin(time * 0.45 + phase) * amount;
-      }
+      void found;
+      void delta;
+      void time;
       // Keep this argument in the interface for callers; landmarks never chase or obstruct the camera.
       void camera;
     },
@@ -155,7 +185,6 @@ export function createIceLandmarks({ scene }) {
       for (const material of materials) material.dispose();
       geometries.clear();
       materials.clear();
-      animated.length = 0;
     },
   };
 }
