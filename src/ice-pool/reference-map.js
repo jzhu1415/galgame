@@ -2672,7 +2672,7 @@ canvas.addEventListener('click', () => {
 
 let lastRenderedAt = -Infinity;
 let lastWaterReflectionAt = -Infinity;
-const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas });
+const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt });
 window.__naiwaIceLayer = iceChapterLayer;
 window.addEventListener('pagehide', () => iceChapterLayer.dispose(), { once: true });
 

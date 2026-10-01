@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { Reflector } from 'three/addons/objects/Reflector.js';
+import { silverMaterial, makeMirrorFragment, makeNote, makeRouteMarker } from './ice-props.js';
+import { hasClearEvidencePath } from './ice-interaction.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -97,119 +98,33 @@ function post(type, id) {
   window.parent.postMessage(message, window.location.origin);
 }
 
-function silverMaterial({ color = 0xc7e1e9, roughness = .14 } = {}) {
-  return new THREE.MeshPhysicalMaterial({
-    color, metalness: .55, roughness, clearcoat: 1, clearcoatRoughness: .045,
-    emissive: 0x315368, emissiveIntensity: .18,
-    reflectivity: 1, envMapIntensity: 2.2, side: THREE.DoubleSide,
+function disposeObject(root) {
+  const resources = new Set();
+  root.traverse(object => {
+    const target = object.getRenderTarget?.();
+    if (target) resources.add(target);
+    if (object.geometry) resources.add(object.geometry);
+    for (const material of [].concat(object.material || [])) {
+      for (const value of Object.values(material)) if (value?.isTexture) resources.add(value);
+      resources.add(material);
+    }
   });
+  resources.forEach(resource => resource.dispose());
 }
 
-function makeMirrorFragment(spec) {
-  const group = new THREE.Group();
-  group.position.copy(spec.position);
-  group.rotation.set(-.11, spec.id === 'shard' ? -.34 : .18, spec.id === 'echo' ? -.2 : .13);
-  group.userData.clueId = spec.id;
-  const shape = new THREE.Shape();
-  shape.moveTo(-.62, -.31); shape.lineTo(-.4, -.7); shape.lineTo(.02, -.53);
-  shape.lineTo(.42, -.65); shape.lineTo(.62, -.16); shape.lineTo(.36, .17);
-  shape.lineTo(.44, .63); shape.lineTo(-.03, .48); shape.lineTo(-.48, .67); shape.lineTo(-.39, .12);
-  shape.closePath();
-  const glass = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: .035, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: .035, bevelThickness: .018 }), silverMaterial());
-  glass.position.y = .48;
-  glass.scale.set(spec.id === 'shard' ? .78 : 1, spec.id === 'shard' ? .9 : .82, 1);
-  glass.userData.clueId = spec.id;
-  group.add(glass);
-  // The extruded glass spans z=0..0.035. Put a live reflection in front of
-  // each surface so the glass cannot occlude it from either approach.
-  const mirrorFaces = [];
-  for (const side of [1, -1]) {
-    const mirror = new Reflector(new THREE.ShapeGeometry(shape), {
-      clipBias: .003, textureWidth: 256, textureHeight: 256, color: 0xffffff,
-    });
-    mirror.position.set(0, .48, side > 0 ? .075 : -.065);
-    if (side < 0) mirror.rotation.y = Math.PI;
-    mirror.scale.copy(glass.scale);
-    mirror.userData.clueId = spec.id;
-    group.add(mirror);
-    mirrorFaces.push(mirror);
-  }
-  group.userData.mirrorFaces = mirrorFaces;
-  const fracture = new THREE.LineSegments(new THREE.EdgesGeometry(glass.geometry, 26), new THREE.LineBasicMaterial({ color: 0xe7faff, transparent: true, opacity: .8 }));
-  fracture.position.copy(glass.position);
-  fracture.scale.copy(glass.scale);
-  fracture.userData.clueId = spec.id;
-  group.add(fracture);
-
-  const backing = new THREE.Mesh(new THREE.BoxGeometry(1.05, .11, .62), new THREE.MeshStandardMaterial({ color: 0x253944, metalness: .82, roughness: .38 }));
-  backing.position.set(0, .11, 0);
-  group.add(backing);
-
-  if (spec.id === 'footage') {
-    const strip = new THREE.Mesh(new THREE.BoxGeometry(.76, .09, .18), new THREE.MeshStandardMaterial({ color: 0x11191d, metalness: .32, roughness: .48 }));
-    strip.position.set(0, .24, .13); group.add(strip);
-    for (let i = 0; i < 3; i += 1) {
-      const frame = new THREE.Mesh(new THREE.PlaneGeometry(.16, .115), new THREE.MeshBasicMaterial({ color: i === 2 ? 0xd4a27e : 0x728691, side: THREE.DoubleSide }));
-      frame.position.set(-.23 + i * .23, .24, .035); frame.rotation.x = -Math.PI / 2; group.add(frame);
-    }
-  } else if (spec.id === 'shard') {
-    const lens = new THREE.Mesh(new THREE.SphereGeometry(.2, 24, 16), new THREE.MeshPhysicalMaterial({ color: 0xc5e5ee, metalness: .86, roughness: .045, clearcoat: 1, clearcoatRoughness: .025, transparent: true, opacity: .84, side: THREE.DoubleSide }));
-    lens.position.set(.08, .35, -.08); lens.scale.set(1, .2, .8); group.add(lens);
-    const hair = new THREE.Mesh(new THREE.TorusGeometry(.22, .009, 4, 48, Math.PI * 1.2), new THREE.MeshBasicMaterial({ color: 0x17191b }));
-    hair.position.set(-.12, .22, .15); hair.rotation.x = -Math.PI / 2; group.add(hair);
-  } else {
-    const wafer = new THREE.Mesh(new THREE.CylinderGeometry(.19, .2, .08, 8), new THREE.MeshStandardMaterial({ color: 0x161d20, metalness: .72, roughness: .32 }));
-    wafer.position.set(0, .2, .12); group.add(wafer);
-    const wave = new THREE.Group();
-    for (let i = 0; i < 9; i += 1) {
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(.027, .012, .1 + Math.abs(Math.sin(i * 1.13)) * .19), new THREE.MeshBasicMaterial({ color: 0xc8e5ed }));
-      bar.position.set(-.22 + i * .055, .31, .14); wave.add(bar);
-    }
-    group.add(wave);
-  }
-  const glint = new THREE.PointLight(spec.color, .16, 2.6, 2);
-  glint.position.set(0, 1.05, .6); group.add(glint);
-  return group;
-}
-
-function makeNote(position) {
-  const group = new THREE.Group();
-  group.position.copy(position);
-  const paper = new THREE.Mesh(new THREE.PlaneGeometry(.72, .54), new THREE.MeshStandardMaterial({ color: 0xc8c2a8, roughness: .96, side: THREE.DoubleSide }));
-  paper.rotation.x = -Math.PI / 2; paper.position.y = .12;
-  group.add(paper);
-  const fold = new THREE.Mesh(new THREE.BoxGeometry(.5, .006, .008), new THREE.MeshBasicMaterial({ color: 0x605f55 }));
-  fold.position.set(0, .126, .03); group.add(fold);
-  const mirrorDust = new THREE.Mesh(new THREE.BoxGeometry(.2, .018, .14), silverMaterial({ color: 0x95bbc6, roughness: .23 }));
-  mirrorDust.position.set(.12, .16, -.18); mirrorDust.rotation.y = -.3; group.add(mirrorDust);
-  return group;
-}
-
-function makeRouteMarker() {
-  const group = new THREE.Group();
-  const ring = new THREE.Mesh(new THREE.RingGeometry(.38, .47, 32), new THREE.MeshBasicMaterial({ color: 0xaed8e1, transparent: true, opacity: .44, side: THREE.DoubleSide }));
-  ring.rotation.x = -Math.PI / 2; ring.position.y = .035; group.add(ring);
-  const sliver = new THREE.Mesh(new THREE.BoxGeometry(.09, .025, .45), silverMaterial({ color: 0xb6d9e2 }));
-  sliver.position.y = .05; group.add(sliver);
-  const pivot = new THREE.Mesh(new THREE.ConeGeometry(.12, .24, 4), new THREE.MeshBasicMaterial({ color: 0xe5faff }));
-  pivot.position.set(.27, .13, 0); pivot.rotation.z = -Math.PI / 2; group.add(pivot);
-  return group;
-}
-
-export function createIceChapterLayer({ scene, camera, canvas }) {
+export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   const found = new Set();
   const groups = new Map();
-  const animated = [];
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   const coreGroup = new THREE.Group();
   coreGroup.position.copy(CORE_POSITION);
-  const coreRing = new THREE.Mesh(new THREE.TorusGeometry(2.35, .065, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0x8eb6c2, metalness: .88, roughness: .09, emissive: 0x163241, emissiveIntensity: .2 }));
-  coreRing.rotation.x = Math.PI / 2; coreGroup.add(coreRing);
+  const coreRing = new THREE.Mesh(new THREE.TorusGeometry(1.1, .045, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0x8eb6c2, metalness: .88, roughness: .09, emissive: 0x163241, emissiveIntensity: .2 }));
+  coreRing.rotation.x = Math.PI / 2; coreRing.position.y = -1.23; coreGroup.add(coreRing);
   const coreCrystal = new THREE.Mesh(new THREE.OctahedronGeometry(.85, 1), silverMaterial({ color: 0xc7ecf4 }));
-  coreCrystal.position.y = .96; coreCrystal.scale.set(.7, 1.55, .7); coreGroup.add(coreCrystal);
+  coreCrystal.position.y = .96; coreCrystal.scale.set(.6, 1.1, .6); coreGroup.add(coreCrystal);
   const coreLight = new THREE.PointLight(0x9be4f2, 1.35, 8, 2); coreLight.position.y = 1; coreGroup.add(coreLight);
-  scene.add(coreGroup); animated.push(coreCrystal);
+  scene.add(coreGroup);
 
   const exhibits = new Map(CLUES.map(spec => [spec.id, makeMirrorFragment(spec)]));
   for (const [id, group] of exhibits) {
@@ -251,6 +166,45 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   let cipherInput = [];
   let cipherFeedback = '';
   let lastNavAt = -Infinity;
+  let pickup = null;
+  let feedbackRemaining = 0;
+  const feedback = document.createElement('div');
+  feedback.className = 'ice-feedback';
+  feedback.setAttribute('role', 'status');
+  feedback.setAttribute('aria-live', 'polite');
+  feedback.hidden = true;
+  overlay?.append(feedback);
+  const focusRing = new THREE.Mesh(new THREE.RingGeometry(.64, .69, 48), new THREE.MeshBasicMaterial({
+    color: 0xc7edf4, transparent: true, opacity: .5, side: THREE.DoubleSide, depthWrite: false,
+  }));
+  focusRing.rotation.x = -Math.PI / 2;
+  focusRing.visible = false;
+  scene.add(focusRing);
+  const coreSlots = CLUES.map((spec, index) => {
+    const slot = new THREE.Mesh(new THREE.TorusGeometry(.22, .035, 6, 24), silverMaterial({ roughness: .2 }));
+    const angle = index * Math.PI * 2 / 3;
+    slot.position.set(Math.sin(angle) * .8, -1.2, Math.cos(angle) * .8);
+    slot.rotation.x = -Math.PI / 2;
+    coreGroup.add(slot);
+    return slot;
+  });
+  function showFeedback(zh, en) {
+    feedback.textContent = language === 'zh' ? zh : en;
+    feedback.hidden = false;
+    feedbackRemaining = 2.8;
+  }
+  function canInspect(position) {
+    return !storyPaused && !pickup && hasClearEvidencePath(camera.position, position, 3.8, columnAt);
+  }
+  function finishPickup() {
+    if (!pickup) return;
+    const { id, group, position, scale } = pickup;
+    pickup = null;
+    group.visible = false;
+    group.position.copy(position);
+    group.scale.copy(scale);
+    post('clue', id);
+  }
   const routeMarkers = [];
   const noteTrail = [];
   for (const [x, z, angle] of [[7.5, 4.25, 0], [7.8, 6.25, -.28], [7.1, 7.95, -.55], [7.5, 9.05, -.8]]) {
@@ -269,12 +223,14 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   }
   function floorDistance(position) { return Math.hypot(camera.position.x - position.x, camera.position.z - position.z); }
   function makeRouteMarkers() {
-    routeMarkers.forEach(marker => scene.remove(marker));
+    routeMarkers.forEach(marker => { scene.remove(marker); disposeObject(marker); });
     routeMarkers.length = 0;
     if (!routeStarted || found.has('route')) return;
     const nextPoint = routeAtStart ? routeStep + 1 : 0;
     for (let i = nextPoint; i < ROUTE_POINTS[routeIndex()].length; i += 1) {
       const marker = makeRouteMarker(); marker.position.copy(routePoint(i));
+      const direction = routePoint(Math.min(i + 1, 4)).sub(routePoint(i === 4 ? 3 : i));
+      marker.rotation.y = Math.atan2(direction.x, direction.z);
       marker.userData.routeIndex = i - 1; marker.visible = i === nextPoint;
       if (i === 0) marker.scale.setScalar(1.3);
       scene.add(marker); routeMarkers.push(marker);
@@ -286,6 +242,11 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (subtitle) subtitle.textContent = copy.subtitle;
     if (hint) hint.textContent = copy.hint;
     if (exit) exit.textContent = copy.exit;
+    coreSlots.forEach((slot, index) => {
+      const recovered = found.has(CLUES[index].id);
+      slot.material.emissiveIntensity = recovered ? .7 : .04;
+      slot.material.color.setHex(recovered ? 0xc7edf4 : 0x52636b);
+    });
     if (clueState) {
       clueState.textContent = `${copy.collected} ${clueCount()}/3`;
       clueState.dataset.complete = String(clueCount() === CLUES.length);
@@ -476,12 +437,8 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     ctx.beginPath(); ctx.moveTo(18, height - 17); ctx.lineTo(18 + 10 * scale, height - 17); ctx.stroke();
     ctx.fillStyle = '#cdeaf0'; ctx.font = '11px sans-serif'; ctx.fillText('10 m', 20 + 10 * scale, height - 13);
   }
-  function targetDistance(target) {
-    if (target?.id === 'note') return camera.position.distanceTo(notePosition);
-    return target ? camera.position.distanceTo(target.position) : camera.position.distanceTo(CORE_POSITION);
-  }
   function nearbyTarget() {
-    if (!found.has('note') && camera.position.distanceTo(notePosition) < 3.8) {
+    if (!found.has('note') && canInspect(notePosition)) {
       return { id: 'note', position: notePosition, zh: '入口取证便笺', en: 'Entrance evidence note' };
     }
     let nearest = null;
@@ -489,14 +446,14 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     for (const spec of CLUES) {
       if (found.has(spec.id) || spec.id === 'shard' && !found.has('route')) continue;
       const distance = camera.position.distanceTo(spec.position);
-      if (distance < nearestDistance) { nearest = spec; nearestDistance = distance; }
+      if (distance < nearestDistance && canInspect(spec.position)) { nearest = spec; nearestDistance = distance; }
     }
     return nearest;
   }
   function updatePrompt() {
     if (!prompt || !promptText || !interact) return;
     const copy = COPY[language];
-    const near = targetDistance(currentTarget) < 3.8;
+    const near = !cipherOpen && !storyPaused && !pickup && (currentTarget ? canInspect(currentTarget.position) : canInspect(CORE_POSITION));
     prompt.hidden = !near;
     if (!near) { interact.hidden = true; return; }
     if (currentTarget?.id === 'note') {
@@ -504,7 +461,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
       interact.textContent = isTouch() ? copy.noteAction : `E · ${copy.noteAction}`;
       interact.hidden = false;
     } else if (currentTarget) {
-      promptText.textContent = `${text(currentTarget)} · ${text(currentTarget.clue)}`;
+      promptText.textContent = `${text(currentTarget)} · ${text(currentTarget.evidence)}`;
       interact.textContent = isTouch() ? copy.collect : `E · ${copy.collect}`;
       interact.hidden = false;
     } else if (found.has('note') && routeStarted && !found.has('route')) {
@@ -520,9 +477,9 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     }
   }
   function collect(id) {
-    if (disposed || found.has(id)) return;
+    if (disposed || storyPaused || pickup || found.has(id)) return;
     if (id === 'note') {
-      if (camera.position.distanceTo(notePosition) > 3.8) return;
+      if (!canInspect(notePosition)) return;
       cipherOpen = true;
       cipherInput = [];
       cipherFeedback = '';
@@ -532,10 +489,13 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     }
     const spec = CLUES.find(entry => entry.id === id);
     if (id === 'shard' && !found.has('route')) return;
-    if (!spec || camera.position.distanceTo(spec.position) > 3.8) return;
+    if (!spec || !canInspect(spec.position)) return;
     found.add(id);
-    const group = groups.get(id); if (group) group.visible = false;
-    post('clue', id); currentTarget = null;
+    const group = groups.get(id);
+    pickup = { id, group, position: group.position.clone(), scale: group.scale.clone(), age: 0 };
+    showFeedback(`已取证 · ${text(spec)}`, `Recovered · ${text(spec)}`);
+    if (isTouch()) navigator.vibrate?.(35);
+    currentTarget = null;
     updateLabels(); updatePrompt();
   }
   function chooseCipher(direction) {
@@ -558,7 +518,7 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   }
   function triggerCore() {
     if (disposed || coreTriggered || clueCount() !== CLUES.length || !found.has('note') || !found.has('route')) return;
-    if (camera.position.distanceTo(CORE_POSITION) > 3.8) return;
+    if (!canInspect(CORE_POSITION)) return;
     coreTriggered = true; post('core');
     if (promptText) promptText.textContent = COPY[language].coreReply;
     if (interact) interact.hidden = true;
@@ -582,21 +542,22 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     if (event.code === 'KeyE' || event.code === 'Enter') {
       event.preventDefault();
       interactWithTarget();
-    } else if (event.code === 'Escape') post('exit');
+    } else if (event.code === 'Escape') handleExit();
   }
   function handleClick(event) {
-    if (disposed || cipherOpen || event.target !== canvas) return;
+    if (disposed || storyPaused || pickup || cipherOpen || event.target !== canvas) return;
     const bounds = canvas.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     ndc.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
-    const hit = raycaster.intersectObjects([...groups.values()], true)[0];
+    const hit = raycaster.intersectObjects([...groups.values()].filter(group => group.visible), true)[0];
     const id = hit?.object.userData.clueId;
     if (id === 'note' && camera.position.distanceTo(notePosition) < 3.8) collect('note');
     else if (id && camera.position.distanceTo(groups.get(id).position) < 3.8) collect(id);
     else if (clueCount() === CLUES.length && found.has('route') && raycaster.intersectObject(coreGroup, true).length) triggerCore();
   }
   function setInit(next) {
+    finishPickup();
     if (next?.language === 'en' || next?.language === 'zh') language = next.language;
     found.clear();
     for (const id of Array.isArray(next?.found) ? next.found : []) if (ALLOWED_CLUES.has(id)) found.add(id);
@@ -618,7 +579,9 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   }
   function progressRoute() {
     if (!routeStarted || found.has('route') || !routeMarkers.length) return;
-    if (floorDistance(routeMarkers[0].position) > 1.25) return;
+    if (storyPaused || cipherOpen || floorDistance(routeMarkers[0].position) > .95) return;
+    showFeedback(routeAtStart ? `镜记确认 · ${routeStep + 1}/4` : '已到达路线起点', routeAtStart ? `Mark confirmed · ${routeStep + 1}/4` : 'Route start reached');
+    if (isTouch()) navigator.vibrate?.(20);
     if (!routeAtStart) {
       routeAtStart = true;
       makeRouteMarkers();
@@ -642,21 +605,49 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
   }
   function update(delta, time) {
     if (disposed) return;
+    const dt = Math.min(delta, .1);
+    feedbackRemaining -= dt;
+    if (feedbackRemaining <= 0) feedback.hidden = true;
+    if (pickup) {
+      pickup.age += dt;
+      const progress = Math.min(pickup.age / .42, 1);
+      pickup.group.position.y = pickup.position.y + Math.sin(progress * Math.PI / 2) * .55;
+      pickup.group.scale.copy(pickup.scale).multiplyScalar(1 - progress * .55);
+      if (progress === 1) finishPickup();
+    }
+    coreCrystal.rotation.y += dt * .16;
+    coreCrystal.position.y = .96 + Math.sin(time * .8) * .05;
     coreLight.intensity = 1.3 + Math.sin(time * 1.4) * .13;
+    for (const marker of routeMarkers) {
+      if (marker.userData.pulseMaterial) marker.userData.pulseMaterial.opacity = .55 + Math.sin(time * 2.6) * .18;
+    }
     if (time * 1000 - lastNavAt > 100) { lastNavAt = time * 1000; updateNavigation(); }
     for (const group of exhibits.values()) {
       const [front, back] = group.userData.mirrorFaces;
       const nearby = camera.position.distanceToSquared(group.position) < 18 * 18;
-      const localCamera = group.worldToLocal(camera.position.clone());
-      front.visible = nearby && localCamera.z >= 0;
-      back.visible = nearby && localCamera.z < 0;
+      group.updateWorldMatrix(true, true);
+      const toCamera = camera.position.clone().sub(front.getWorldPosition(new THREE.Vector3()));
+      const frontFacing = toCamera.dot(front.getWorldDirection(new THREE.Vector3())) >= 0;
+      front.visible = nearby && frontFacing;
+      back.visible = nearby && !frontFacing;
     }
     progressRoute();
-    currentTarget = nearbyTarget();
+    currentTarget = cipherOpen ? null : nearbyTarget();
+    focusRing.visible = !!currentTarget && !storyPaused && !pickup;
+    if (focusRing.visible) {
+      focusRing.position.set(currentTarget.position.x, .18, currentTarget.position.z);
+      focusRing.material.opacity = .45 + Math.sin(time * 3) * .1;
+    }
+    for (const [id, group] of groups) {
+      for (const material of group.userData.focusMaterials || []) {
+        material.emissiveIntensity = currentTarget?.id === id ? .45 : .08;
+      }
+    }
     updateRouteReadout(); updatePrompt();
   }
   function dispose() {
     if (disposed) return;
+    finishPickup();
     disposed = true;
     window.removeEventListener('keydown', handleKey);
     canvas.removeEventListener('click', handleClick);
@@ -669,18 +660,13 @@ export function createIceChapterLayer({ scene, camera, canvas }) {
     noteTrail.forEach(flake => scene.remove(flake));
     for (const group of groups.values()) scene.remove(group);
     routeMarkers.forEach(marker => scene.remove(marker));
-    const disposeObject = root => root.traverse(object => {
-      object.getRenderTarget?.().dispose();
-      object.geometry?.dispose();
-      if (Array.isArray(object.material)) object.material.forEach(material => material.dispose());
-      else if (object.material) object.material.dispose();
-    });
-    disposeObject(coreGroup); disposeObject(noteGroup);
+    disposeObject(coreGroup);
+    scene.remove(focusRing); disposeObject(focusRing); feedback.remove();
     noteTrail.forEach(disposeObject);
     for (const group of groups.values()) disposeObject(group);
     routeMarkers.forEach(disposeObject);
   }
-  function handleExit() { post('exit'); }
+  function handleExit() { finishPickup(); post('exit'); }
   function handleArchiveToggle() {
     archive?.classList.toggle('is-mobile-open');
     updateLabels();

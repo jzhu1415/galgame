@@ -463,3 +463,25 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
 @media (prefers-reduced-motion: reduce) {
   .ice-map-clue { transition: none; }
 }
+
+.ice-feedback {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  transform: translateX(-50%);
+  max-width: min(30rem, 85vw);
+  padding: .65rem 1.2rem;
+  border: 1px solid #a9dce77a;
+  border-radius: 4px;
+  background: #102730ed;
+  color: #e1f7fb;
+  font-size: .85rem;
+  line-height: 1.5;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 8px 30px #0004;
+}
+.ice-feedback[hidden] { display: none; }
+@media (max-width: 700px) {
+  .ice-feedback { top: 45%; font-size: .72rem; padding: .55rem .85rem; }
+}

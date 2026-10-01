@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "check:story": "node scripts/check-story.mjs",
     "check:ice-route": "node scripts/check-ice-route.mjs",
+    "check:ice-interaction": "node scripts/check-ice-interaction.mjs",
     "generate:tts": "python3 scripts/generate-neural-tts.py"
   },
   "dependencies": {
