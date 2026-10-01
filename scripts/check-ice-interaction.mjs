@@ -15,12 +15,21 @@ const floatingCrystals = [];
 const growthSurfaces = new Set();
 const growthDirections = [];
 const earlyRoomSurfaces = new Map();
+const wallCrystalCounts = new Map();
 landmarkScene.traverse(object => {
   if (!object.isMesh) return;
   meshCount++;
   assert.notEqual(object.geometry.type, 'TorusGeometry', 'Landmarks no longer contain ambiguous D-shaped supports');
   if (object.userData.floatingCrystal) floatingCrystals.push(object);
   if (object.userData.growthSurface) growthSurfaces.add(object.userData.growthSurface);
+  if (object.userData.wallRoom) {
+    const room = object.userData.wallRoom;
+    wallCrystalCounts.set(room, (wallCrystalCounts.get(room) || 0) + (object.geometry.userData.growthDirections?.length || 0));
+    const inwardSign = object.name.endsWith('-west') ? 1 : -1;
+    for (const direction of object.geometry.userData.growthDirections || []) {
+      assert.ok(direction[0] * inwardSign > 0, 'Wall crystals must grow into the room, away from the wall');
+    }
+  }
   if (object.userData.earlyRoom && object.userData.growthSurface) {
     const surfaces = earlyRoomSurfaces.get(object.userData.earlyRoom) || [];
     surfaces.push(object.userData.growthSurface);
@@ -49,6 +58,9 @@ landmarkScene.traverse(object => {
   assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
 });
 assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
+for (const room of ['arrival', 'mirror', 'crystal', 'core']) {
+  assert.ok(wallCrystalCounts.get(room) >= 20, `${room} has a visible spread of wall-grown crystals`);
+}
 for (const room of ['arrival', 'mirror']) {
   const surfaces = earlyRoomSurfaces.get(room) || [];
   assert.ok(surfaces.filter(surface => surface === 'floor').length >= 2 && surfaces.filter(surface => surface === 'wall').length >= 2,

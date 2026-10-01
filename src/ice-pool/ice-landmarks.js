@@ -239,16 +239,6 @@ export function createIceLandmarks({ scene }) {
     floating.push({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
     addFissures(crystal);
   });
-  // Wall-grown shards angle inward and up from the side surfaces.
-  for (const [side, x, tilt] of [['left', 3.16, -.48], ['right', 11.84, .48]]) {
-    const specs = [
-      { variantIndex: side === 'left' ? 2 : 1, x: 0, z: -.35, scale: [.55, .5], height: 1.75, rootY: .85, rotation: [0, .18, tilt] },
-      { variantIndex: 0, x: side === 'left' ? .36 : -.36, z: .52, scale: [.36, .32], height: 1.05, rootY: 1.05, rotation: [.12, -.2, tilt * .68] },
-    ];
-    const wallGrowth = mesh(makeCrystalCluster(specs), ice, x, 0, side === 'left' ? 66 : 69);
-    wallGrowth.userData.growthSurface = 'wall';
-  }
-
   // Low, broad mineral growth frames the former mirror core, with one strong
   // diagonal crystal on each side instead of a freestanding mirror silhouette.
   const coreClusters = [
@@ -282,14 +272,6 @@ export function createIceLandmarks({ scene }) {
       { variantIndex: 2, x: .1, z: -.18, scale: [.29, .25], height: 1.02, rotation: [-.07, .12, .08] },
       { variantIndex: 1, x: -.22, z: .34, scale: [.18, .2], height: .58, rotation: [.1, -.24, -.16] },
     ] },
-    { room: 'arrival', surface: 'wall', name: 'arrival-wall-west', x: 1.2, z: 9.3, entries: [
-      { variantIndex: 0, x: 0, z: -.18, scale: [.28, .27], height: 1.0, rootY: .45, rotation: [0, .18, -.45] },
-      { variantIndex: 2, x: .2, z: .24, scale: [.18, .2], height: .72, rootY: .62, rotation: [.08, -.14, -.32] },
-    ] },
-    { room: 'arrival', surface: 'wall', name: 'arrival-wall-east', x: 13.8, z: 5.1, entries: [
-      { variantIndex: 1, x: 0, z: -.22, scale: [.26, .25], height: .96, rootY: .5, rotation: [0, -.16, .44] },
-      { variantIndex: 0, x: -.2, z: .26, scale: [.19, .2], height: .7, rootY: .64, rotation: [-.08, .18, .3] },
-    ] },
     { room: 'mirror', surface: 'floor', name: 'mirror-floor-west', x: 3.55, z: 34.6, entries: [
       { variantIndex: 2, x: -.2, z: -.38, scale: [.4, .36], height: 1.55, rotation: [.08, .24, -.24] },
       { variantIndex: 0, x: .26, z: .38, scale: [.31, .29], height: 1.05, rotation: [-.1, -.3, .28] },
@@ -300,16 +282,6 @@ export function createIceLandmarks({ scene }) {
       { variantIndex: 2, x: -.25, z: .35, scale: [.32, .3], height: 1.18, rotation: [.12, .3, -.26] },
       { variantIndex: 1, x: .5, z: .5, scale: [.23, .22], height: .78, rotation: [-.1, -.14, .16] },
     ] },
-    { room: 'mirror', surface: 'wall', name: 'mirror-wall-west', x: 1.2, z: 34.2, entries: [
-      { variantIndex: 1, x: 0, z: -.4, scale: [.36, .34], height: 1.55, rootY: .82, rotation: [.08, .16, -.52] },
-      { variantIndex: 0, x: .24, z: .42, scale: [.26, .24], height: 1.0, rootY: 1.0, rotation: [-.12, -.24, -.36] },
-      { variantIndex: 2, x: -.12, z: .86, scale: [.2, .21], height: .78, rootY: .68, rotation: [.12, .2, -.24] },
-    ] },
-    { room: 'mirror', surface: 'wall', name: 'mirror-wall-east', x: 13.8, z: 40.7, entries: [
-      { variantIndex: 0, x: 0, z: -.42, scale: [.38, .35], height: 1.65, rootY: .84, rotation: [-.08, -.18, .52] },
-      { variantIndex: 2, x: -.23, z: .4, scale: [.25, .24], height: .96, rootY: 1.0, rotation: [.12, .22, .34] },
-      { variantIndex: 1, x: .14, z: .82, scale: [.2, .2], height: .75, rootY: .7, rotation: [-.1, -.18, .25] },
-    ] },
   ];
   for (const cluster of earlyClusters) {
     const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
@@ -318,6 +290,56 @@ export function createIceLandmarks({ scene }) {
     object.userData.growthSurface = cluster.surface;
   }
 
+  // Four wall stations on both faces of each early/core room are merged into
+  // one mesh per side. Each station combines a heavy spear and two smaller
+  // branches at different heights and angles for a broken, mineral growth line.
+  function addRoomWallCrystals({ room, wallRoom, startZ, endZ }) {
+    const centerZ = (startZ + endZ) * .5;
+    const stations = [startZ + 2.4, startZ + 4.7, endZ - 4.7, endZ - 2.4];
+    const branchHeights = [
+      [2.55, 1.35, .52], [2.05, .76, .48],
+      [2.42, 1.12, .58], [1.82, .68, 2.12],
+    ];
+    const branchRoots = [
+      [.36, .92, 1.65], [.48, 1.28, .62],
+      [.42, 1.0, 1.72], [.58, 1.42, .72],
+    ];
+    const leanMagnitudes = [.26, .48, .68, .34];
+    for (const side of ['west', 'east']) {
+      const west = side === 'west';
+      const anchorX = west ? 1.02 : 13.98;
+      const sign = west ? -1 : 1;
+      const specs = [];
+      stations.forEach((stationZ, stationIndex) => {
+        for (let branch = 0; branch < 3; branch++) {
+          const height = branchHeights[stationIndex][branch];
+          const rootY = branchRoots[stationIndex][branch];
+          const lean = sign * leanMagnitudes[(stationIndex + branch) % leanMagnitudes.length]
+            * (branch === 1 ? .72 : 1);
+          const sideOffset = branch === 0 ? 0 : sign * (branch === 1 ? .13 : -.09);
+          specs.push({
+            variantIndex: (stationIndex * 2 + branch + (west ? 1 : 0)) % crystalVariants.length,
+            x: sideOffset,
+            z: stationZ - centerZ + (branch - 1) * .16,
+            scale: branch === 0 ? [.43, .39] : branch === 1 ? [.29, .27] : [.18, .2],
+            height,
+            rootY,
+            rotation: [((stationIndex + branch) % 2 ? -.1 : .1), (stationIndex - 1.5) * .1 + (branch - 1) * .08, lean],
+          });
+        }
+      });
+      const object = mesh(makeCrystalCluster(specs), ice, anchorX, 0, centerZ);
+      object.name = `ice-wall-crystals-${wallRoom}-${side}`;
+      object.userData.growthSurface = 'wall';
+      object.userData.wallRoom = wallRoom;
+      if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
+    }
+  }
+  addRoomWallCrystals({ room: 'arrival', wallRoom: 'arrival', startZ: 0, endZ: 15 });
+  addRoomWallCrystals({ room: 'mirror', wallRoom: 'mirror', startZ: 30, endZ: 45 });
+  addRoomWallCrystals({ room: 'crystal', wallRoom: 'crystal', startZ: 60, endZ: 75 });
+  addRoomWallCrystals({ room: 'core', wallRoom: 'core', startZ: 90, endZ: 105 });
+
   // A small pair grows off the walls of the long connecting passage without
   // crossing into the central path or the evidence pickup at z=22.5.
   for (const [side, x, lean] of [['west', 6.05, -.3], ['east', 8.95, .3]]) {
@@ -325,6 +347,10 @@ export function createIceLandmarks({ scene }) {
       variantIndex: side === 'west' ? 1 : 0, x: 0, z: 0,
       scale: [.12, .15], height: .65, rootY: .38,
       rotation: [0, .12, lean], embed: .02,
+    }, {
+      variantIndex: side === 'west' ? 2 : 1, x: 0, z: 7.0,
+      scale: [.16, .17], height: .78, rootY: .52,
+      rotation: [.08, -.18, lean * .8], embed: .02,
     }]), ice, x, 0, 18.6);
     object.name = `ice-connector-wall-${side}`;
     object.userData.earlyRoom = 'arrival';
