@@ -77,7 +77,7 @@ const copy = {
       ['旁白', '我把纸折进衣袋，回头看了奶霸一眼。他没有解释，也没有追上来。手甲上那颗熄掉的宝石，仍是黑的。'],
       ['旁白', '电梯屏亮起“三”。奶蛙还没醒；镜面里，奶鼠站在原处，看着我按下按钮。'],
     ],
-    complete: '第二章 · 完', completeNote: '冰镜已融，真相仍藏在下一层。', choose: '选择进入镜馆的方式', mapHint: '看左下角地图：先走「前左前左」，再解第二枚碎片的密码。', skipToMap: '返回镜馆', voicePlay: '播放奶鼠原声片段', voiceStop: '停止播放', voiceError: '音频暂时无法播放', characterVoicePlay: '播放奶霸声音', characterVoiceStop: '跳过声音', narratorVoicePlay: '播放旁白',
+    complete: '第二章 · 完', completeNote: '冰镜已融，真相仍藏在下一层。', choose: '选择进入镜馆的方式', mapHint: '跟随地图的当前目标一路向北；取得物证后，继续前往下一间镜室。', skipToMap: '返回镜馆', voicePlay: '播放奶鼠原声片段', voiceStop: '停止播放', voiceError: '音频暂时无法播放', characterVoicePlay: '播放奶霸声音', characterVoiceStop: '跳过声音', narratorVoicePlay: '播放旁白',
   },
   en: {
     back: 'Chapters', chapter: 'Chapter two', title: 'The Culprit in the Ice', subtitle: 'Layer two · The Frozen Mirror Hall', next: 'Continue', enter: 'Enter the mirror hall', resume: 'Resume exploration', restart: 'Replay chapter two', restartConfirm: 'Restart chapter two? This chapter’s clues and progress will be cleared.', fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen', routes: 'Story tree', routesTitle: 'Frozen mirror story tree', close: 'Close', locked: 'Not reached', visited: 'Reached', log: 'History', menu: 'Menu', routeHint: 'Select a reached node to revisit that part of the story.',
@@ -130,7 +130,7 @@ const copy = {
       ['Narration', 'I folded the page into my pocket and looked back at Naiba. He offered no explanation. He did not follow. The dead jewel on his gauntlet was still black.'],
       ['Narration', 'A three lit up on the lift display. Naiwa was still asleep. In the glass, Naishu stayed where he was and watched me press the button.'],
     ],
-    complete: 'Chapter two · End', completeNote: 'The ice has melted. The truth waits deeper in.', choose: 'Choose your way into the hall', mapHint: 'Use the map: complete forward-left-forward-left, then decode the second shard.', skipToMap: 'Return to the hall', voicePlay: 'Play Naishu voice clip', voiceStop: 'Stop audio', voiceError: 'Audio is unavailable', characterVoicePlay: 'Play Naiba voice', characterVoiceStop: 'Skip voice', narratorVoicePlay: 'Play narration',
+    complete: 'Chapter two · End', completeNote: 'The ice has melted. The truth waits deeper in.', choose: 'Choose your way into the hall', mapHint: 'Follow the current map target north. Each recovered exhibit leads to the next chamber.', skipToMap: 'Return to the hall', voicePlay: 'Play Naishu voice clip', voiceStop: 'Stop audio', voiceError: 'Audio is unavailable', characterVoicePlay: 'Play Naiba voice', characterVoiceStop: 'Skip voice', narratorVoicePlay: 'Play narration',
   },
 } as const
 

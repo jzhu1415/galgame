@@ -2,9 +2,26 @@ import assert from 'node:assert/strict';
 import { hasClearEvidencePath } from '../src/ice-pool/ice-interaction.js';
 import * as THREE from 'three';
 import { makeMirrorFragment, makeNote, makeRouteMarker, silverMaterial } from '../src/ice-pool/ice-props.js';
+import { ICE_LAYOUT, currentIceStage, canCollectIceEvidence } from '../src/ice-pool/ice-progression.js';
+
+const progress = new Set();
+for (const [stage, completedId] of [['note', 'note'], ['footage', 'footage'], ['routeOne', 'routeOne'],
+  ['shard', 'shard'], ['routeTwo', 'route'], ['echo', 'echo']]) {
+  assert.equal(currentIceStage(progress), stage, `The next objective must be ${stage}`);
+  for (const id of ['note', 'footage', 'shard', 'echo']) {
+    assert.equal(canCollectIceEvidence(id, progress), id === stage, `${id} must respect the current stage`);
+  }
+  progress.add(completedId);
+}
+assert.equal(currentIceStage(progress), 'core');
+assert.equal(currentIceStage(new Set(['route', 'echo'])), 'note', 'An out-of-order legacy save can complete missing objectives');
+assert.equal(currentIceStage(new Set(['note', 'footage', 'routeOne', 'route'])), 'shard', 'Legacy route completion does not hide a missing shard');
+assert.ok(ICE_LAYOUT.shard.z - ICE_LAYOUT.footage.z > 15);
+assert.ok(ICE_LAYOUT.echo.z - ICE_LAYOUT.shard.z > 25);
+assert.ok(ICE_LAYOUT.core.z - ICE_LAYOUT.echo.z > 20);
 
 for (const id of ['footage', 'shard', 'echo']) {
-  const model = makeMirrorFragment({ id, position: new THREE.Vector3(7.5, .72, 22.5) });
+  const model = makeMirrorFragment({ id, position: ICE_LAYOUT[id] });
   const bounds = new THREE.Box3().setFromObject(model);
   const size = bounds.getSize(new THREE.Vector3());
   assert.ok(size.x <= 1.3 && size.z <= 1.3, `${id} must fit inside the corridor`);

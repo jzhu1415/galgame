@@ -18,6 +18,8 @@ const cache = new Map();
 const opening = new Map([
   ['0:0', 'shallow'], ['2:0', 'giant'], ['4:0', 'giant'], ['2:2', 'deep'],
   ['0:2', 'dry'], ['-2:0', 'dark'], ['0:-2', 'spa'], ['-2:2', 'low'],
+  // Chapter two continues north through separate puzzle and core chambers.
+  ['0:4', 'dry'], ['0:6', 'rest'],
 ]);
 // Keep the original weighted selection stable. New terrain is an independent
 // replacement gate, so adding a profile cannot reshuffle unrelated old rooms.

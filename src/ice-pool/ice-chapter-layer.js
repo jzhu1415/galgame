@@ -1,31 +1,29 @@
 import * as THREE from 'three';
 import { silverMaterial, makeMirrorFragment, makeNote, makeRouteMarker } from './ice-props.js';
 import { hasClearEvidencePath } from './ice-interaction.js';
+import { ICE_LAYOUT, ICE_ROUTES, currentIceStage, canCollectIceEvidence } from './ice-progression.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
-const CORE_POSITION = new THREE.Vector3(7.5, 1.35, 82.5);
+const CORE_POSITION = ICE_LAYOUT.core;
 // A fixed, walkable room owns the route marks. Camera-relative placement could
 // send a mark through the Pool map's walls when the player faced a side wall.
-export const ROUTE_POINTS = [
-  [[12.1, 31.9], [12.1, 36.9], [7.1, 36.9], [7.1, 41.9], [2.1, 41.9]],
-  [[2.1, 31.9], [7.1, 31.9], [7.1, 36.9], [12.1, 36.9], [12.1, 41.9]],
-];
+export const ROUTE_POINTS = ICE_ROUTES;
 const CLUES = [
   {
-    id: 'footage', position: new THREE.Vector3(7.5, 0.72, 22.5), color: 0xb9dbe6,
+    id: 'footage', position: ICE_LAYOUT.footage, color: 0xb9dbe6,
     zh: '监控胶片 · 17号', en: 'Surveillance film · 17',
     clue: { zh: '胶片最后一格里，门外的人影比监控时间早一秒。', en: 'In the final frame, the shadow appears one second before the clock.' },
     evidence: { zh: '一段被冰水咬蚀的 8 毫米胶片，金属片框仍留着两帧倒置的走廊影像。', en: 'An ice-bitten 8 mm film strip. Two inverted corridor frames remain in its steel carrier.' },
   },
   {
-    id: 'shard', position: new THREE.Vector3(7.5, 0.72, 42.5), color: 0x9fd4e3,
+    id: 'shard', position: ICE_LAYOUT.shard, color: 0x9fd4e3,
     zh: '镜片 · 无编号', en: 'Mirror lens · unmarked',
     clue: { zh: '正面映出空走廊，背面却沾着一根新鲜的黑发。', en: 'The face reflects an empty hall; a fresh dark hair clings to its back.' },
     evidence: { zh: '一块凹面镜片嵌在碎镜框内。银层脱落处留下指纹状擦痕，背面粘着一缕黑发。', en: 'A concave lens in a fractured bezel. Finger-shaped wipes cross the worn silvering; a dark hair is caught on its back.' },
   },
   {
-    id: 'echo', position: new THREE.Vector3(7.5, 0.72, 62.5), color: 0xc1dce7,
+    id: 'echo', position: ICE_LAYOUT.echo, color: 0xc1dce7,
     zh: '声纹蜡片 · 02秒', en: 'Voiceprint wax · 02 sec',
     clue: { zh: '两段声纹完全重合，只有第二个心跳没有回声。', en: 'The two voiceprints overlap exactly. Only the second heartbeat has no echo.' },
     evidence: { zh: '一枚裂开的黑色录音蜡片压着银镜碎屑。波纹刻痕在第二次心跳处突然中断。', en: 'A cracked black recording wafer pressed against silvered glass. Its etched waveform stops at the second heartbeat.' },
@@ -43,12 +41,13 @@ const COPY = {
     routeApproach: '先按地图前往干燥房间的起点镜记，再依次走完四步。',
     routeStep: ['向前走到第一枚镜记', '向左走到第二枚镜记', '再向前走到第三枚镜记', '再向左走到最后一枚镜记'],
     routeWrong: '方向不对，镜面没有回应。回到这一步的正确方向再走。',
-    routeDone: '两段镜记已走完。继续寻找远处的镜面物证。', routeProgress: '路线',
+    routeDone: '第二段路线已完成。前往第二镜室收取回声物证。', routeProgress: '路线',
+    routeOneDone: '第一段路线已完成。寻找路线尽头的镜片。',
     secondCodeTitle: '第二枚碎片 · 密码', secondCodeKey: '第一段尽头的镜片刻着「右 · 前 · 右 · 前」。依次输入，开启第二段路。',
-    secondCodeFound: '第一段完成。镜片上出现第二道密码：右 · 前 · 右 · 前。', secondCodeSolved: '第二段密码已解开，继续沿镜记走。',
+    secondCodeFound: '镜片已收取。读取镜片上的第二密码，再前往第二段路线。', secondCodeSolved: '第二段密码已解开，继续沿镜记走。',
     secondRouteStart: '第二段：右 · 前 · 右 · 前。请按地面镜记实际行走。',
     secondRouteStep: ['向右走到第一枚镜记', '向前走到第二枚镜记', '再向右走到第三枚镜记', '再向前走到最后一枚镜记'],
-    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navCipher: '破解第二枚碎片', navRoute: '地面镜记', navCore: '中央镜心',
+    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navCipher: '读取已收取镜片上的第二密码', navRoute: '镜室地面镜记', navCore: '镜心室中央镜心',
     core: '三件镜面物证与两段路线均已确认。靠近镜心并按 E。',
     coreTouch: '靠近镜心后点击「进入镜心」', collect: '查看物证', enter: '进入镜心',
     collected: '已归档', locked: '镜心仍封闭：需要三件物证与完整路线。', exit: '离开镜馆',
@@ -71,12 +70,13 @@ const COPY = {
     routeApproach: 'Follow the map to the starting mark in the dry room, then walk the four steps.',
     routeStep: ['Walk forward to the first mirror mark', 'Walk left to the second mirror mark', 'Walk forward to the third mirror mark', 'Walk left to the final mirror mark'],
     routeWrong: 'Wrong direction. The mirror stays dark. Correct your course and try this leg again.',
-    routeDone: 'Both mirror routes are complete. Seek the distant exhibits.', routeProgress: 'Route',
+    routeDone: 'Route two is complete. Enter the second mirror room to recover the echo evidence.', routeProgress: 'Route',
+    routeOneDone: 'Route one is complete. Recover the shard at its end.',
     secondCodeTitle: 'SECOND FRAGMENT · CIPHER', secondCodeKey: 'The shard at the end of route one reads RIGHT · FORWARD · RIGHT · FORWARD. Enter the sequence to open route two.',
-    secondCodeFound: 'Route one complete. The next shard reveals RIGHT · FORWARD · RIGHT · FORWARD.', secondCodeSolved: 'Second cipher solved. Follow the next floor marks.',
+    secondCodeFound: 'Shard recovered. Read its second cipher, then head to route two.', secondCodeSolved: 'Second cipher solved. Follow the next floor marks.',
     secondRouteStart: 'Route two: right · forward · right · forward. Walk each floor mark.',
     secondRouteStep: ['Walk right to the first mark', 'Walk forward to the second mark', 'Walk right to the third mark', 'Walk forward to the final mark'],
-    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navCipher: 'Decode second shard', navRoute: 'Floor mirror mark', navCore: 'Central mirror',
+    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navCipher: 'Read the recovered shard cipher', navRoute: 'Mirror room floor marks', navCore: 'Core room central mirror',
     core: 'Three mirror exhibits and both routes are confirmed. Press E at the core.',
     coreTouch: 'Approach the core, then tap “Enter core”.', collect: 'Inspect evidence', enter: 'Enter core',
     collected: 'archived', locked: 'The core remains sealed: three exhibits and the complete route are required.', exit: 'Leave hall',
@@ -131,7 +131,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     group.traverse(object => { if (object.isMesh || object.isLineSegments) object.userData.clueId = id; });
     scene.add(group); groups.set(id, group);
   }
-  const notePosition = new THREE.Vector3(7.5, .05, 9.35);
+  const notePosition = ICE_LAYOUT.note;
   const noteGroup = makeNote(notePosition);
   noteGroup.userData.clueId = 'note';
   noteGroup.traverse(object => { if (object.isMesh || object.isLineSegments) object.userData.clueId = 'note'; });
@@ -163,6 +163,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   let routeAtStart = false;
   let routeStarted = false;
   let cipherOpen = false;
+  let firstCipherSolved = false;
   let cipherInput = [];
   let cipherFeedback = '';
   let lastNavAt = -Infinity;
@@ -203,6 +204,14 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     group.visible = false;
     group.position.copy(position);
     group.scale.copy(scale);
+    if (id === 'shard' && !found.has('route')) {
+      cipherOpen = true; cipherInput = []; cipherFeedback = '';
+      updateLabels();
+    }
+    refreshEvidenceVisibility();
+    if (id === 'footage' && firstCipherSolved && currentIceStage(found) === 'routeOne') {
+      routeStarted = true; routeStep = 0; routeAtStart = false; makeRouteMarkers();
+    }
     post('clue', id);
   }
   const routeMarkers = [];
@@ -217,6 +226,11 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   function isTouch() { return navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches; }
   function clueCount() { return CLUES.reduce((count, item) => count + Number(found.has(item.id)), 0); }
   function routeIndex() { return found.has('routeOne') ? 1 : 0; }
+  function refreshEvidenceVisibility() {
+    const stage = currentIceStage(found);
+    for (const spec of CLUES) groups.get(spec.id).visible = pickup?.id === spec.id || (!found.has(spec.id) && spec.id === stage);
+    groups.get('note').visible = !found.has('note');
+  }
   function routePoint(index) {
     const [x, z] = ROUTE_POINTS[routeIndex()][index];
     return new THREE.Vector3(x, .02, z);
@@ -269,10 +283,10 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     const noteStatus = document.querySelector('#ice-note-status');
     if (noteStatus) noteStatus.textContent = found.has('note') ? copy.noteFound : copy.sealed;
     const routeArchive = document.querySelector('#ice-route-archive');
-    if (routeArchive) routeArchive.textContent = found.has('route') ? copy.routeFound : found.has('routeOne') ? copy.secondCodeFound : found.has('note') ? copy.routeStart : copy.routeLocked;
+    if (routeArchive) routeArchive.textContent = found.has('route') ? copy.routeFound : found.has('routeOne') ? copy.routeOneDone : found.has('note') ? copy.routeStart : copy.routeLocked;
     const noteCipher = document.querySelector('#ice-note-cipher');
     if (noteCipher) noteCipher.hidden = !cipherOpen && !found.has('note');
-    const secondCipher = found.has('routeOne');
+    const secondCipher = found.has('note') && found.has('shard');
     const cipherTitle = document.querySelector('#ice-cipher-title');
     const cipherCode = document.querySelector('#ice-cipher-code');
     if (cipherTitle) cipherTitle.textContent = secondCipher ? copy.secondCodeTitle : copy.noteDecode;
@@ -284,7 +298,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (noteCipherHint) noteCipherHint.textContent = secondCipher ? copy.secondCodeKey : copy.noteKey;
     if (noteCipherAnswer) { noteCipherAnswer.textContent = secondCipher ? copy.secondRouteStart : copy.noteAnswer; noteCipherAnswer.hidden = secondCipher ? !routeStarted && !found.has('route') : !found.has('note'); }
     const cipherControls = document.querySelector('#ice-cipher-input');
-    if (cipherControls) cipherControls.hidden = secondCipher ? routeStarted || found.has('route') : found.has('note');
+    if (cipherControls) cipherControls.hidden = secondCipher ? routeStarted || found.has('route') : !cipherOpen;
     for (const button of document.querySelectorAll('[data-cipher-dir]')) {
       button.textContent = button.dataset.cipherDir === 'forward' ? copy.cipherForward : button.dataset.cipherDir === 'left' ? copy.cipherLeft : language === 'zh' ? '右' : 'Right';
       button.hidden = secondCipher ? button.dataset.cipherDir === 'left' : button.dataset.cipherDir === 'right';
@@ -333,14 +347,26 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   }
   function navigationTarget() {
     if (!found.has('note')) return { position: notePosition, label: language === 'zh' ? '入口便笺' : 'Entrance note' };
-    if (routeStarted && !found.has('route')) {
-      const marker = routeMarkers[0];
-      if (marker) return { position: marker.position, label: routeAtStart ? COPY[language].navRoute : COPY[language].routeApproach };
+    const stage = currentIceStage(found);
+    if (stage === 'footage' || stage === 'shard' || stage === 'echo') {
+      const spec = CLUES.find(entry => entry.id === stage);
+      const place = language === 'zh' ? ({ footage: '胶片室', shard: '第一镜室尽头', echo: '第二镜室尽头' })[stage] : ({ footage: 'Film room', shard: 'End of the first mirror room', echo: 'End of the second mirror room' })[stage];
+      if (Math.floor(camera.position.z / 15) !== Math.floor(spec.position.z / 15) && Math.abs(spec.position.x - 7.5) > 2) {
+        const room = Math.floor(spec.position.z / 15) * 15;
+        return { position: new THREE.Vector3(7.5, .02, room + 1.5), label: `${language === 'zh' ? '穿过北侧长廊进入' : 'Enter via the north corridor'} · ${place} · ${text(spec)}` };
+      }
+      return { position: spec.position, label: `${place} · ${text(spec)}` };
     }
-    if (found.has('routeOne') && !found.has('route')) return { position: camera.position, label: COPY[language].navCipher };
-    for (const id of ['footage', 'shard', 'echo']) {
-      const spec = CLUES.find(entry => entry.id === id);
-      if (!found.has(id) && spec) return { position: spec.position, label: text(spec) };
+    if (stage === 'routeTwo' && !routeStarted) return { position: camera.position, label: COPY[language].navCipher };
+    if (routeStarted && !found.has('route')) {
+      const point = routeMarkers[0]?.position;
+      if (point) {
+        if (Math.floor(camera.position.z / 15) !== Math.floor(point.z / 15) && Math.abs(point.x - 7.5) > 2) {
+          const room = Math.floor(point.z / 15) * 15;
+          return { position: new THREE.Vector3(7.5, .02, room + 1.5), label: `${language === 'zh' ? (routeIndex() ? '第二镜室 · 穿过北侧长廊进入' : '第一镜室 · 穿过北侧长廊进入') : (routeIndex() ? 'Second mirror room · enter via the north corridor' : 'First mirror room · enter via the north corridor')}` };
+        }
+        return { position: point, label: `${language === 'zh' ? (routeIndex() ? '第二镜室' : '第一镜室') : (routeIndex() ? 'Second mirror room' : 'First mirror room')} · ${COPY[language].navRoute}` };
+      }
     }
     return { position: CORE_POSITION, label: COPY[language].navCore };
   }
@@ -358,7 +384,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     const minX = Math.min(-34, camera.position.x - 8, target.position.x - 8);
     const maxX = Math.max(49, camera.position.x + 8, target.position.x + 8);
     const minZ = Math.min(-4, camera.position.z - 8, target.position.z - 8);
-    const maxZ = Math.max(88, camera.position.z + 8, target.position.z + 8);
+    const maxZ = Math.max(105, camera.position.z + 8, target.position.z + 8);
     const scale = Math.min((width - 30) / (maxX - minX), (height - 30) / (maxZ - minZ));
     const offsetX = (width - (maxX - minX) * scale) / 2;
     const offsetY = (height - (maxZ - minZ) * scale) / 2;
@@ -388,10 +414,11 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     drawFloor(6, 15, 9, 30);
     drawFloor(0, 30, 15, 45);
     drawFloor(6, 45, 9, 60);
-    drawFloor(5, 60, 10, 75);
+    drawFloor(0, 60, 15, 75);
     drawFloor(6, 75, 9, 90);
+    drawFloor(0, 90, 15, 105);
     const hallStart = mapPoint({ x: 7.5, z: 2.5 });
-    const hallEnd = mapPoint(CORE_POSITION);
+    const hallEnd = mapPoint({ x: 7.5, z: 104 });
     ctx.strokeStyle = 'rgba(181, 233, 240, .56)'; ctx.lineWidth = 2; ctx.setLineDash([5, 8]);
     ctx.beginPath(); ctx.moveTo(hallStart.x, hallStart.y); ctx.lineTo(hallEnd.x, hallEnd.y); ctx.stroke(); ctx.setLineDash([]);
     if (routeStarted && !found.has('route')) {
@@ -404,19 +431,13 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
       ctx.stroke(); ctx.setLineDash([]);
     }
     for (const [index, spec] of CLUES.entries()) {
+      if (!found.has(spec.id)) continue;
       const point = mapPoint(spec.position);
       if (point.y < 10 || point.y > height - 10) continue;
       ctx.strokeStyle = 'rgba(169, 226, 239, .52)'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(point.x - 17, point.y); ctx.lineTo(point.x + 17, point.y); ctx.stroke();
       ctx.fillStyle = found.has(spec.id) ? 'rgba(172, 223, 232, .55)' : '#cceef5';
       ctx.font = '700 13px sans-serif'; ctx.fillText(String(index + 1), point.x + 20, point.y + 4);
-    }
-    for (const spec of CLUES) {
-      if (found.has(spec.id)) continue;
-      const point = mapPoint(spec.position);
-      if (point.x < 8 || point.x > width - 8 || point.y < 8 || point.y > height - 8) continue;
-      ctx.fillStyle = 'rgba(142, 206, 220, .48)';
-      ctx.fillRect(point.x - 3, point.y - 3, 6, 6);
     }
     const raw = mapPoint(target.position);
     const tx = raw.x;
@@ -443,8 +464,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     }
     let nearest = null;
     let nearestDistance = 3.8;
+    const stage = currentIceStage(found);
     for (const spec of CLUES) {
-      if (found.has(spec.id) || spec.id === 'shard' && !found.has('route')) continue;
+      if (found.has(spec.id) || spec.id !== stage) continue;
       const distance = camera.position.distanceTo(spec.position);
       if (distance < nearestDistance && canInspect(spec.position)) { nearest = spec; nearestDistance = distance; }
     }
@@ -488,7 +510,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
       return;
     }
     const spec = CLUES.find(entry => entry.id === id);
-    if (id === 'shard' && !found.has('route')) return;
+    if (!canCollectIceEvidence(id, found)) return;
     if (!spec || !canInspect(spec.position)) return;
     found.add(id);
     const group = groups.get(id);
@@ -496,19 +518,22 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     showFeedback(`已取证 · ${text(spec)}`, `Recovered · ${text(spec)}`);
     if (isTouch()) navigator.vibrate?.(35);
     currentTarget = null;
+    refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
   }
   function chooseCipher(direction) {
-    if (!cipherOpen || found.has('route') || cipherInput.length >= 4) return;
+    if (!cipherOpen || currentIceStage(found) !== (found.has('note') ? (found.has('shard') ? 'routeTwo' : 'routeOne') : 'note') || cipherInput.length >= 4) return;
     cipherInput.push(direction);
     if (cipherInput.length === 4) {
-      const second = found.has('routeOne');
+      const second = found.has('note') && found.has('shard');
       if (cipherInput.join(',') === (second ? 'right,forward,right,forward' : 'forward,left,forward,left')) {
-        if (!second) { found.add('note'); post('clue', 'note'); }
-        routeStarted = true; routeStep = 0; routeAtStart = false; cipherOpen = false;
+        if (!second) { found.add('note'); post('clue', 'note'); firstCipherSolved = true; }
+        routeStarted = second ? !found.has('route') : currentIceStage(found) === 'routeOne'; routeStep = 0; routeAtStart = false; cipherOpen = false;
         cipherFeedback = second ? COPY[language].secondCodeSolved : COPY[language].cipherSolved;
         makeRouteMarkers();
         const note = groups.get('note'); if (note) note.visible = false;
+        refreshEvidenceVisibility();
+        if (!routeStarted) cipherFeedback = COPY[language].cipherSolved;
       } else {
         cipherFeedback = COPY[language].cipherWrong;
         cipherInput = [];
@@ -533,8 +558,8 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (storyPaused) return;
     if (event.repeat) return;
     if (cipherOpen) {
-      if (event.code === 'Digit1' || event.code === 'Numpad1') { event.preventDefault(); chooseCipher(found.has('routeOne') ? 'right' : 'forward'); return; }
-      if (event.code === 'Digit2' || event.code === 'Numpad2') { event.preventDefault(); chooseCipher(found.has('routeOne') ? 'forward' : 'left'); return; }
+      if (event.code === 'Digit1' || event.code === 'Numpad1') { event.preventDefault(); chooseCipher(found.has('note') && found.has('shard') ? 'right' : 'forward'); return; }
+      if (event.code === 'Digit2' || event.code === 'Numpad2') { event.preventDefault(); chooseCipher(found.has('note') && found.has('shard') ? 'forward' : 'left'); return; }
       if (event.code === 'Backspace') { event.preventDefault(); cipherInput.pop(); cipherFeedback = ''; updateCipherInput(); return; }
       if (event.code === 'Escape') { event.preventDefault(); return; }
       return;
@@ -561,15 +586,13 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (next?.language === 'en' || next?.language === 'zh') language = next.language;
     found.clear();
     for (const id of Array.isArray(next?.found) ? next.found : []) if (ALLOWED_CLUES.has(id)) found.add(id);
-    if (found.has('route')) found.add('routeOne');
-    for (const spec of CLUES) groups.get(spec.id).visible = !found.has(spec.id);
-    groups.get('shard').visible = found.has('route') && !found.has('shard');
-    groups.get('note').visible = !found.has('note');
-    if (found.has('route')) { routeStep = 4; routeStarted = true; }
-    else if (found.has('routeOne')) { routeStep = 0; routeStarted = false; cipherOpen = true; }
-    else if (found.has('note')) {
-      routeStarted = true; routeStep = 0; routeAtStart = false; makeRouteMarkers();
-    }
+    routeStep = 0; routeStarted = false; routeAtStart = false; cipherOpen = false;
+    firstCipherSolved = found.has('note'); cipherInput = []; cipherFeedback = ''; coreTriggered = false;
+    routeMarkers.forEach(marker => { scene.remove(marker); disposeObject(marker); }); routeMarkers.length = 0;
+    const stage = currentIceStage(found);
+    if (stage === 'routeTwo') cipherOpen = true;
+    if (stage === 'routeOne') { routeStarted = true; makeRouteMarkers(); }
+    refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
   }
   function setStoryPaused(paused) {
@@ -592,13 +615,14 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (routeStep >= 4) {
       if (!found.has('routeOne')) {
         found.add('routeOne'); post('clue', 'routeOne');
-        routeStarted = false; cipherOpen = true; cipherInput = [];
+        routeStarted = false; cipherOpen = false; cipherInput = [];
         cipherFeedback = COPY[language].secondCodeFound;
         if (document.pointerLockElement) document.exitPointerLock();
       } else {
         found.add('route'); post('clue', 'route');
-        groups.get('shard').visible = !found.has('shard');
+        routeStarted = false;
       }
+      refreshEvidenceVisibility();
       routeMarkers.forEach(marker => { marker.visible = false; });
     } else makeRouteMarkers();
     updateLabels(); updatePrompt();
@@ -682,6 +706,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   interact?.addEventListener('click', interactWithTarget);
   exit?.addEventListener('click', handleExit);
   archiveToggle?.addEventListener('click', handleArchiveToggle);
+  refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
   return { setInit, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose };
 }
