@@ -5,6 +5,11 @@ const SOURCE = 'naiwa-ice-map';
 const parentOrigin = window.location.origin;
 const layer = window.__naiwaIceLayer;
 
+window.addEventListener('naiwa-language-change', (event) => {
+  const language = event.detail?.language;
+  if (language === 'zh' || language === 'en') layer?.setLanguage(language);
+});
+
 referenceLanguage.start();
 
 window.addEventListener('message', (event) => {

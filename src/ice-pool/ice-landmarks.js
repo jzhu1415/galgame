@@ -122,15 +122,26 @@ export function createIceLandmarks({ scene }) {
   function makeCrystalCluster(specs) {
     const positions = [];
     const facetOrigins = [];
-    for (const { variantIndex, x, z, scale, height } of specs) {
+    const growthDirections = [];
+    for (const { variantIndex, x, z, scale, height, rootY = 0, rotation = [0, 0, 0], embed = .035 } of specs) {
       const shape = createCrystalParts(crystalVariantFor(variantIndex));
-      const transform = new THREE.Matrix4().makeScale(scale[0], height, scale[1]);
-      transform.setPosition(x, height / 2, z);
+      const orientation = new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation));
+      growthDirections.push(new THREE.Vector3(0, 1, 0).applyQuaternion(orientation).normalize().toArray());
+      const transform = new THREE.Matrix4().compose(
+        new THREE.Vector3(), orientation, new THREE.Vector3(scale[0], height, scale[1]),
+      );
       const vertex = new THREE.Vector3();
+      let minY = Infinity;
+      for (let i = 0; i < shape.positions.length; i += 3) {
+        vertex.set(shape.positions[i], shape.positions[i + 1], shape.positions[i + 2]).applyMatrix4(transform);
+        minY = Math.min(minY, vertex.y);
+      }
+      const origin = new THREE.Vector3(x, rootY - minY - embed, z);
+      transform.setPosition(origin);
       for (let i = 0; i < shape.positions.length; i += 3) {
         vertex.set(shape.positions[i], shape.positions[i + 1], shape.positions[i + 2]).applyMatrix4(transform);
         positions.push(vertex.x, vertex.y, vertex.z);
-        if (i % 9 === 0) facetOrigins.push([x, height / 2, z]);
+        if (i % 9 === 0) facetOrigins.push(origin.toArray());
       }
     }
     const geometry = new THREE.BufferGeometry();
@@ -138,6 +149,7 @@ export function createIceLandmarks({ scene }) {
     geometry.computeVertexNormals();
     geometry.userData.facetOrigins = facetOrigins;
     geometry.userData.crystal = true;
+    geometry.userData.growthDirections = growthDirections;
     return ownGeometry(geometry);
   }
   const fissureGeometry = ownGeometry(new THREE.BufferGeometry().setFromPoints([
@@ -154,25 +166,26 @@ export function createIceLandmarks({ scene }) {
   }
   const crystalGroups = [
     { x: 3.52, z: 63.65, entries: [
-      { variantIndex: 0, x: -.2, z: -.9, scale: [.66, .58], height: 2.7 },
-      { variantIndex: 1, x: .24, z: .78, scale: [.4, .39], height: 1.55 },
+      { variantIndex: 0, x: -.2, z: -.9, scale: [.66, .58], height: 2.7, rotation: [0, .12, -.08] },
+      { variantIndex: 1, x: .24, z: .78, scale: [.4, .39], height: 1.55, rotation: [.1, -.3, .32] },
     ] },
     { x: 3.55, z: 70.15, entries: [
-      { variantIndex: 2, x: -.24, z: -1.0, scale: [.59, .52], height: 2.4 },
-      { variantIndex: 0, x: .22, z: .92, scale: [.44, .39], height: 1.85 },
+      { variantIndex: 2, x: -.24, z: -1.0, scale: [.59, .52], height: 2.4, rotation: [-.08, .28, -.27] },
+      { variantIndex: 0, x: .22, z: .92, scale: [.44, .39], height: 1.85, rotation: [.14, -.2, .24] },
     ] },
     { x: 11.36, z: 63.6, entries: [
-      { variantIndex: 1, x: -.2, z: -1.0, scale: [.6, .52], height: 2.5 },
-      { variantIndex: 2, x: .23, z: .87, scale: [.43, .38], height: 1.75 },
+      { variantIndex: 1, x: -.2, z: -1.0, scale: [.6, .52], height: 2.5, rotation: [.12, -.16, -.22] },
+      { variantIndex: 2, x: .23, z: .87, scale: [.43, .38], height: 1.75, rotation: [-.1, .3, .29] },
     ] },
     { x: 11.42, z: 70.75, entries: [
-      { variantIndex: 0, x: -.24, z: -1.05, scale: [.64, .53], height: 2.75 },
-      { variantIndex: 1, x: .2, z: .98, scale: [.38, .4], height: 1.55 },
+      { variantIndex: 0, x: -.24, z: -1.05, scale: [.64, .53], height: 2.75, rotation: [-.15, .2, .12] },
+      { variantIndex: 1, x: .2, z: .98, scale: [.38, .4], height: 1.55, rotation: [.08, -.2, -.34] },
     ] },
   ];
   for (const cluster of crystalGroups) {
     const members = cluster.entries.map(entry => ({ ...entry, x: entry.x, z: entry.z }));
-    mesh(makeCrystalCluster(members), ice, cluster.x, 0, cluster.z);
+    const object = mesh(makeCrystalCluster(members), ice, cluster.x, 0, cluster.z);
+    object.userData.growthSurface = 'floor';
   }
   function makeFloatingCrystal(variantIndex) {
     const profile = crystalVariantFor(variantIndex);
@@ -226,86 +239,35 @@ export function createIceLandmarks({ scene }) {
     floating.push({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
     addFissures(crystal);
   });
-  // Narrow side-wall mirror slivers distinguish this chamber from the doorway.
-  for (const [x, z, angle] of [[3.13, 63.6, -.15], [11.87, 67.0, .15], [3.12, 71.0, .12], [11.88, 62.0, -.12]]) {
-    const pane = beam(x, 1.72, z, .045, 1.35, .56, glass);
-    pane.rotation.y = angle;
-    const rim = beam(x + (x < 7.5 ? .045 : -.045), 1.72, z, .06, 1.45, .64, edge);
-    rim.rotation.y = angle;
+  // Wall-grown shards angle inward and up from the side surfaces.
+  for (const [side, x, tilt] of [['left', 3.16, -.48], ['right', 11.84, .48]]) {
+    const specs = [
+      { variantIndex: side === 'left' ? 2 : 1, x: 0, z: -.35, scale: [.55, .5], height: 1.75, rootY: .85, rotation: [0, .18, tilt] },
+      { variantIndex: 0, x: side === 'left' ? .36 : -.36, z: .52, scale: [.36, .32], height: 1.05, rootY: 1.05, rotation: [.12, -.2, tilt * .68] },
+    ];
+    const wallGrowth = mesh(makeCrystalCluster(specs), ice, x, 0, side === 'left' ? 66 : 69);
+    wallGrowth.userData.growthSurface = 'wall';
   }
 
-  // 3. Pair of damaged standing mirrors. The inset glass-metal faces have a
-  // chipped crown and a beveled rim, with visible surface fractures.
-  function mirrorSilhouette(inset = false) {
-    const shape = new THREE.Shape();
-    const points = inset
-      ? [[-.55, .25], [-.52, 1.45], [-.54, 2.27], [-.34, 2.34], [-.2, 2.22], [-.06, 2.39], [.12, 2.2], [.29, 2.32], [.53, 2.25], [.55, .25]]
-      : [[-.7, .16], [-.67, 1.48], [-.7, 2.43], [-.42, 2.52], [-.27, 2.4], [-.08, 2.58], [.09, 2.31], [.27, 2.5], [.4, 2.34], [.67, 2.42], [.7, .16]];
-    shape.moveTo(...points[0]);
-    for (const point of points.slice(1)) shape.lineTo(...point);
-    shape.closePath();
-    return shape;
-  }
-  function mirrorFrameGeometry() {
-    const shape = mirrorSilhouette(false);
-    const hole = new THREE.Path();
-    const points = [[-.57, .29], [.57, .29], [.55, 2.28], [.32, 2.2], [.13, 2.08], [-.04, 2.23], [-.22, 2.06], [-.37, 2.2], [-.55, 2.14]];
-    hole.moveTo(...points[0]);
-    for (const point of points.slice(1)) hole.lineTo(...point);
-    hole.closePath();
-    shape.holes.push(hole);
-    return ownGeometry(new THREE.ExtrudeGeometry(shape, {
-      depth: .08, bevelEnabled: true, bevelSegments: 1, steps: 1,
-      bevelSize: .035, bevelThickness: .035,
-    }));
-  }
-  function mirrorFaceGeometry() {
-    return ownGeometry(new THREE.ExtrudeGeometry(mirrorSilhouette(true), {
-      depth: .09, bevelEnabled: true, bevelSegments: 1, steps: 1,
-      bevelSize: .025, bevelThickness: .025,
-    }));
-  }
-  function mergeBoxParts(parts) {
-    const positions = [];
-    for (const [w, h, d, x, y, z] of parts) {
-      const part = new THREE.BoxGeometry(w, h, d).toNonIndexed();
-      const matrix = new THREE.Matrix4().makeTranslation(x, y, z);
-      const attribute = part.getAttribute('position');
-      const vertex = new THREE.Vector3();
-      for (let i = 0; i < attribute.count; i++) {
-        vertex.fromBufferAttribute(attribute, i).applyMatrix4(matrix);
-        positions.push(vertex.x, vertex.y, vertex.z);
-      }
-      part.dispose();
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.computeVertexNormals();
-    return ownGeometry(geometry);
-  }
-  for (const [side, x] of [['left', 4.5], ['right', 10.5]]) {
-    const mirror = new THREE.Group();
-    mirror.name = `ice-core-standing-mirror-${side}`;
-    mirror.userData.kind = 'brokenStandingMirror';
-    mirror.position.set(x, 0, 100);
-    mirror.rotation.y = Math.PI;
-    root.add(mirror);
-    silver.side = THREE.DoubleSide;
-    mesh(mirrorFrameGeometry(), silver, 0, .1, 0, mirror);
-    mesh(mirrorFaceGeometry(), silver, 0, .1, .11, mirror);
-    const footing = mesh(mergeBoxParts([
-      [.98, .14, .5, 0, .07, 0], [.2, .25, .18, 0, .24, 0],
-    ]), silver, 0, 0, 0, mirror);
-    footing.name = 'mirror-footing';
-    const crackGeometry = ownGeometry(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-.25, .62, .23), new THREE.Vector3(-.04, .91, .23),
-      new THREE.Vector3(-.04, .91, .23), new THREE.Vector3(-.18, 1.21, .23),
-      new THREE.Vector3(.27, 1.42, .23), new THREE.Vector3(.08, 1.7, .23),
-      new THREE.Vector3(.08, 1.7, .23), new THREE.Vector3(.19, 2.02, .23),
-    ]));
-    mirror.add(new THREE.LineSegments(crackGeometry, ownMaterial(new THREE.LineBasicMaterial({
-      color: 0x334a52, transparent: true, opacity: .38,
-    }))));
+  // Low, broad mineral growth frames the former mirror core, with one strong
+  // diagonal crystal on each side instead of a freestanding mirror silhouette.
+  const coreClusters = [
+    { x: 5.0, z: 99.7, entries: [
+      { variantIndex: 2, x: -.2, z: -.48, scale: [.62, .55], height: 2.35, rotation: [0, .2, -.34] },
+      { variantIndex: 1, x: .28, z: .42, scale: [.48, .44], height: 1.55, rotation: [.08, -.28, .18] },
+      { variantIndex: 0, x: -.55, z: .52, scale: [.34, .33], height: 1.12, rotation: [-.1, .2, -.12] },
+    ] },
+    { x: 10.0, z: 100.2, entries: [
+      { variantIndex: 0, x: .2, z: -.5, scale: [.62, .55], height: 2.35, rotation: [0, -.2, .34] },
+      { variantIndex: 2, x: -.28, z: .42, scale: [.48, .44], height: 1.55, rotation: [-.08, .28, -.18] },
+      { variantIndex: 1, x: .55, z: .52, scale: [.34, .33], height: 1.12, rotation: [.1, -.2, .12] },
+    ] },
+  ];
+  for (const cluster of coreClusters) {
+    const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
+    object.name = cluster.x < 7.5 ? 'ice-core-crystal-left' : 'ice-core-crystal-right';
+    object.userData.kind = 'coreCrystalCluster';
+    object.userData.growthSurface = 'floor';
   }
 
   scene.add(root);

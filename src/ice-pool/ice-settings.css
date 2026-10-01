@@ -1,0 +1,137 @@
+/* Player-facing Frozen Mirror Hall settings: restrained ice-blue metalwork. */
+#reference-settings {
+  padding: max(.65rem, env(safe-area-inset-top)) max(.65rem, env(safe-area-inset-right))
+    max(.65rem, env(safe-area-inset-bottom)) max(.65rem, env(safe-area-inset-left));
+  background: rgba(4, 14, 20, .72);
+  -webkit-backdrop-filter: blur(5px) brightness(.8);
+  backdrop-filter: blur(5px) brightness(.8);
+}
+#reference-settings[hidden] { display: grid; }
+.settings-panel {
+  width: min(92vw, 29rem);
+  max-height: min(88dvh, 46rem);
+  padding: clamp(1rem, 3.4vw, 1.55rem);
+  border: 1px solid rgba(178, 219, 229, .32);
+  border-radius: .65rem;
+  background: linear-gradient(145deg, rgba(19, 42, 56, .96), rgba(8, 23, 34, .97));
+  box-shadow: 0 .7rem 2rem rgba(0, 8, 14, .38), inset 0 1px rgba(231, 249, 251, .08);
+}
+.settings-panel::before,
+.settings-panel::after { display: none; }
+.settings-header { gap: .8rem; }
+.settings-kicker { margin-bottom: .35rem; color: rgba(172, 213, 225, .68); letter-spacing: .2em; }
+.settings-panel h1 {
+  color: #e3f1f3;
+  font: 500 clamp(1.65rem, 6vw, 2.1rem)/1.08 Georgia, "Songti SC", serif;
+  letter-spacing: .04em;
+  text-shadow: 0 1px rgba(0, 0, 0, .35);
+}
+.settings-rule {
+  margin: .9rem 0 .55rem;
+  background: linear-gradient(90deg, transparent, rgba(163, 211, 222, .34), transparent);
+}
+.setting-row {
+  grid-template-columns: 2.3rem minmax(0, 1fr);
+  gap: .72rem;
+  margin-top: .55rem;
+  padding: .65rem .72rem;
+  border: 1px solid rgba(168, 208, 218, .17);
+  border-radius: .38rem;
+  background: rgba(180, 218, 225, .035);
+  box-shadow: inset 0 1px rgba(236, 248, 250, .035);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.setting-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid rgba(169, 211, 222, .2);
+  border-radius: .35rem;
+  color: rgba(193, 227, 233, .8);
+  background: rgba(117, 166, 179, .08);
+  box-shadow: none;
+  text-shadow: none;
+}
+.setting-control { gap: .38rem; }
+.setting-label label,
+.setting-toggle-title { color: rgba(226, 241, 243, .9); letter-spacing: .035em; }
+.setting-label output {
+  min-width: 3rem;
+  padding: .23rem .36rem;
+  border-color: rgba(174, 213, 222, .15);
+  border-radius: .25rem;
+  color: rgba(205, 230, 234, .8);
+  background: rgba(0, 10, 16, .18);
+  box-shadow: none;
+}
+.setting-scale { color: rgba(177, 211, 219, .58); letter-spacing: .025em; }
+input[type="range"]::-webkit-slider-runnable-track {
+  border-color: rgba(165, 205, 215, .2);
+  border-radius: .15rem;
+  background: rgba(111, 158, 173, .2);
+  box-shadow: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  border-radius: .2rem;
+  background: #a9cbd2;
+  box-shadow: 0 0 0 2px rgba(169, 203, 210, .12);
+}
+input[type="range"]::-moz-range-track {
+  border-radius: .15rem;
+  background: rgba(111, 158, 173, .2);
+  box-shadow: none;
+}
+input[type="range"]::-moz-range-thumb {
+  border-radius: .2rem;
+  background: #a9cbd2;
+  box-shadow: none;
+}
+.quality-select {
+  min-height: 2.25rem;
+  border-color: rgba(173, 214, 223, .22);
+  border-radius: .3rem;
+  color: #e2eff1;
+  background-color: rgba(24, 52, 66, .98);
+  letter-spacing: .025em;
+}
+.quality-note,
+.settings-hint { color: rgba(178, 211, 219, .56); letter-spacing: .025em; }
+.settings-actions { grid-template-columns: 1fr 1.35fr; gap: .55rem; margin-top: .85rem; }
+.settings-actions button {
+  min-height: 2.6rem;
+  padding: .65rem .75rem;
+  border-color: rgba(180, 218, 226, .24);
+  border-radius: .35rem;
+  color: #dcebed;
+  letter-spacing: .045em;
+}
+.settings-reset,
+.settings-continue {
+  background: rgba(126, 173, 186, .09);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.settings-continue { background: rgba(114, 166, 181, .2); }
+.settings-actions button:hover { transform: none; border-color: rgba(194, 231, 237, .5); }
+.settings-hint { margin-top: .65rem; font-size: .62rem; }
+
+html:lang(en) .settings-panel { width: min(92vw, 29rem); }
+html:lang(en) .settings-panel h1 { font-size: clamp(1.55rem, 5vw, 2rem); }
+html:lang(en) .settings-kicker { font-size: .62rem; letter-spacing: .16em; }
+html:lang(en) .setting-label { flex-wrap: nowrap; }
+html:lang(en) .setting-label label,
+html:lang(en) .setting-toggle-title { font-size: .8rem; line-height: 1.25; }
+html:lang(en) .setting-label output { font-size: .63rem; }
+html:lang(en) .setting-scale { font-size: .58rem; line-height: 1.2; }
+
+@media (max-height: 620px) {
+  .settings-panel { max-height: 94dvh; padding: .8rem 1rem; }
+  .settings-rule { margin: .6rem 0 .3rem; }
+  .setting-row { margin-top: .35rem; padding: .48rem .62rem; }
+  .settings-hint { margin-top: .4rem; }
+}
+@media (max-width: 420px) {
+  .settings-panel { width: 94vw; }
+  .settings-actions button { min-height: 2.45rem; font-size: .63rem; }
+}

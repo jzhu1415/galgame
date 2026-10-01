@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#132e48" />
-    <meta name="description" content="进入冰封镜馆，探索池厅式镜面空间并找回三条线索。" />
-    <title>冰封镜馆 · 第二章</title>
+    <meta name="description" content="进入冰封镜馆，沿着结霜的镜面长廊寻找失落的证词。" data-i18n-content="page.description" />
+    <title>冰封镜馆 · NAIWA</title>
     <style>
       :root { color-scheme: dark; }
       * { box-sizing: border-box; }
@@ -301,9 +301,10 @@
       }
     </style>
     <link rel="stylesheet" href="/src/ice-map.css" />
+    <link rel="stylesheet" href="/src/ice-pool/ice-settings.css" />
   </head>
   <body>
-    <canvas id="reference-world" aria-label="冰封镜馆三维地图"></canvas>
+    <canvas id="reference-world" aria-label="冰封镜馆三维地图" data-i18n-aria-label="game.canvas"></canvas>
     <div id="underwater-filter" aria-hidden="true"></div>
     <div id="touch-hud" class="is-playing" aria-hidden="false">
       <button class="touch-menu" id="touch-menu" type="button" data-i18n-aria-label="touch.menu" aria-label="打开场景设置">•••</button>
@@ -319,7 +320,7 @@
         </button>
       </div>
     </div>
-    <section id="reference-entry" class="is-hidden" aria-label="进入冰封镜馆">
+    <section id="reference-entry" class="is-hidden" aria-label="进入冰封镜馆" data-i18n-aria-label="entry.label">
       <div class="entry-copy">
         <strong data-i18n="game.title">泳池空间</strong>
         <small id="entry-hint" data-i18n="entry.keyboard">WASD 移动 · Space 跳跃/上浮 · Shift 加速/下潜 · Esc 设置</small>
@@ -329,24 +330,11 @@
       <div class="settings-panel">
         <div class="settings-header">
           <div>
-            <p class="settings-kicker" data-i18n="settings.kicker">环境调节</p>
-            <h1 id="settings-title" data-i18n="settings.title">场景设置</h1>
+            <p class="settings-kicker" data-i18n="settings.kicker">NAIWA · 第二章</p>
+            <h1 id="settings-title" data-i18n="settings.title">游戏设置</h1>
           </div>
         </div>
         <div class="settings-rule"></div>
-
-        <div class="setting-row">
-          <div class="setting-icon" aria-hidden="true">⌘</div>
-          <div class="setting-control">
-            <div class="setting-label">
-              <label for="map-selection" data-i18n="map.label">地图</label>
-            </div>
-            <select class="quality-select" id="map-selection" name="map-selection" autocomplete="off" aria-describedby="map-note" disabled aria-disabled="true">
-              <option value="reference" selected data-i18n="map.reference">参考版（默认）</option>
-            </select>
-            <p class="quality-note" id="map-note">冰封镜馆固定使用参考版池厅空间。</p>
-          </div>
-        </div>
 
         <div class="setting-row">
           <div class="setting-icon" aria-hidden="true">◎</div>
@@ -374,7 +362,7 @@
               <option value="balanced" selected data-i18n="quality.balanced">平衡（推荐）</option>
               <option value="performance" data-i18n="quality.performance">性能优先</option>
             </select>
-            <p class="quality-note" id="quality-note" data-i18n="quality.note">调整分辨率、水体刷新与光照数量，场景布局和材质保持不变。</p>
+            <p class="quality-note" id="quality-note" data-i18n="quality.note">选择画面细节与流畅度。</p>
           </div>
         </div>
 
@@ -395,7 +383,7 @@
           <div class="setting-icon" aria-hidden="true">✦</div>
           <div class="setting-control">
             <div class="setting-label">
-              <label for="light-brightness" data-i18n="light.label">光源亮度</label>
+              <label for="light-brightness" data-i18n="light.label">画面亮度</label>
               <output id="light-brightness-value" for="light-brightness">100%</output>
             </div>
             <input id="light-brightness" type="range" min="30" max="180" value="100" step="1" />
@@ -404,49 +392,15 @@
         </div>
 
         <div class="setting-row">
-          <div class="setting-icon" aria-hidden="true">▥</div>
+          <div class="setting-icon" aria-hidden="true">⌖</div>
           <div class="setting-control">
             <div class="setting-label">
-              <label for="surface-reflection" data-i18n="reflection.label">地板与墙壁反光</label>
-              <output id="surface-reflection-value" for="surface-reflection">80%</output>
+              <label for="look-sensitivity" data-i18n="look.label">视角灵敏度</label>
+              <output id="look-sensitivity-value" for="look-sensitivity">100%</output>
             </div>
-            <input id="surface-reflection" type="range" min="0" max="100" value="80" step="1" />
-            <div class="setting-scale"><span data-i18n="reflection.low">无反光</span><span data-i18n="reflection.high">强反光</span></div>
-          </div>
-        </div>
-
-        <label class="setting-row setting-toggle-row" for="multicolor-tiles">
-          <span class="setting-icon" aria-hidden="true">▦</span>
-          <span class="setting-control">
-            <span class="setting-toggle-topline">
-              <span class="setting-toggle-title" data-i18n="tiles.multicolor.label">多色瓷砖</span>
-              <input class="setting-switch" id="multicolor-tiles" name="multicolor-tiles" type="checkbox" role="switch" checked aria-describedby="multicolor-tiles-note" />
-            </span>
-            <span class="quality-note" id="multicolor-tiles-note" data-i18n="tiles.multicolor.note">显示零散的蓝色与黑色瓷砖。</span>
-          </span>
-        </label>
-
-        <div class="setting-row">
-          <div class="setting-icon" aria-hidden="true">↗</div>
-          <div class="setting-control">
-            <div class="setting-label">
-              <label for="movement-speed" data-i18n="speed.label">移动速度</label>
-              <output id="movement-speed-value" for="movement-speed">100%</output>
-            </div>
-            <input id="movement-speed" type="range" min="25" max="300" value="100" step="5" />
-            <div class="setting-scale"><span data-i18n="speed.low">缓慢 · 25%</span><span data-i18n="speed.high">快速 · 300%</span></div>
-          </div>
-        </div>
-
-        <div class="setting-row">
-          <div class="setting-icon" aria-hidden="true">↓</div>
-          <div class="setting-control">
-            <div class="setting-label">
-              <label for="gravity-strength" data-i18n="gravity.label">重力</label>
-              <output id="gravity-strength-value" for="gravity-strength">100%</output>
-            </div>
-            <input id="gravity-strength" type="range" min="25" max="200" value="100" step="5" />
-            <div class="setting-scale"><span data-i18n="gravity.low">轻盈 · 25%</span><span data-i18n="gravity.high">沉重 · 200%</span></div>
+            <input id="look-sensitivity" name="look-sensitivity" type="range" min="40" max="180" value="100" step="1" aria-describedby="look-note" />
+            <div class="setting-scale"><span data-i18n="look.low">缓慢</span><span data-i18n="look.high">灵敏</span></div>
+            <p class="quality-note" id="look-note" data-i18n="look.note">同时调整鼠标和触屏视角速度。</p>
           </div>
         </div>
 
@@ -457,6 +411,16 @@
         <p class="settings-hint" data-i18n="settings.hint">再次按 ESC 或选择“继续探索”返回场景</p>
       </div>
     </section>
+    <div id="fixed-scene-settings" hidden aria-hidden="true" inert>
+      <select id="map-selection" disabled aria-disabled="true"><option value="reference" selected>Reference</option></select>
+      <input id="surface-reflection" type="range" min="0" max="100" value="80" tabindex="-1" />
+      <output id="surface-reflection-value">80%</output>
+      <input id="multicolor-tiles" type="checkbox" checked tabindex="-1" />
+      <input id="movement-speed" type="range" min="25" max="300" value="100" tabindex="-1" />
+      <output id="movement-speed-value">100%</output>
+      <input id="gravity-strength" type="range" min="25" max="200" value="100" tabindex="-1" />
+      <output id="gravity-strength-value">100%</output>
+    </div>
     <div id="ice-map-overlay" aria-live="polite">
       <header class="ice-map-heading">
         <p class="ice-map-kicker">CHAPTER TWO · ICE ARCHIVE</p>

@@ -43,7 +43,14 @@ for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
 assert.ok(has('note'));
 assert.equal(has('routeOne'), false);
 collect('footage');
-for (const [x, z] of ROUTE_POINTS[0]) { approach({ x: x + 1.1, z: z + .8 }); tick(); }
+for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
+  approach({ x: x + 1.1, z: z + .8 }); tick();
+  if (index === 2) {
+    const pose = camera.position.clone();
+    layer.setLanguage('en');
+    assert.ok(camera.position.equals(pose), 'Changing settings language must not teleport the player');
+  }
+}
 assert.ok(has('routeOne'), 'First route starts after footage');
 assert.equal(has('route'), false);
 collect('shard');

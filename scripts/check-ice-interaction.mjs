@@ -12,11 +12,15 @@ landmarkScene.updateMatrixWorld(true);
 const walkingLane = new THREE.Box3(new THREE.Vector3(6.5, .2, 30), new THREE.Vector3(8.5, 2.7, 105));
 let meshCount = 0;
 const floatingCrystals = [];
+const growthSurfaces = new Set();
+const growthDirections = [];
 landmarkScene.traverse(object => {
   if (!object.isMesh) return;
   meshCount++;
   assert.notEqual(object.geometry.type, 'TorusGeometry', 'Landmarks no longer contain ambiguous D-shaped supports');
   if (object.userData.floatingCrystal) floatingCrystals.push(object);
+  if (object.userData.growthSurface) growthSurfaces.add(object.userData.growthSurface);
+  growthDirections.push(...(object.geometry.userData.growthDirections || []));
   if (object.material.transmission > 0) {
     assert.equal(object.material.metalness, 0, 'Crystal is a dielectric, not painted metal');
     assert.ok(object.material.transmission >= .9 && object.material.roughness < .06);
@@ -40,10 +44,13 @@ landmarkScene.traverse(object => {
 });
 assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
 for (const side of ['left', 'right']) {
-  const mirror = landmarkScene.getObjectByName(`ice-core-standing-mirror-${side}`);
-  assert.equal(mirror?.userData.kind, 'brokenStandingMirror', 'The core landmark must read as a standing mirror');
-  assert.ok(new THREE.Box3().setFromObject(mirror).getSize(new THREE.Vector3()).y > 1.8);
+  assert.equal(landmarkScene.getObjectByName(`ice-core-standing-mirror-${side}`), undefined);
+  const cluster = landmarkScene.getObjectByName(`ice-core-crystal-${side}`);
+  assert.equal(cluster?.userData.kind, 'coreCrystalCluster', 'Core landmarks grow as crystal clusters');
 }
+assert.ok(growthSurfaces.has('floor') && growthSurfaces.has('wall'), 'Crystals grow from both floor and walls');
+assert.ok(growthDirections.length > 4 && new Set(growthDirections.map(direction => direction.map(value => value.toFixed(2)).join(','))).size > 4,
+  'Crystals grow in varied directions');
 assert.ok(floatingCrystals.length >= 2, 'The hall has both grounded and floating crystals');
 const poses = floatingCrystals.map(object => ({ position: object.position.clone(), rotation: object.rotation.clone() }));
 landmarks.update(.1, 11, { found: new Set(['routeOne']) });

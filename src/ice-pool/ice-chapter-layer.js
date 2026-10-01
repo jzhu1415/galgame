@@ -617,6 +617,12 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
   }
+  function setLanguage(nextLanguage) {
+    if (nextLanguage !== 'zh' && nextLanguage !== 'en') return;
+    language = nextLanguage;
+    updateLabels();
+    updatePrompt();
+  }
   function setStoryPaused(paused) {
     storyPaused = paused;
     window.dispatchEvent(new Event(paused ? 'naiwa-story-pause' : 'naiwa-story-resume'));
@@ -747,6 +753,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   archiveToggle?.addEventListener('click', handleArchiveToggle);
   refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
-  return { setInit, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
+  return { setInit, setLanguage, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
     refreshReflections: () => reflections.refresh(camera) };
 }

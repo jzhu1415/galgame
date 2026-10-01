@@ -13,7 +13,6 @@ import { referenceRoomColumn, isReferenceCorridor } from './environment/RoomArch
 import { addChunkLights, applyFixturePreset, PoolLighting, PoolLightPlanCache } from './environment/PoolLighting.js';
 import { addChunkPoolAccess, PoolAccessPlanCache } from './environment/PoolAccessFixtures.js';
 import { createTileAccentStyle } from './environment/TileAccents.js';
-import { bindTileAccentSettings } from './environment/TileAccentSettings.js';
 import { isCurvedRoom } from './environment/CurvedRoomProfiles.js';
 import { addCurvedRoomGeometry, sampleCurvedRoom, curvedRoomCollision,
   curvedPoolBounds, curvedPoolWall } from './environment/CurvedRooms.js';
@@ -45,6 +44,8 @@ const movementSpeedValue = document.querySelector('#movement-speed-value');
 const gravityStrengthValue = document.querySelector('#gravity-strength-value');
 const masterVolumeInput = document.querySelector('#master-volume');
 const masterVolumeValue = document.querySelector('#master-volume-value');
+const lookSensitivityInput = document.querySelector('#look-sensitivity');
+const lookSensitivityValue = document.querySelector('#look-sensitivity-value');
 const playerSettings = { movementSpeed: 1, gravity: 1 };
 const qualityPresetInput = document.querySelector('#quality-preset');
 const touchHud = document.querySelector('#touch-hud');
@@ -54,6 +55,31 @@ const touchRiseButton = document.querySelector('#touch-rise');
 const touchDiveButton = document.querySelector('#touch-dive');
 const entryHint = document.querySelector('#entry-hint');
 bindMapSelection({ select: mapSelectionInput, location: window.location });
+const SETTINGS_STORAGE_KEY = 'naiwa-ice-player-settings-v1';
+const DEFAULT_SETTINGS = Object.freeze({ brightness: 100, volume: 65, look: 100 });
+function readPlayerSettings() {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+    for (const [key, input] of [['brightness', lightBrightnessInput], ['volume', masterVolumeInput], ['look', lookSensitivityInput]]) {
+      const value = Number(saved[key]);
+      if (Number.isFinite(value)) input.value = String(THREE.MathUtils.clamp(value, Number(input.min), Number(input.max)));
+    }
+  } catch {
+    // Keep the declared defaults when storage is unavailable or malformed.
+  }
+}
+function persistPlayerSettings() {
+  try {
+    window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({
+      brightness: Number(lightBrightnessInput.value),
+      volume: Number(masterVolumeInput.value),
+      look: Number(lookSensitivityInput.value),
+    }));
+  } catch {
+    // Current-session settings remain usable when storage is unavailable.
+  }
+}
+readPlayerSettings();
 const WATER_LEVEL = -0.12;
 const EYE_HEIGHT = 1.7;
 const CHUNK_SIZE = 16;
@@ -181,6 +207,7 @@ if (import.meta.hot) import.meta.hot.dispose(() => skylightSky.dispose());
 
 const controls = new PointerLockControls(camera, document.body);
 controls.pointerSpeed = 0.72;
+applyLookSettings();
 
 const audioSystem = new AudioSystem({
   camera, scene, mobile: isMobilePlatform, quality: qualityPresetName,
@@ -343,12 +370,9 @@ function makeTileTextures() {
 
 const tileTextures = makeTileTextures();
 const tileAccentStyle = createTileAccentStyle();
-const tileAccentSettings = bindTileAccentSettings({
-  input: document.querySelector('#multicolor-tiles'),
-  onChange: enabled => tileAccentStyle.setEnabled(enabled),
-});
+// The tile variation is a fixed scene treatment here, not a player setting.
+tileAccentStyle.setEnabled(true);
 if (import.meta.hot) import.meta.hot.dispose(() => {
-  tileAccentSettings.dispose();
   tileAccentStyle.dispose();
 });
 
@@ -1732,6 +1756,7 @@ function applySceneSettings() {
   poolLighting.setBrightness(lightScale);
   lightBrightnessValue.value = `${lightBrightnessInput.value}%`;
   surfaceReflectionValue.value = `${surfaceReflectionInput.value}%`;
+  persistPlayerSettings();
 }
 
 applySceneSettings();
@@ -1749,6 +1774,14 @@ function applyAudioSettings() {
   const volume = THREE.MathUtils.clamp(Number(masterVolumeInput.value) / 100, 0, 1);
   audioSystem.setVolume('MASTER', volume);
   masterVolumeValue.value = `${Math.round(volume * 100)}%`;
+  persistPlayerSettings();
+}
+
+function applyLookSettings() {
+  const scale = THREE.MathUtils.clamp(Number(lookSensitivityInput.value) / 100, 0.4, 1.8);
+  controls.pointerSpeed = 0.72 * scale;
+  lookSensitivityValue.value = `${Math.round(scale * 100)}%`;
+  persistPlayerSettings();
 }
 
 applyAudioSettings();
@@ -2486,8 +2519,9 @@ canvas.addEventListener('pointermove', (event) => {
   const dy = event.clientY - touchLookY;
   touchLookX = event.clientX;
   touchLookY = event.clientY;
-  camera.rotation.y -= dx * 0.0038;
-  camera.rotation.x = THREE.MathUtils.clamp(camera.rotation.x - dy * 0.0034, -Math.PI * 0.48, Math.PI * 0.48);
+  const lookScale = Number(lookSensitivityInput.value) / 100;
+  camera.rotation.y -= dx * 0.0038 * lookScale;
+  camera.rotation.x = THREE.MathUtils.clamp(camera.rotation.x - dy * 0.0034 * lookScale, -Math.PI * 0.48, Math.PI * 0.48);
 });
 function releaseTouchLook(event) {
   if (touchLookPointerId === null || event.pointerId !== touchLookPointerId) return;
@@ -2586,16 +2620,18 @@ touchMenu.addEventListener('click', () => {
   showSettings();
 });
 settingsReset.addEventListener('click', () => {
-  tileAccentSettings.reset();
-  lightBrightnessInput.value = '100';
+  referenceLanguage.setLanguage('auto');
+  lightBrightnessInput.value = String(DEFAULT_SETTINGS.brightness);
   surfaceReflectionInput.value = '80';
   movementSpeedInput.value = '100';
   gravityStrengthInput.value = '100';
-  masterVolumeInput.value = '65';
+  masterVolumeInput.value = String(DEFAULT_SETTINGS.volume);
+  lookSensitivityInput.value = String(DEFAULT_SETTINGS.look);
   applyQualityPreset('balanced');
   applySceneSettings();
   applyPlayerSettings();
   applyAudioSettings();
+  applyLookSettings();
 });
 [lightBrightnessInput, surfaceReflectionInput].forEach((input) => {
   input.addEventListener('input', applySceneSettings);
@@ -2607,6 +2643,7 @@ qualityPresetInput.addEventListener('change', () => {
   input.addEventListener('input', applyPlayerSettings);
 });
 masterVolumeInput.addEventListener('input', applyAudioSettings);
+lookSensitivityInput.addEventListener('input', applyLookSettings);
 controls.addEventListener('lock', () => {
   hasEntered = true;
   entry.classList.add('is-hidden');
