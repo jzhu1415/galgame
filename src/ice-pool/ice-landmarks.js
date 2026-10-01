@@ -8,6 +8,7 @@ export function createIceLandmarks({ scene }) {
   const geometries = new Set();
   const materials = new Set();
   const boxGeometries = new Map();
+  const floating = [];
 
   const silver = ownMaterial(new THREE.MeshPhysicalMaterial({
     color: 0xaebfc2, metalness: 0.97, roughness: 0.08,
@@ -75,28 +76,70 @@ export function createIceLandmarks({ scene }) {
     shard.rotation.set(0, turn, turn * 0.4);
   }
 
-  // 2. Lateral ice clusters, with suspended shards kept above the walking camera.
-  // A broad, six-sided crystal body with a short hexagonal crown. Non-indexed
-  // triangles keep the individual planes optically crisp under env reflections.
-  const crystalPositions = [];
-  const ring = (y, radius, index) => new THREE.Vector3(
-    Math.cos(index * Math.PI / 3) * radius, y,
-    Math.sin(index * Math.PI / 3) * radius,
-  );
-  function triangle(a, b, c) { crystalPositions.push(...a.toArray(), ...c.toArray(), ...b.toArray()); }
-  const bottom = Array.from({ length: 6 }, (_, i) => ring(-0.5, 1, i));
-  const shoulder = Array.from({ length: 6 }, (_, i) => ring(0.12, 1, i));
-  const tip = new THREE.Vector3(0, 0.5, 0);
-  for (let i = 0; i < 6; i++) {
-    const next = (i + 1) % 6;
-    triangle(bottom[i], bottom[next], shoulder[next]);
-    triangle(bottom[i], shoulder[next], shoulder[i]);
-    triangle(shoulder[i], shoulder[next], tip);
-    triangle(new THREE.Vector3(0, -0.5, 0), bottom[next], bottom[i]);
+  // 2. Lateral ice clusters. Three deterministic profiles avoid a repeated
+  // pencil silhouette; each pair/trio is baked into one non-indexed mesh.
+  const crystalVariants = [
+    { sides: 6, radii: [1, .91, 1.04, .94, 1.02, .9], shoulder: -.05, tip: [.16, -.09] },
+    { sides: 5, radii: [.93, 1.08, .9, 1.03, .96], shoulder: .2, tip: [-.12, .12] },
+    { sides: 6, radii: [1.06, .9, .98, 1.08, .91, 1.02], shoulder: .32, tip: [.1, .16] },
+  ];
+  const crystalVariantFor = (index) => crystalVariants[index % crystalVariants.length];
+  const createCrystalParts = (variant) => {
+    const positions = [];
+    const facetOrigins = [];
+    const sides = variant.sides;
+    const ring = (y, radiusScale, index) => {
+      const angle = index * Math.PI * 2 / sides;
+      const radius = radiusScale * variant.radii[index];
+      return new THREE.Vector3(Math.cos(angle) * radius, y,
+        Math.sin(angle) * radius);
+    };
+    const addTriangle = (a, b, c, outward) => {
+      const normal = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+      if (normal.dot(outward) < 0) [b, c] = [c, b];
+      positions.push(...a.toArray(), ...b.toArray(), ...c.toArray());
+      facetOrigins.push([0, 0, 0]);
+    };
+    const lower = Array.from({ length: sides }, (_, i) => ring(-.5, 1, i));
+    const shoulder = Array.from({ length: sides }, (_, i) => ring(variant.shoulder, 1, i));
+    const shoulderTop = Array.from({ length: sides }, (_, i) => ring(variant.shoulder + .08, .97, i));
+    const apex = new THREE.Vector3(variant.tip[0], .5, variant.tip[1]);
+    const center = new THREE.Vector3(0, -.5, 0);
+    for (let i = 0; i < sides; i++) {
+      const next = (i + 1) % sides;
+      const radial = new THREE.Vector3().addVectors(lower[i], lower[next]); radial.y = 0;
+      addTriangle(lower[i], lower[next], shoulder[next], radial);
+      addTriangle(lower[i], shoulder[next], shoulder[i], radial);
+      addTriangle(shoulder[i], shoulder[next], shoulderTop[next], radial);
+      addTriangle(shoulder[i], shoulderTop[next], shoulderTop[i], radial);
+      const crownRadial = new THREE.Vector3().addVectors(shoulderTop[i], shoulderTop[next]);
+      crownRadial.add(apex).multiplyScalar(1 / 3); crownRadial.y = 0;
+      addTriangle(shoulderTop[i], shoulderTop[next], apex, crownRadial);
+      addTriangle(center, lower[next], lower[i], new THREE.Vector3(0, -1, 0));
+    }
+    return { positions, facetOrigins };
+  };
+  function makeCrystalCluster(specs) {
+    const positions = [];
+    const facetOrigins = [];
+    for (const { variantIndex, x, z, scale, height } of specs) {
+      const shape = createCrystalParts(crystalVariantFor(variantIndex));
+      const transform = new THREE.Matrix4().makeScale(scale[0], height, scale[1]);
+      transform.setPosition(x, height / 2, z);
+      const vertex = new THREE.Vector3();
+      for (let i = 0; i < shape.positions.length; i += 3) {
+        vertex.set(shape.positions[i], shape.positions[i + 1], shape.positions[i + 2]).applyMatrix4(transform);
+        positions.push(vertex.x, vertex.y, vertex.z);
+        if (i % 9 === 0) facetOrigins.push([x, height / 2, z]);
+      }
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.computeVertexNormals();
+    geometry.userData.facetOrigins = facetOrigins;
+    geometry.userData.crystal = true;
+    return ownGeometry(geometry);
   }
-  const crystalGeometry = ownGeometry(new THREE.BufferGeometry());
-  crystalGeometry.setAttribute('position', new THREE.Float32BufferAttribute(crystalPositions, 3));
-  crystalGeometry.computeVertexNormals();
   const fissureGeometry = ownGeometry(new THREE.BufferGeometry().setFromPoints([
     new THREE.Vector3(-.33, -.22, .12), new THREE.Vector3(-.12, .13, .18),
     new THREE.Vector3(-.12, .13, .18), new THREE.Vector3(.02, .49, .02),
@@ -109,27 +152,80 @@ export function createIceLandmarks({ scene }) {
   function addFissures(parent) {
     parent.add(new THREE.LineSegments(fissureGeometry, fissureMaterial));
   }
-  const crystalSpecs = [
-    [3.5, 1.35, 62.4, .62, 1.5, .55, -.14], [3.8, 1.0, 65.0, .42, 1.1, .38, .28],
-    [3.35, 1.2, 68.2, .56, 1.4, .48, -.32], [3.8, 1.05, 72.2, .48, 1.2, .45, .2],
-    [11.5, 1.25, 61.8, .58, 1.4, .5, .2], [11.2, 1.05, 65.4, .44, 1.2, .4, -.22],
-    [11.65, 1.4, 69.0, .62, 1.5, .52, .16], [11.25, 1.0, 72.5, .43, 1.15, .38, -.3],
+  const crystalGroups = [
+    { x: 3.52, z: 63.65, entries: [
+      { variantIndex: 0, x: -.2, z: -.9, scale: [.66, .58], height: 2.7 },
+      { variantIndex: 1, x: .24, z: .78, scale: [.4, .39], height: 1.55 },
+    ] },
+    { x: 3.55, z: 70.15, entries: [
+      { variantIndex: 2, x: -.24, z: -1.0, scale: [.59, .52], height: 2.4 },
+      { variantIndex: 0, x: .22, z: .92, scale: [.44, .39], height: 1.85 },
+    ] },
+    { x: 11.36, z: 63.6, entries: [
+      { variantIndex: 1, x: -.2, z: -1.0, scale: [.6, .52], height: 2.5 },
+      { variantIndex: 2, x: .23, z: .87, scale: [.43, .38], height: 1.75 },
+    ] },
+    { x: 11.42, z: 70.75, entries: [
+      { variantIndex: 0, x: -.24, z: -1.05, scale: [.64, .53], height: 2.75 },
+      { variantIndex: 1, x: .2, z: .98, scale: [.38, .4], height: 1.55 },
+    ] },
   ];
-  for (const [x, y, z, sx, sy, sz, ry] of crystalSpecs) {
-    const c = mesh(crystalGeometry, ice, x, y, z);
-    c.scale.set(sx, y * 2, sz);
-    c.rotation.set(0, ry, (x < 7.5 ? 1 : -1) * .12);
-    addFissures(c);
+  for (const cluster of crystalGroups) {
+    const members = cluster.entries.map(entry => ({ ...entry, x: entry.x, z: entry.z }));
+    mesh(makeCrystalCluster(members), ice, cluster.x, 0, cluster.z);
   }
-  for (const [x, z, size, turn] of [
-    [5.1, 61.8, .36, .18], [9.9, 63.5, .29, -.24],
-    [5.25, 68.7, .3, -.18], [9.8, 72.8, .35, .22],
-  ]) {
-    const hanger = mesh(crystalGeometry, glass, x, 3.27, z);
-    hanger.scale.set(size * .62, size * 1.55, size * .62);
-    hanger.rotation.set(0, turn, Math.PI);
-    addFissures(hanger);
+  function makeFloatingCrystal(variantIndex) {
+    const profile = crystalVariantFor(variantIndex);
+    const positions = [];
+    const facetOrigins = [];
+    const sides = 5;
+    const ring = (y, radius, index) => {
+      const angle = index * Math.PI * 2 / sides;
+      const irregular = profile.radii[index] ?? 1;
+      return new THREE.Vector3(Math.cos(angle) * radius * irregular, y,
+        Math.sin(angle) * radius * irregular);
+    };
+    const addTriangle = (a, b, c, outward) => {
+      const normal = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+      if (normal.dot(outward) < 0) [b, c] = [c, b];
+      positions.push(...a.toArray(), ...b.toArray(), ...c.toArray());
+      facetOrigins.push([0, 0, 0]);
+    };
+    const lower = Array.from({ length: sides }, (_, i) => ring(-.12, .42, i));
+    const upper = Array.from({ length: sides }, (_, i) => ring(.12, .48, i));
+    const top = new THREE.Vector3(profile.tip[0] * .35, .5, profile.tip[1] * .35);
+    const bottom = new THREE.Vector3(-profile.tip[1] * .35, -.5, profile.tip[0] * .35);
+    for (let i = 0; i < sides; i++) {
+      const next = (i + 1) % sides;
+      const radial = new THREE.Vector3().addVectors(lower[i], upper[next]); radial.y = 0;
+      addTriangle(lower[i], lower[next], upper[next], radial);
+      addTriangle(lower[i], upper[next], upper[i], radial);
+      const topOutward = new THREE.Vector3().addVectors(upper[i], upper[next]).add(top).multiplyScalar(1 / 3);
+      topOutward.y = 0;
+      addTriangle(upper[i], upper[next], top, topOutward);
+      const bottomOutward = new THREE.Vector3().addVectors(lower[i], lower[next]).add(bottom).multiplyScalar(1 / 3);
+      bottomOutward.y = 0;
+      addTriangle(lower[next], lower[i], bottom, bottomOutward);
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.computeVertexNormals();
+    geometry.userData.facetOrigins = facetOrigins;
+    geometry.userData.crystal = true;
+    return ownGeometry(geometry);
   }
+  const floatingSpecs = [
+    [4.85, 2.85, 62.6, .95, 0], [10.2, 3.02, 65.0, .82, 1],
+    [4.95, 2.76, 68.3, 1.05, 2], [10.15, 3.08, 71.2, .9, 0],
+  ];
+  floatingSpecs.forEach(([x, y, z, size, variantIndex], index) => {
+    const crystal = mesh(makeFloatingCrystal(variantIndex), ice, x, y, z);
+    crystal.userData.floatingCrystal = true;
+    crystal.scale.setScalar(size);
+    crystal.rotation.set(.12 * (variantIndex - 1), .26 * variantIndex, .1 * (variantIndex % 2 ? -1 : 1));
+    floating.push({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
+    addFissures(crystal);
+  });
   // Narrow side-wall mirror slivers distinguish this chamber from the doorway.
   for (const [x, z, angle] of [[3.13, 63.6, -.15], [11.87, 67.0, .15], [3.12, 71.0, .12], [11.88, 62.0, -.12]]) {
     const pane = beam(x, 1.72, z, .045, 1.35, .56, glass);
@@ -138,25 +234,78 @@ export function createIceLandmarks({ scene }) {
     rim.rotation.y = angle;
   }
 
-  // 3. A pair of tall crescent mirror ribs makes a broad, open-ended arc around the core.
-  // Each rib lies at the room sides, leaving the whole x=6.5..8.5 corridor empty.
-  const archCurveGeometry = ownGeometry(new THREE.TorusGeometry(1, 0.085, 5, 20, Math.PI));
-  for (const side of [-1, 1]) {
-    const arch = mesh(archCurveGeometry, silver, side < 0 ? 4.0 : 11.0, 1.63, 100);
-    // TorusGeometry's half-circle is turned upright and opens toward the room center.
-    arch.rotation.z = side < 0 ? Math.PI / 2 : -Math.PI / 2;
-    arch.scale.set(1.38, 1.65, 1);
-    const backing = beam(side < 0 ? 4.15 : 10.85, 1.63, 100, .12, 2.42, .16, edge);
-    backing.rotation.z = side < 0 ? -.12 : .12;
-    // Thin vertical lens inserts catch the existing ambient/reflection pass.
-    const insert = mesh(box(.055, 1.5, .035), glass, side < 0 ? 4.65 : 10.35, 1.72, 100.04);
-    insert.rotation.z = side < 0 ? -.17 : .17;
+  // 3. Pair of damaged standing mirrors. The inset glass-metal faces have a
+  // chipped crown and a beveled rim, with visible surface fractures.
+  function mirrorSilhouette(inset = false) {
+    const shape = new THREE.Shape();
+    const points = inset
+      ? [[-.55, .25], [-.52, 1.45], [-.54, 2.27], [-.34, 2.34], [-.2, 2.22], [-.06, 2.39], [.12, 2.2], [.29, 2.32], [.53, 2.25], [.55, .25]]
+      : [[-.7, .16], [-.67, 1.48], [-.7, 2.43], [-.42, 2.52], [-.27, 2.4], [-.08, 2.58], [.09, 2.31], [.27, 2.5], [.4, 2.34], [.67, 2.42], [.7, .16]];
+    shape.moveTo(...points[0]);
+    for (const point of points.slice(1)) shape.lineTo(...point);
+    shape.closePath();
+    return shape;
   }
-  // Silver arc fragments, set around the outer shoulders rather than across the route.
-  for (const [x, y, z, r] of [[4.75, 2.7, 99.8, .25], [10.25, 2.55, 100.2, -.25]]) {
-    const accent = mesh(shardGeometry, glass, x, y, z);
-    accent.scale.set(.16, .34, .07);
-    accent.rotation.z = r;
+  function mirrorFrameGeometry() {
+    const shape = mirrorSilhouette(false);
+    const hole = new THREE.Path();
+    const points = [[-.57, .29], [.57, .29], [.55, 2.28], [.32, 2.2], [.13, 2.08], [-.04, 2.23], [-.22, 2.06], [-.37, 2.2], [-.55, 2.14]];
+    hole.moveTo(...points[0]);
+    for (const point of points.slice(1)) hole.lineTo(...point);
+    hole.closePath();
+    shape.holes.push(hole);
+    return ownGeometry(new THREE.ExtrudeGeometry(shape, {
+      depth: .08, bevelEnabled: true, bevelSegments: 1, steps: 1,
+      bevelSize: .035, bevelThickness: .035,
+    }));
+  }
+  function mirrorFaceGeometry() {
+    return ownGeometry(new THREE.ExtrudeGeometry(mirrorSilhouette(true), {
+      depth: .09, bevelEnabled: true, bevelSegments: 1, steps: 1,
+      bevelSize: .025, bevelThickness: .025,
+    }));
+  }
+  function mergeBoxParts(parts) {
+    const positions = [];
+    for (const [w, h, d, x, y, z] of parts) {
+      const part = new THREE.BoxGeometry(w, h, d).toNonIndexed();
+      const matrix = new THREE.Matrix4().makeTranslation(x, y, z);
+      const attribute = part.getAttribute('position');
+      const vertex = new THREE.Vector3();
+      for (let i = 0; i < attribute.count; i++) {
+        vertex.fromBufferAttribute(attribute, i).applyMatrix4(matrix);
+        positions.push(vertex.x, vertex.y, vertex.z);
+      }
+      part.dispose();
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.computeVertexNormals();
+    return ownGeometry(geometry);
+  }
+  for (const [side, x] of [['left', 4.5], ['right', 10.5]]) {
+    const mirror = new THREE.Group();
+    mirror.name = `ice-core-standing-mirror-${side}`;
+    mirror.userData.kind = 'brokenStandingMirror';
+    mirror.position.set(x, 0, 100);
+    mirror.rotation.y = Math.PI;
+    root.add(mirror);
+    silver.side = THREE.DoubleSide;
+    mesh(mirrorFrameGeometry(), silver, 0, .1, 0, mirror);
+    mesh(mirrorFaceGeometry(), silver, 0, .1, .11, mirror);
+    const footing = mesh(mergeBoxParts([
+      [.98, .14, .5, 0, .07, 0], [.2, .25, .18, 0, .24, 0],
+    ]), silver, 0, 0, 0, mirror);
+    footing.name = 'mirror-footing';
+    const crackGeometry = ownGeometry(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-.25, .62, .23), new THREE.Vector3(-.04, .91, .23),
+      new THREE.Vector3(-.04, .91, .23), new THREE.Vector3(-.18, 1.21, .23),
+      new THREE.Vector3(.27, 1.42, .23), new THREE.Vector3(.08, 1.7, .23),
+      new THREE.Vector3(.08, 1.7, .23), new THREE.Vector3(.19, 2.02, .23),
+    ]));
+    mirror.add(new THREE.LineSegments(crackGeometry, ownMaterial(new THREE.LineBasicMaterial({
+      color: 0x334a52, transparent: true, opacity: .38,
+    }))));
   }
 
   scene.add(root);
@@ -166,7 +315,10 @@ export function createIceLandmarks({ scene }) {
       if (disposed) return;
       void found;
       void delta;
-      void time;
+      for (const { object, baseY, phase, baseRotationY } of floating) {
+        object.position.y = baseY + Math.sin(time * .62 + phase) * .1;
+        object.rotation.y = baseRotationY + time * .08;
+      }
       // Keep this argument in the interface for callers; landmarks never chase or obstruct the camera.
       void camera;
     },
@@ -185,6 +337,7 @@ export function createIceLandmarks({ scene }) {
       for (const material of materials) material.dispose();
       geometries.clear();
       materials.clear();
+      floating.length = 0;
     },
   };
 }
