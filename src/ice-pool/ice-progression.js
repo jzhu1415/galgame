@@ -4,13 +4,15 @@ import * as THREE from 'three';
 export const ICE_LAYOUT = {
   note: new THREE.Vector3(7.5, .05, 9.35),
   footage: new THREE.Vector3(7.5, .72, 22.5),
-  shard: new THREE.Vector3(2.1, .72, 41.9),
-  echo: new THREE.Vector3(12.1, .72, 71.9),
+  shard: new THREE.Vector3(7.5, .72, 49.5),
+  echo: new THREE.Vector3(7.5, .72, 82.5),
   core: new THREE.Vector3(7.5, 1.35, 97.5),
 };
 
-export const ICE_ROUTE_ONE = [[12.1,31.9],[12.1,36.9],[7.1,36.9],[7.1,41.9],[2.1,41.9]];
-export const ICE_ROUTE_TWO = [[2.1,61.9],[7.1,61.9],[7.1,66.9],[12.1,66.9],[12.1,71.9]];
+// Password directions are the lock combination. Travel continues north across
+// doorways and corridors; players never have to trace a square inside a room.
+export const ICE_ROUTE_ONE = [[7.5,22.5],[7.5,31.5],[7.5,38.5],[7.5,44.5],[7.5,49.5]];
+export const ICE_ROUTE_TWO = [[7.5,49.5],[7.5,56.5],[7.5,61.5],[7.5,73.5],[7.5,82.5]];
 export const ICE_ROUTES = [ICE_ROUTE_ONE, ICE_ROUTE_TWO];
 
 export function currentIceStage(found = new Set()) {

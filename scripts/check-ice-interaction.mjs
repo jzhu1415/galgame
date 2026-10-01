@@ -3,6 +3,22 @@ import { hasClearEvidencePath } from '../src/ice-pool/ice-interaction.js';
 import * as THREE from 'three';
 import { makeMirrorFragment, makeNote, makeRouteMarker, silverMaterial } from '../src/ice-pool/ice-props.js';
 import { ICE_LAYOUT, currentIceStage, canCollectIceEvidence } from '../src/ice-pool/ice-progression.js';
+import { createIceLandmarks } from '../src/ice-pool/ice-landmarks.js';
+
+const landmarkScene = new THREE.Scene();
+const landmarks = createIceLandmarks({ scene: landmarkScene });
+landmarks.update(.05, 1, { found: new Set(['routeOne']) });
+landmarkScene.updateMatrixWorld(true);
+const walkingLane = new THREE.Box3(new THREE.Vector3(6.5, .2, 30), new THREE.Vector3(8.5, 2.7, 105));
+let meshCount = 0;
+landmarkScene.traverse(object => {
+  if (!object.isMesh) return;
+  meshCount++;
+  assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
+});
+assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
+landmarks.dispose(); landmarks.dispose();
+assert.equal(landmarkScene.children.length, 0);
 
 const progress = new Set();
 for (const [stage, completedId] of [['note', 'note'], ['footage', 'footage'], ['routeOne', 'routeOne'],
@@ -18,7 +34,7 @@ assert.equal(currentIceStage(new Set(['route', 'echo'])), 'note', 'An out-of-ord
 assert.equal(currentIceStage(new Set(['note', 'footage', 'routeOne', 'route'])), 'shard', 'Legacy route completion does not hide a missing shard');
 assert.ok(ICE_LAYOUT.shard.z - ICE_LAYOUT.footage.z > 15);
 assert.ok(ICE_LAYOUT.echo.z - ICE_LAYOUT.shard.z > 25);
-assert.ok(ICE_LAYOUT.core.z - ICE_LAYOUT.echo.z > 20);
+assert.ok(ICE_LAYOUT.core.z - ICE_LAYOUT.echo.z >= 15);
 
 for (const id of ['footage', 'shard', 'echo']) {
   const model = makeMirrorFragment({ id, position: ICE_LAYOUT[id] });

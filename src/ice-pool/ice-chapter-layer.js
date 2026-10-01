@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { silverMaterial, makeMirrorFragment, makeNote, makeRouteMarker } from './ice-props.js';
 import { hasClearEvidencePath } from './ice-interaction.js';
 import { ICE_LAYOUT, ICE_ROUTES, currentIceStage, canCollectIceEvidence } from './ice-progression.js';
+import { createIceLandmarks } from './ice-landmarks.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -35,58 +36,58 @@ const COPY = {
     title: '冰封镜馆 · 第二层',
     subtitle: '镜子记住了每一次经过。先找到入口附近的取证便笺。',
     guide: '靠近物证并按 E 收取', guideTouch: '靠近物证后点击「查看物证」',
-    notePrompt: '入口附近有一张压在碎镜下的纸条。它记录了通往镜心的四步口令。',
+    notePrompt: '入口附近有一张压在碎镜下的纸条。它记录了北侧镜门的四位口令。',
     noteAction: '读取纸条', noteTitle: '纸条已展开',
-    routeStart: '符号已解读：前 · 左 · 前 · 左。按顺序走到四个地面镜记，每一步都要实际移动。',
-    routeApproach: '先按地图前往干燥房间的起点镜记，再依次走完四步。',
-    routeStep: ['向前走到第一枚镜记', '向左走到第二枚镜记', '再向前走到第三枚镜记', '再向左走到最后一枚镜记'],
+    routeStart: '门锁密码已解开。沿北侧通道穿过镜门，寻找下一件物证。',
+    routeApproach: '沿地图向北走，穿过前面的镜门。',
+    routeStep: ['穿过结霜的镜门', '沿地面拖痕穿过镜室', '从对面的出口离开', '在下一段长廊查看镜片'],
     routeWrong: '方向不对，镜面没有回应。回到这一步的正确方向再走。',
-    routeDone: '第二段路线已完成。前往第二镜室收取回声物证。', routeProgress: '路线',
+    routeDone: '已离开冰晶厅。查看长廊架子上的录音蜡盘。', routeProgress: '路线',
     routeOneDone: '第一段路线已完成。寻找路线尽头的镜片。',
     secondCodeTitle: '第二枚碎片 · 密码', secondCodeKey: '第一段尽头的镜片刻着「右 · 前 · 右 · 前」。依次输入，开启第二段路。',
-    secondCodeFound: '镜片已收取。读取镜片上的第二密码，再前往第二段路线。', secondCodeSolved: '第二段密码已解开，继续沿镜记走。',
-    secondRouteStart: '第二段：右 · 前 · 右 · 前。请按地面镜记实际行走。',
-    secondRouteStep: ['向右走到第一枚镜记', '向前走到第二枚镜记', '再向右走到第三枚镜记', '再向前走到最后一枚镜记'],
-    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navCipher: '读取已收取镜片上的第二密码', navRoute: '镜室地面镜记', navCore: '镜心室中央镜心',
+    secondCodeFound: '镜片已收取。读取镜片上的第二密码，再前往第二段路线。', secondCodeSolved: '第二道门锁已解开。穿过长廊，向冰晶厅深处走。',
+    secondRouteStart: '右 · 前 · 右 · 前是门锁口令。解锁后，沿北侧长廊进入冰晶厅。',
+    secondRouteStep: ['穿过狭长的滴水走廊', '进入有悬冰的大厅', '从镜墙后的出口离开', '在回声长廊查看录音蜡盘'],
+    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navCipher: '读取已收取镜片上的第二密码', navRoute: '前方出口', navCore: '镜心室中央镜心',
     core: '三件镜面物证与两段路线均已确认。靠近镜心并按 E。',
     coreTouch: '靠近镜心后点击「进入镜心」', collect: '查看物证', enter: '进入镜心',
     collected: '已归档', locked: '镜心仍封闭：需要三件物证与完整路线。', exit: '离开镜馆',
     hint: 'WASD / 方向键移动 · 触屏摇杆 · E 查看 · Esc 离开',
     noteDecode: '便笺密码', noteCode: '○　●　○　●', noteKey: '霜印旁的注记：空心圆代表「前」，实心圆代表「左」。',
-    noteAnswer: '解码后：前 · 左 · 前 · 左', notePhysical: '薄纸被水浸透，折痕间夹着一枚发暗的镜粉。',
-    cipherForward: '前', cipherLeft: '左', cipherClear: '清除', cipherPrompt: '按纸条顺序选择四个方向。', cipherWrong: '顺序不对。擦去霜痕，再试一次。', cipherSolved: '密码解开。沿四枚地面镜记前进。',
-    archive: '镜面物证档案', archiveHelp: '靠近并收取后，展开条目查看物证细节。', sealed: '尚未取得', noteFound: '入口便笺', routeFound: '四步路线', routeLocked: '待解码',
+    noteAnswer: '门锁口令：前 · 左 · 前 · 左', notePhysical: '薄纸被水浸透，折痕间夹着一枚发暗的镜粉。',
+    cipherForward: '前', cipherLeft: '左', cipherClear: '清除', cipherPrompt: '按纸条顺序选择四个方向。', cipherWrong: '顺序不对。擦去霜痕，再试一次。', cipherSolved: '密码解开。先查看长廊里的胶片，再穿过镜门。',
+    archive: '镜面物证档案', archiveHelp: '靠近并收取后，展开条目查看物证细节。', sealed: '尚未取得', noteFound: '入口便笺', routeFound: '通路已走完', routeLocked: '待解码',
     caseFootage: '监控胶片', caseShard: '镜片', caseEcho: '声纹 / 录音',
-    routeLabels: ['前', '左', '前', '左'], routeShort: '走到地面镜记',
+    routeLabels: ['镜门', '拖痕', '出口', '镜片'], routeShort: '前往下一片区域',
     coreReply: '镜心里映出另一个入口。', wrong: '还差一步。',
   },
   en: {
     title: 'Frozen Mirror Hall · Layer Two',
     subtitle: 'The mirrors remember each passing. Find the evidence note near the entrance.',
     guide: 'Approach an exhibit and press E to inspect', guideTouch: 'Approach an exhibit, then tap “Inspect evidence”.',
-    notePrompt: 'A note is pinned beneath broken glass near the entrance. It records a four-part route to the mirror core.',
+    notePrompt: 'A note is pinned beneath broken glass near the entrance. It carries the four-part code for the north mirror door.',
     noteAction: 'Read the note', noteTitle: 'Note unfolded',
-    routeStart: 'Decoded: forward · left · forward · left. Walk to four floor marks in order; each step requires movement.',
-    routeApproach: 'Follow the map to the starting mark in the dry room, then walk the four steps.',
-    routeStep: ['Walk forward to the first mirror mark', 'Walk left to the second mirror mark', 'Walk forward to the third mirror mark', 'Walk left to the final mirror mark'],
+    routeStart: 'The lock is open. Follow the north passage through the mirror doorway to the next exhibit.',
+    routeApproach: 'Follow the map north, through the mirror doorway.',
+    routeStep: ['Pass through the frosted doorway', 'Follow the drag mark across the room', 'Leave through the far doorway', 'Inspect the lens in the next corridor'],
     routeWrong: 'Wrong direction. The mirror stays dark. Correct your course and try this leg again.',
-    routeDone: 'Route two is complete. Enter the second mirror room to recover the echo evidence.', routeProgress: 'Route',
+    routeDone: 'You have left the crystal hall. Inspect the recording disc on the corridor stand.', routeProgress: 'Route',
     routeOneDone: 'Route one is complete. Recover the shard at its end.',
     secondCodeTitle: 'SECOND FRAGMENT · CIPHER', secondCodeKey: 'The shard at the end of route one reads RIGHT · FORWARD · RIGHT · FORWARD. Enter the sequence to open route two.',
-    secondCodeFound: 'Shard recovered. Read its second cipher, then head to route two.', secondCodeSolved: 'Second cipher solved. Follow the next floor marks.',
-    secondRouteStart: 'Route two: right · forward · right · forward. Walk each floor mark.',
-    secondRouteStep: ['Walk right to the first mark', 'Walk forward to the second mark', 'Walk right to the third mark', 'Walk forward to the final mark'],
-    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navCipher: 'Read the recovered shard cipher', navRoute: 'Mirror room floor marks', navCore: 'Core room central mirror',
+    secondCodeFound: 'Shard recovered. Read its second cipher, then head to route two.', secondCodeSolved: 'The second lock is open. Follow the passage into the crystal hall.',
+    secondRouteStart: 'Right · forward · right · forward opens the lock. Then follow the north passage into the crystal hall.',
+    secondRouteStep: ['Cross the dripping corridor', 'Enter the hall of hanging ice', 'Leave through the doorway beyond the mirror wall', 'Inspect the disc in the echo corridor'],
+    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navCipher: 'Read the recovered shard cipher', navRoute: 'Next doorway', navCore: 'Core room central mirror',
     core: 'Three mirror exhibits and both routes are confirmed. Press E at the core.',
     coreTouch: 'Approach the core, then tap “Enter core”.', collect: 'Inspect evidence', enter: 'Enter core',
     collected: 'archived', locked: 'The core remains sealed: three exhibits and the complete route are required.', exit: 'Leave hall',
     hint: 'WASD / arrows move · touch joystick · E inspect · Esc leave',
     noteDecode: 'NOTE CIPHER', noteCode: '○　●　○　●', noteKey: 'Margin note: an open circle means “forward”; a filled circle means “left”.',
-    noteAnswer: 'Decoded: forward · left · forward · left', notePhysical: 'The thin paper is waterlogged; dark mirror dust clings to its folds.',
-    cipherForward: 'Forward', cipherLeft: 'Left', cipherClear: 'Clear', cipherPrompt: 'Choose four directions in the note’s order.', cipherWrong: 'That sequence is wrong. Clear the frost and try again.', cipherSolved: 'Cipher solved. Follow the four floor marks.',
-    archive: 'MIRROR EVIDENCE ARCHIVE', archiveHelp: 'Inspect each exhibit in the hall to open its record.', sealed: 'Not recovered', noteFound: 'Entrance note', routeFound: 'Four-step route', routeLocked: 'Awaiting decode',
+    noteAnswer: 'Lock code: forward · left · forward · left', notePhysical: 'The thin paper is waterlogged; dark mirror dust clings to its folds.',
+    cipherForward: 'Forward', cipherLeft: 'Left', cipherClear: 'Clear', cipherPrompt: 'Choose four directions in the note’s order.', cipherWrong: 'That sequence is wrong. Clear the frost and try again.', cipherSolved: 'Lock opened. Inspect the corridor film, then head through the mirror doorway.',
+    archive: 'MIRROR EVIDENCE ARCHIVE', archiveHelp: 'Inspect each exhibit in the hall to open its record.', sealed: 'Not recovered', noteFound: 'Entrance note', routeFound: 'Passage explored', routeLocked: 'Awaiting decode',
     caseFootage: 'SURVEILLANCE FILM', caseShard: 'MIRROR LENS', caseEcho: 'VOICEPRINT / RECORDING',
-    routeLabels: ['FWD', 'LEFT', 'FWD', 'LEFT'], routeShort: 'Walk to the floor mark',
+    routeLabels: ['DOOR', 'TRAIL', 'EXIT', 'LENS'], routeShort: 'Continue to the next area',
     coreReply: 'Another entrance appears inside the core.', wrong: 'One step remains.',
   },
 };
@@ -113,6 +114,7 @@ function disposeObject(root) {
 }
 
 export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
+  const landmarks = createIceLandmarks({ scene });
   const found = new Set();
   const groups = new Map();
   const raycaster = new THREE.Raycaster();
@@ -164,6 +166,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   let routeStarted = false;
   let cipherOpen = false;
   let firstCipherSolved = false;
+  let initialized = false;
   let cipherInput = [];
   let cipherFeedback = '';
   let lastNavAt = -Infinity;
@@ -210,7 +213,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     }
     refreshEvidenceVisibility();
     if (id === 'footage' && firstCipherSolved && currentIceStage(found) === 'routeOne') {
-      routeStarted = true; routeStep = 0; routeAtStart = false; makeRouteMarkers();
+      routeStarted = true; routeStep = 0; routeAtStart = true; makeRouteMarkers();
     }
     post('clue', id);
   }
@@ -339,10 +342,10 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     routeReadout.dataset.wrong = 'false';
     const steps = routeReadout.querySelectorAll('[data-route-step]');
     steps.forEach((step, index) => {
-      step.textContent = routeIndex() ? (language === 'zh' ? ['右', '前', '右', '前'] : ['RIGHT', 'FWD', 'RIGHT', 'FWD'])[index] : copy.routeLabels[index];
+      step.textContent = routeIndex() ? (language === 'zh' ? ['长廊', '悬冰', '出口', '录音'] : ['HALL', 'ICE', 'EXIT', 'DISC'])[index] : copy.routeLabels[index];
       step.classList.toggle('is-complete', found.has('route') || index < routeStep);
       step.classList.toggle('is-current', !found.has('route') && index === routeStep && routeStarted && routeAtStart);
-      step.setAttribute('aria-label', `${copy.routeLabels[index]} ${index < routeStep || found.has('route') ? '✓' : ''}`);
+      step.setAttribute('aria-label', `${step.textContent} ${index < routeStep || found.has('route') ? '✓' : ''}`);
     });
   }
   function navigationTarget() {
@@ -350,7 +353,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     const stage = currentIceStage(found);
     if (stage === 'footage' || stage === 'shard' || stage === 'echo') {
       const spec = CLUES.find(entry => entry.id === stage);
-      const place = language === 'zh' ? ({ footage: '胶片室', shard: '第一镜室尽头', echo: '第二镜室尽头' })[stage] : ({ footage: 'Film room', shard: 'End of the first mirror room', echo: 'End of the second mirror room' })[stage];
+      const place = language === 'zh' ? ({ footage: '入口长廊', shard: '镜门后的长廊', echo: '回声长廊' })[stage] : ({ footage: 'Entrance corridor', shard: 'Passage beyond the mirror room', echo: 'Echo corridor' })[stage];
       if (Math.floor(camera.position.z / 15) !== Math.floor(spec.position.z / 15) && Math.abs(spec.position.x - 7.5) > 2) {
         const room = Math.floor(spec.position.z / 15) * 15;
         return { position: new THREE.Vector3(7.5, .02, room + 1.5), label: `${language === 'zh' ? '穿过北侧长廊进入' : 'Enter via the north corridor'} · ${place} · ${text(spec)}` };
@@ -365,7 +368,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
           const room = Math.floor(point.z / 15) * 15;
           return { position: new THREE.Vector3(7.5, .02, room + 1.5), label: `${language === 'zh' ? (routeIndex() ? '第二镜室 · 穿过北侧长廊进入' : '第一镜室 · 穿过北侧长廊进入') : (routeIndex() ? 'Second mirror room · enter via the north corridor' : 'First mirror room · enter via the north corridor')}` };
         }
-        return { position: point, label: `${language === 'zh' ? (routeIndex() ? '第二镜室' : '第一镜室') : (routeIndex() ? 'Second mirror room' : 'First mirror room')} · ${COPY[language].navRoute}` };
+        return { position: point, label: (routeIndex() ? COPY[language].secondRouteStep : COPY[language].routeStep)[routeStep] };
       }
     }
     return { position: CORE_POSITION, label: COPY[language].navCore };
@@ -374,6 +377,11 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (!navCanvas) return;
     const copy = COPY[language];
     const target = navigationTarget();
+    const zone = Math.max(0, Math.min(6, Math.floor(camera.position.z / 15)));
+    if (title) title.textContent = (language === 'zh'
+      ? ['入口水厅', '胶片长廊', '破镜厅', '裂缝长廊', '悬冰大厅', '回声长廊', '镜心室']
+      : ['Entrance pool', 'Film corridor', 'Broken mirror hall', 'Fracture passage', 'Hanging ice hall', 'Echo corridor', 'Mirror core'])[zone];
+    if (subtitle) subtitle.textContent = target.label;
     const distance = floorDistance(target.position);
     if (navTitle) navTitle.textContent = copy.navTitle;
     if (navTarget) navTarget.textContent = `${copy.navGoal} · ${target.label}`;
@@ -528,7 +536,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
       const second = found.has('note') && found.has('shard');
       if (cipherInput.join(',') === (second ? 'right,forward,right,forward' : 'forward,left,forward,left')) {
         if (!second) { found.add('note'); post('clue', 'note'); firstCipherSolved = true; }
-        routeStarted = second ? !found.has('route') : currentIceStage(found) === 'routeOne'; routeStep = 0; routeAtStart = false; cipherOpen = false;
+        routeStarted = second ? !found.has('route') : currentIceStage(found) === 'routeOne'; routeStep = 0; routeAtStart = true; cipherOpen = false;
         cipherFeedback = second ? COPY[language].secondCodeSolved : COPY[language].cipherSolved;
         makeRouteMarkers();
         const note = groups.get('note'); if (note) note.visible = false;
@@ -590,8 +598,14 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     firstCipherSolved = found.has('note'); cipherInput = []; cipherFeedback = ''; coreTriggered = false;
     routeMarkers.forEach(marker => { scene.remove(marker); disposeObject(marker); }); routeMarkers.length = 0;
     const stage = currentIceStage(found);
+    if (!initialized && found.size) {
+      const resumeZ = { footage: 10.5, routeOne: 23.5, shard: 48, routeTwo: 50.5, echo: 81, core: 84 }[stage];
+      if (resumeZ) camera.position.set(7.5, camera.position.y, resumeZ);
+    }
+    if (!initialized) camera.lookAt(camera.position.x, camera.position.y, camera.position.z + 10);
+    initialized = true;
     if (stage === 'routeTwo') cipherOpen = true;
-    if (stage === 'routeOne') { routeStarted = true; makeRouteMarkers(); }
+    if (stage === 'routeOne') { routeStarted = true; routeAtStart = true; makeRouteMarkers(); }
     refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
   }
@@ -602,8 +616,22 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   }
   function progressRoute() {
     if (!routeStarted || found.has('route') || !routeMarkers.length) return;
-    if (storyPaused || cipherOpen || floorDistance(routeMarkers[0].position) > .95) return;
-    showFeedback(routeAtStart ? `镜记确认 · ${routeStep + 1}/4` : '已到达路线起点', routeAtStart ? `Mark confirmed · ${routeStep + 1}/4` : 'Route start reached');
+    if (storyPaused || cipherOpen) return;
+    const checkpoint = routeMarkers[0].position;
+    // Crossing a doorway advances the journey without requiring a precise stop.
+    if (camera.position.z < checkpoint.z - .5 || Math.abs(camera.position.x - checkpoint.x) > 1.45) return;
+    const moments = routeIndex() ? [
+      ['滴水声里混进了一下短促的呼吸。', 'A short breath slips between the drips.'],
+      ['冰柱悬在头顶。脚步声先从对面传了回来。', 'Ice hangs overhead. Footsteps return from the far end before yours stop.'],
+      ['墙上的倒影晚了一步才跟上。', 'The reflection on the wall follows a step too late.'],
+      ['架子上的蜡盘还在。盘心有一个空白的圆。', 'The recording disc is still on its stand, with a blank circle at its centre.'],
+    ] : [
+      ['胶片里那扇门就在前面。门把上结着白霜。', 'The door from the film stands ahead. Frost coats its handle.'],
+      ['地上有一道拖痕，一直延伸到另一侧的门。', 'A drag mark crosses the floor to the far doorway.'],
+      ['离开镜室时，身后的门轻轻碰了一下。', 'As you leave, the door behind you taps against its frame.'],
+      ['银色镜片压在架子上。边缘像是被人掰断的。', 'A silver lens rests on the stand. Its edge looks snapped by hand.'],
+    ];
+    showFeedback(...moments[Math.min(routeStep, 3)]);
     if (isTouch()) navigator.vibrate?.(20);
     if (!routeAtStart) {
       routeAtStart = true;
@@ -629,6 +657,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
   }
   function update(delta, time) {
     if (disposed) return;
+    landmarks.update(delta, time, { found, camera });
     const dt = Math.min(delta, .1);
     feedbackRemaining -= dt;
     if (feedbackRemaining <= 0) feedback.hidden = true;
@@ -673,6 +702,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt }) {
     if (disposed) return;
     finishPickup();
     disposed = true;
+    landmarks.dispose();
     window.removeEventListener('keydown', handleKey);
     canvas.removeEventListener('click', handleClick);
     interact?.removeEventListener('click', interactWithTarget);

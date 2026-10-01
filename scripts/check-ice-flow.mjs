@@ -35,6 +35,7 @@ const collect = id => {
 };
 
 layer.setInit({ found: [] });
+assert.ok(camera.getWorldDirection(new THREE.Vector3()).z > .99, 'Entering the hall faces the route, rather than the entrance wall');
 approach(ICE_LAYOUT.echo); key('KeyE'); tick(12);
 assert.equal(has('echo'), false, 'Walking ahead cannot collect a future exhibit');
 approach(ICE_LAYOUT.note); key('KeyE');
@@ -42,12 +43,12 @@ for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
 assert.ok(has('note'));
 assert.equal(has('routeOne'), false);
 collect('footage');
-for (const [x, z] of ROUTE_POINTS[0]) { approach({ x, z }); tick(); }
+for (const [x, z] of ROUTE_POINTS[0]) { approach({ x: x + 1.1, z: z + .8 }); tick(); }
 assert.ok(has('routeOne'), 'First route starts after footage');
 assert.equal(has('route'), false);
 collect('shard');
 for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
-for (const [x, z] of ROUTE_POINTS[1]) { approach({ x, z }); tick(); }
+for (const [x, z] of ROUTE_POINTS[1]) { approach({ x: x - 1.1, z: z + .8 }); tick(); }
 assert.ok(has('route'), 'Shard cipher starts the second-room route');
 collect('echo');
 approach(ICE_LAYOUT.core); key('KeyE');
@@ -69,4 +70,14 @@ collect('shard');
 approach(ICE_LAYOUT.core); key('KeyE');
 assert.ok(messages.some(message => message.type === 'core'), 'A legacy second route also implies the first route is complete');
 layer.dispose();
+const resumeCamera = new THREE.PerspectiveCamera();
+resumeCamera.position.set(7.5, 1.7, 2.5);
+const resumedLayer = createIceChapterLayer({ scene: new THREE.Scene(), camera: resumeCamera,
+  canvas: { addEventListener: noop, removeEventListener: noop },
+  columnAt: () => ({ solid: false, level: 0, ceiling: 5 }),
+});
+resumedLayer.setInit({ found: ['note', 'footage', 'routeOne', 'shard'] });
+assert.ok(resumeCamera.position.z > 45, 'A resumed game enters near its current passage');
+assert.ok(resumeCamera.getWorldDirection(new THREE.Vector3()).z > .99);
+resumedLayer.dispose();
 console.log('Ice flow OK: future exhibits stay locked; note → film → route one → shard → route two → echo → core.');
