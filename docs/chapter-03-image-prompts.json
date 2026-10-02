@@ -1,0 +1,193 @@
+{
+  "generator": "Codex built-in imagegen",
+  "jobs": [
+    {
+      "asset": "chapter-03-naifen-angry",
+      "label": "愤怒",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-angry.png",
+      "webp": "public/images/chapter-03-naifen-angry.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Angry and frustrated: sharply lowered brows, firm tiny downturned mouth, both hands clenched low at the sides, shoulders slightly tense. Keep the character cute and recognizable; no rage monster or distortion."
+    },
+    {
+      "asset": "chapter-03-naifen-scared",
+      "label": "害怕",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-scared.png",
+      "webp": "public/images/chapter-03-naifen-scared.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Afraid and startled: green eyes wide, brows raised inward, small mouth slightly open, both hands drawn close to the upper belly protectively, weight leaning subtly back."
+    },
+    {
+      "asset": "chapter-03-naifen-sad",
+      "label": "委屈",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-sad.png",
+      "webp": "public/images/chapter-03-naifen-sad.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Hurt and close to tears: brows arch upward at the inner ends, green eyes glossy with one tiny tear, tiny downturned mouth, shoulders droop, arms lowered and fingers loosely curled. Quiet vulnerable sadness."
+    },
+    {
+      "asset": "chapter-03-naifen-guarded",
+      "label": "警惕",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-guarded.png",
+      "webp": "public/images/chapter-03-naifen-guarded.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Guarded and suspicious: green eyes mildly narrowed, one brow lowered, small straight closed mouth, head turned slightly toward the viewer, one palm extended in a gentle stop gesture, the other hand near the belly."
+    },
+    {
+      "asset": "chapter-03-naifen-relieved",
+      "label": "释然",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-relieved.png",
+      "webp": "public/images/chapter-03-naifen-relieved.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Relieved after being heard: relaxed brows, green eyes softened but open, a tiny closed-mouth grateful smile, shoulders loosened, one open palm extended toward the viewer with no tension."
+    },
+    {
+      "asset": "chapter-03-naifen-happy",
+      "label": "开心",
+      "type": "portrait",
+      "transparent_background": true,
+      "reference_images": [
+        "references/naifen-character-turnaround.png",
+        "assets/images/chapter-03-naifen.png"
+      ],
+      "png": "assets/images/chapter-03-naifen-happy.png",
+      "webp": "public/images/chapter-03-naifen-happy.webp",
+      "prompt": "Use case: identity-preserve. Asset type: transparent visual novel character expression sprite.\nNaifen is the exact pink creature in Image 1; Image 2 is the approved game sprite for scale, rendering and camera. Preserve its pink rounded pear-shaped body, cream oval belly, green round eyes with black pupils, short chunky arms, darker mauve fingertips and feet. No ears, no tail, no clothes, no teeth. One character only, full body centered from the same front three-quarter camera, same body proportions and framing as the approved sprite. Polished soft 3D animated-film rendering, warm gentle key light and restrained rose rim light. Actual transparent alpha background, no scenery, no floor, no props, no text or labels. Keep the feet and both hands entirely inside the frame. Do not reproduce the three-view layout.\nExpression and pose: Quietly happy and trusting: bright green eyes open, soft lifted brows, warm broad closed-mouth smile, both arms opening slightly in a welcoming gesture. Same body and style, no teeth."
+    },
+    {
+      "asset": "chapter-03-cg-offer",
+      "label": "医院邀约",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "public/images/chapter-02-hospital.webp"
+      ],
+      "png": "assets/images/chapter-03-cg-offer.png",
+      "webp": "public/images/chapter-03-cg-offer.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: Inside the same cool blue hospital ward from the reference, shot close to a bedside table. A stranger's plain human white laboratory coat sleeve opens a silver medical case. Inside: a small silver probe, a neatly folded consent paper with blank lines and no legible writing, and a smartphone showing only an indistinct rainy intersection. The occupied bed at right is hidden by sheets and framing; show no patient body or face. Rain reflected on the dark window. An uneasy offer of help, cool cyan hospital light and a warm desk lamp. No purple character in this frame."
+    },
+    {
+      "asset": "chapter-03-cg-entrance",
+      "label": "第三声铃",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-entrance.png",
+      "webp": "public/images/chapter-03-cg-entrance.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: Standing at the threshold of the SAME abandoned ornate theatre in the reference, a close wide-angle shot past heavy burgundy velvet curtains and red thread rigging into empty rows of seats. Three warm stage spotlights illuminate the distant table, rain window and film projector. Curtains appear almost to brush the viewer's shoulders. Golden entrance bell in the upper left, no characters. Ominous invitation, rich texture and deep perspective."
+    },
+    {
+      "asset": "chapter-03-cg-rain",
+      "label": "雨夜的两种记忆",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-rain.png",
+      "webp": "public/images/chapter-03-cg-rain.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: A close view of a stage set on the SAME theatre stage. Two freestanding rainy alley windows stand side by side. One window reveals an ordinary sagging wet cardboard box, a tilted plain umbrella protecting the box while rain still falls beside it, and everyday clutter. The other window shows exaggerated glaring headlights and a pristine empty box, flattened into a theatrical backdrop. No characters in either window. Greenish-blue rain glow, gold light on the wooden window frames, red curtain edges, tangible paper scraps on the stage. Ordinary details contrasted against dramatic staged harm."
+    },
+    {
+      "asset": "chapter-03-cg-breakfast",
+      "label": "早餐的真实细节",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-breakfast.png",
+      "webp": "public/images/chapter-03-cg-breakfast.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: Close medium view of a domestic breakfast table on the SAME theatre stage. At left: a misshapen pancake with one small burnt edge, a cream ceramic mug painted with crooked tiny stars, and a well-used spatula. At right: an immaculate symmetrical pancake on a perfectly arranged advertisement-like plate. Empty chairs behind, red rigging above, burgundy curtain background. Warm comforting light on the imperfect meal, cooler artificial light on the perfect plate. No characters or words. Maintain realistic small props and readable star mug."
+    },
+    {
+      "asset": "chapter-03-cg-film",
+      "label": "车灯与偏转",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png",
+        "references/naiba-character-turnaround.png"
+      ],
+      "png": "assets/images/chapter-03-cg-film.png",
+      "webp": "public/images/chapter-03-cg-film.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: At the SAME theatre stage's vintage film projector, close wide shot of two physical reels and loose film strips in the foreground. A large projected cinematic frame behind shows a rainy urban intersection: the car's front wheels turn toward a roadside barrier to the side of the viewpoint, leaving the central pedestrian space clear. At one edge of the projected image stands Naiba, the SMALL rounded PURPLE creature from Image 2 with green eyes, pale belly, short limbs and a gem-studded metal gauntlet on the RIGHT hand holding a controller. It must never be a human, lizard, armored soldier, or tall monster. No impact, no injured bodies, no readable timestamp. Cool wet-road headlight light and warm projector rays."
+    },
+    {
+      "asset": "chapter-03-cg-backstage",
+      "label": "后台与侧门",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-backstage.png",
+      "webp": "public/images/chapter-03-cg-backstage.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: A backstage passage adjoining the SAME theatre. Burgundy curtain folds open onto a narrow passage merging into a cool blue tiled hospital corridor. Two doors: a painfully bright silver-wired main door to one side and a modest half-open unlit side door to the other. A hand-drawn parchment map on a small stool contains ONLY three simple pictograms in sequence: star mug, umbrella, wheel; no letters or numbers. Behind the side door sits a small shelf holding an EMPTY clear cylindrical glass vessel with faint pink pigment at the base. A few shallow scratches near its handle, no characters, no labels. Strong spatial mystery and shadow."
+    },
+    {
+      "asset": "chapter-03-cg-bargain",
+      "label": "发光容器的交易",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png",
+        "references/naiba-character-turnaround.png"
+      ],
+      "png": "assets/images/chapter-03-cg-bargain.png",
+      "webp": "public/images/chapter-03-cg-bargain.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: Medium-wide cinematic shot in the SAME theatre backstage where red curtains open into a blue hospital corridor. Naiba from Image 2, exactly a short rounded purple creature with green eyes, cream belly and RIGHT-hand gem-studded gauntlet, hands a small glowing pink cylindrical GLASS vessel to the gloved hand of a human institute employee visible only as a cropped white lab coat sleeve. Naiba's other hand receives a small old smartphone. A separate small pink memory crystal rests on a dark red velvet ledge in the nearer foreground. Preserve Naiba's creature identity and short proportions; do not make him a human wearing purple armor. Subtle tension, no fight, no words, no other characters."
+    },
+    {
+      "asset": "chapter-03-cg-curtain",
+      "label": "落幕之后",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-curtain.png",
+      "webp": "public/images/chapter-03-cg-curtain.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: The SAME theatre after a successful ending, a new closer camera from the stage side: heavy burgundy curtain rests closed and slack red rigging lies harmlessly on the wooden floor. On a small breakfast table: an open blank journal containing one tiny glowing pink memory crystal, a cream star-pattern mug, a folded hand-drawn map with only small icons and no readable text. Soft early daylight enters from the rain window, the storm is over, warm gentle peach light and the feeling of quiet relief. Empty chairs, no characters or words."
+    },
+    {
+      "asset": "chapter-03-cg-collapse",
+      "label": "无人谢幕",
+      "type": "scene",
+      "transparent_background": false,
+      "reference_images": [
+        "assets/images/chapter-03-theatre.png"
+      ],
+      "png": "assets/images/chapter-03-cg-collapse.png",
+      "webp": "public/images/chapter-03-cg-collapse.webp",
+      "prompt": "Use case: stylized-concept. Asset type: cinematic visual-novel storyboard background, landscape 16:9. Match the approved environment reference's polished 3D animated-film style, burgundy velvet, tarnished champagne-gold trim, dusty warm spotlights and blue rain light. Camera composition must remain legible behind a dialogue box covering the lower quarter: keep key props and gestures above that area. No UI, subtitles, readable lettering, labels, watermark, gore or extra characters. This is a single cinematic frame, not a collage or storyboard grid.\nScene: A nightmare rehearsal collapsing in the SAME abandoned theatre: empty red velvet chairs tipping toward the stage, red rigging stretched taut and a few snapped threads hanging, loose blank script pages fluttering, spotlights going dark one by one, cracked wooden stage seen in the upper half. One small silver medical probe lies powerless on the foreground floor. Burgundy and muted pink highlights with deep blue-black shadows, dust and tension without gore, fire, injured bodies, characters or words. Single wide frame, keep the collapsing theatre readable."
+    }
+  ]
+}

@@ -151,7 +151,9 @@ function noteTexture() {
   ctx.fillStyle='rgba(67,102,106,.13)';
   for (const [x,y,rx,ry] of [[92,286,52,33],[396,86,43,28],[321,306,35,22]]) { ctx.beginPath();ctx.ellipse(x,y,rx,ry,-.3,0,Math.PI*2);ctx.fill(); }
   ctx.fillStyle='#343c39'; ctx.strokeStyle='#343c39'; ctx.lineWidth=5;
-  for(let i=0;i<4;i++) { const x=108+i*98,y=188; ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);i%2?ctx.fill():ctx.stroke(); }
+  // Ordinary field notes, rather than the removed direction-code symbols.
+  ctx.font='600 30px serif'; ctx.fillText('MIRROR HALL / 17',64,96);
+  for(const [y,width] of [[150,350],[192,290],[234,325],[276,215]]) { ctx.beginPath();ctx.moveTo(64,y);ctx.lineTo(64+width,y+3);ctx.stroke(); }
   const texture=new THREE.CanvasTexture(canvas); texture.colorSpace=THREE.SRGBColorSpace; return texture;
 }
 

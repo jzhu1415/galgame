@@ -37,27 +37,23 @@ const COPY = {
     title: '冰封镜馆 · 第二层',
     subtitle: '镜子记住了每一次经过。先找到入口附近的取证便笺。',
     guide: '靠近物证并按 E 收取', guideTouch: '靠近物证后点击「查看物证」',
-    notePrompt: '入口附近有一张压在碎镜下的纸条。它记录了北侧镜门的四位口令。',
+    notePrompt: '入口附近有一张压在碎镜下的便笺。收取后，沿地图寻找长廊里的胶片。',
     noteAction: '读取纸条', noteTitle: '纸条已展开',
-    routeStart: '门锁密码已解开。沿北侧通道穿过镜门，寻找下一件物证。',
+    routeStart: '沿北侧通道穿过镜门，寻找下一件物证。',
     routeApproach: '沿地图向北走，穿过前面的镜门。',
     routeStep: ['穿过结霜的镜门', '沿地面拖痕穿过镜室', '从对面的出口离开', '在下一段长廊查看镜片'],
     routeWrong: '方向不对，镜面没有回应。回到这一步的正确方向再走。',
     routeDone: '已离开冰晶厅。查看长廊架子上的录音蜡盘。', routeProgress: '路线',
     routeOneDone: '第一段路线已完成。寻找路线尽头的镜片。',
-    secondCodeTitle: '第二枚碎片 · 密码', secondCodeKey: '第一段尽头的镜片刻着「右 · 前 · 右 · 前」。依次输入，开启第二段路。',
-    secondCodeFound: '镜片已收取。读取镜片上的第二密码，再前往第二段路线。', secondCodeSolved: '第二道门锁已解开。穿过长廊，向冰晶厅深处走。',
-    secondRouteStart: '右 · 前 · 右 · 前是门锁口令。解锁后，沿北侧长廊进入冰晶厅。',
+    secondRouteStart: '沿北侧长廊进入冰晶厅，寻找录音蜡盘。',
     secondRouteStep: ['穿过狭长的滴水走廊', '进入有悬冰的大厅', '从镜墙后的出口离开', '在回声长廊查看录音蜡盘'],
-    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navCipher: '读取已收取镜片上的第二密码', navRoute: '前方出口', navCore: '镜心室中央镜心',
+    navTitle: '镜馆地图', navYou: '你', navGoal: '当前目标', navRoute: '前方出口', navCore: '镜心室中央镜心',
     core: '三件镜面物证与两段路线均已确认。靠近镜心并按 E。',
     coreTouch: '靠近镜心后点击「进入镜心」', collect: '查看物证', enter: '进入镜心',
     collected: '已归档', locked: '镜心仍封闭：需要三件物证与完整路线。', exit: '离开镜馆',
     hint: 'WASD / 方向键移动 · 触屏摇杆 · E 查看 · Esc 离开',
-    noteDecode: '便笺密码', noteCode: '○　●　○　●', noteKey: '霜印旁的注记：空心圆代表「前」，实心圆代表「左」。',
-    noteAnswer: '门锁口令：前 · 左 · 前 · 左', notePhysical: '薄纸被水浸透，折痕间夹着一枚发暗的镜粉。',
-    cipherForward: '前', cipherLeft: '左', cipherClear: '清除', cipherPrompt: '按纸条顺序选择四个方向。', cipherWrong: '顺序不对。擦去霜痕，再试一次。', cipherSolved: '密码解开。先查看长廊里的胶片，再穿过镜门。',
-    archive: '镜面物证档案', archiveHelp: '靠近并收取后，展开条目查看物证细节。', sealed: '尚未取得', noteFound: '入口便笺', routeFound: '通路已走完', routeLocked: '待解码',
+    notePhysical: '薄纸被水浸透，折痕间夹着一枚发暗的镜粉。',
+    archive: '镜面物证档案', archiveHelp: '靠近并收取后，展开条目查看物证细节。', sealed: '尚未取得', noteFound: '入口便笺', routeFound: '通路已走完', routeLocked: '尚未探索',
     caseFootage: '监控胶片', caseShard: '镜片', caseEcho: '声纹 / 录音',
     routeLabels: ['镜门', '拖痕', '出口', '镜片'], routeShort: '前往下一片区域',
     coreReply: '镜心里映出另一个入口。', wrong: '还差一步。',
@@ -66,27 +62,23 @@ const COPY = {
     title: 'Frozen Mirror Hall · Layer Two',
     subtitle: 'The mirrors remember each passing. Find the evidence note near the entrance.',
     guide: 'Approach an exhibit and press E to inspect', guideTouch: 'Approach an exhibit, then tap “Inspect evidence”.',
-    notePrompt: 'A note is pinned beneath broken glass near the entrance. It carries the four-part code for the north mirror door.',
+    notePrompt: 'An evidence note rests beneath broken glass near the entrance. Recover it, then follow the map to the corridor film.',
     noteAction: 'Read the note', noteTitle: 'Note unfolded',
-    routeStart: 'The lock is open. Follow the north passage through the mirror doorway to the next exhibit.',
+    routeStart: 'Follow the north passage through the mirror doorway to the next exhibit.',
     routeApproach: 'Follow the map north, through the mirror doorway.',
     routeStep: ['Pass through the frosted doorway', 'Follow the drag mark across the room', 'Leave through the far doorway', 'Inspect the lens in the next corridor'],
     routeWrong: 'Wrong direction. The mirror stays dark. Correct your course and try this leg again.',
     routeDone: 'You have left the crystal hall. Inspect the recording disc on the corridor stand.', routeProgress: 'Route',
     routeOneDone: 'Route one is complete. Recover the shard at its end.',
-    secondCodeTitle: 'SECOND FRAGMENT · CIPHER', secondCodeKey: 'The shard at the end of route one reads RIGHT · FORWARD · RIGHT · FORWARD. Enter the sequence to open route two.',
-    secondCodeFound: 'Shard recovered. Read its second cipher, then head to route two.', secondCodeSolved: 'The second lock is open. Follow the passage into the crystal hall.',
-    secondRouteStart: 'Right · forward · right · forward opens the lock. Then follow the north passage into the crystal hall.',
+    secondRouteStart: 'Follow the north passage into the crystal hall to find the recording disc.',
     secondRouteStep: ['Cross the dripping corridor', 'Enter the hall of hanging ice', 'Leave through the doorway beyond the mirror wall', 'Inspect the disc in the echo corridor'],
-    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navCipher: 'Read the recovered shard cipher', navRoute: 'Next doorway', navCore: 'Core room central mirror',
+    navTitle: 'HALL MAP', navYou: 'YOU', navGoal: 'NEXT', navRoute: 'Next doorway', navCore: 'Core room central mirror',
     core: 'Three mirror exhibits and both routes are confirmed. Press E at the core.',
     coreTouch: 'Approach the core, then tap “Enter core”.', collect: 'Inspect evidence', enter: 'Enter core',
     collected: 'archived', locked: 'The core remains sealed: three exhibits and the complete route are required.', exit: 'Leave hall',
     hint: 'WASD / arrows move · touch joystick · E inspect · Esc leave',
-    noteDecode: 'NOTE CIPHER', noteCode: '○　●　○　●', noteKey: 'Margin note: an open circle means “forward”; a filled circle means “left”.',
-    noteAnswer: 'Lock code: forward · left · forward · left', notePhysical: 'The thin paper is waterlogged; dark mirror dust clings to its folds.',
-    cipherForward: 'Forward', cipherLeft: 'Left', cipherClear: 'Clear', cipherPrompt: 'Choose four directions in the note’s order.', cipherWrong: 'That sequence is wrong. Clear the frost and try again.', cipherSolved: 'Lock opened. Inspect the corridor film, then head through the mirror doorway.',
-    archive: 'MIRROR EVIDENCE ARCHIVE', archiveHelp: 'Inspect each exhibit in the hall to open its record.', sealed: 'Not recovered', noteFound: 'Entrance note', routeFound: 'Passage explored', routeLocked: 'Awaiting decode',
+    notePhysical: 'The thin paper is waterlogged; dark mirror dust clings to its folds.',
+    archive: 'MIRROR EVIDENCE ARCHIVE', archiveHelp: 'Inspect each exhibit in the hall to open its record.', sealed: 'Not recovered', noteFound: 'Entrance note', routeFound: 'Passage explored', routeLocked: 'Not explored',
     caseFootage: 'SURVEILLANCE FILM', caseShard: 'MIRROR LENS', caseEcho: 'VOICEPRINT / RECORDING',
     routeLabels: ['DOOR', 'TRAIL', 'EXIT', 'LENS'], routeShort: 'Continue to the next area',
     coreReply: 'Another entrance appears inside the core.', wrong: 'One step remains.',
@@ -157,8 +149,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   const hint = document.querySelector('#ice-map-hint');
   const routeReadout = document.querySelector('#ice-route-readout');
   const routeStatus = document.querySelector('#ice-route-status');
-  const archive = document.querySelector('#ice-archive');
-  const archiveToggle = document.querySelector('#ice-archive-toggle');
   const overlay = document.querySelector('#ice-map-overlay');
   const navCanvas = document.querySelector('#ice-nav-canvas');
   const navTarget = document.querySelector('#ice-nav-target');
@@ -173,11 +163,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   let routeStep = 0;
   let routeAtStart = false;
   let routeStarted = false;
-  let cipherOpen = false;
-  let firstCipherSolved = false;
   let initialized = false;
-  let cipherInput = [];
-  let cipherFeedback = '';
   let lastNavAt = -Infinity;
   let pickup = null;
   let feedbackRemaining = 0;
@@ -216,14 +202,12 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     group.visible = false;
     group.position.copy(position);
     group.scale.copy(scale);
-    if (id === 'shard' && !found.has('route')) {
-      cipherOpen = true; cipherInput = []; cipherFeedback = '';
-      updateLabels();
-    }
-    refreshEvidenceVisibility();
-    if (id === 'footage' && firstCipherSolved && currentIceStage(found) === 'routeOne') {
+    const stage = currentIceStage(found);
+    if ((id === 'footage' && stage === 'routeOne') || (id === 'shard' && stage === 'routeTwo')) {
       routeStarted = true; routeStep = 0; routeAtStart = true; makeRouteMarkers();
     }
+    refreshEvidenceVisibility();
+    updateLabels(); updatePrompt();
     post('clue', id);
   }
   const routeMarkers = [];
@@ -296,49 +280,12 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (noteStatus) noteStatus.textContent = found.has('note') ? copy.noteFound : copy.sealed;
     const routeArchive = document.querySelector('#ice-route-archive');
     if (routeArchive) routeArchive.textContent = found.has('route') ? copy.routeFound : found.has('routeOne') ? copy.routeOneDone : found.has('note') ? copy.routeStart : copy.routeLocked;
-    const noteCipher = document.querySelector('#ice-note-cipher');
-    if (noteCipher) noteCipher.hidden = !cipherOpen && !found.has('note');
-    const secondCipher = found.has('note') && found.has('shard');
-    const cipherTitle = document.querySelector('#ice-cipher-title');
-    const cipherCode = document.querySelector('#ice-cipher-code');
-    if (cipherTitle) cipherTitle.textContent = secondCipher ? copy.secondCodeTitle : copy.noteDecode;
-    if (cipherCode) cipherCode.textContent = secondCipher ? '◁　○　◁　○' : copy.noteCode;
-    const noteCipherLabel = noteCipher?.querySelector('.cipher-label');
-    const noteCipherHint = noteCipher?.querySelector('[data-cipher-hint]');
-    const noteCipherAnswer = noteCipher?.querySelector('[data-cipher-answer]');
-    if (noteCipherLabel) noteCipherLabel.textContent = secondCipher ? copy.secondCodeTitle : copy.noteDecode;
-    if (noteCipherHint) noteCipherHint.textContent = secondCipher ? copy.secondCodeKey : copy.noteKey;
-    if (noteCipherAnswer) { noteCipherAnswer.textContent = secondCipher ? copy.secondRouteStart : copy.noteAnswer; noteCipherAnswer.hidden = secondCipher ? !routeStarted && !found.has('route') : !found.has('note'); }
-    const cipherControls = document.querySelector('#ice-cipher-input');
-    if (cipherControls) cipherControls.hidden = secondCipher ? routeStarted || found.has('route') : !cipherOpen;
-    for (const button of document.querySelectorAll('[data-cipher-dir]')) {
-      button.textContent = button.dataset.cipherDir === 'forward' ? copy.cipherForward : button.dataset.cipherDir === 'left' ? copy.cipherLeft : language === 'zh' ? '右' : 'Right';
-      button.hidden = secondCipher ? button.dataset.cipherDir === 'left' : button.dataset.cipherDir === 'right';
-    }
-    const clearCipher = document.querySelector('#ice-cipher-clear');
-    if (clearCipher) clearCipher.textContent = copy.cipherClear;
-    updateCipherInput();
-    if (archive) { archive.classList.toggle('has-note', found.has('note')); archive.classList.toggle('is-solving', cipherOpen); }
-    overlay?.classList.toggle('is-solving', cipherOpen);
-    overlay?.classList.toggle('is-archive-open', !!archive?.classList.contains('is-mobile-open') || cipherOpen);
-    if (archiveToggle) {
-      const open = archive?.classList.contains('is-mobile-open') || cipherOpen;
-      archiveToggle.textContent = open ? language === 'zh' ? '收起线索' : 'Close clues' : language === 'zh' ? '查看线索' : 'Clues';
-      archiveToggle.setAttribute('aria-expanded', String(!!open));
-    }
     const archiveTitle = document.querySelector('#ice-archive-title');
     const archiveIntro = document.querySelector('.ice-archive-intro');
     if (archiveTitle) archiveTitle.textContent = copy.archive;
     if (archiveIntro) archiveIntro.textContent = copy.archiveHelp;
     updateRouteReadout();
     updateNavigation();
-  }
-  function updateCipherInput() {
-    const copy = COPY[language];
-    const slots = document.querySelector('#ice-cipher-slots');
-    if (slots) slots.textContent = Array.from({ length: 4 }, (_, index) => cipherInput[index] ? (cipherInput[index] === 'forward' ? copy.cipherForward : cipherInput[index] === 'left' ? copy.cipherLeft : language === 'zh' ? '右' : 'Right') : '□').join(' · ');
-    const feedback = document.querySelector('#ice-cipher-feedback');
-    if (feedback) feedback.textContent = cipherFeedback || (found.has('routeOne') ? copy.secondCodeFound : copy.cipherPrompt);
   }
   function updateRouteReadout() {
     if (!routeReadout || !routeStatus) return;
@@ -369,7 +316,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
       }
       return { position: spec.position, label: `${place} · ${text(spec)}` };
     }
-    if (stage === 'routeTwo' && !routeStarted) return { position: camera.position, label: COPY[language].navCipher };
     if (routeStarted && !found.has('route')) {
       const point = routeMarkers[0]?.position;
       if (point) {
@@ -492,7 +438,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   function updatePrompt() {
     if (!prompt || !promptText || !interact) return;
     const copy = COPY[language];
-    const near = !cipherOpen && !storyPaused && !pickup && (currentTarget ? canInspect(currentTarget.position) : canInspect(CORE_POSITION));
+    const near = !storyPaused && !pickup && (currentTarget ? canInspect(currentTarget.position) : canInspect(CORE_POSITION));
     prompt.hidden = !near;
     if (!near) { interact.hidden = true; return; }
     if (currentTarget?.id === 'note') {
@@ -519,11 +465,12 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (disposed || storyPaused || menuPaused || pickup || found.has(id)) return;
     if (id === 'note') {
       if (!canInspect(notePosition)) return;
-      cipherOpen = true;
-      cipherInput = [];
-      cipherFeedback = '';
+      found.add('note');
+      currentTarget = null;
+      refreshEvidenceVisibility();
+      showFeedback('已收取 · 入口便笺', 'Recovered · Entrance note');
       updateLabels(); updatePrompt();
-      if (document.pointerLockElement) document.exitPointerLock();
+      post('clue', 'note');
       return;
     }
     const spec = CLUES.find(entry => entry.id === id);
@@ -536,26 +483,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (isTouch()) navigator.vibrate?.(35);
     currentTarget = null;
     refreshEvidenceVisibility();
-    updateLabels(); updatePrompt();
-  }
-  function chooseCipher(direction) {
-    if (!cipherOpen || currentIceStage(found) !== (found.has('note') ? (found.has('shard') ? 'routeTwo' : 'routeOne') : 'note') || cipherInput.length >= 4) return;
-    cipherInput.push(direction);
-    if (cipherInput.length === 4) {
-      const second = found.has('note') && found.has('shard');
-      if (cipherInput.join(',') === (second ? 'right,forward,right,forward' : 'forward,left,forward,left')) {
-        if (!second) { found.add('note'); post('clue', 'note'); firstCipherSolved = true; }
-        routeStarted = second ? !found.has('route') : currentIceStage(found) === 'routeOne'; routeStep = 0; routeAtStart = true; cipherOpen = false;
-        cipherFeedback = second ? COPY[language].secondCodeSolved : COPY[language].cipherSolved;
-        makeRouteMarkers();
-        const note = groups.get('note'); if (note) note.visible = false;
-        refreshEvidenceVisibility();
-        if (!routeStarted) cipherFeedback = COPY[language].cipherSolved;
-      } else {
-        cipherFeedback = COPY[language].cipherWrong;
-        cipherInput = [];
-      }
-    } else cipherFeedback = '';
     updateLabels(); updatePrompt();
   }
   function triggerCore() {
@@ -575,20 +502,13 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   function handleKey(event) {
     if (storyPaused || menuPaused) return;
     if (event.repeat) return;
-    if (cipherOpen) {
-      if (event.code === 'Digit1' || event.code === 'Numpad1') { event.preventDefault(); chooseCipher(found.has('note') && found.has('shard') ? 'right' : 'forward'); return; }
-      if (event.code === 'Digit2' || event.code === 'Numpad2') { event.preventDefault(); chooseCipher(found.has('note') && found.has('shard') ? 'forward' : 'left'); return; }
-      if (event.code === 'Backspace') { event.preventDefault(); cipherInput.pop(); cipherFeedback = ''; updateCipherInput(); return; }
-      if (event.code === 'Escape') { event.preventDefault(); return; }
-      return;
-    }
     if (event.code === 'KeyE' || event.code === 'Enter') {
       event.preventDefault();
       interactWithTarget();
     } else if (event.code === 'Escape') handleExit();
   }
   function handleClick(event) {
-    if (disposed || storyPaused || menuPaused || pickup || cipherOpen || event.target !== canvas) return;
+    if (disposed || storyPaused || menuPaused || pickup || event.target !== canvas) return;
     const bounds = canvas.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     ndc.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
@@ -604,8 +524,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (next?.language === 'en' || next?.language === 'zh') language = next.language;
     found.clear();
     for (const id of Array.isArray(next?.found) ? next.found : []) if (ALLOWED_CLUES.has(id)) found.add(id);
-    routeStep = 0; routeStarted = false; routeAtStart = false; cipherOpen = false;
-    firstCipherSolved = found.has('note'); cipherInput = []; cipherFeedback = ''; coreTriggered = false;
+    routeStep = 0; routeStarted = false; routeAtStart = false; coreTriggered = false;
     routeMarkers.forEach(marker => { scene.remove(marker); disposeObject(marker); }); routeMarkers.length = 0;
     const stage = currentIceStage(found);
     if (!initialized && found.size) {
@@ -614,8 +533,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     if (!initialized) camera.lookAt(camera.position.x, camera.position.y, camera.position.z + 10);
     initialized = true;
-    if (stage === 'routeTwo') cipherOpen = true;
-    if (stage === 'routeOne') { routeStarted = true; routeAtStart = true; makeRouteMarkers(); }
+    if (stage === 'routeOne' || stage === 'routeTwo') { routeStarted = true; routeAtStart = true; makeRouteMarkers(); }
     refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
   }
@@ -636,7 +554,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   }
   function progressRoute() {
     if (!routeStarted || found.has('route') || !routeMarkers.length) return;
-    if (storyPaused || menuPaused || cipherOpen) return;
+    if (storyPaused || menuPaused) return;
     const checkpoint = routeMarkers[0].position;
     // Crossing a doorway advances the journey without requiring a precise stop.
     if (camera.position.z < checkpoint.z - .5 || Math.abs(camera.position.x - checkpoint.x) > 1.45) return;
@@ -663,9 +581,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (routeStep >= 4) {
       if (!found.has('routeOne')) {
         found.add('routeOne'); post('clue', 'routeOne');
-        routeStarted = false; cipherOpen = false; cipherInput = [];
-        cipherFeedback = COPY[language].secondCodeFound;
-        if (document.pointerLockElement) document.exitPointerLock();
+        routeStarted = false;
       } else {
         found.add('route'); post('clue', 'route');
         routeStarted = false;
@@ -705,7 +621,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
       back.visible = nearby && !frontFacing;
     }
     progressRoute();
-    currentTarget = cipherOpen ? null : nearbyTarget();
+    currentTarget = nearbyTarget();
     focusRing.visible = !!currentTarget && !storyPaused && !menuPaused && !pickup;
     if (focusRing.visible) {
       focusRing.position.set(currentTarget.position.x, .18, currentTarget.position.z);
@@ -728,9 +644,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     canvas.removeEventListener('click', handleClick);
     interact?.removeEventListener('click', interactWithTarget);
     exit?.removeEventListener('click', handleExit);
-    archiveToggle?.removeEventListener('click', handleArchiveToggle);
-    cipherButtons.forEach(button => button.removeEventListener('click', handleCipherClick));
-    clearCipher?.removeEventListener('click', clearCipherInput);
     scene.remove(coreGroup); scene.remove(noteGroup);
     noteTrail.forEach(flake => scene.remove(flake));
     for (const group of groups.values()) scene.remove(group);
@@ -742,21 +655,10 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     routeMarkers.forEach(disposeObject);
   }
   function handleExit() { finishPickup(); post('exit'); }
-  function handleArchiveToggle() {
-    archive?.classList.toggle('is-mobile-open');
-    updateLabels();
-  }
-  const cipherButtons = [...document.querySelectorAll('[data-cipher-dir]')];
-  const clearCipher = document.querySelector('#ice-cipher-clear');
-  function handleCipherClick(event) { chooseCipher(event.currentTarget.dataset.cipherDir); }
-  function clearCipherInput() { cipherInput = []; cipherFeedback = ''; updateCipherInput(); }
-  cipherButtons.forEach(button => button.addEventListener('click', handleCipherClick));
-  clearCipher?.addEventListener('click', clearCipherInput);
   window.addEventListener('keydown', handleKey);
   canvas.addEventListener('click', handleClick);
   interact?.addEventListener('click', interactWithTarget);
   exit?.addEventListener('click', handleExit);
-  archiveToggle?.addEventListener('click', handleArchiveToggle);
   refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
   return { setInit, setLanguage, setMenuPaused, setQuality: preset => landmarks.setQuality(preset), setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,

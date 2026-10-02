@@ -1,0 +1,20 @@
+.release-dialog{width:min(680px,calc(100vw - 28px));max-height:88dvh;overflow:auto}
+.release-dialog .dialog-head{z-index:1;padding:18px 24px}
+.release-body{padding:26px 28px 8px}
+.release-intro{padding-bottom:24px;border-bottom:1px solid #586365}
+.release-date,.release-tag{font-size:.65rem;letter-spacing:.15em;color:#e9c686}
+.release-date{margin:0 0 14px}
+.release-intro h3{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,4vw,1.65rem);font-weight:500;margin:0 0 12px;text-wrap:balance}
+.release-intro p:last-child,.release-list p{font-size:.88rem;line-height:1.85;color:#c3cdca;margin:0}
+.release-list{list-style:none;padding:0;margin:0}
+.release-list li{padding:22px 0;border-bottom:1px solid #35464c}
+.release-list li:last-child{border-bottom:0}
+.release-list h4{font-size:1rem;font-weight:500;margin:8px 0 9px;color:#f5efe5}
+.release-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px 26px;border-top:1px solid #586365}
+.release-footer p{font-size:.75rem;color:#adb8b7;line-height:1.6;margin:0}
+.release-footer .primary-btn{white-space:nowrap;padding:12px 18px;font-size:.86rem;min-height:44px}
+.release-dialog [data-release-close]:focus-visible{outline:2px solid #e9c686;outline-offset:3px}
+.release-entry{cursor:pointer;background:none;border:0;color:inherit;font:inherit;padding:8px 0;text-decoration:underline;text-underline-offset:5px}
+.release-entry:hover{color:#e9c686}
+.release-entry:focus-visible{outline:2px solid #e9c686;outline-offset:4px}
+@media(max-width:480px){.release-dialog{max-height:90dvh}.release-dialog .dialog-head{padding:16px 18px}.release-body{padding:22px 18px 8px}.release-footer{padding:18px;align-items:flex-start}.release-footer p{max-width:13em}.release-list li{padding:20px 0}.release-dialog .dialog-head h2{font-size:1.2rem}}

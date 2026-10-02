@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict'
+import { existsSync, readFileSync } from 'node:fs'
+import ts from 'typescript'
+const source = readFileSync('src/dlc-unlock-progress.ts', 'utf8')
+const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
+const { DlcWatchSession, normalizeDlcViews, loadDlcViews, isRomanceDlcUnlocked, DLC_WATCH_KEY, redeemDlcKey } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`)
+for (const input of [null, '3', -1, 1.5, NaN, {}, undefined]) assert.equal(normalizeDlcViews(input), 0)
+assert.equal(normalizeDlcViews(99), 3)
+let stored = '0'
+const keyStorage = new Map()
+globalThis.localStorage = { getItem: key => key === DLC_WATCH_KEY ? stored : keyStorage.get(key) ?? null, setItem: (key, value) => keyStorage.set(key, value) }
+assert.equal(isRomanceDlcUnlocked(), false)
+for (let views = 1; views <= 3; views++) {
+  const session = new DlcWatchSession()
+  session.start(0, 0)
+  for (let t = .25; t <= 10; t += .25) session.sample(t, t * 1000, true, 1)
+  assert.equal(session.finish(10), true)
+  assert.equal(session.finish(10), false, 'ended must only count once per viewing')
+  stored = String(views)
+  assert.equal(loadDlcViews(), views, 'completed views restore after reloading')
+  assert.equal(isRomanceDlcUnlocked(), views === 3, 'must require all three full viewings')
+}
+const skipped = new DlcWatchSession()
+skipped.start(0, 0); skipped.sample(1, 1000, true, 1)
+skipped.start(9, 1100); skipped.sample(10, 2100, true, 1)
+assert.equal(skipped.finish(10), false, 'skipping to the end must not count')
+const repeated = new DlcWatchSession()
+repeated.start(0, 0)
+for (let cycle = 0; cycle < 12; cycle++) { repeated.start(0, cycle * 1000); repeated.sample(1, cycle * 1000 + 1000, true, 1) }
+repeated.start(9, 12000); repeated.sample(10, 13000, true, 1)
+assert.equal(repeated.finish(10), false, 'replaying one segment cannot fill missing coverage')
+const paused = new DlcWatchSession()
+paused.start(0, 0); paused.sample(5, 5000, true, 1)
+paused.start(5, 20000); paused.sample(10, 25000, true, 1)
+assert.equal(paused.finish(10), true, 'pausing must preserve valid coverage')
+const hidden = new DlcWatchSession()
+hidden.start(0, 0); hidden.sample(10, 10000, false, 1)
+assert.equal(hidden.finish(10), false)
+const sped = new DlcWatchSession()
+sped.start(0, 0); sped.sample(10, 5000, true, 2)
+assert.equal(sped.finish(10), false)
+assert(existsSync('public/video/romance-dlc-unlock.mp4'))
+assert(existsSync('assets/video/romance-dlc-unlock-source.mov'))
+console.log('DLC unlock OK: 3 complete views required, persisted progress, pause/resume, no seeking/duplicate/hidden/speed counts, source and web video present.')
+
+stored = '0'
+assert.equal(redeemDlcKey('123456'), 'invalid')
+assert.equal(isRomanceDlcUnlocked(), false)
+assert.equal(keyStorage.size, 0, 'incorrect keys must not write unlock state')
+assert.equal(redeemDlcKey('442456'), 'unlocked')
+assert.equal(isRomanceDlcUnlocked(), true, 'correct key unlocks without watching')
+assert.equal(loadDlcViews(), 0, 'key unlock must not fabricate completed video views')
+console.log('DLC key OK: correct key persists unlock; incorrect key does not unlock or change views.')

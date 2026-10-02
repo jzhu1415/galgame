@@ -9,8 +9,8 @@ export const ICE_LAYOUT = {
   core: new THREE.Vector3(7.5, 1.35, 97.5),
 };
 
-// Password directions are the lock combination. Travel continues north across
-// doorways and corridors; players never have to trace a square inside a room.
+// Each recovered exhibit starts the next walk through the north passage.
+// Doorway checkpoints advance the journey without a separate lock puzzle.
 export const ICE_ROUTE_ONE = [[7.5,22.5],[7.5,31.5],[7.5,38.5],[7.5,44.5],[7.5,49.5]];
 export const ICE_ROUTE_TWO = [[7.5,49.5],[7.5,56.5],[7.5,61.5],[7.5,73.5],[7.5,82.5]];
 export const ICE_ROUTES = [ICE_ROUTE_ONE, ICE_ROUTE_TWO];

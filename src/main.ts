@@ -1,9 +1,15 @@
 import './style.css'
+import './release-notes.css'
+import { showReleaseNotes } from './release-notes'
 import { firstScene, memoryNames, story, type Language, type Line, type MemoryId, type Scene } from './story'
-import { chapterTwoStatus, mountChapterTwo } from './chapter-two'
+import { chapterTwoStatus, resetChapterTwo, mountChapterTwo, previewChapterTwoRoutes } from './chapter-two'
+import { chapterThreeStatus, resetChapterThree, mountChapterThree, previewChapterThreeRoutes } from './chapter-three'
+import { mountRomanceDlc, romanceDlcStatus } from './romance-dlc'
+import { isRomanceDlcUnlocked, loadDlcViews, showDlcUnlock } from './dlc-unlock'
 import { characterVoiceSequence } from './character-voice'
 import { enterAppFullscreen, isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
 import { confirmInApp } from './ui-confirm'
+import { setupStoryMap } from './story-map'
 
 type LogEntry = { sceneId: string; index: number }
 type GameState = {
@@ -40,6 +46,9 @@ function languageOverride(): Language | null {
 const root = document.querySelector<HTMLDivElement>('#app')!
 let state: GameState | null = loadSave()
 let progress: Progress = loadProgress()
+let romanceDlcOpen = false
+let romanceDlcController: ReturnType<typeof mountRomanceDlc> | null = null
+let chapterPlaying = false
 let active = false
 let modal: 'log' | 'menu' | 'routes' | 'settings' | 'gallery' | null = null
 let preferredLanguage: Language = languageOverride() ?? systemLanguage()
@@ -50,8 +59,9 @@ let soundPlayback: SoundPlayback | null = null
 let ambientLaugh: HTMLAudioElement | null = null
 let ambientEnabled = true
 let ambientError = false
-let selectedChapter: 0 | 1 | 2 = 0
+let selectedChapter: 0 | 1 | 2 | 3 = new URLSearchParams(window.location.search).get('chapter') === '3' ? 3 : 0
 let chapterTwoController: ReturnType<typeof mountChapterTwo> | null = null
+let chapterThreeController: ReturnType<typeof mountChapterThree> | null = null
 let playbackMode: 'off' | 'auto' | 'skip' = 'off'
 let playbackTimer: number | null = null
 let audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
@@ -495,23 +505,28 @@ function imageUrl(id: string) { return `/images/${id}.webp` }
 function renderChapterSelect() {
   stopSound()
   stopAmbientLaugh()
+  audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
   const lang = preferredLanguage
   const status = chapterTwoStatus()
+  const thirdStatus = chapterThreeStatus()
   root.innerHTML = `<div class="chapter-select" style="--cover:url('${imageUrl('P02')}')">
     <header class="chapter-select-top"><span class="wordmark">NAIWA <span>·</span> ${lang === 'zh' ? '奶之救赎' : 'THE REDEMPTION'}</span><div class="chapter-select-tools"><button class="small-btn" id="routes-select" type="button">${esc(ui[lang].routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(ui[lang].settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(ui[lang].gallery)}</button>${state ? `<button class="small-btn" id="replay-select" type="button">${esc(ui[lang].restart)}</button>` : ''}<button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${ui[lang].languageLabel}">${ui[lang].language}</button></div></header>
     <main class="chapter-select-main"><div class="chapter-select-heading"><span>AN INTERACTIVE STORY / 2026</span><h1>${lang === 'zh' ? '奶之救赎' : 'naiwa'}</h1><p>${lang === 'zh' ? '选择章节，走进奶蛙的世界。' : 'Choose a chapter and step into naiwa’s world.'}</p></div>
       <div class="chapter-cards"><button class="chapter-card first" id="chapter-one" type="button"><span class="card-overline">CHAPTER 01 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '缘起' : 'Origin'}</strong><span class="card-description">${lang === 'zh' ? '雨夜相遇，走进迷雾游乐园，找回遗失的回忆。' : 'A rainy meeting leads into the mistbound fairground.'}</span><span class="card-action">${state ? ui[lang].continue : ui[lang].start} ↗</span></button>
       <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
       <p class="chapter-select-note">${lang === 'zh' ? '章节分别保存进度 · 可随时返回切换' : 'Each chapter saves separately · Switch at any time'}</p>
-    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><span>01 — 02</span></footer></div>`
+    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What’s new'}</button><span>01 — 03</span></footer></div>`
+  root.querySelector('.chapter-cards')?.insertAdjacentHTML('beforeend', `<button class="chapter-card third" id="chapter-three" type="button"><span class="card-overline">CHAPTER 03 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '血色交易' : 'The Crimson Bargain'}</strong><span class="card-description">${lang === 'zh' ? '与奶粉走进血肉剧场，辨认真记忆，决定碎片的归属。' : 'Meet Naifen in the Flesh Theatre. Find the real memories and choose what to trade.'}</span><span class="card-action">${thirdStatus.started ? lang === 'zh' ? '继续第三章' : 'Resume chapter' : lang === 'zh' ? '进入血肉剧场' : 'Enter the theatre'} ↗</span></button>`)
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   root.querySelector('#routes-select')?.addEventListener('click', () => openModal('routes'))
   root.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
   root.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
+  root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
   root.querySelector('#replay-select')?.addEventListener('click', () => confirmRestart(() => { selectedChapter = 1; start() }))
-  root.querySelector('#chapter-one')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 1; render() })
-  root.querySelector('#chapter-two')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 2; active = false; render() })
+  root.querySelector('#chapter-one')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 1; active = false; chapterPlaying = false; render() })
+  root.querySelector('#chapter-two')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 2; active = false; chapterPlaying = false; render() })
+  root.querySelector('#chapter-three')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 3; active = false; chapterPlaying = false; const url = new URL(window.location.href); url.searchParams.set('chapter', '3'); window.history.replaceState(null, '', url); render() })
   updateFullscreenButton()
 }
 
@@ -519,31 +534,79 @@ function renderIntro() {
   stopSound()
   stopAmbientLaugh()
   const t = ui[preferredLanguage]
+  const lang = preferredLanguage
+  const chapter = selectedChapter === 2 || selectedChapter === 3 ? selectedChapter : 1
+  const details = chapter === 2 ? {
+    cover: 'chapter-02-ice-hall', theme: 'ice', label: 'THE FROZEN MIRROR HALL',
+    subtitle: lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice',
+    tagline: lang === 'zh' ? '镜子记得的，未必就是真相。' : 'What the mirrors remember may not be the truth.',
+    note: lang === 'zh' ? '追踪病房中的紫色身影，探索冰封镜馆，收集残缺线索，辨认事故背后被裁切的记忆。' : 'Follow a purple shadow from the hospital into the Frozen Mirror Hall. Gather clues and piece together the memories cut from the accident.',
+    mechanics: lang === 'zh' ? '第二层 · 镜馆探索 · 线索解谜' : 'Layer two · Explore the hall · Solve the clues',
+    started: chapterTwoStatus().started,
+  } : chapter === 3 ? {
+    cover: 'chapter-03-theatre', theme: 'crimson', label: 'THE FLESH THEATRE',
+    subtitle: lang === 'zh' ? '血色交易' : 'The Crimson Bargain',
+    tagline: lang === 'zh' ? '幕布落下之前，你愿意付出什么？' : 'What will you give before the curtain falls?',
+    note: lang === 'zh' ? '与奶粉走进血肉剧场，辨认舞台上的真假记忆，在精神力耗尽之前，决定碎片与回忆的归属。' : 'Enter the Flesh Theatre with Naifen. Tell real memories from imitations, and decide the fate of the fragment before your spirit runs out.',
+    mechanics: lang === 'zh' ? '第三层 · 记忆辨认 · 多结局交易' : 'Layer three · Identify memories · Choose your bargain',
+    started: chapterThreeStatus().started,
+  } : {
+    cover: 'P02', theme: 'origin', label: 'ORIGIN', subtitle: t.subtitle,
+    tagline: t.tagline, note: t.introNote,
+    mechanics: lang === 'zh' ? '第一层 · 恋爱日常 · 迷雾游乐园' : 'Layer one · Life together · The mistbound fairground',
+    started: !!state,
+  }
+  const begin = (restart = false) => {
+    enterFullscreen()
+    if (chapter === 1) { if (restart || !state) start(); else { active = true; render() } }
+    else {
+      if (restart) { if (chapter === 2) resetChapterTwo(); else resetChapterThree() }
+      chapterPlaying = true
+      render()
+    }
+  }
+  const routes = () => {
+    if (chapter === 1) openModal('routes')
+    else if (chapter === 2) previewChapterTwoRoutes(root, lang, () => begin())
+    else previewChapterThreeRoutes(root, lang, () => begin())
+  }
   root.innerHTML = `
-    <div class="intro" style="--intro-image:url('${imageUrl('P02')}')">
-      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ORIGIN</button><div class="intro-tools"><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(t.settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(t.gallery)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
+    <div class="intro chapter-detail detail-${details.theme}" style="--intro-image:url('${imageUrl(details.cover)}')">
+      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ${details.label}</button><div class="intro-tools"><button class="small-btn" id="chapter-return" type="button" aria-keyshortcuts="Escape">← ${lang === 'zh' ? '返回章节选择' : 'Back to chapters'}</button><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(t.settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(t.gallery)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
       <main class="intro-body">
-        <div class="intro-kicker">A VISUAL NOVEL <span>✦</span> 01 / 01</div>
-        <h1>${esc(t.title)}<small>${esc(t.subtitle)}</small></h1>
-        <p class="intro-tagline">${esc(t.tagline)}</p>
-        <p class="intro-note">${esc(t.introNote)}</p>
+        <div class="intro-kicker">A VISUAL NOVEL <span>✦</span> 0${chapter} / 03</div>
+        <h1>${esc(t.title)}<small>${esc(details.subtitle)}</small></h1>
+        <p class="intro-tagline">${esc(details.tagline)}</p>
+        <p class="intro-note">${esc(details.note)}</p>
+        <p class="chapter-detail-meta">${esc(details.mechanics)}</p>
         <div class="intro-actions">
-          ${state ? `<button class="primary-btn" id="continue">${esc(t.continue)} <span aria-hidden="true">↗</span></button><button class="secondary-btn" id="start">${esc(t.restart)}</button>` : `<button class="primary-btn" id="start">${esc(t.start)} <span aria-hidden="true">↗</span></button>`}
+          ${details.started ? `<button class="primary-btn" id="continue">${esc(t.continue)} <span aria-hidden="true">↗</span></button><button class="secondary-btn" id="start">${esc(t.restart)}</button>` : `<button class="primary-btn" id="start">${esc(t.start)} <span aria-hidden="true">↗</span></button>`}
           <button class="secondary-btn" id="routes-intro">${esc(t.routes)}</button>
         </div>
         <p class="save-note">${esc(t.saveNote)}</p>
+        ${chapter === 1 ? `<button class="chapter-dlc-entry" id="romance-dlc-entry" type="button"><span>DLC / 01</span><div><strong>${lang === 'zh' ? '潮汐写给你的信' : 'A Letter from the Tide'}</strong><small>${lang === 'zh' ? '全新恋爱番外 · 两天一夜的海边旅行' : 'A new romance story · Two days by the sea'} · ${romanceDlcStatus().completed}/4</small><small class="dlc-entry-lock">${isRomanceDlcUnlocked() ? (lang === 'zh' ? '已解锁' : 'Unlocked') : (lang === 'zh' ? `观看视频解锁 · ${loadDlcViews()}/3` : `Watch to unlock · ${loadDlcViews()}/3`)}</small></div><span>↗</span></button>` : ''}
       </main>
-      <footer class="intro-bottom"><span>© NAIWA / 2026</span><span>CHAPTER ONE · THE BEGINNING</span></footer>
+      <footer class="intro-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What’s new'}</button><span>CHAPTER 0${chapter} · ${details.label}</span></footer>
     </div>`
   document.querySelector('#language')?.addEventListener('click', toggleLanguage)
   document.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
-  document.querySelector('#chapter-home')?.addEventListener('click', () => { stopPlayback(); selectedChapter = 0; render() })
-  document.querySelector('#continue')?.addEventListener('click', () => { enterFullscreen(); active = true; render() })
-  document.querySelector('#start')?.addEventListener('click', () => { if (!state) { enterFullscreen(); start() } else confirmRestart(() => { enterFullscreen(); start() }) })
-  document.querySelector('#routes-intro')?.addEventListener('click', () => openModal('routes'))
-  document.querySelector('#routes-intro-top')?.addEventListener('click', () => openModal('routes'))
+  document.querySelector('#chapter-home')?.addEventListener('click', () => { stopPlayback(); active = false; chapterPlaying = false; selectedChapter = 0; const url = new URL(window.location.href); url.searchParams.delete('chapter'); window.history.replaceState(null, '', url); render() })
+  document.querySelector('#chapter-return')?.addEventListener('click', () => root.querySelector<HTMLButtonElement>('#chapter-home')?.click())
+  document.querySelector('#romance-dlc-entry')?.addEventListener('click', () => {
+    const enterDlc = () => { stopPlayback(); active = false; romanceDlcOpen = true; render() }
+    if (isRomanceDlcUnlocked()) enterDlc()
+    else showDlcUnlock(root, lang, enterDlc, () => {
+      const label = root.querySelector('.dlc-entry-lock')
+      if (label) label.textContent = isRomanceDlcUnlocked() ? (lang === 'zh' ? '已解锁' : 'Unlocked') : (lang === 'zh' ? `观看视频解锁 · ${loadDlcViews()}/3` : `Watch to unlock · ${loadDlcViews()}/3`)
+    })
+  })
+  document.querySelector('#continue')?.addEventListener('click', () => begin())
+  document.querySelector('#start')?.addEventListener('click', () => { if (!details.started) begin(); else confirmRestart(() => begin(true), chapter === 3 ? (lang === 'zh' ? '重新开始第三章？当前进度会被清除，已解锁结局会保留。' : 'Restart chapter three? Progress will be cleared; unlocked endings will remain.') : t.confirmRestart) })
+  document.querySelector('#routes-intro')?.addEventListener('click', routes)
+  document.querySelector('#routes-intro-top')?.addEventListener('click', routes)
   document.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
   document.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
+  root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
   updateFullscreenButton()
 }
 
@@ -635,6 +698,7 @@ function renderGame() {
         <header class="game-top">
           <button class="wordmark wordmark-btn" id="title">NAIWA <span>·</span> ORIGIN</button>
           <div class="game-tools">
+            <button class="small-btn" id="chapter-back" type="button" aria-keyshortcuts="Escape"></button>
             <button class="small-btn" id="log"></button>
             <button class="small-btn" id="routes"></button>
             <button class="small-btn" id="auto" type="button"></button>
@@ -653,6 +717,7 @@ function renderGame() {
       </div>`
     game = root.querySelector<HTMLElement>(':scope > .game')!
     game.querySelector('#title')?.addEventListener('click', () => { stopPlayback(); active = false; render() })
+    game.querySelector('#chapter-back')?.addEventListener('click', () => game?.querySelector<HTMLButtonElement>('#title')?.click())
     game.querySelector('#language')?.addEventListener('click', toggleLanguage)
     game.querySelector('#log')?.addEventListener('click', () => openModal('log'))
     game.querySelector('#routes')?.addEventListener('click', () => openModal('routes'))
@@ -710,6 +775,7 @@ function renderGame() {
   ambientButton.setAttribute('aria-label', ambientButton.textContent)
   updateSceneImage(game.querySelector<HTMLElement>('#image-layer')!, scene.image, scene.chapter[lang])
   game.querySelector<HTMLElement>('#title')!.setAttribute('aria-label', t.returnTitle)
+  game.querySelector<HTMLElement>('#chapter-back')!.textContent = preferredLanguage === 'zh' ? '← 章节详情' : '← Chapter details'
   for (const id of ['log', 'routes', 'menu', 'auto', 'skip', 'save'] as const) {
     const element = game.querySelector<HTMLElement>(`#${id === 'save' ? 'save-entry' : id}`)!
     element.textContent = t[id]
@@ -799,40 +865,7 @@ function renderMindMap(lang: Language) {
 }
 
 function setupMindMap(dialog: HTMLDialogElement) {
-  const viewport = dialog.querySelector<HTMLElement>('#map-viewport')
-  const scaled = dialog.querySelector<HTMLElement>('#map-scaled')
-  const map = dialog.querySelector<HTMLElement>('#mindmap')
-  if (!viewport || !scaled || !map) return
-  let zoom = window.innerWidth < 600 ? 1 : .9
-  const applyZoom = (next: number, initial = false) => {
-    const worldX = initial ? 550 : (viewport.scrollLeft + viewport.clientWidth / 2) / zoom
-    const worldY = initial ? (mapNodes[state?.sceneId ?? 'p01']?.y ?? 80) : (viewport.scrollTop + viewport.clientHeight / 2) / zoom
-    zoom = Math.max(.55, Math.min(1.25, next))
-    scaled.style.width = `${MAP_WIDTH * zoom}px`
-    scaled.style.height = `${MAP_HEIGHT * zoom}px`
-    map.style.transform = `scale(${zoom})`
-    dialog.querySelector<HTMLElement>('#map-zoom')!.textContent = `${Math.round(zoom * 100)}%`
-    viewport.scrollLeft = worldX * zoom - viewport.clientWidth / 2
-    viewport.scrollTop = worldY * zoom - viewport.clientHeight / 2
-  }
-  requestAnimationFrame(() => applyZoom(zoom, true))
-  dialog.querySelector('#zoom-in')?.addEventListener('click', () => applyZoom(zoom + .15))
-  dialog.querySelector('#zoom-out')?.addEventListener('click', () => applyZoom(zoom - .15))
-  let drag: { x: number; y: number; left: number; top: number } | null = null
-  viewport.addEventListener('pointerdown', event => {
-    if (event.pointerType !== 'mouse' || (event.target as HTMLElement).closest('button')) return
-    drag = { x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop }
-    viewport.classList.add('is-dragging')
-    viewport.setPointerCapture(event.pointerId)
-  })
-  viewport.addEventListener('pointermove', event => {
-    if (!drag) return
-    viewport.scrollLeft = drag.left - (event.clientX - drag.x)
-    viewport.scrollTop = drag.top - (event.clientY - drag.y)
-  })
-  const finishDrag = () => { drag = null; viewport.classList.remove('is-dragging') }
-  viewport.addEventListener('pointerup', finishDrag)
-  viewport.addEventListener('pointercancel', finishDrag)
+  setupStoryMap(dialog, { width: MAP_WIDTH, height: MAP_HEIGHT, current: mapNodes[state?.sceneId ?? 'p01'] ?? { x: 550, y: 80 } })
 }
 
 function renderModal() {
@@ -898,17 +931,51 @@ function sceneLinesForLog(scene: Scene, saved: GameState, index: number) {
 }
 
 function render() {
+  if (romanceDlcOpen && !isRomanceDlcUnlocked()) romanceDlcOpen = false
+  if (!romanceDlcOpen && romanceDlcController) { romanceDlcController.dispose(); romanceDlcController = null }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
-  document.title = preferredLanguage === 'zh' ? selectedChapter === 2 ? '奶之救赎：冰镜疑凶 | naiwa' : '奶之救赎 | naiwa' : selectedChapter === 2 ? 'naiwa: The Culprit in the Ice' : 'naiwa'
-  if (selectedChapter !== 2 && chapterTwoController) { chapterTwoController.dispose(); chapterTwoController = null }
-  if (selectedChapter === 2) {
-    if (!chapterTwoController) chapterTwoController = mountChapterTwo(root, preferredLanguage, language => { setPreferredLanguage(language); chapterTwoController?.dispose(); chapterTwoController = null; selectedChapter = 0; render() }, setPreferredLanguage)
+  document.title = preferredLanguage === 'zh' ? selectedChapter === 3 ? '奶之救赎：血色交易 | naiwa' : selectedChapter === 2 ? '奶之救赎：冰镜疑凶 | naiwa' : '奶之救赎 | naiwa' : selectedChapter === 3 ? 'naiwa: The Crimson Bargain' : selectedChapter === 2 ? 'naiwa: The Culprit in the Ice' : 'naiwa'
+  if ((selectedChapter !== 2 || !chapterPlaying) && chapterTwoController) { chapterTwoController.dispose(); chapterTwoController = null }
+  if ((selectedChapter !== 3 || !chapterPlaying) && chapterThreeController) { chapterThreeController.dispose(); chapterThreeController = null }
+  if (romanceDlcOpen) {
+    stopSound(); stopAmbientLaugh()
+    if (!romanceDlcController) romanceDlcController = mountRomanceDlc(root, preferredLanguage, () => { romanceDlcOpen = false; active = false; selectedChapter = 1; audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
+    else romanceDlcController.setLanguage(preferredLanguage)
+  } else if ((selectedChapter === 2 || selectedChapter === 3) && !chapterPlaying) renderIntro()
+  else if (selectedChapter === 3) {
+    stopSound(); stopAmbientLaugh()
+    if (!chapterThreeController) chapterThreeController = mountChapterThree(root, preferredLanguage, language => { setPreferredLanguage(language); chapterThreeController?.dispose(); chapterThreeController = null; chapterPlaying = false; selectedChapter = 3; const url = new URL(window.location.href); url.searchParams.delete('chapter'); window.history.replaceState(null, '', url); render() }, setPreferredLanguage)
+    else chapterThreeController.setLanguage(preferredLanguage)
+  } else if (selectedChapter === 2) {
+    if (!chapterTwoController) chapterTwoController = mountChapterTwo(root, preferredLanguage, language => { setPreferredLanguage(language); chapterTwoController?.dispose(); chapterTwoController = null; chapterPlaying = false; selectedChapter = 2; render() }, setPreferredLanguage)
     else chapterTwoController.setLanguage(preferredLanguage)
   } else if (selectedChapter === 0) renderChapterSelect()
   else if (!active) renderIntro()
   else renderGame()
   if (modal) renderModal()
 }
+
+// Escape closes the current overlay first, then returns one navigation level.
+window.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
+  if (root.querySelector('dialog[open]')) {
+    event.stopImmediatePropagation()
+    return // Keep the native dialog cancellation behavior.
+  }
+  const settings = root.querySelector<HTMLDetailsElement>('.crimson-settings[open]')
+  if (settings) {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    settings.open = false
+    settings.querySelector<HTMLElement>('summary')?.focus()
+    return
+  }
+  const back = root.querySelector<HTMLButtonElement>('#ice-routes-close, #chapter-return, #chapter-back, #ice-back, #crimson-back, #romance-back')
+  if (!back) return
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  back.click()
+}, { capture: true })
 
 document.addEventListener('keydown', event => {
   if (!active || modal || event.altKey || event.ctrlKey || event.metaKey) return
@@ -932,3 +999,4 @@ window.addEventListener('resize', () => {
   if (stage) positionObjectHotspots(stage)
 })
 render()
+showReleaseNotes(root, preferredLanguage, true)

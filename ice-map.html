@@ -459,7 +459,6 @@
           <span class="ice-map-clue" data-ice-clue="echo" role="listitem">声纹 / 录音</span>
         </div>
       </div>
-      <button class="ice-archive-toggle" id="ice-archive-toggle" type="button" aria-controls="ice-archive" aria-expanded="false">线索</button>
       <aside class="ice-nav-map" aria-label="镜馆地图">
         <div class="ice-nav-head"><strong id="ice-nav-title">镜馆地图</strong><span>N ↑</span></div>
         <canvas id="ice-nav-canvas" width="240" height="236" aria-hidden="true"></canvas>
@@ -468,7 +467,7 @@
       <section class="ice-route-readout" id="ice-route-readout" aria-live="polite" hidden>
         <p class="ice-route-label">NAVIGATION NOTE · 04</p>
         <ol class="ice-route-steps">
-          <li data-route-step="0">前</li><li data-route-step="1">左</li><li data-route-step="2">前</li><li data-route-step="3">左</li>
+          <li data-route-step="0">镜门</li><li data-route-step="1">拖痕</li><li data-route-step="2">出口</li><li data-route-step="3">镜片</li>
         </ol>
         <p id="ice-route-status"></p>
       </section>
@@ -489,18 +488,7 @@
           <p data-ice-detail="echo" hidden></p>
         </details>
         <div class="ice-evidence-record ice-note-record"><span class="record-index">04</span><span>入口便笺</span><span id="ice-note-status">未取得</span></div>
-        <div class="ice-evidence-record ice-note-record"><span class="record-index">05</span><span>四步路线</span><span id="ice-route-archive">待解码</span></div>
-        <div class="ice-note-cipher" id="ice-note-cipher" hidden>
-          <span class="cipher-label" id="ice-cipher-title">便笺密码 / NOTE CIPHER</span>
-          <strong id="ice-cipher-code">○　●　○　●</strong>
-          <p data-cipher-hint>霜印旁的注记：空心圆代表「前」，实心圆代表「左」。</p>
-          <div class="ice-cipher-input" id="ice-cipher-input">
-            <output id="ice-cipher-slots" aria-live="polite">□ · □ · □ · □</output>
-            <div class="ice-cipher-actions"><button type="button" data-cipher-dir="forward">前</button><button type="button" data-cipher-dir="left">左</button><button type="button" data-cipher-dir="right">右</button><button type="button" id="ice-cipher-clear">清除</button></div>
-            <p id="ice-cipher-feedback" aria-live="polite">按纸条顺序选择四个方向。</p>
-          </div>
-          <small data-cipher-answer hidden>解码后：前 · 左 · 前 · 左</small>
-        </div>
+        <div class="ice-evidence-record ice-note-record"><span class="record-index">05</span><span>四步路线</span><span id="ice-route-archive">尚未探索</span></div>
       </aside>
       <div class="ice-map-prompt" id="ice-map-prompt" hidden>
         <p id="ice-map-prompt-text"></p>

@@ -40,14 +40,12 @@ approach(ICE_LAYOUT.echo); key('KeyE'); tick(12);
 assert.equal(has('echo'), false, 'Walking ahead cannot collect a future exhibit');
 layer.setMenuPaused(true);
 approach(ICE_LAYOUT.note); key('KeyE');
-for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
 key('Escape');
 assert.equal(has('note'), false, 'Quality and settings dialogs block evidence interaction');
 assert.equal(messages.some(message => message.type === 'exit'), false, 'Escape cannot leave the hall behind a settings dialog');
 layer.setMenuPaused(false);
 approach(ICE_LAYOUT.note); key('KeyE');
-for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
-assert.ok(has('note'));
+assert.ok(has('note'), 'The entrance note is collected immediately without code input');
 assert.equal(has('routeOne'), false);
 collect('footage');
 for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
@@ -63,9 +61,8 @@ for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
 assert.ok(has('routeOne'), 'First route starts after footage');
 assert.equal(has('route'), false);
 collect('shard');
-for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
 for (const [x, z] of ROUTE_POINTS[1]) { approach({ x: x - 1.1, z: z + .8 }); tick(); }
-assert.ok(has('route'), 'Shard cipher starts the second-room route');
+assert.ok(has('route'), 'Recovering the shard starts the second route without code input');
 collect('echo');
 approach(ICE_LAYOUT.core); key('KeyE');
 assert.ok(messages.some(message => message.type === 'core'));
@@ -79,8 +76,7 @@ assert.equal(has('route'), false, 'A completed legacy route is not replayed');
 messages.length = 0;
 layer.setInit({ found: ['route', 'echo'] });
 approach(ICE_LAYOUT.note); key('KeyE');
-for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
-assert.ok(has('note'), 'A legacy route does not block the missing entrance cipher');
+assert.ok(has('note'), 'A legacy route does not block the missing entrance note');
 collect('footage');
 collect('shard');
 approach(ICE_LAYOUT.core); key('KeyE');
@@ -95,5 +91,16 @@ const resumedLayer = createIceChapterLayer({ scene: new THREE.Scene(), camera: r
 resumedLayer.setInit({ found: ['note', 'footage', 'routeOne', 'shard'] });
 assert.ok(resumeCamera.position.z > 45, 'A resumed game enters near its current passage');
 assert.ok(resumeCamera.getWorldDirection(new THREE.Vector3()).z > .99);
+// A save that used to stop at the second cipher now resumes the walking route.
+resumedLayer.setStoryPaused(true);
+resumeCamera.position.set(7.5, 1.7, ROUTE_POINTS[1][1][1] + .8);
+resumedLayer.update(.05, 1);
+assert.equal(has('route'), false, 'Fragment dialogue pauses route progression');
+resumedLayer.setStoryPaused(false);
+for (const [x, z] of ROUTE_POINTS[1]) {
+  resumeCamera.position.set(x, 1.7, z + .8);
+  resumedLayer.update(.05, 2);
+}
+assert.ok(has('route'), 'A legacy save proceeds along route two with no cipher gate');
 resumedLayer.dispose();
 console.log('Ice flow OK: future exhibits stay locked; note → film → route one → shard → route two → echo → core.');

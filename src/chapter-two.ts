@@ -4,6 +4,7 @@ import type { Language } from './story'
 import { characterVoiceSequence } from './character-voice'
 import { isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
 import { confirmInApp } from './ui-confirm'
+import { showChapterRoutePreview } from './chapter-route-preview'
 
 type Phase = 'hospital' | 'threshold' | 'map' | 'core' | 'ending'
 type FragmentId = 'footage' | 'shard' | 'echo'
@@ -27,8 +28,8 @@ function load(): ChapterSave {
 }
 const copy = {
   zh: {
-    back: '返回章节', chapter: '第二章', title: '冰镜疑凶', subtitle: '第二层 · 冰封镜馆', next: '继续', enter: '进入冰封镜馆', resume: '继续探索', restart: '重玩第二章', restartConfirm: '重新开始第二章？本章线索和进度将被清除。', fullscreen: '进入全屏', exitFullscreen: '退出全屏', routes: '剧情树', routesTitle: '冰镜剧情树', close: '关闭', locked: '尚未抵达', visited: '已抵达', log: '回顾', menu: '菜单', routeHint: '点击已抵达的节点返回该段剧情。',
-    map: '探索镜馆', clues: '探索记录', clueNames: { footage: '残缺监控', shard: '冰蓝晶片', echo: '被封住的声音', note: '密码纸条', routeOne: '第一段路线', route: '第二段路线' },
+    back: '章节详情', chapter: '第二章', title: '冰镜疑凶', subtitle: '第二层 · 冰封镜馆', next: '继续', enter: '进入冰封镜馆', resume: '继续探索', restart: '重玩第二章', restartConfirm: '重新开始第二章？本章线索和进度将被清除。', fullscreen: '进入全屏', exitFullscreen: '退出全屏', routes: '剧情树', routesTitle: '冰镜剧情树', close: '关闭', locked: '尚未抵达', visited: '已抵达', log: '回顾', menu: '菜单', routeHint: '点击已抵达的节点返回该段剧情。',
+    map: '探索镜馆', clues: '探索记录', clueNames: { footage: '残缺监控', shard: '冰蓝晶片', echo: '被封住的声音', note: '入口便笺', routeOne: '第一段路线', route: '第二段路线' },
     hospital: [
       ['旁白', '从游乐园回来，奶蛙的心跳终于稳了一点。我在病床边睡着过一次，醒来时手还攥着他的被角。窗外的雨下了一整夜。'],
       ['旁白', '两点十七分，监护仪连响三声。奶蛙的手指缩了一下。床边的《奶蛙观察日记》自行翻页，纸上慢慢洇出一行字：第二层。别信第一面镜子。'],
@@ -80,8 +81,8 @@ const copy = {
     complete: '第二章 · 完', completeNote: '冰镜已融，真相仍藏在下一层。', choose: '选择进入镜馆的方式', mapHint: '跟随地图的当前目标一路向北；取得物证后，继续前往下一间镜室。', skipToMap: '返回镜馆', voicePlay: '播放奶鼠原声片段', voiceStop: '停止播放', voiceError: '音频暂时无法播放', characterVoicePlay: '播放奶霸声音', characterVoiceStop: '跳过声音', narratorVoicePlay: '播放旁白',
   },
   en: {
-    back: 'Chapters', chapter: 'Chapter two', title: 'The Culprit in the Ice', subtitle: 'Layer two · The Frozen Mirror Hall', next: 'Continue', enter: 'Enter the mirror hall', resume: 'Resume exploration', restart: 'Replay chapter two', restartConfirm: 'Restart chapter two? This chapter’s clues and progress will be cleared.', fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen', routes: 'Story tree', routesTitle: 'Frozen mirror story tree', close: 'Close', locked: 'Not reached', visited: 'Reached', log: 'History', menu: 'Menu', routeHint: 'Select a reached node to revisit that part of the story.',
-    map: 'Explore the hall', clues: 'Clues', clueNames: { footage: 'Broken footage', shard: 'Blue crystal', echo: 'The sealed voice', note: 'Cipher note', routeOne: 'First route', route: 'Second route' },
+    back: 'Chapter details', chapter: 'Chapter two', title: 'The Culprit in the Ice', subtitle: 'Layer two · The Frozen Mirror Hall', next: 'Continue', enter: 'Enter the mirror hall', resume: 'Resume exploration', restart: 'Replay chapter two', restartConfirm: 'Restart chapter two? This chapter’s clues and progress will be cleared.', fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen', routes: 'Story tree', routesTitle: 'Frozen mirror story tree', close: 'Close', locked: 'Not reached', visited: 'Reached', log: 'History', menu: 'Menu', routeHint: 'Select a reached node to revisit that part of the story.',
+    map: 'Explore the hall', clues: 'Clues', clueNames: { footage: 'Broken footage', shard: 'Blue crystal', echo: 'The sealed voice', note: 'Entrance note', routeOne: 'First route', route: 'Second route' },
     hospital: [
       ['Narration', 'Naiwa’s pulse had steadied since the fairground. I fell asleep beside his bed once and woke with a fistful of blanket in my hand. Rain kept tapping at the window.'],
       ['Narration', 'At 2:17 a.m., the monitor beeped three times. Naiwa’s fingers curled. His journal opened by itself, and ink spread across the page: Layer Two. Don’t trust the first mirror.'],
@@ -136,7 +137,7 @@ const copy = {
 
 const fragmentStories = {
   zh: {
-    footage: { title: '被剪掉的一秒', art: ['chapter-02-crash-memory', 'chapter-02-crash-memory', 'chapter-02-gauntlet', 'chapter-02-crash-memory'], lines: [
+    footage: { title: '被剪掉的一秒', art: ['chapter-02-cg-film-fragment', 'chapter-02-crash-memory', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
       ['旁白', '胶片离开冰面，雨点在画格里倒着往上走。时间码停在两点十七分；跳过一格，人影已经跑进车道。'],
       ['奶鼠', '我一直记得那盏红灯。你看，撞上去之前它灭了。为什么我一点印象都没有？'],
       ['旁白', '我把胶片对着灯叠起来。手甲亮起之前，车轮已经偏转；两帧之间少了一秒。'],
@@ -148,7 +149,7 @@ const fragmentStories = {
       ['奶鼠', '我记得他站在那儿。再往前想，镜子就跳回撞上的那一刻。我试过很多次。'],
       ['旁白', '裂缝左边的时间码比右边早了三秒。我把镜片转来转去，也对不齐。'],
     ] },
-    echo: { title: '没有回声的心跳', art: ['chapter-02-cg-cold-mirror', 'chapter-02-crash-memory', 'chapter-02-cg-cold-mirror', 'chapter-02-ice-hall'], lines: [
+    echo: { title: '没有回声的心跳', art: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-shared-palm', 'chapter-02-ice-hall'], lines: [
       ['旁白', '我把蜡片贴近耳朵。两下心跳，一前一后；第二下撞上镜墙，什么回声也没有。'],
       ['奶鼠', '“别信他”……等一下。先说这句话的是谁？我听着像我自己。'],
       ['旁白', '我又听了一遍。“别信他”三个字重在一起，后面的呼吸却分成两道。'],
@@ -156,7 +157,7 @@ const fragmentStories = {
     ] },
   },
   en: {
-    footage: { title: 'The Missing Second', art: ['chapter-02-crash-memory', 'chapter-02-crash-memory', 'chapter-02-gauntlet', 'chapter-02-crash-memory'], lines: [
+    footage: { title: 'The Missing Second', art: ['chapter-02-cg-film-fragment', 'chapter-02-crash-memory', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
       ['Narration', 'I lifted the film from the ice. Rain ran upward in the frames. The timecode read 2:17; one frame later, a figure was already in the road.'],
       ['Naishu', 'I remember that light being red. Look—it goes out before the crash. How did I miss that?'],
       ['Narration', 'I held the frames against the light. The wheels had turned before the gauntlet flashed. There was a missing second between them.'],
@@ -168,7 +169,7 @@ const fragmentStories = {
       ['Naishu', 'I remember him standing there. Every time I try to look earlier, the mirror skips back to the impact. I’ve tried.'],
       ['Narration', 'The timecodes on either side of the crack were three seconds apart. I turned the lens over. They still would not meet.'],
     ] },
-    echo: { title: 'A Heartbeat Without an Echo', art: ['chapter-02-cg-cold-mirror', 'chapter-02-crash-memory', 'chapter-02-cg-cold-mirror', 'chapter-02-ice-hall'], lines: [
+    echo: { title: 'A Heartbeat Without an Echo', art: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-shared-palm', 'chapter-02-ice-hall'], lines: [
       ['Narration', 'I held the wax record to my ear. Two heartbeats, one after the other. The second struck the mirror wall and gave no echo.'],
       ['Naishu', '“Don’t trust him”… Wait. Who said it first? That sounds like me.'],
       ['Narration', 'I played it again. The words overlapped exactly; the breaths afterward split apart.'],
@@ -176,6 +177,15 @@ const fragmentStories = {
     ] },
   },
 } as const
+
+function chapterTwoRouteTree(save: ChapterSave, language: Language) {
+  const t = copy[language]
+    const rank: Record<Phase, number> = { hospital: 0, threshold: 1, map: 2, core: 3, ending: 4 }
+    const reached = (phase: Phase) => save.completed || rank[save.phase] >= rank[phase]
+    const node = (phase: Phase, title: string, detail = '') => `<button type="button" data-ice-route="${phase}" class="ice-route-node ${reached(phase) ? 'is-reached' : 'is-locked'}" ${reached(phase) ? '' : 'disabled'}><span class="ice-route-dot">${reached(phase) ? '✓' : '·'}</span><span class="ice-route-description"><strong>${title}</strong>${detail ? `<small>${detail}</small>` : ''}</span><em>${reached(phase) ? t.visited : t.locked}</em></button>`
+    const routeTree = `<div class="ice-route-tree"><div class="ice-route-spine"><span class="ice-route-kicker">01</span><div class="ice-route-branches"><div class="ice-route-branch">${node('hospital', language === 'zh' ? '医院病房' : 'Hospital ward', language === 'zh' ? '日记残页 · 冷藏电梯' : 'Journal page · cold lift')}<div class="ice-route-link"></div>${node('threshold', language === 'zh' ? '镜馆入口' : 'Hall entrance', language === 'zh' ? '选择进入方式' : 'Choose an approach')}<div class="ice-route-link"></div><div class="ice-route-choice-title">${language === 'zh' ? '三种进入方式' : 'Three approaches'}</div><div class="ice-route-choice-grid">${t.approaches.map(([name, desc], i) => `<div class="ice-route-choice ${save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-selected' : ''} ${save.approach ? (save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-reached' : 'is-locked') : reached('map') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.approach === (['chase','restore','comfort'] as const)[i] ? `<em>${language === 'zh' ? '当前路线' : 'Selected'}</em>` : ''}</div>`).join('')}</div><div class="ice-route-link"></div>${node('map', language === 'zh' ? '镜馆探索' : 'Hall exploration', `${t.clues} ${save.clues.length}/6 · ${save.clues.map(id => t.clueNames[id]).join(' / ') || (language === 'zh' ? '尚无线索' : 'No clues yet')}`)}<div class="ice-route-link"></div>${node('core', language === 'zh' ? '镜心对质' : 'Confrontation', language === 'zh' ? '三段记忆与路线合流' : 'Memories and route converge')}<div class="ice-route-choice-grid ice-response-branches">${t.responses.map(([name, desc], i) => { const id = (['trust','question'] as const)[i]; return `<div class="ice-route-choice ${save.response === id ? 'is-selected is-reached' : reached('ending') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.response === id ? `<em>${language === 'zh' ? '当前结局' : 'Selected'}</em>` : ''}</div>` }).join('')}</div><div class="ice-route-link"></div>${node('ending', language === 'zh' ? '冰镜结局' : 'The thawing', language === 'zh' ? '通往第三层' : 'A path to layer three')}</div></div></div>`
+  return { reached, routeTree }
+}
 
 export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, onBack: (language: Language) => void, onLanguageChange?: (language: Language) => void) {
   let language = initialLanguage
@@ -235,17 +245,14 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     const showNarrationVoice = line?.[0] === '旁白' || line?.[0] === 'Narration'
     const showSpokenVoice = audioEnabled && (showCharacterVoice || showNarrationVoice)
     const artByPhase: Record<Phase, string[]> = {
-      hospital: ['chapter-02-hospital', 'chapter-02-journal', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-hospital'],
-      threshold: ['chapter-02-elevator', 'chapter-02-ice-hall', 'chapter-02-elevator', 'chapter-02-ice-hall', 'chapter-02-ice-hall'],
-      core: ['chapter-02-cg-cold-mirror', 'chapter-02-crash-memory', 'chapter-02-crash-memory', 'chapter-02-cg-shattered-mirror', 'chapter-02-cg-cold-mirror', 'chapter-02-gauntlet', 'chapter-02-gauntlet', 'chapter-02-cg-shattered-mirror', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-cold-mirror'],
-      ending: ['chapter-02-thaw', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-thaw', 'chapter-02-elevator'],
+      hospital: ['chapter-02-hospital', 'chapter-02-journal', 'chapter-02-cg-surveillance', 'chapter-02-hospital', 'chapter-02-cg-door-note', 'chapter-02-cg-surveillance', 'chapter-02-cg-door-note', 'chapter-02-elevator'],
+      threshold: ['chapter-02-elevator', 'chapter-02-cg-three-mirrors', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-three-mirrors', 'chapter-02-ice-hall'],
+      core: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-film-fragment', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-shared-palm', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-shared-palm', 'chapter-02-cg-shattered-mirror'],
+      ending: ['chapter-02-cg-naishu-emerges', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-cg-dark-jewel', 'chapter-02-elevator'],
       map: [],
     }
     const art = isMap ? 'chapter-02-ice-hall' : artByPhase[save.phase][Math.min(save.line, artByPhase[save.phase].length - 1)]
-    const rank: Record<Phase, number> = { hospital: 0, threshold: 1, map: 2, core: 3, ending: 4 }
-    const reached = (phase: Phase) => save.completed || rank[save.phase] >= rank[phase]
-    const node = (phase: Phase, title: string, detail = '') => `<button type="button" data-ice-route="${phase}" class="ice-route-node ${reached(phase) ? 'is-reached' : 'is-locked'}" ${reached(phase) ? '' : 'disabled'}><span class="ice-route-dot">${reached(phase) ? '✓' : '·'}</span><span class="ice-route-description"><strong>${title}</strong>${detail ? `<small>${detail}</small>` : ''}</span><em>${reached(phase) ? t.visited : t.locked}</em></button>`
-    const routeTree = `<div class="ice-route-tree"><div class="ice-route-spine"><span class="ice-route-kicker">01</span><div class="ice-route-branches"><div class="ice-route-branch">${node('hospital', language === 'zh' ? '医院病房' : 'Hospital ward', language === 'zh' ? '日记残页 · 冷藏电梯' : 'Journal page · cold lift')}<div class="ice-route-link"></div>${node('threshold', language === 'zh' ? '镜馆入口' : 'Hall entrance', language === 'zh' ? '选择进入方式' : 'Choose an approach')}<div class="ice-route-link"></div><div class="ice-route-choice-title">${language === 'zh' ? '三种进入方式' : 'Three approaches'}</div><div class="ice-route-choice-grid">${t.approaches.map(([name, desc], i) => `<div class="ice-route-choice ${save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-selected' : ''} ${save.approach ? (save.approach === (['chase','restore','comfort'] as const)[i] ? 'is-reached' : 'is-locked') : reached('map') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.approach === (['chase','restore','comfort'] as const)[i] ? `<em>${language === 'zh' ? '当前路线' : 'Selected'}</em>` : ''}</div>`).join('')}</div><div class="ice-route-link"></div>${node('map', language === 'zh' ? '镜馆探索' : 'Hall exploration', `${t.clues} ${save.clues.length}/6 · ${save.clues.map(id => t.clueNames[id]).join(' / ') || (language === 'zh' ? '尚无线索' : 'No clues yet')}`)}<div class="ice-route-link"></div>${node('core', language === 'zh' ? '镜心对质' : 'Confrontation', language === 'zh' ? '三段记忆与路线合流' : 'Memories and route converge')}<div class="ice-route-choice-grid ice-response-branches">${t.responses.map(([name, desc], i) => { const id = (['trust','question'] as const)[i]; return `<div class="ice-route-choice ${save.response === id ? 'is-selected is-reached' : reached('ending') ? 'is-reached' : 'is-locked'}"><strong>${name}</strong><small>${desc}</small>${save.response === id ? `<em>${language === 'zh' ? '当前结局' : 'Selected'}</em>` : ''}</div>` }).join('')}</div><div class="ice-route-link"></div>${node('ending', language === 'zh' ? '冰镜结局' : 'The thawing', language === 'zh' ? '通往第三层' : 'A path to layer three')}</div></div></div>`
+    const { reached, routeTree } = chapterTwoRouteTree(save, language)
     root.innerHTML = `<div class="chapter-two ${isMap ? 'is-map' : ''}"><header class="ice-top"><button class="ice-back" id="ice-back" type="button">← ${t.back}</button><span>NAIWA <i>✦</i> ${t.chapter}</span><div class="ice-top-tools"><button class="ice-restart" id="ice-restart" type="button">${t.restart}</button><button class="ice-top-action" id="ice-log" type="button">${t.log}</button><button class="ice-top-action" id="ice-routes" type="button">⌘ ${t.routes}</button><button class="ice-top-action" id="ice-menu" type="button">${t.menu}</button><button class="ice-top-action ice-fullscreen" id="ice-fullscreen" type="button" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen}</button><button class="ice-language" id="ice-language" type="button">${language === 'zh' ? 'EN' : 'ZH'}</button></div></header><main class="ice-layout"><div class="ice-heading"><span>${t.chapter.toUpperCase()} / 02</span><h1>${t.title}</h1><p>${t.subtitle}</p></div>${isMap ? `<div class="ice-world" id="ice-world"></div><div class="ice-map-foot"><span>${t.mapHint}</span><strong>${t.clues} ${save.clues.length}/6</strong></div>` : `<section class="ice-narrative" style="--ice-art:url('/images/${art}.webp')"><div class="ice-atmosphere" aria-hidden="true"></div><div class="ice-copy"><div class="ice-index">${String(save.line + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</div><div class="ice-speaker">${line?.[0] ?? ''}</div><p>${lineText}</p>${showVoice ? `<button class="ice-voice" id="ice-voice" type="button">♪ ${t.voicePlay}</button>` : ''}${showSpokenVoice ? `<button class="ice-voice" id="ice-character-voice" type="button">♪ ${t.characterVoiceStop}</button>` : ''}${save.phase === 'threshold' && save.line === lines.length - 1 ? `<div class="ice-approaches" role="group" aria-label="${t.choose}">${t.approaches.map(([name, description], i) => `<button data-approach="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'core' && save.line === lines.length - 1 ? `<div class="ice-approaches ice-response-options" role="group" aria-label="${t.choose}">${t.responses.map(([name, description], i) => `<button data-response="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'ending' && save.line === lines.length - 1 ? `<div class="ice-end"><strong>${t.complete}</strong><span>${t.completeNote}</span><button id="ice-finish" type="button">${t.back} →</button></div>` : `<button class="ice-next" id="ice-next" type="button">${save.phase === 'threshold' ? t.enter : t.next} <span>↗</span></button>`}</div></section>`}</main></div>`
     if (isMap) {
       root.querySelector('.ice-map-foot strong')?.insertAdjacentHTML('beforebegin', `<details class="ice-memory-replays"><summary>${language === 'zh' ? '回看碎片记忆' : 'Replay memories'}</summary><div>${fragmentIds.map(id => `<button type="button" data-replay-fragment="${id}" ${save.clues.includes(id) ? '' : 'disabled'}>${t.clueNames[id]}</button>`).join('')}</div></details>`)
@@ -392,3 +399,21 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
 }
 
 export function chapterTwoStatus() { const save = load(); return { started: save.phase !== 'hospital' || save.line > 0, completed: save.completed, clues: save.clues.length } }
+
+export function resetChapterTwo() { localStorage.setItem(KEY, JSON.stringify(blank())) }
+
+export function previewChapterTwoRoutes(root: HTMLElement, language: Language, onPlay: () => void) {
+  const save = load()
+  const { reached, routeTree } = chapterTwoRouteTree(save, language)
+  const t = copy[language]
+  const dialog = showChapterRoutePreview(root, language, t.routesTitle, `<p class="ice-panel-hint">${t.routeHint}</p>${routeTree}`, 'ice-routes-dialog')
+  dialog.querySelectorAll<HTMLButtonElement>('[data-ice-route]').forEach(button => button.addEventListener('click', () => {
+    const phase = button.dataset.iceRoute as Phase
+    if (!reached(phase)) return
+    save.phase = phase; save.line = 0; save.pendingFragment = null
+    localStorage.setItem(KEY, JSON.stringify(save))
+    dialog.close()
+    onPlay()
+  }))
+  return dialog
+}

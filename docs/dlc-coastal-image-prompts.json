@@ -1,0 +1,223 @@
+{
+  "generator": "Codex built-in imagegen",
+  "identity_reference": "references/naiwa-character-turnaround.png",
+  "jobs": [
+    {
+      "id": "dlc-coastal-train-close",
+      "prompt": "Use case: identity-preserve. Edit reference image 2 into a new character close-up for this seaside romance visual novel. Image 1 is the ONLY character identity source, the approved yellow Naiwa three-view sheet. Copy this exact distinctive design: tall smooth rounded head continuous with long pear-shaped neck/body, small widely separated green iris eyes with dark pupils, TINY thin curved line mouth below the eyes, no nose, NO eyebrows, no cheek blush or added face markings, yellow skin, cream oval belly, brown/gray fingertips, same head silhouette and proportions as the sheet. NEVER redesign into an ordinary round-headed toy, frog, bear or cartoon dinosaur. Image 2 is the existing train setting: preserve its realistic cinematic coastal sunset, blue patterned train seats, metallic window frame, cream bags, golden sea outside. Recompose to an intimate chest-up shot of the EXACT Image 1 character seated by the window and turning gently toward its partner (camera), affectionate subtle line-mouth smile. Head and green eyes in upper half, chest/cream belly readable, lower third left available for dialogue. 16:9 landscape single image, high quality cinematic 3D, no labels, no UI, no lettering, no watermark, no human face. Keep eye shape, spacing, scale relative to head and yellow head silhouette exactly from Image 1. Expression through eye gaze, slight line-mouth curve and pose, not invented eyebrows or facial anatomy.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-train.png"
+      ],
+      "png": "assets/images/dlc-coastal-train-close.png",
+      "webp": "public/images/dlc-coastal-train-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "scene and lighting"
+      ],
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-packing-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: Keep the home kitchen's warm wood, window and plant palette from image 3, but REMOVE its cooking action and its visible human face. Naiwa stands beside an OPEN small travel bag at the table; a folded blanket, plain thermos and pocket recorder lie next to it. One little hand presents the thermos, affectionate inquisitive line-mouth smile, looking toward partner/camera. Two blank train tickets. Character face and green eyes large and clearly visible in upper half.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/R02_KITCHEN.png"
+      ],
+      "png": "assets/images/dlc-coastal-packing-close.png",
+      "webp": "public/images/dlc-coastal-packing-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-seaglass-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: On the exact sunny coast of image 3, Naiwa gently holds a small pale blue-green rounded frosted piece of ordinary SEA GLASS up beside its eye between its gray/brown fingertips. Soft wonder, gaze toward the glass, tiny delighted line-mouth curve. Face and sea glass large and in focus, coast and lighthouse bokeh behind. No magical glow, no floating gemstone.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-shore.png"
+      ],
+      "png": "assets/images/dlc-coastal-seaglass-close.png",
+      "webp": "public/images/dlc-coastal-seaglass-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-hug-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: On the sunny coast of image 3, close shot of Naiwa consenting to a gentle hug. A cropped adult male gray sweater shoulder at one side, his natural hand lightly on creature's upper back. Naiwa's whole yellow face remains unobstructed in upper half, green eyes visible, content trusting gaze, tiny subtle line-mouth smile; cheek slightly leaning toward shoulder. No human face, no creature clothing.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-shore.png"
+      ],
+      "png": "assets/images/dlc-coastal-hug-close.png",
+      "webp": "public/images/dlc-coastal-hug-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-rain-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: At the inn window in image 3 before the projector was switched on: REMOVE ALL STAR PROJECTIONS from walls and ceiling, keep rainy sea window and amber lamp. Naiwa holds two unused plain bus tickets in its little hands below its face, looks down quietly with a subtly downturned thin-line mouth, mild disappointment, no tears, no eyebrows added. Tender close portrait, blue and amber light, face remains well lit.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-rain.png"
+      ],
+      "png": "assets/images/dlc-coastal-rain-close.png",
+      "webp": "public/images/dlc-coastal-rain-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-stars-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: Same inn as image 3 with star projector working. Tight close-up of Naiwa looking at its partner, happy amused green eyes, small upward-curving thin line-mouth smile, never huge open grin. Tiny projected star dots shimmer lightly on yellow cheek; ceiling has stars, rainy window bokeh behind. One little hand holds a blank folded instruction leaflet at chest level. Amber lamp and blue projection light.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-rain.png"
+      ],
+      "png": "assets/images/dlc-coastal-stars-close.png",
+      "webp": "public/images/dlc-coastal-stars-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-dawn-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: At the sunrise seawall and warm pale wooden railing in image 3. Remove the old envelope and sea-glass props for this plain companion portrait. Tight chest-up view of Naiwa looking toward its partner with quiet gratitude, soft green eyes and very subtle thin line-mouth smile, tiny hand reaching to a cropped adult male hand resting on the railing. NO CUP, no thermos, no recorder, no blanket, no sea glass: compatible with every luggage choice. Same pink sunrise and ocean bokeh.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-dawn.png"
+      ],
+      "png": "assets/images/dlc-coastal-dawn-close.png",
+      "webp": "public/images/dlc-coastal-dawn-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-letter-close",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: At the exact sunrise railing of image 3. Naiwa holds a single plain sealed cream envelope in both small gray/brown-tipped hands beneath its face and gently offers it to partner/camera. Earnest loving green-eyed gaze, tiny thin-line smile. A cropped adult male hand reaches for it from the side. Face and envelope upper two thirds. Remove unrelated cups, thermos, recorder and sea-glass props so the frame fits all endings. Dawn peach and pale-blue light.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-dawn.png"
+      ],
+      "png": "assets/images/dlc-coastal-letter-close.png",
+      "webp": "public/images/dlc-coastal-letter-close.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-shore-smile",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: On the exact sunny coastal path of image 3. Close chest-up portrait of Naiwa turning slightly back toward its partner/camera while holding a small creased hand-drawn map with no legible writing. Playful calm gaze and tiny thin-line smile. NO sea glass, no hug or unchosen props. Lighthouse and blue sea bokeh behind, yellow face in upper half.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-shore.png"
+      ],
+      "png": "assets/images/dlc-coastal-shore-smile.png",
+      "webp": "public/images/dlc-coastal-shore-smile.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    },
+    {
+      "id": "dlc-coastal-rain-together",
+      "prompt": "Use case: identity-preserve. Edit/recompose image 3 as a single new 16:9 visual-novel CG. Image 1 is the PRIMARY authoritative character identity sheet. Image 2 is ONLY a consistency reference for the same character in a cinematic close-up, NOT for its train setting. Image 3 is the scene/location reference. Copy EXACTLY the yellow creature from image 1: continuous tall rounded head/neck merging into a plump pear body, widely separated small green round iris eyes with dark pupils, a TINY THIN line-mouth just under the eyes, no prominent nose and NO eyebrows, NO face markings, NO cheek blush, no ears, no horns, yellow body, large cream belly and short arms ending in gray/brown fingertips. Keep the head silhouette, eye spacing/scale and body proportions. Do not redesign into a frog, bear, generic round-headed plush, human, lizard or dinosaur. Subtle expression conveyed by gaze, mouth line curve and pose only. Cinematic 3D rendering and materials matching image 2 and 3; close chest-up shot, green eyes and face in upper half and the key gesture above lower third reserved for dialogue overlay. One character; the adult male partner may appear ONLY as cropped hands or gray/charcoal sweater shoulder, no human face. No clothes on creature, no labels, no words, no UI, no watermark, no collage. Scene instructions: At the exact rainy inn window of image 3 after an honest comforting conversation. REMOVE the STAR PROJECTIONS from ceiling and walls. Naiwa looking gently toward partner/camera with calm relieved green-eyed gaze, subtle thin-line smile. Its gray/brown fingertips rest against one cropped adult male hand on the windowsill. Rainy blue sea reflections and warm amber lamp. No blanket, recorder, tickets or stars, so either rainy-night branch can use the frame.",
+      "references": [
+        "/Users/claw/Documents/galgame-naiwa/references/naiwa-character-turnaround.png",
+        "/Users/claw/.codex/generated_images/01a0f4f9-00ed-7c60-ad52-5b049c53654f/exec-c1c220e0-d26c-4d1b-86ba-f6e6f7318b52.png",
+        "/Users/claw/Documents/galgame-naiwa/assets/images/dlc-coastal-rain.png"
+      ],
+      "png": "assets/images/dlc-coastal-rain-together.png",
+      "webp": "public/images/dlc-coastal-rain-together.webp",
+      "reference_roles": [
+        "original identity sheet",
+        "cinematic identity consistency only",
+        "scene and lighting"
+      ],
+      "archived_consistency_reference": "assets/images/dlc-coastal-train-close.png",
+      "identity_checked": true,
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      }
+    }
+  ]
+}

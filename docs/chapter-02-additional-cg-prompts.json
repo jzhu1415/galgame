@@ -1,0 +1,81 @@
+{
+  "generator": "built-in image_gen",
+  "images": [
+    {
+      "id": "surveillance",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Naiba must exactly match purple reference: smooth purple plump pear body, cream belly, large green eyes, short limbs, no ears/horns/clothes/armor; elaborate bronze gem gauntlet on his anatomical RIGHT hand. Reference 1 is character identity, reference 2 hospital style. Recompose a new shot: close view of a hospital security monitor on a nurse desk in rainy night blue light. The monitor shows an overhead CCTV shot of Naiba pulling one torn diary page from a journal on an empty chair beside a hospital bed. His right gauntlet glints, mild horizontal interference. His theft is clearly readable, no readable monitor text. No other creatures visible.",
+      "refs": [
+        "references/naiba-source.jpg",
+        "public/images/chapter-02-hospital.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-04c58afd-4859-44c4-86df-78fb06ab4bdf.png",
+      "asset": "chapter-02-cg-surveillance"
+    },
+    {
+      "id": "door-note",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Reference hospital is mood and location. New low-angle close shot of a heavy closed hospital fire door, a torn notebook page caught beneath it with unmistakable white frost spreading across paper edge and floor. Small blue fingerprint on paper, no readable writing. Purple light barely leaks beneath door, corridor and wheel of hospital cart recede in background, rainy night suspense.",
+      "refs": [
+        "public/images/chapter-02-hospital.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-d3b68d1d-e71d-4818-9a4e-dabf160867aa.png",
+      "asset": "chapter-02-cg-door-note"
+    },
+    {
+      "id": "three-mirrors",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Location remains the reference Poolrooms: low flat tiled ceiling, rectangular fluorescent fixtures, pale square ceramic tile walls, floor and square columns, shallow water, stainless pool ladder, blue ice crystals and real bright reflective mirrors. Never cathedral or fantasy castle. Use hall image as environment reference and recompose entrance corner: three separate tall rectangular silver-backed mirrors mounted between square tile columns, reflecting three different moments of one ordinary adult male in gray jacket: running down corridor, kneeling to gather glass, listening with hand against tile wall. Male faces small and indistinct. Wet footprints split toward these mirrors. Silver reflections luminous and legible, no black mirror surfaces.",
+      "refs": [
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-9384837f-3401-4c21-9bc6-5dc4a5c553f4.png",
+      "asset": "chapter-02-cg-three-mirrors"
+    },
+    {
+      "id": "film-fragment",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Location remains the reference Poolrooms: low flat tiled ceiling, rectangular fluorescent fixtures, pale square ceramic tile walls, floor and square columns, shallow water, stainless pool ladder, blue ice crystals and real bright reflective mirrors. Never cathedral or fantasy castle. Environment reference only. New first-person close shot of ordinary human male hands lifting a translucent strip of photographic film out of a blue ice pocket at a tiled pool edge. Backlight reveals rainy road and headlights across three tiny film frames, the central frame partly blank. Film is physical with sprocket holes, water droplets, fine frost, tile hall softly out of focus. No readable text.",
+      "refs": [
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-57a1219e-aba1-4b24-9b24-ef1a239c88bf.png",
+      "asset": "chapter-02-cg-film-fragment"
+    },
+    {
+      "id": "medicine-memory",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Use blue cinematic lighting from hall as style reference only. New story memory shot INSIDE a stopped car at night in heavy rain: foreground passenger seat has a small broken amber medicine bottle and scattered pale tablets, windshield beyond smeared with rain, brake lights ahead reflected red on wet road, headlights cold blue. Slight memory-like doubled edges, no collision gore, no visible people, no legible labels.",
+      "refs": [
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-733ff771-73e2-4934-b4d2-bbee20a91f4f.png",
+      "asset": "chapter-02-cg-medicine-memory"
+    },
+    {
+      "id": "shared-palm",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Naishu must exactly match the yellow character reference: smooth bright yellow plump pear body, pale yellow belly, two asymmetric thick long rounded ear-like protrusions, white eye rings and brown eyes, large brown oval nose, short hands, broad feet, short thick curved tail. No fur, whiskers, pink ears, clothing or rabbit anatomy. Location remains the reference Poolrooms: low flat tiled ceiling, rectangular fluorescent fixtures, pale square ceramic tile walls, floor and square columns, shallow water, stainless pool ladder, blue ice crystals and real bright reflective mirrors. Never cathedral or fantasy castle. Reference 1 character identity; reference 2 environment. New intimate side medium shot: one ordinary human male hand in gray jacket presses a frosted vertical mirror; on the other side Naishu raises his tiny smooth yellow hand to meet precisely that palm through the glass. Naishu face, brown nose and unequal rounded ear protrusions clearly visible in upper half, anxious hopeful expression. Thin ice melts at contact into clear patch, reflections show tiled poolroom. No duplicated fingers or invented clothes.",
+      "refs": [
+        "references/second-layer-form-source.png",
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-1a024d21-9262-4c65-bfc6-e898864cfeff.png",
+      "asset": "chapter-02-cg-shared-palm"
+    },
+    {
+      "id": "dark-jewel",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Naiba must exactly match purple reference: smooth purple plump pear body, cream belly, large green eyes, short limbs, no ears/horns/clothes/armor; elaborate bronze gem gauntlet on his anatomical RIGHT hand. Location remains the reference Poolrooms: low flat tiled ceiling, rectangular fluorescent fixtures, pale square ceramic tile walls, floor and square columns, shallow water, stainless pool ladder, blue ice crystals and real bright reflective mirrors. Never cathedral or fantasy castle. Reference 1 identity, reference2 environment. New tight cinematic waist-up shot of Naiba bracing beside freshly shattered central mirror. His right bronze gauntlet clutches a blue ice crystal, fine blue filament stretches from crystal offscreen toward viewer. All gauntlet gems softly glow except ONE visibly dark extinguished gem. Purple unarmored body and green worried eyes visible. Suspended glass catches fluorescent light; tense responsible expression, not triumphant villain, no text.",
+      "refs": [
+        "references/naiba-source.jpg",
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-a7cbc654-ec99-4d0a-9488-1a1251bdab31.png",
+      "asset": "chapter-02-cg-dark-jewel"
+    },
+    {
+      "id": "naishu-emerges",
+      "prompt": "Create a new single cinematic 16:9 widescreen visual novel CG, no collage, no text, no UI, polished cinematic 3D animated film rendering matching the supplied environment reference. Important story details in upper two thirds, lower quarter remains usable for dialogue overlay. Naishu must exactly match the yellow character reference: smooth bright yellow plump pear body, pale yellow belly, two asymmetric thick long rounded ear-like protrusions, white eye rings and brown eyes, large brown oval nose, short hands, broad feet, short thick curved tail. No fur, whiskers, pink ears, clothing or rabbit anatomy. Location remains the reference Poolrooms: low flat tiled ceiling, rectangular fluorescent fixtures, pale square ceramic tile walls, floor and square columns, shallow water, stainless pool ladder, blue ice crystals and real bright reflective mirrors. Never cathedral or fantasy castle. Reference1 character identity, reference2 environment. New low medium shot: Naishu has stepped out through a thawed cracked mirror and stands on wet tiles, gently catches the gray jacket cuff of first-person ordinary human male at right frame. Yellow pear body, broad feet, pale belly and both asymmetric thick ear protrusions visible, short thick tail. Cautious relief, pool reflection below, broken mirror behind reflects the now empty tiled corridor. No clothes on Naishu.",
+      "refs": [
+        "references/second-layer-form-source.png",
+        "public/images/chapter-02-ice-hall.webp"
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-fd9aca73-500b-4557-8e9f-127ecf9155e0.png",
+      "asset": "chapter-02-cg-naishu-emerges"
+    }
+  ]
+}

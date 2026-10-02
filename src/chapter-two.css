@@ -103,3 +103,8 @@
   .ice-top-tools button{min-height:44px;white-space:normal;line-height:1.15;text-wrap:balance;font-size:.68rem;padding:5px 4px}
   .ice-fragment-top strong{min-width:0;white-space:normal;text-wrap:balance}
 }
+
+/* Mobile map HUD lives in the iframe; keep the exploration view clear. */
+@media(max-width:700px), (max-width:1000px) and (pointer:coarse) and (max-height:560px){
+  .chapter-two.is-map .ice-map-foot{display:none}
+}

@@ -66,6 +66,19 @@ for (const phase of ['hospital', 'threshold', 'core', 'ending']) {
   })
 }
 
+const romanceSource = readFileSync(new URL('../src/romance-dlc-story.ts', import.meta.url), 'utf8')
+const romanceJs = ts.transpileModule(romanceSource, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
+const { romanceStory } = await import(`data:text/javascript;base64,${Buffer.from(romanceJs).toString('base64')}`)
+for (const [id, node] of Object.entries(romanceStory)) {
+  node.lines.forEach((line, index) => {
+    if (line.speaker === 'naiwa') return
+    for (const lang of ['zh', 'en']) {
+      add(`tts/romance-${id}-${index}-${lang}.mp3`, line.text[lang], line.speaker === 'player' ? 'hero' : 'narrator', lang)
+      if (line.blanketText) add(`tts/romance-${id}-${index}-blanket-${lang}.mp3`, line.blanketText[lang], 'narrator', lang)
+    }
+  })
+}
+
 const paths = new Set()
 for (const entry of entries) {
   if (!entry.text.trim()) throw new Error(`Empty TTS text: ${entry.path}`)
