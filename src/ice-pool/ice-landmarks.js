@@ -9,6 +9,7 @@ export function createIceLandmarks({ scene }) {
   const materials = new Set();
   const boxGeometries = new Map();
   const floating = [];
+  const crystalLights = [];
 
   const silver = ownMaterial(new THREE.MeshPhysicalMaterial({
     color: 0xaebfc2, metalness: 0.97, roughness: 0.08,
@@ -29,6 +30,7 @@ export function createIceLandmarks({ scene }) {
     transmission: 0.92, ior: 1.31, thickness: 0.85,
     attenuationColor: 0xaedbe7, attenuationDistance: 6,
     envMapIntensity: 1.6, flatShading: true,
+    emissive: 0x356b83, emissiveIntensity: .11,
   }));
   for (const material of [silver, edge, glass, ice]) material.userData.iceReflective = true;
 
@@ -340,6 +342,29 @@ export function createIceLandmarks({ scene }) {
   addRoomWallCrystals({ room: 'crystal', wallRoom: 'crystal', startZ: 60, endZ: 75 });
   addRoomWallCrystals({ room: 'core', wallRoom: 'core', startZ: 90, endZ: 105 });
 
+  // A pair of embedded lights per room throws a soft blue wash onto actual
+  // surfaces. Only the nearest pair participates in rendering on mobile.
+  for (const centerZ of [7.5, 37.5, 67.5, 97.5]) {
+    for (const [side, station] of [['west', 1], ['east', 2]]) {
+      const cluster = root.children.find(object => object.userData.wallRoom
+        && object.position.z === centerZ && object.name.endsWith(`-${side}`));
+      // Each branch owns 6 triangles per polygon side. Pick the first branch
+      // at this station, whose stored origin is inside its faceted volume.
+      let triangle = 0;
+      for (let branch = 0; branch < station * 3; branch++) {
+        const variantIndex = (Math.floor(branch / 3) * 2 + branch % 3 + (side === 'west' ? 1 : 0)) % crystalVariants.length;
+        triangle += crystalVariants[variantIndex].sides * 6;
+      }
+      const light = new THREE.PointLight(0xb6eaff, 5, 10, 1.6);
+      light.name = `ice-crystal-light-${centerZ}-${side}`;
+      light.position.fromArray(cluster.geometry.userData.facetOrigins[triangle]).add(cluster.position);
+      light.userData.roomZ = centerZ;
+      light.visible = centerZ === 7.5;
+      root.add(light);
+      crystalLights.push(light);
+    }
+  }
+
   // A small pair grows off the walls of the long connecting passage without
   // crossing into the central path or the evidence pickup at z=22.5.
   for (const [side, x, lean] of [['west', 6.05, -.3], ['east', 8.95, .3]]) {
@@ -368,8 +393,11 @@ export function createIceLandmarks({ scene }) {
         object.position.y = baseY + Math.sin(time * .62 + phase) * .1;
         object.rotation.y = baseRotationY + time * .08;
       }
-      // Keep this argument in the interface for callers; landmarks never chase or obstruct the camera.
-      void camera;
+      if (camera) {
+        const nearest = crystalLights.reduce((closest, light) =>
+          Math.abs(light.userData.roomZ - camera.position.z) < Math.abs(closest.userData.roomZ - camera.position.z) ? light : closest);
+        for (const light of crystalLights) light.visible = light.userData.roomZ === nearest.userData.roomZ;
+      }
     },
     dispose() {
       if (disposed) return;
@@ -387,6 +415,8 @@ export function createIceLandmarks({ scene }) {
       geometries.clear();
       materials.clear();
       floating.length = 0;
+      crystalLights.forEach(light => light.dispose());
+      crystalLights.length = 0;
     },
   };
 }

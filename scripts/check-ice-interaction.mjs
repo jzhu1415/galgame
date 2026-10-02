@@ -40,7 +40,7 @@ landmarkScene.traverse(object => {
     assert.equal(object.material.metalness, 0, 'Crystal is a dielectric, not painted metal');
     assert.ok(object.material.transmission >= .9 && object.material.roughness < .06);
     assert.ok(object.material.attenuationDistance > 0 && object.material.flatShading);
-    assert.equal(object.material.emissive.getHex(), 0, 'Crystal highlights come from lighting, not glow');
+    assert.ok(object.material.emissive.getHex() === 0 || object.material.emissiveIntensity <= .15, 'Crystal glow remains subtle beside real lighting');
   }
   if (object.material.ior === 1.31 || object.geometry.userData.crystal) {
     const positions = object.geometry.attributes.position;
@@ -58,6 +58,14 @@ landmarkScene.traverse(object => {
   assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
 });
 assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
+const crystalLights = [];
+landmarkScene.traverse(object => { if (object.isPointLight) crystalLights.push(object); });
+assert.equal(crystalLights.length, 8, 'Each room has two embedded crystal lights');
+for (const roomZ of [7.5, 37.5, 67.5, 97.5]) {
+  landmarks.update(.05, 1, { camera: { position: new THREE.Vector3(7.5, 1.7, roomZ) } });
+  assert.equal(crystalLights.filter(light => light.visible).length, 2, 'Only the nearest room lights render');
+  assert.ok(crystalLights.filter(light => light.visible).every(light => light.userData.roomZ === roomZ && !light.castShadow));
+}
 for (const room of ['arrival', 'mirror', 'crystal', 'core']) {
   assert.ok(wallCrystalCounts.get(room) >= 20, `${room} has a visible spread of wall-grown crystals`);
 }
