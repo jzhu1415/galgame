@@ -10,6 +10,8 @@ export function createIceLandmarks({ scene }) {
   const boxGeometries = new Map();
   const floating = [];
   const crystalLights = [];
+  const qualityRebuilders = [];
+  let quality = 'balanced';
   const floatingDummy = new THREE.Object3D();
 
   const silver = ownMaterial(new THREE.MeshPhysicalMaterial({
@@ -37,6 +39,12 @@ export function createIceLandmarks({ scene }) {
 
   function ownMaterial(material) { materials.add(material); return material; }
   function ownGeometry(geometry) { geometries.add(geometry); return geometry; }
+  function replaceQualityGeometry(object, buildGeometry) {
+    const previous = object.geometry;
+    if (previous && geometries.delete(previous)) previous.dispose();
+    object.geometry = buildGeometry();
+  }
+  function registerQualityRebuilder(rebuild) { qualityRebuilders.push(rebuild); }
   function box(w, h, d) {
     const key = `${w}:${h}:${d}`;
     if (!boxGeometries.has(key)) boxGeometries.set(key, ownGeometry(new THREE.BoxGeometry(w, h, d)));
@@ -87,13 +95,13 @@ export function createIceLandmarks({ scene }) {
     { sides: 6, radii: [1.06, .9, .98, 1.08, .91, 1.02], shoulder: .32, tip: [.1, .16] },
   ];
   const crystalVariantFor = (index) => crystalVariants[index % crystalVariants.length];
-  const createCrystalParts = (variant) => {
+  const createCrystalParts = (variant, reduced = false) => {
     const positions = [];
     const facetOrigins = [];
-    const sides = variant.sides;
+    const sides = reduced ? 4 : variant.sides;
     const ring = (y, radiusScale, index) => {
       const angle = index * Math.PI * 2 / sides;
-      const radius = radiusScale * variant.radii[index];
+      const radius = radiusScale * (variant.radii[index % variant.radii.length] ?? 1);
       return new THREE.Vector3(Math.cos(angle) * radius, y,
         Math.sin(angle) * radius);
     };
@@ -122,14 +130,14 @@ export function createIceLandmarks({ scene }) {
     }
     return { positions, facetOrigins };
   };
-  function makeCrystalCluster(specs) {
+  function makeCrystalCluster(specs, reduced = quality === 'performance') {
     const positions = [];
     const facetOrigins = [];
     const growthDirections = [];
     const growthRoots = [];
     const growthHeights = [];
     for (const { variantIndex, x, z, scale, height, rootY = 0, rotation = [0, 0, 0], rotationQuaternion, embed = .035 } of specs) {
-      const shape = createCrystalParts(crystalVariantFor(variantIndex));
+      const shape = createCrystalParts(crystalVariantFor(variantIndex), reduced);
       const orientation = rotationQuaternion
         ? new THREE.Quaternion(...rotationQuaternion)
         : new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation));
@@ -199,12 +207,14 @@ export function createIceLandmarks({ scene }) {
     object.userData.growthSurface = 'floor';
     object.userData.crystalRoom = 'crystal';
     object.userData.crystalCount = members.length;
+    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+      () => makeCrystalCluster(members, reduced)));
   }
-  function makeFloatingCrystal(variantIndex) {
+  function makeFloatingCrystal(variantIndex, reduced = quality === 'performance') {
     const profile = crystalVariantFor(variantIndex);
     const positions = [];
     const facetOrigins = [];
-    const sides = 5;
+    const sides = reduced ? 4 : 5;
     const ring = (y, radius, index) => {
       const angle = index * Math.PI * 2 / sides;
       const irregular = profile.radii[index] ?? 1;
@@ -246,7 +256,7 @@ export function createIceLandmarks({ scene }) {
     [4.95, 2.76, 68.3, 1.05, 2], [10.15, 3.08, 71.2, .9, 0],
   ];
   floatingSpecs.forEach(([x, y, z, size, variantIndex], index) => {
-    const crystal = mesh(makeFloatingCrystal(variantIndex), ice, x, y, z);
+    const crystal = mesh(makeFloatingCrystal(variantIndex, false), ice, x, y, z);
     crystal.userData.floatingCrystal = true;
     crystal.userData.growthSurface = 'air';
     crystal.userData.crystalRoom = 'crystal';
@@ -254,6 +264,8 @@ export function createIceLandmarks({ scene }) {
     crystal.scale.setScalar(size);
     crystal.rotation.set(.12 * (variantIndex - 1), .26 * variantIndex, .1 * (variantIndex % 2 ? -1 : 1));
     floating.push({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
+    registerQualityRebuilder((reduced) => replaceQualityGeometry(crystal,
+      () => makeFloatingCrystal(variantIndex, reduced)));
     addFissures(crystal);
   });
   // Low, broad mineral growth frames the former mirror core, with one strong
@@ -271,12 +283,14 @@ export function createIceLandmarks({ scene }) {
     ] },
   ];
   for (const cluster of coreClusters) {
-    const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
+      const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
     object.name = cluster.x < 7.5 ? 'ice-core-crystal-left' : 'ice-core-crystal-right';
     object.userData.kind = 'coreCrystalCluster';
     object.userData.growthSurface = 'floor';
     object.userData.crystalRoom = 'core';
     object.userData.crystalCount = cluster.entries.length;
+    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+      () => makeCrystalCluster(cluster.entries, reduced)));
   }
 
   // Early rooms use smaller growths at the dry arrival perimeter and richer
@@ -309,6 +323,8 @@ export function createIceLandmarks({ scene }) {
     object.userData.growthSurface = cluster.surface;
     object.userData.crystalRoom = cluster.room;
     object.userData.crystalCount = cluster.entries.length;
+    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+      () => makeCrystalCluster(cluster.entries, reduced)));
   }
 
   // Four wall stations on both faces of each early/core room are merged into
@@ -345,7 +361,8 @@ export function createIceLandmarks({ scene }) {
             scale: branch === 0 ? [.43, .39] : branch === 1 ? [.29, .27] : [.18, .2],
             height,
             rootY,
-            rotation: [((stationIndex + branch) % 2 ? -.1 : .1), (stationIndex - 1.5) * .1 + (branch - 1) * .08, lean],
+            rotation: [((stationIndex + branch) % 2 ? -.24 : .19) + (branch - 1) * .055,
+              (stationIndex - 1.5) * .17 + (branch - 1) * .1, lean],
           });
         }
       });
@@ -362,6 +379,19 @@ export function createIceLandmarks({ scene }) {
         .fromArray(object.geometry.userData.growthRoots[lightBranch])
         .addScaledVector(growthDirection, object.geometry.userData.growthHeights[lightBranch] * .36)
         .toArray();
+      registerQualityRebuilder((reduced) => {
+        const retainedIndexes = reduced ? [0, 2, 3, 5, 6, 9] : specs.map((_, index) => index);
+        const selected = retainedIndexes.map(index => specs[index]);
+        replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
+        object.userData.crystalCount = selected.length;
+        const retainedLightBranch = retainedIndexes.indexOf(lightBranch);
+        const growth = object.geometry.userData.growthDirections[retainedLightBranch];
+        object.userData.crystalLightPoint = new THREE.Vector3()
+          .fromArray(object.geometry.userData.growthRoots[retainedLightBranch])
+          .addScaledVector(new THREE.Vector3().fromArray(growth),
+            object.geometry.userData.growthHeights[retainedLightBranch] * .36)
+          .toArray();
+      });
     }
   }
   addRoomWallCrystals({ room: 'arrival', wallRoom: 'arrival', startZ: 0, endZ: 15 });
@@ -372,6 +402,16 @@ export function createIceLandmarks({ scene }) {
   function deterministicUnit(seed, index, salt) {
     const value = Math.sin((seed + 1) * 127.1 + (index + 1) * 311.7 + salt * 74.7) * 43758.5453123;
     return value - Math.floor(value);
+  }
+  function sampleCrystalSpecs(specs, count) {
+    if (count >= specs.length) return specs;
+    const selected = [];
+    const seen = new Set();
+    for (let i = 0; i < count; i++) {
+      const index = Math.min(specs.length - 1, Math.floor((i + .5) * specs.length / count));
+      if (!seen.has(index)) { selected.push(specs[index]); seen.add(index); }
+    }
+    return selected;
   }
   function addDenseGroundRoom({ room, countPerSide, startZ, endZ, maxHeight }) {
     for (const side of ['west', 'east']) {
@@ -407,7 +447,9 @@ export function createIceLandmarks({ scene }) {
           ? (west ? 1 : -1) * (.2 + deterministicUnit(181, i, 5) * .28)
           : (deterministicUnit(211, i, 6) - .5) * .68;
         const yaw = deterministicUnit(281, i, 8) * Math.PI * 2;
-        const orientation = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, tilt))
+        const forwardTilt = (deterministicUnit(331, i, 9) - .5) * (outward ? .72 : .98);
+        const orientation = new THREE.Quaternion().setFromEuler(new THREE.Euler(forwardTilt, 0, 0))
+          .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, tilt)))
           .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw));
         specs.push({
           variantIndex: Math.floor(deterministicUnit(251, i, 7) * crystalVariants.length),
@@ -424,6 +466,11 @@ export function createIceLandmarks({ scene }) {
       object.userData.crystalCount = specs.length;
       object.userData.growthSurface = 'floor';
       if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
+      registerQualityRebuilder((reduced) => {
+        const selected = reduced ? sampleCrystalSpecs(specs, Math.max(1, Math.ceil(specs.length * .35))) : specs;
+        replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
+        object.userData.crystalCount = selected.length;
+      });
     }
   }
   addDenseGroundRoom({ room: 'arrival', countPerSide: 16, startZ: 0, endZ: 15, maxHeight: 1.35 });
@@ -436,7 +483,7 @@ export function createIceLandmarks({ scene }) {
       const west = side === 'west';
       const instances = [];
       const variantIndex = west ? 0 : 2;
-      const geometry = makeFloatingCrystal(variantIndex);
+      const geometry = makeFloatingCrystal(variantIndex, false);
       const object = new THREE.InstancedMesh(geometry, ice, perSide);
       object.name = `ice-floating-${room}-${side}`;
       object.userData.floatingCrystal = true;
@@ -464,8 +511,17 @@ export function createIceLandmarks({ scene }) {
         });
       }
       root.add(object);
-      floating.push({ object, instances });
+      const entry = { object, instances, allInstances: instances, perSide, variantIndex };
+      floating.push(entry);
       updateInstancedFloatBatch(object, instances, 0);
+      registerQualityRebuilder((reduced) => {
+        const count = reduced ? Math.max(1, Math.ceil(perSide * .35)) : perSide;
+        entry.instances = entry.allInstances.slice(0, count);
+        object.count = count;
+        object.userData.crystalCount = count;
+        replaceQualityGeometry(object, () => makeFloatingCrystal(variantIndex, reduced));
+        updateInstancedFloatBatch(object, entry.instances, 0);
+      });
     }
   }
   function updateInstancedFloatBatch(object, instances, time) {
@@ -525,6 +581,13 @@ export function createIceLandmarks({ scene }) {
   scene.add(root);
   let disposed = false;
   return {
+    setQuality(preset) {
+      if (disposed) return;
+      const nextQuality = preset === 'performance' ? 'performance' : 'balanced';
+      if (nextQuality === quality) return;
+      quality = nextQuality;
+      for (const rebuild of qualityRebuilders) rebuild(quality === 'performance');
+    },
     update(delta, time, { found = new Set(), camera } = {}) {
       if (disposed) return;
       void found;
@@ -560,6 +623,7 @@ export function createIceLandmarks({ scene }) {
       geometries.clear();
       materials.clear();
       floating.length = 0;
+      qualityRebuilders.length = 0;
       crystalLights.forEach(light => light.dispose());
       crystalLights.length = 0;
     },

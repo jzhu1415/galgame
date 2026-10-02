@@ -23,6 +23,8 @@ window.addEventListener('message', (event) => {
   }
   layer?.setInit({ language: data.language, found: data.found });
   layer?.setStoryPaused(!!data.storyPaused);
+  window.__naiwaShowFirstQualityDialog?.();
 });
 
 window.parent?.postMessage({ source: SOURCE, type: 'ready' }, parentOrigin);
+if (window.parent === window) window.__naiwaShowFirstQualityDialog?.();

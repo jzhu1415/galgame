@@ -169,6 +169,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   let coreTriggered = false;
   let disposed = false;
   let storyPaused = false;
+  let menuPaused = false;
   let routeStep = 0;
   let routeAtStart = false;
   let routeStarted = false;
@@ -206,7 +207,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     feedbackRemaining = 2.8;
   }
   function canInspect(position) {
-    return !storyPaused && !pickup && hasClearEvidencePath(camera.position, position, 3.8, columnAt);
+    return !storyPaused && !menuPaused && !pickup && hasClearEvidencePath(camera.position, position, 3.8, columnAt);
   }
   function finishPickup() {
     if (!pickup) return;
@@ -515,7 +516,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
   }
   function collect(id) {
-    if (disposed || storyPaused || pickup || found.has(id)) return;
+    if (disposed || storyPaused || menuPaused || pickup || found.has(id)) return;
     if (id === 'note') {
       if (!canInspect(notePosition)) return;
       cipherOpen = true;
@@ -566,12 +567,13 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     coreCrystal.material.emissiveIntensity = .5;
   }
   function interactWithTarget() {
+    if (menuPaused || storyPaused) return;
     currentTarget = nearbyTarget();
     if (currentTarget) collect(currentTarget.id);
     else if (clueCount() === CLUES.length && found.has('note') && found.has('route')) triggerCore();
   }
   function handleKey(event) {
-    if (storyPaused) return;
+    if (storyPaused || menuPaused) return;
     if (event.repeat) return;
     if (cipherOpen) {
       if (event.code === 'Digit1' || event.code === 'Numpad1') { event.preventDefault(); chooseCipher(found.has('note') && found.has('shard') ? 'right' : 'forward'); return; }
@@ -586,7 +588,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     } else if (event.code === 'Escape') handleExit();
   }
   function handleClick(event) {
-    if (disposed || storyPaused || pickup || cipherOpen || event.target !== canvas) return;
+    if (disposed || storyPaused || menuPaused || pickup || cipherOpen || event.target !== canvas) return;
     const bounds = canvas.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     ndc.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
@@ -623,6 +625,10 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     updateLabels();
     updatePrompt();
   }
+  function setMenuPaused(paused) {
+    menuPaused = !!paused;
+    updatePrompt();
+  }
   function setStoryPaused(paused) {
     storyPaused = paused;
     window.dispatchEvent(new Event(paused ? 'naiwa-story-pause' : 'naiwa-story-resume'));
@@ -630,7 +636,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   }
   function progressRoute() {
     if (!routeStarted || found.has('route') || !routeMarkers.length) return;
-    if (storyPaused || cipherOpen) return;
+    if (storyPaused || menuPaused || cipherOpen) return;
     const checkpoint = routeMarkers[0].position;
     // Crossing a doorway advances the journey without requiring a precise stop.
     if (camera.position.z < checkpoint.z - .5 || Math.abs(camera.position.x - checkpoint.x) > 1.45) return;
@@ -700,7 +706,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     progressRoute();
     currentTarget = cipherOpen ? null : nearbyTarget();
-    focusRing.visible = !!currentTarget && !storyPaused && !pickup;
+    focusRing.visible = !!currentTarget && !storyPaused && !menuPaused && !pickup;
     if (focusRing.visible) {
       focusRing.position.set(currentTarget.position.x, .18, currentTarget.position.z);
       focusRing.material.opacity = .45 + Math.sin(time * 3) * .1;
@@ -753,6 +759,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   archiveToggle?.addEventListener('click', handleArchiveToggle);
   refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
-  return { setInit, setLanguage, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
+  return { setInit, setLanguage, setMenuPaused, setQuality: preset => landmarks.setQuality(preset), setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
     refreshReflections: () => reflections.refresh(camera) };
 }

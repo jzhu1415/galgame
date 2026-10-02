@@ -38,6 +38,13 @@ layer.setInit({ found: [] });
 assert.ok(camera.getWorldDirection(new THREE.Vector3()).z > .99, 'Entering the hall faces the route, rather than the entrance wall');
 approach(ICE_LAYOUT.echo); key('KeyE'); tick(12);
 assert.equal(has('echo'), false, 'Walking ahead cannot collect a future exhibit');
+layer.setMenuPaused(true);
+approach(ICE_LAYOUT.note); key('KeyE');
+for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
+key('Escape');
+assert.equal(has('note'), false, 'Quality and settings dialogs block evidence interaction');
+assert.equal(messages.some(message => message.type === 'exit'), false, 'Escape cannot leave the hall behind a settings dialog');
+layer.setMenuPaused(false);
 approach(ICE_LAYOUT.note); key('KeyE');
 for (const code of ['Digit1', 'Digit2', 'Digit1', 'Digit2']) key(code);
 assert.ok(has('note'));
@@ -48,6 +55,8 @@ for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
   if (index === 2) {
     const pose = camera.position.clone();
     layer.setLanguage('en');
+    layer.setQuality('performance');
+    layer.setQuality('balanced');
     assert.ok(camera.position.equals(pose), 'Changing settings language must not teleport the player');
   }
 }

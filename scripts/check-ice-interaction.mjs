@@ -42,6 +42,11 @@ landmarkScene.traverse(object => {
     earlyRoomSurfaces.set(object.userData.earlyRoom, surfaces);
   }
   growthDirections.push(...(object.geometry.userData.growthDirections || []));
+  if (object.name.startsWith('ice-dense-ground-')) {
+    const forwardGrowth = object.geometry.userData.growthDirections.map(direction => direction[2]);
+    assert.ok(Math.min(...forwardGrowth) < -.1 && Math.max(...forwardGrowth) > .1,
+      'Ground crystal growth varies forward and backward rather than leaning in one flat plane');
+  }
   if (object.material.transmission > 0) {
     assert.equal(object.material.metalness, 0, 'Crystal is a dielectric, not painted metal');
     assert.ok(object.material.transmission >= .9 && object.material.roughness < .06);
@@ -117,6 +122,21 @@ landmarks.update(.1, 1, { found: new Set(['routeOne']) });
 floatingCrystals.forEach((object, index) => {
   assert.ok(floatingPose(object).position.distanceTo(poses[index].position) < 1e-6, 'Floating animation does not accumulate position drift');
 });
+const renderedCrystalVertices = () => {
+  let count = 0;
+  landmarkScene.traverse(object => {
+    if (object.isMesh && object.userData.crystalCount) count += Math.min(object.geometry.attributes.position.count, object.geometry.drawRange.count) * (object.isInstancedMesh ? object.count : 1);
+  });
+  return count;
+};
+const fullVertexCount = renderedCrystalVertices();
+landmarks.setQuality('performance');
+assert.ok(renderedCrystalVertices() < fullVertexCount * .6, 'Low quality reduces actual crystal geometry, not only visual labels');
+landmarks.setQuality('high');
+assert.equal(renderedCrystalVertices(), fullVertexCount, 'High quality restores the complete landscape');
+landmarks.setQuality('performance');
+landmarks.setQuality('balanced');
+assert.equal(renderedCrystalVertices(), fullVertexCount, 'Switching quality repeatedly restores all crystals');
 landmarks.dispose(); landmarks.dispose();
 assert.equal(landmarkScene.children.length, 0);
 

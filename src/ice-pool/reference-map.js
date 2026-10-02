@@ -33,6 +33,10 @@ const underwaterFilter = document.querySelector('#underwater-filter');
 const settingsMenu = document.querySelector('#reference-settings');
 const settingsContinue = document.querySelector('#settings-continue');
 const settingsReset = document.querySelector('#settings-reset');
+const settingsTrigger = document.querySelector('#touch-menu');
+const qualityWelcome = document.querySelector('#quality-welcome');
+const qualityWelcomeEnter = document.querySelector('#quality-welcome-enter');
+const qualityWelcomeInputs = [...document.querySelectorAll('input[name="welcome-quality"]')];
 const mapSelectionInput = document.querySelector('#map-selection');
 const lightBrightnessInput = document.querySelector('#light-brightness');
 const surfaceReflectionInput = document.querySelector('#surface-reflection');
@@ -49,7 +53,7 @@ const lookSensitivityValue = document.querySelector('#look-sensitivity-value');
 const playerSettings = { movementSpeed: 1, gravity: 1 };
 const qualityPresetInput = document.querySelector('#quality-preset');
 const touchHud = document.querySelector('#touch-hud');
-const touchMenu = document.querySelector('#touch-menu');
+const touchMenu = settingsTrigger;
 const touchStickZone = document.querySelector('#touch-stick-zone');
 const touchRiseButton = document.querySelector('#touch-rise');
 const touchDiveButton = document.querySelector('#touch-dive');
@@ -119,6 +123,13 @@ let lastPointerType = 'mouse';
 const isCompactViewport = initialViewport.width < 720;
 const PAUSED_RENDER_FPS = 12;
 const QUALITY_STORAGE_KEY = 'poolrooms-reference-quality';
+const ICE_QUALITY_CHOSEN_KEY = 'naiwa-ice-quality-chosen-v1';
+function readIceQualityChosen() {
+  try { return window.localStorage.getItem(ICE_QUALITY_CHOSEN_KEY) === 'true'; }
+  catch { return false; }
+}
+let qualityChosen = readIceQualityChosen();
+let firstQualityPending = !qualityChosen;
 // Sharp reflections must track the camera every frame. Reduce capture resolution,
 // not temporal cadence, for balanced quality; performance mode skips capture entirely.
 const QUALITY_PRESETS = {
@@ -161,7 +172,9 @@ function storedQualityPreset() {
   return 'balanced';
 }
 
-let qualityPresetName = storedQualityPreset();
+let qualityPresetName = qualityChosen
+  ? storedQualityPreset()
+  : isCompactViewport ? 'performance' : 'balanced';
 let qualitySettings = QUALITY_PRESETS[qualityPresetName];
 qualityPresetInput.value = qualityPresetName;
 
@@ -1838,6 +1851,7 @@ function applyQualityPreset(presetName, persist = true) {
   poolLighting.setQuality(qualityPresetName);
   audioSystem.setQuality(qualityPresetName);
   updateSkylightLights(true);
+  window.__naiwaIceLayer?.setQuality?.(qualityPresetName);
   lastWaterReflectionAt = -Infinity;
   if (!persist) return;
   try {
@@ -2557,11 +2571,41 @@ let suppressUnlockSettings = false;
 
 function hideSettings() {
   settingsMenu.hidden = true;
+  settingsTrigger.hidden = !qualityChosen;
+  keys.clear();
+  resetTouchInputs();
+  if (!firstQualityPending) window.__naiwaIceLayer?.setMenuPaused?.(false);
 }
 
 function showSettings() {
+  if (firstQualityPending) return;
+  settingsTrigger.hidden = true;
   settingsMenu.hidden = false;
+  window.__naiwaIceLayer?.setMenuPaused?.(true);
+  keys.clear();
+  resetTouchInputs();
+  setTouchPlaying(false);
+  if (controls.isLocked) {
+    suppressUnlockSettings = true;
+    controls.unlock();
+    window.setTimeout(() => { suppressUnlockSettings = false; }, 500);
+  }
   settingsContinue.focus({ preventScroll: true });
+}
+
+function showFirstQualityDialog() {
+  if (!firstQualityPending) return;
+  settingsMenu.hidden = true;
+  settingsTrigger.hidden = true;
+  qualityWelcome.hidden = false;
+  window.__naiwaIceLayer?.setMenuPaused?.(true);
+  keys.clear();
+  resetTouchInputs();
+  setTouchPlaying(false);
+  const selected = isCompactViewport ? 'performance' : 'balanced';
+  applyQualityPreset(selected, false);
+  qualityWelcomeInputs.forEach((input) => { input.checked = input.value === selected; });
+  qualityWelcomeInputs.find((input) => input.checked)?.focus({ preventScroll: true });
 }
 
 function requestGameFullscreen() {
@@ -2583,6 +2627,7 @@ function requestGameFullscreen() {
 
 function activateTouchGameplay() {
   if (!hasTouchSupport) return;
+  if (firstQualityPending) return;
   enableTouchInput();
   if (!hasEntered || !settingsMenu.hidden) return;
   requestGameFullscreen();
@@ -2595,6 +2640,7 @@ function activateTouchGameplay() {
 }
 
 function enterExperience() {
+  if (firstQualityPending || !qualityChosen) return;
   requestGameFullscreen();
   if (touchInputEnabled) {
     hasEntered = true;
@@ -2616,8 +2662,34 @@ window.addEventListener('pointerdown', (event) => {
 }, { passive: true });
 settingsContinue.addEventListener('click', enterExperience);
 touchMenu.addEventListener('click', () => {
-  setTouchPlaying(false);
   showSettings();
+});
+qualityWelcomeEnter.addEventListener('pointerdown', (event) => {
+  if (event.pointerType === 'touch' || event.pointerType === 'pen') enableTouchInput();
+});
+qualityWelcomeInputs.forEach((input) => input.addEventListener('change', () => {
+  if (!input.checked || !firstQualityPending) return;
+  applyQualityPreset(input.value, false);
+}));
+qualityWelcomeEnter.addEventListener('click', () => {
+  if (!firstQualityPending) return;
+  keys.clear();
+  resetTouchInputs();
+  const selected = qualityWelcomeInputs.find((input) => input.checked)?.value
+    ?? (isCompactViewport ? 'performance' : 'balanced');
+  applyQualityPreset(selected, false);
+  qualityChosen = true;
+  firstQualityPending = false;
+  try {
+    window.localStorage.setItem(QUALITY_STORAGE_KEY, qualityPresetName);
+    window.localStorage.setItem(ICE_QUALITY_CHOSEN_KEY, 'true');
+  } catch {
+    // This session is confirmed; a later reload will ask again if storage is blocked.
+  }
+  qualityWelcome.hidden = true;
+  window.__naiwaIceLayer?.setMenuPaused?.(false);
+  settingsTrigger.hidden = false;
+  enterExperience();
 });
 settingsReset.addEventListener('click', () => {
   referenceLanguage.setLanguage('auto');
@@ -2645,6 +2717,11 @@ qualityPresetInput.addEventListener('change', () => {
 masterVolumeInput.addEventListener('input', applyAudioSettings);
 lookSensitivityInput.addEventListener('input', applyLookSettings);
 controls.addEventListener('lock', () => {
+  if (firstQualityPending) {
+    suppressUnlockSettings = true;
+    controls.unlock();
+    return;
+  }
   hasEntered = true;
   entry.classList.add('is-hidden');
   hideSettings();
@@ -2653,7 +2730,8 @@ controls.addEventListener('lock', () => {
 controls.addEventListener('unlock', () => {
   keys.clear();
   if (touchPlaying) setTouchPlaying(false);
-  if (window.__naiwaIceLayer?.isStoryPaused() || document.querySelector('#ice-archive.is-solving')) {
+  if (firstQualityPending) return;
+  if (window.__naiwaIceLayer?.isStoryPaused()) {
     hideSettings();
     return;
   }
@@ -2664,6 +2742,29 @@ controls.addEventListener('unlock', () => {
   entry.classList.remove('is-hidden');
 });
 window.addEventListener('keydown', (event) => {
+  if (firstQualityPending) {
+    if (event.code === 'Escape') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    } else if (event.key === 'Tab') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (!qualityWelcome.hidden) {
+        const selectedRadio = qualityWelcomeInputs.find((input) => input.checked);
+        const controlsInDialog = [selectedRadio, qualityWelcomeEnter].filter(Boolean);
+        const currentIndex = controlsInDialog.indexOf(document.activeElement);
+        const nextIndex = event.shiftKey
+          ? (currentIndex <= 0 ? controlsInDialog.length - 1 : currentIndex - 1)
+          : (currentIndex < 0 || currentIndex === controlsInDialog.length - 1 ? 0 : currentIndex + 1);
+        controlsInDialog[nextIndex]?.focus({ preventScroll: true });
+      }
+    } else if (!qualityWelcome.contains(event.target)
+      && ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'KeyE'].includes(event.code)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+    return;
+  }
   if (event.code === 'Escape' && !event.repeat) {
     event.preventDefault();
     if (!settingsMenu.hidden) {
@@ -2671,8 +2772,13 @@ window.addEventListener('keydown', (event) => {
       // so suppress the unlock callback and allow a canvas click to resume the game.
       suppressUnlockSettings = true;
       hideSettings();
-      controls.lock();
-      window.setTimeout(() => { suppressUnlockSettings = false; }, 500);
+      if (touchInputEnabled) {
+        setTouchPlaying(true);
+        suppressUnlockSettings = false;
+      } else {
+        controls.lock();
+        window.setTimeout(() => { suppressUnlockSettings = false; }, 500);
+      }
     } else if (hasEntered && controls.isLocked) {
       // During gameplay, the browser unlock event opens the settings overlay.
       controls.unlock();
@@ -2690,7 +2796,7 @@ window.addEventListener('naiwa-story-pause', () => {
   if (touchPlaying) setTouchPlaying(false);
 });
 window.addEventListener('naiwa-story-resume', () => {
-  if (touchInputEnabled && hasEntered && settingsMenu.hidden) setTouchPlaying(true);
+  if (!firstQualityPending && touchInputEnabled && hasEntered && settingsMenu.hidden) setTouchPlaying(true);
 });
 window.addEventListener('blur', () => {
   keys.clear();
@@ -2704,13 +2810,22 @@ window.addEventListener('orientationchange', requestResize, { passive: true });
 window.visualViewport?.addEventListener('resize', requestResize, { passive: true });
 screen.orientation?.addEventListener('change', requestResize, { passive: true });
 canvas.addEventListener('click', () => {
-  if (hasEntered && settingsMenu.hidden && !controls.isLocked && lastPointerType !== 'touch' && lastPointerType !== 'pen') controls.lock();
+  if (!firstQualityPending && qualityChosen && hasEntered && settingsMenu.hidden && !controls.isLocked && lastPointerType !== 'touch' && lastPointerType !== 'pen') controls.lock();
 });
 
 let lastRenderedAt = -Infinity;
 let lastWaterReflectionAt = -Infinity;
 const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
 window.__naiwaIceLayer = iceChapterLayer;
+iceChapterLayer.setQuality(qualityPresetName);
+if (firstQualityPending) {
+  iceChapterLayer.setMenuPaused(true);
+  setTouchPlaying(false);
+} else {
+  iceChapterLayer.setMenuPaused(false);
+  settingsTrigger.hidden = false;
+}
+window.__naiwaShowFirstQualityDialog = showFirstQualityDialog;
 window.addEventListener('pagehide', () => iceChapterLayer.dispose(), { once: true });
 
 function render(frameTime = performance.now()) {

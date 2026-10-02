@@ -307,7 +307,6 @@
     <canvas id="reference-world" aria-label="冰封镜馆三维地图" data-i18n-aria-label="game.canvas"></canvas>
     <div id="underwater-filter" aria-hidden="true"></div>
     <div id="touch-hud" class="is-playing" aria-hidden="false">
-      <button class="touch-menu" id="touch-menu" type="button" data-i18n-aria-label="touch.menu" aria-label="打开场景设置">•••</button>
       <div class="touch-stick-zone" id="touch-stick-zone" data-i18n-aria-label="touch.stick" aria-label="移动摇杆">
         <div class="touch-stick" aria-hidden="true"><span class="touch-stick-core"></span></div>
       </div>
@@ -320,6 +319,7 @@
         </button>
       </div>
     </div>
+    <button class="ice-settings-trigger" id="touch-menu" type="button" hidden data-i18n-aria-label="touch.menu" aria-label="打开游戏设置" data-i18n="settings.button">设置</button>
     <section id="reference-entry" class="is-hidden" aria-label="进入冰封镜馆" data-i18n-aria-label="entry.label">
       <div class="entry-copy">
         <strong data-i18n="game.title">泳池空间</strong>
@@ -421,6 +421,29 @@
       <input id="gravity-strength" type="range" min="25" max="200" value="100" tabindex="-1" />
       <output id="gravity-strength-value">100%</output>
     </div>
+    <section id="quality-welcome" class="quality-welcome" role="dialog" aria-modal="true" aria-labelledby="quality-welcome-title" hidden>
+      <div class="quality-welcome-panel">
+        <p class="settings-kicker" data-i18n="quality.welcome.kicker">NAIWA · 首次进入</p>
+        <h1 id="quality-welcome-title" data-i18n="quality.welcome.title">选择画质</h1>
+        <p class="quality-welcome-note" id="quality-welcome-note" data-i18n="quality.welcome.note">低画质会减少场景中的水晶，以提升流畅度。</p>
+        <fieldset class="quality-choice-list" aria-describedby="quality-welcome-note">
+          <legend class="visually-hidden" data-i18n="quality.label">画质</legend>
+          <label class="quality-choice" for="welcome-quality-high">
+            <input id="welcome-quality-high" type="radio" name="welcome-quality" value="high" />
+            <span data-i18n="quality.high">高画质</span>
+          </label>
+          <label class="quality-choice" for="welcome-quality-balanced">
+            <input id="welcome-quality-balanced" type="radio" name="welcome-quality" value="balanced" />
+            <span data-i18n="quality.balanced">平衡</span>
+          </label>
+          <label class="quality-choice" for="welcome-quality-performance">
+            <input id="welcome-quality-performance" type="radio" name="welcome-quality" value="performance" />
+            <span data-i18n="quality.performance">低画质 · 手机推荐</span>
+          </label>
+        </fieldset>
+        <button id="quality-welcome-enter" class="quality-welcome-enter" type="button" data-i18n="quality.welcome.enter">进入镜馆</button>
+      </div>
+    </section>
     <div id="ice-map-overlay" aria-live="polite">
       <header class="ice-map-heading">
         <p class="ice-map-kicker">CHAPTER TWO · ICE ARCHIVE</p>
