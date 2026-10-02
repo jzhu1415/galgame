@@ -16,9 +16,15 @@ const growthSurfaces = new Set();
 const growthDirections = [];
 const earlyRoomSurfaces = new Map();
 const wallCrystalCounts = new Map();
+const roomCrystalCounts = new Map();
 landmarkScene.traverse(object => {
   if (!object.isMesh) return;
   meshCount++;
+  if (object.userData.crystalRoom) {
+    assert.ok(Number.isInteger(object.userData.crystalCount) && object.userData.crystalCount > 0);
+    const room = object.userData.crystalRoom;
+    roomCrystalCounts.set(room, (roomCrystalCounts.get(room) || 0) + object.userData.crystalCount);
+  }
   assert.notEqual(object.geometry.type, 'TorusGeometry', 'Landmarks no longer contain ambiguous D-shaped supports');
   if (object.userData.floatingCrystal) floatingCrystals.push(object);
   if (object.userData.growthSurface) growthSurfaces.add(object.userData.growthSurface);
@@ -57,7 +63,13 @@ landmarkScene.traverse(object => {
   }
   assert.equal(new THREE.Box3().setFromObject(object).intersectsBox(walkingLane), false, 'Scenery must leave the northbound walking lane open');
 });
-assert.ok(meshCount <= 40, 'Landmarks keep a modest geometry budget');
+assert.ok(meshCount <= 56, 'Dense crystal growth is batched to limit draw calls');
+let previousCount = 0;
+for (const [room, minimum] of [['arrival', 50], ['mirror', 90], ['crystal', 140], ['core', 210]]) {
+  const count = roomCrystalCounts.get(room) || 0;
+  assert.ok(count >= minimum && count > previousCount * 1.3, `${room} has increasingly dense crystal growth toward the core`);
+  previousCount = count;
+}
 const crystalLights = [];
 landmarkScene.traverse(object => { if (object.isPointLight) crystalLights.push(object); });
 assert.equal(crystalLights.length, 8, 'Each room has two embedded crystal lights');
@@ -83,15 +95,27 @@ assert.ok(growthSurfaces.has('floor') && growthSurfaces.has('wall'), 'Crystals g
 assert.ok(growthDirections.length > 4 && new Set(growthDirections.map(direction => direction.map(value => value.toFixed(2)).join(','))).size > 4,
   'Crystals grow in varied directions');
 assert.ok(floatingCrystals.length >= 2, 'The hall has both grounded and floating crystals');
-const poses = floatingCrystals.map(object => ({ position: object.position.clone(), rotation: object.rotation.clone() }));
+const floatingPose = object => {
+  if (!object.isInstancedMesh) return { position: object.position.clone(), rotation: object.quaternion.clone() };
+  const matrix = new THREE.Matrix4();
+  object.getMatrixAt(0, matrix);
+  const position = new THREE.Vector3(), rotation = new THREE.Quaternion();
+  matrix.decompose(position, rotation, new THREE.Vector3());
+  return { position, rotation };
+};
+const poses = floatingCrystals.map(floatingPose);
 landmarks.update(.1, 11, { found: new Set(['routeOne']) });
 floatingCrystals.forEach((object, index) => {
-  assert.ok(Math.abs(object.position.y - poses[index].position.y) <= .3, 'Floating motion remains subtle');
-  assert.notEqual(object.rotation.y, poses[index].rotation.y, 'Floating crystal rotates slowly');
+  const pose = floatingPose(object);
+  assert.ok(Math.abs(pose.position.y - poses[index].position.y) <= .3, 'Floating motion remains subtle');
+  assert.ok(pose.rotation.angleTo(poses[index].rotation) > .001, 'Floating crystal rotates slowly');
+  if (object.isInstancedMesh && ['mirror', 'crystal'].includes(object.userData.crystalRoom)) {
+    assert.ok(new THREE.Box3().setFromObject(object).max.y < 4.1, 'Floating crystals fit below the dry rooms ceiling');
+  }
 });
 landmarks.update(.1, 1, { found: new Set(['routeOne']) });
 floatingCrystals.forEach((object, index) => {
-  assert.ok(object.position.distanceTo(poses[index].position) < 1e-6, 'Floating animation does not accumulate position drift');
+  assert.ok(floatingPose(object).position.distanceTo(poses[index].position) < 1e-6, 'Floating animation does not accumulate position drift');
 });
 landmarks.dispose(); landmarks.dispose();
 assert.equal(landmarkScene.children.length, 0);
