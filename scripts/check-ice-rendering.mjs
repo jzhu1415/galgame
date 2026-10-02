@@ -1,0 +1,104 @@
+import assert from 'node:assert/strict';
+import * as THREE from 'three';
+import { createIceReflections } from '../src/ice-pool/ice-reflections.js';
+
+// Keep the actual controller, scene, textures and targets. Replace only GPU
+// execution so capture scheduling and resource lifetime can be tested in Node.
+const scene = new THREE.Scene();
+const fog = new THREE.Fog(0xaabbcc, 1, 40);
+scene.fog = fog;
+const root = new THREE.Group();
+const material = new THREE.MeshPhysicalMaterial();
+root.add(new THREE.Mesh(new THREE.BoxGeometry(), material));
+scene.add(root);
+const hiddenRoot = new THREE.Group();
+hiddenRoot.visible = false;
+scene.add(hiddenRoot);
+const mirror = new THREE.Mesh(new THREE.PlaneGeometry());
+mirror.isReflector = true;
+scene.add(mirror);
+const light = new THREE.PointLight(0xb6eaff, 5);
+scene.add(light);
+const renderer = { extensions: { has: () => false } };
+const camera = new THREE.PerspectiveCamera();
+let captures = 0;
+let failCapture = false;
+const outputs = [];
+const updateCube = THREE.CubeCamera.prototype.update;
+const filterCube = THREE.PMREMGenerator.prototype.fromCubemap;
+THREE.CubeCamera.prototype.update = function (_renderer, currentScene) {
+  assert.equal(currentScene.fog, null);
+  assert.equal(root.visible, false, 'Capture avoids reflecting crystal geometry into itself');
+  assert.equal(mirror.visible, false, 'Capture disables nested planar reflections');
+  assert.equal(light.visible, true, 'Room lighting survives hiding its crystal geometry');
+  captures++;
+  if (failCapture) throw new Error('simulated GPU interruption');
+};
+THREE.PMREMGenerator.prototype.fromCubemap = function (texture) {
+  const target = new THREE.WebGLRenderTarget(256, 128);
+  target.texture.mapping = THREE.CubeUVReflectionMapping;
+  const output = { target, size: texture.image[0].width, disposals: 0 };
+  target.addEventListener('dispose', () => output.disposals++);
+  outputs.push(output);
+  return target;
+};
+
+const reflections = createIceReflections({ renderer, scene, roots: [root, hiddenRoot] });
+const visit = z => { camera.position.set(7.5, 1.7, z); reflections.refresh(camera); };
+try {
+  visit(7.5);
+  assert.equal(captures, 1);
+  assert.equal(material.envMap, outputs[0].target.texture);
+  assert.equal(scene.fog, fog);
+  assert.equal(root.visible, true);
+  assert.equal(hiddenRoot.visible, false);
+  assert.equal(mirror.visible, true);
+  const version = material.version;
+  for (let frame = 0; frame < 100; frame++) visit(7.5);
+  assert.equal(captures, 1, 'Static room reflections are cached between frames');
+  visit(22.5);
+  assert.equal(captures, 1, 'A connecting passage does not capture the next room with the wrong lights');
+  visit(37.5);
+  assert.equal(captures, 2);
+  assert.equal(material.version, version, 'Changing room textures keeps the material shader features unchanged');
+  visit(7.5);
+  assert.equal(captures, 2, 'Revisiting a room reuses its previous reflection');
+  reflections.invalidate({ delayMs: 10_000 });
+  visit(7.5);
+  assert.equal(captures, 2, 'Dragging brightness retains a valid map until the slider settles');
+  assert.equal(material.envMap, outputs[0].target.texture);
+  reflections.invalidate();
+  visit(7.5);
+  assert.equal(captures, 3, 'Changed lighting refreshes the current room once');
+  assert.equal(outputs[0].disposals, 1, 'Replaced reflection buffers are released');
+  reflections.setQuality('performance');
+  visit(7.5);
+  assert.equal(outputs.at(-1).size, 64, 'Low quality captures fewer reflection pixels');
+  reflections.setQuality('high');
+  visit(7.5);
+  assert.equal(outputs.at(-1).size, 128, 'High quality restores the original reflection resolution');
+  failCapture = true;
+  assert.throws(() => visit(67.5), /simulated GPU interruption/);
+  assert.equal(scene.fog, fog, 'A failed capture restores fog');
+  assert.equal(root.visible, true, 'A failed capture restores room geometry');
+  assert.equal(mirror.visible, true, 'A failed capture restores mirrors');
+  assert.equal(hiddenRoot.visible, false, 'Originally hidden roots stay hidden');
+  failCapture = false;
+  visit(67.5);
+  for (const z of [97.5, 7.5, 37.5, 67.5, 97.5]) visit(z);
+  assert.ok(outputs.filter(output => !output.disposals).length <= 4, 'At most one reflection map is retained per room');
+  reflections.dispose();
+  reflections.dispose();
+  assert.equal(material.envMap, null, 'Disposal restores the original material map');
+  assert.ok(outputs.every(output => output.disposals === 1), 'Every reflection buffer is released once');
+} finally {
+  reflections.dispose();
+  THREE.CubeCamera.prototype.update = updateCube;
+  THREE.PMREMGenerator.prototype.fromCubemap = filterCube;
+  root.children[0].geometry.dispose();
+  material.dispose();
+  mirror.geometry.dispose();
+  mirror.material.dispose();
+  light.dispose();
+}
+console.log('Ice rendering OK: cached room captures, preserved light wash, quality buffers, brightness debounce, shader stability, failure recovery and disposal.');

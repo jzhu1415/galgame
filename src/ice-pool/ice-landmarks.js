@@ -10,8 +10,11 @@ export function createIceLandmarks({ scene }) {
   const boxGeometries = new Map();
   const floating = [];
   const crystalLights = [];
+  const lightRooms = [];
   const qualityRebuilders = [];
   let quality = 'balanced';
+  let brightness = 1;
+  let activeLightRoom = null;
   const floatingDummy = new THREE.Object3D();
 
   const silver = ownMaterial(new THREE.MeshPhysicalMaterial({
@@ -485,6 +488,7 @@ export function createIceLandmarks({ scene }) {
       const variantIndex = west ? 0 : 2;
       const geometry = makeFloatingCrystal(variantIndex, false);
       const object = new THREE.InstancedMesh(geometry, ice, perSide);
+      object.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       object.name = `ice-floating-${room}-${side}`;
       object.userData.floatingCrystal = true;
       object.userData.growthSurface = 'air';
@@ -514,6 +518,7 @@ export function createIceLandmarks({ scene }) {
       const entry = { object, instances, allInstances: instances, perSide, variantIndex };
       floating.push(entry);
       updateInstancedFloatBatch(object, instances, 0);
+      setFloatBounds(object, instances);
       registerQualityRebuilder((reduced) => {
         const count = reduced ? Math.max(1, Math.ceil(perSide * .35)) : perSide;
         entry.instances = entry.allInstances.slice(0, count);
@@ -521,6 +526,7 @@ export function createIceLandmarks({ scene }) {
         object.userData.crystalCount = count;
         replaceQualityGeometry(object, () => makeFloatingCrystal(variantIndex, reduced));
         updateInstancedFloatBatch(object, entry.instances, 0);
+        setFloatBounds(object, entry.instances);
       });
     }
   }
@@ -535,29 +541,60 @@ export function createIceLandmarks({ scene }) {
       object.setMatrixAt(index, floatingDummy.matrix);
     }
     object.instanceMatrix.needsUpdate = true;
-    object.computeBoundingBox();
-    object.computeBoundingSphere();
+  }
+  function setFloatBounds(object, instances) {
+    // A sphere around each origin covers every rotation and the full bob cycle.
+    // Keep these bounds between frames instead of scanning every instance twice.
+    const positions = object.geometry.attributes.position;
+    let radiusSquared = 0;
+    for (let index = 0; index < positions.count; index++) {
+      radiusSquared = Math.max(radiusSquared,
+        positions.getX(index) ** 2 + positions.getY(index) ** 2 + positions.getZ(index) ** 2);
+    }
+    const radius = Math.sqrt(radiusSquared);
+    const bounds = new THREE.Box3();
+    const extent = new THREE.Vector3();
+    for (const instance of instances) {
+      const r = radius * Math.max(...instance.scale);
+      bounds.expandByPoint(extent.set(instance.x - r, instance.baseY - r - .1, instance.z - r));
+      bounds.expandByPoint(extent.set(instance.x + r, instance.baseY + r + .1, instance.z + r));
+    }
+    object.boundingBox = bounds;
+    object.boundingSphere = bounds.getBoundingSphere(new THREE.Sphere());
   }
   addRoomFloatBatches({ room: 'arrival', startZ: 0, endZ: 15, perSide: 4, minY: 2.65, maxY: 3.65, maxScale: .72 });
   addRoomFloatBatches({ room: 'mirror', startZ: 30, endZ: 45, perSide: 4, minY: 2.6, maxY: 3.3, maxScale: .88 });
   addRoomFloatBatches({ room: 'crystal', startZ: 60, endZ: 75, perSide: 18, minY: 2.45, maxY: 3.15, maxScale: 1.0 });
   addRoomFloatBatches({ room: 'core', startZ: 90, endZ: 105, perSide: 30, minY: 3.0, maxY: 5.6, maxScale: 1.15 });
 
-  // A pair of embedded lights per room throws a soft blue wash onto actual
-  // surfaces. Only the nearest pair participates in rendering on mobile.
+  // Reuse two lights at the original embedded positions in all four rooms.
+  // Keeping the light count constant also keeps the shader configuration stable.
   for (const centerZ of [7.5, 37.5, 67.5, 97.5]) {
+    const room = { z: centerZ, clusters: [] };
     for (const side of ['west', 'east']) {
       const cluster = root.children.find(object => object.userData.wallRoom
         && object.position.z === centerZ && object.name.endsWith(`-${side}`));
-      const light = new THREE.PointLight(0xb6eaff, 5, 10, 1.6);
-      light.name = `ice-crystal-light-${centerZ}-${side}`;
-      light.position.fromArray(cluster.userData.crystalLightPoint).add(cluster.position);
-      light.userData.roomZ = centerZ;
-      light.visible = centerZ === 7.5;
-      root.add(light);
-      crystalLights.push(light);
+      room.clusters.push(cluster);
     }
+    lightRooms.push(room);
   }
+  for (const side of ['west', 'east']) {
+    const light = new THREE.PointLight(0xb6eaff, 5, 10, 1.6);
+    light.name = `ice-crystal-light-${side}`;
+    // Outside the hidden geometry root so room reflection captures retain the
+    // crystal light on the tiles without reflecting the crystal into itself.
+    scene.add(light);
+    crystalLights.push(light);
+  }
+  function positionLights(room) {
+    crystalLights.forEach((light, index) => {
+      const cluster = room.clusters[index];
+      light.position.fromArray(cluster.userData.crystalLightPoint).add(cluster.position);
+      light.userData.roomZ = room.z;
+    });
+    activeLightRoom = room;
+  }
+  positionLights(lightRooms[0]);
 
   // A small pair grows off the walls of the long connecting passage without
   // crossing into the central path or the evidence pickup at z=22.5.
@@ -579,6 +616,13 @@ export function createIceLandmarks({ scene }) {
   }
 
   scene.add(root);
+  const animatedObjects = new Set(floating.map(entry => entry.object));
+  root.traverse(object => {
+    if (!animatedObjects.has(object)) {
+      object.updateMatrix();
+      object.matrixAutoUpdate = false;
+    }
+  });
   let disposed = false;
   return {
     setQuality(preset) {
@@ -587,12 +631,23 @@ export function createIceLandmarks({ scene }) {
       if (nextQuality === quality) return;
       quality = nextQuality;
       for (const rebuild of qualityRebuilders) rebuild(quality === 'performance');
+      positionLights(activeLightRoom);
+    },
+    setBrightness(scale) {
+      if (disposed) return;
+      brightness = THREE.MathUtils.clamp(Number.isFinite(scale) ? scale : 1, 0, 2);
+      ice.emissiveIntensity = .11 * brightness;
     },
     update(delta, time, { found = new Set(), camera } = {}) {
       if (disposed) return;
       void found;
       void delta;
       for (const entry of floating) {
+        // Geometry remains visible to the main and reflection cameras. Distant
+        // motion alone sleeps; absolute time resumes the same phase on approach.
+        if (camera && (entry.object.isInstancedMesh
+          ? entry.object.boundingSphere.center.distanceTo(camera.position) - entry.object.boundingSphere.radius > 32
+          : entry.object.position.distanceToSquared(camera.position) > 32 * 32)) continue;
         if (entry.instances) {
           updateInstancedFloatBatch(entry.object, entry.instances, time);
           continue;
@@ -602,9 +657,14 @@ export function createIceLandmarks({ scene }) {
         object.rotation.y = baseRotationY + time * .08;
       }
       if (camera) {
-        const nearest = crystalLights.reduce((closest, light) =>
-          Math.abs(light.userData.roomZ - camera.position.z) < Math.abs(closest.userData.roomZ - camera.position.z) ? light : closest);
-        for (const light of crystalLights) light.visible = light.userData.roomZ === nearest.userData.roomZ;
+        const nearest = lightRooms.reduce((closest, room) =>
+          Math.abs(room.z - camera.position.z) < Math.abs(closest.z - camera.position.z) ? room : closest);
+        if (activeLightRoom !== nearest) positionLights(nearest);
+        // Both sides fade out before relocation in the unlit connecting passage.
+        const fade = 1 - THREE.MathUtils.smoothstep(Math.abs(nearest.z - camera.position.z), 10, 15);
+        for (const light of crystalLights) light.intensity = 5 * brightness * fade;
+      } else {
+        for (const light of crystalLights) light.intensity = 5 * brightness;
       }
     },
     dispose() {
@@ -624,8 +684,9 @@ export function createIceLandmarks({ scene }) {
       materials.clear();
       floating.length = 0;
       qualityRebuilders.length = 0;
-      crystalLights.forEach(light => light.dispose());
+      crystalLights.forEach(light => { scene.remove(light); light.dispose(); });
       crystalLights.length = 0;
+      lightRooms.length = 0;
     },
   };
 }

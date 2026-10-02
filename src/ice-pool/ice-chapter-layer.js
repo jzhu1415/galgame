@@ -159,6 +159,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   let coreTriggered = false;
   let disposed = false;
   let storyPaused = false;
+  let lightScale = 1;
   let menuPaused = false;
   let routeStep = 0;
   let routeAtStart = false;
@@ -167,6 +168,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   let lastNavAt = -Infinity;
   let pickup = null;
   let feedbackRemaining = 0;
+  let routeUiState = '';
+  const mirrorPosition = new THREE.Vector3();
+  const mirrorDirection = new THREE.Vector3();
   const feedback = document.createElement('div');
   feedback.className = 'ice-feedback';
   feedback.setAttribute('role', 'status');
@@ -289,6 +293,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   }
   function updateRouteReadout() {
     if (!routeReadout || !routeStatus) return;
+    const uiState = `${language}:${routeIndex()}:${routeStep}:${routeAtStart}:${routeStarted}:${found.has('route')}`;
+    if (routeUiState === uiState) return;
+    routeUiState = uiState;
     const copy = COPY[language];
     routeReadout.hidden = !routeStarted || found.has('route');
     routeStatus.textContent = found.has('route')
@@ -547,6 +554,26 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     menuPaused = !!paused;
     updatePrompt();
   }
+  function setQuality(preset) {
+    if (disposed) return;
+    landmarks.setQuality(preset);
+    reflections.setQuality(preset);
+    const mirrorSize = preset === 'performance' ? 128 : 256;
+    for (const group of exhibits.values()) {
+      for (const face of group.userData.mirrorFaces) {
+        const target = face.getRenderTarget();
+        if (target.width !== mirrorSize) target.setSize(mirrorSize, mirrorSize);
+      }
+    }
+  }
+  function setBrightness(scale) {
+    if (disposed) return;
+    const next = THREE.MathUtils.clamp(Number.isFinite(scale) ? scale : 1, 0, 2);
+    if (next === lightScale) return;
+    lightScale = next;
+    landmarks.setBrightness(lightScale);
+    reflections.invalidate({ delayMs: 150 });
+  }
   function setStoryPaused(paused) {
     storyPaused = paused;
     window.dispatchEvent(new Event(paused ? 'naiwa-story-pause' : 'naiwa-story-resume'));
@@ -606,17 +633,19 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     coreCrystal.rotation.y += dt * .16;
     coreCrystal.position.y = .96 + Math.sin(time * .8) * .05;
-    coreLight.intensity = 1.3 + Math.sin(time * 1.4) * .13;
+    coreLight.intensity = (1.3 + Math.sin(time * 1.4) * .13) * lightScale;
     for (const marker of routeMarkers) {
       if (marker.userData.pulseMaterial) marker.userData.pulseMaterial.opacity = .55 + Math.sin(time * 2.6) * .18;
     }
     if (time * 1000 - lastNavAt > 100) { lastNavAt = time * 1000; updateNavigation(); }
     for (const group of exhibits.values()) {
       const [front, back] = group.userData.mirrorFaces;
-      const nearby = camera.position.distanceToSquared(group.position) < 18 * 18;
+      const nearby = group.visible && camera.position.distanceToSquared(group.position) < 18 * 18;
+      if (!nearby) { front.visible = false; back.visible = false; continue; }
       group.updateWorldMatrix(true, true);
-      const toCamera = camera.position.clone().sub(front.getWorldPosition(new THREE.Vector3()));
-      const frontFacing = toCamera.dot(front.getWorldDirection(new THREE.Vector3())) >= 0;
+      front.getWorldPosition(mirrorPosition);
+      mirrorPosition.subVectors(camera.position, mirrorPosition);
+      const frontFacing = mirrorPosition.dot(front.getWorldDirection(mirrorDirection)) >= 0;
       front.visible = nearby && frontFacing;
       back.visible = nearby && !frontFacing;
     }
@@ -661,6 +690,6 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   exit?.addEventListener('click', handleExit);
   refreshEvidenceVisibility();
   updateLabels(); updatePrompt();
-  return { setInit, setLanguage, setMenuPaused, setQuality: preset => landmarks.setQuality(preset), setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
+  return { setInit, setLanguage, setMenuPaused, setQuality, setBrightness, setStoryPaused, isStoryPaused: () => storyPaused, update, dispose,
     refreshReflections: () => reflections.refresh(camera) };
 }

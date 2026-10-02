@@ -54,7 +54,13 @@ for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
     const pose = camera.position.clone();
     layer.setLanguage('en');
     layer.setQuality('performance');
+    scene.traverse(object => { if (object.isReflector) assert.equal(object.getRenderTarget().width, 128, 'Low quality reduces actual mirror buffers'); });
     layer.setQuality('balanced');
+    scene.traverse(object => { if (object.isReflector) assert.equal(object.getRenderTarget().width, 256, 'Balanced quality restores mirror detail'); });
+    layer.setBrightness(.5);
+    tick();
+    assert.ok(scene.children.filter(object => object.name.startsWith('ice-crystal-light-')).every(light => light.intensity <= 2.5));
+    layer.setBrightness(1);
     assert.ok(camera.position.equals(pose), 'Changing settings language must not teleport the player');
   }
 }

@@ -77,12 +77,29 @@ for (const [room, minimum] of [['arrival', 50], ['mirror', 90], ['crystal', 140]
 }
 const crystalLights = [];
 landmarkScene.traverse(object => { if (object.isPointLight) crystalLights.push(object); });
-assert.equal(crystalLights.length, 8, 'Each room has two embedded crystal lights');
+assert.equal(crystalLights.length, 2, 'All four rooms reuse one pair of embedded lights');
+const lightIds = crystalLights.map(light => light.uuid);
 for (const roomZ of [7.5, 37.5, 67.5, 97.5]) {
   landmarks.update(.05, 1, { camera: { position: new THREE.Vector3(7.5, 1.7, roomZ) } });
   assert.equal(crystalLights.filter(light => light.visible).length, 2, 'Only the nearest room lights render');
   assert.ok(crystalLights.filter(light => light.visible).every(light => light.userData.roomZ === roomZ && !light.castShadow));
+  crystalLights.forEach(light => {
+    const side = light.name.endsWith('-west') ? 'west' : 'east';
+    const cluster = landmarkScene.getObjectByName(`ice-wall-crystals-${({ 7.5: 'arrival', 37.5: 'mirror', 67.5: 'crystal', 97.5: 'core' })[roomZ]}-${side}`);
+    assert.ok(light.position.distanceTo(new THREE.Vector3().fromArray(cluster.userData.crystalLightPoint).add(cluster.position)) < 1e-8,
+      'Reused lights keep their original embedded positions');
+    assert.equal(light.intensity, 5, 'Room light intensity is unchanged at normal brightness');
+  });
 }
+assert.deepEqual(crystalLights.map(light => light.uuid), lightIds, 'Changing rooms never allocates a new light');
+landmarks.update(.05, 1, { camera: { position: new THREE.Vector3(7.5, 1.7, 20) } });
+assert.ok(crystalLights.every(light => light.intensity > 0 && light.intensity < 5), 'Lights fade approaching the unlit passage');
+landmarks.update(.05, 1, { camera: { position: new THREE.Vector3(7.5, 1.7, 22.5) } });
+assert.ok(crystalLights.every(light => light.intensity === 0 && light.visible), 'Light relocation is dark without changing the shader light count');
+landmarks.setBrightness(.5);
+landmarks.update(.05, 1, { camera: { position: new THREE.Vector3(7.5, 1.7, 37.5) } });
+assert.ok(crystalLights.every(light => light.intensity === 2.5), 'Brightness controls embedded crystal lighting');
+landmarks.setBrightness(1);
 for (const room of ['arrival', 'mirror', 'crystal', 'core']) {
   assert.ok(wallCrystalCounts.get(room) >= 20, `${room} has a visible spread of wall-grown crystals`);
 }
@@ -122,6 +139,37 @@ landmarks.update(.1, 1, { found: new Set(['routeOne']) });
 floatingCrystals.forEach((object, index) => {
   assert.ok(floatingPose(object).position.distanceTo(poses[index].position) < 1e-6, 'Floating animation does not accumulate position drift');
 });
+const farBatch = floatingCrystals.find(object => object.isInstancedMesh && object.userData.crystalRoom === 'core');
+const bounds = farBatch.boundingBox;
+const version = farBatch.instanceMatrix.version;
+landmarks.update(.1, 40, { camera: { position: new THREE.Vector3(7.5, 1.7, 7.5) } });
+assert.equal(farBatch.instanceMatrix.version, version, 'Distant crystals do not upload unchanged instance matrices');
+assert.equal(farBatch.visible, true, 'Distant geometry remains available to reflection cameras');
+landmarks.update(.1, 40, { camera: { position: new THREE.Vector3(7.5, 1.7, 97.5) } });
+const resumedPose = floatingPose(farBatch);
+assert.ok(farBatch.instanceMatrix.version > version, 'Nearby crystals animate again');
+landmarks.update(.1, 40);
+assert.ok(floatingPose(farBatch).position.distanceTo(resumedPose.position) < 1e-8, 'Resuming uses absolute animation time');
+assert.equal(farBatch.boundingBox, bounds, 'Animation reuses its precomputed bounds');
+const checkAnimatedBounds = () => {
+  const matrix = new THREE.Matrix4();
+  const vertex = new THREE.Vector3();
+  for (const time of [0, 13, 48, 119]) {
+    landmarks.update(.1, time);
+    for (const object of floatingCrystals.filter(object => object.isInstancedMesh)) {
+      for (let index = 0; index < object.count; index++) {
+        object.getMatrixAt(index, matrix);
+        const positions = object.geometry.attributes.position;
+        for (let point = 0; point < positions.count; point++) {
+          vertex.fromBufferAttribute(positions, point).applyMatrix4(matrix);
+          assert.ok(object.boundingBox.containsPoint(vertex), 'Cached bounds cover every bobbing and rotating vertex');
+          assert.ok(object.boundingSphere.containsPoint(vertex), 'Cached sphere never culls a visible crystal');
+        }
+      }
+    }
+  }
+};
+checkAnimatedBounds();
 const renderedCrystalVertices = () => {
   let count = 0;
   landmarkScene.traverse(object => {
@@ -131,8 +179,10 @@ const renderedCrystalVertices = () => {
 };
 const fullVertexCount = renderedCrystalVertices();
 landmarks.setQuality('performance');
+checkAnimatedBounds();
 assert.ok(renderedCrystalVertices() < fullVertexCount * .6, 'Low quality reduces actual crystal geometry, not only visual labels');
 landmarks.setQuality('high');
+checkAnimatedBounds();
 assert.equal(renderedCrystalVertices(), fullVertexCount, 'High quality restores the complete landscape');
 landmarks.setQuality('performance');
 landmarks.setQuality('balanced');

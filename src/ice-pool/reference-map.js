@@ -198,6 +198,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualitySettings.pixelRa
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.82;
+// Low quality samples refraction at half resolution; crystal silhouettes and
+// physical materials remain unchanged, with a quarter of the sampled pixels.
+renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
 // Sixteen shadowed spotlights can exceed mobile GPU shader limits. Pool-light
 // reflection visibility is handled by the tile materials instead.
 renderer.shadowMap.enabled = false;
@@ -1758,6 +1761,7 @@ function applySceneSettings() {
   const lightScale = Number(lightBrightnessInput.value) / 100;
   hemisphereLight.intensity = 0.74 * lightScale;
   ambientLight.intensity = 0.22 * lightScale;
+  window.__naiwaIceLayer?.setBrightness?.(lightScale);
   glowMaterial.color.copy(glowBaseColor).multiplyScalar(lightScale);
   skylightLights.forEach((light) => {
     if (light.intensity > 0) light.intensity = SKYLIGHT_BASE_INTENSITY * lightScale;
@@ -1836,6 +1840,7 @@ mistGeometry.setDrawRange(0, Math.round(mistCount * qualitySettings.mistRatio));
 function applyQualityPreset(presetName, persist = true) {
   qualityPresetName = QUALITY_PRESETS[presetName] ? presetName : 'balanced';
   qualitySettings = QUALITY_PRESETS[qualityPresetName];
+  renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
   qualityPresetInput.value = qualityPresetName;
   const viewport = getViewportSize();
   const pixelRatio = Math.min(window.devicePixelRatio, qualitySettings.pixelRatio);
@@ -2818,6 +2823,7 @@ let lastWaterReflectionAt = -Infinity;
 const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
 window.__naiwaIceLayer = iceChapterLayer;
 iceChapterLayer.setQuality(qualityPresetName);
+iceChapterLayer.setBrightness(Number(lightBrightnessInput.value) / 100);
 if (firstQualityPending) {
   iceChapterLayer.setMenuPaused(true);
   setTouchPlaying(false);
@@ -2830,6 +2836,7 @@ window.addEventListener('pagehide', () => iceChapterLayer.dispose(), { once: tru
 
 function render(frameTime = performance.now()) {
   requestAnimationFrame(render);
+  if (document.hidden) return;
   const isPlaying = !iceChapterLayer.isStoryPaused() && (controls.isLocked || touchPlaying);
   const renderInterval = isPlaying ? 0 : 1000 / PAUSED_RENDER_FPS;
   if (frameTime - lastRenderedAt < renderInterval) return;

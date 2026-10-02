@@ -12,6 +12,7 @@
     "check:ice-route": "node scripts/check-ice-route.mjs",
     "check:ice-interaction": "node scripts/check-ice-interaction.mjs",
     "check:ice-flow": "node scripts/check-ice-flow.mjs",
+    "check:ice-rendering": "node scripts/check-ice-rendering.mjs",
     "generate:tts": "python3 scripts/generate-neural-tts.py",
     "check:romance-dlc": "node scripts/check-romance-dlc.mjs",
     "check:route-preview": "node scripts/check-route-preview.mjs",
