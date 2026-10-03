@@ -127,7 +127,7 @@ const ui = {
     save: '存档', saved: '已保存', settings: '设置', gallery: '图鉴', auto: '自动', skip: '快进', audio: '语音播放', on: '开启', off: '关闭',
   },
   en: {
-    title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
+    title: 'Naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
     start: 'Begin story', continue: 'Continue', restart: 'Start over', log: 'History', routes: 'Story map', menu: 'Menu',
     fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen',
     language: 'ZH', languageLabel: 'Switch to Chinese', close: 'Close', next: 'Click the scene or press Space to continue',

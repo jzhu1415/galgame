@@ -88,7 +88,7 @@ const copy = {
       ['Narration', 'At 2:17 a.m., the monitor beeped three times. Naiwa\'s fingers curled. His journal opened by itself, and ink spread across the page: Layer Two. Don\'t trust the first mirror.'],
       ['Narration', 'I pulled up the ward footage. A figure in purple took that page from the journal. His right gauntlet flashed. The picture broke up just as he turned. I rewound it three times. Same spot.'],
       ['Naiba', 'Give me that page. You brought one of him back already. Don\'t go in again.'],
-      ['Narration', 'I ran after him. The fire door slammed shut in my face, trapping a frosted corner of paper. Behind me, the monitor sped up. Through the wall, someone spoke in Naiwa\'s voice: “He wasn\'t the only one there.”'],
+      ['Narration', 'I ran after him. The fire door slammed shut in my face, trapping a frosted corner of paper. Behind me, the monitor sped up. Through the wall, someone spoke in Naiwa\'s voice: \"He wasn\'t the only one there.\"'],
       ['Narration', 'The nurse said the whole floor had lost power overnight. I showed her the footage: every room was lit during the outage. She checked the maintenance log. The cold-storage lift had been called at the same minute.'],
       ['Narration', 'A partial blue fingerprint marked the paper. Below it: Layer Two, Frozen Mirror Hall. The rest had been torn away recently.'],
       ['Narration', 'The lift opened, and cold air slipped up my sleeves. I looked back at Naiwa. Still asleep. A chip of ice sat in his fist, leaving a wet ring on the sheet.'],
@@ -96,7 +96,7 @@ const copy = {
     threshold: [
       ['Narration', 'The lift stopped. Its floor display showed a single dash. Ice veined the tiles outside. Above me, another corridor hung upside down in the glass ceiling.'],
       ['Narration', 'Three mirrors stood by the entrance. In one, I chased a purple coat. In another, I knelt to gather broken glass. In the third, I pressed my ear to a wall and heard someone breathing.'],
-      ['Narration', 'Each reflection led farther into the hall. I touched the glass and pulled my hand away from the cold. “Don\'t trust him,” the wall said again. This time the last word cut off.'],
+      ['Narration', 'Each reflection led farther into the hall. I touched the glass and pulled my hand away from the cold. \"Don\'t trust him,\" the wall said again. This time the last word cut off.'],
       ['Narration', 'The lights stayed on for three seconds, off for two. While they were on, I counted scratches on the wall and wet footprints below. In the dark, one more print appeared.'],
       ['Narration', 'The central mirror was locked, with three empty slots in its frame. At the first turn, I found a damp note. Someone had folded directions into it.'],
     ],
@@ -106,7 +106,7 @@ const copy = {
       ['Find the voice in the wall', 'Whoever is inside is still breathing.'],
     ],
     responses: [['Let Fat Dudu finish', 'He still remembers a voice from the crash.'], ['Question Naiba', 'Ask about the gauntlet and the braking command.']],
-    responseLines: { trust: 'I let Fat Dudu speak first. He stared at the crystal in Naiba\'s hand. “Someone shouted stop before the car hit.” Naiba did not correct him.', question: '“Did you send the braking command?” I asked. Naiba looked down at the dark jewel on his gauntlet. “Yes. Ask someone else why the car took that road.”' },
+    responseLines: { trust: 'I let Fat Dudu speak first. He stared at the crystal in Naiba\'s hand. “Someone shouted stop before the car hit.” Naiba did not correct him.', question: '\"Did you send the braking command?\" I asked. Naiba looked down at the dark jewel on his gauntlet. \"Yes. Ask someone else why the car took that road.\"' },
     approachLines: {
       chase: 'I chased the purple coat down three corridors. It vanished at every turn. The last mirror showed the crash, but its timestamp jumped over the second before impact.',
       restore: 'I lined up the pieces by timestamp. Naiba was at the scene. The braking command came one second before impact. I checked the order again. It held.',
@@ -127,7 +127,7 @@ const copy = {
     ending: [
       ['Narration', 'Fat Dudu came out from behind the glass, water dripping from his sleeves. He caught my cuff, then let go. “Some of what I said—I\'m not sure anymore. Will you come back and ask me?” I nodded.'],
       ['Narration', 'Back in the ward, Naiwa\'s finger moved again. I watched it happen this time. The rain had stopped, but a stairway now showed in the window\'s reflection.'],
-      ['Narration', 'The missing journal page lay on the first step. On its back, someone had written: “The brakes weren\'t the beginning. Find out who changed the route before the rain.”'],
+      ['Narration', 'The missing journal page lay on the first step. On its back, someone had written: \"The brakes weren\'t the beginning. Find out who changed the route before the rain.\"'],
       ['Narration', 'I folded the page into my pocket and looked back at Naiba. He offered no explanation. He did not follow. The dead jewel on his gauntlet was still black.'],
       ['Narration', 'A three lit up on the lift display. Naiwa was still asleep. In the glass, Fat Dudu stayed where he was and watched me press the button.'],
     ],
@@ -171,7 +171,7 @@ const fragmentStories = {
     ] },
     echo: { title: 'A Heartbeat Without an Echo', art: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-shared-palm', 'chapter-02-ice-hall'], lines: [
       ['Narration', 'I held the wax record to my ear. Two heartbeats, one after the other. The second struck the mirror wall and gave no echo.'],
-      ['Fat Dudu', '“Don\'t trust him”… Wait. Who said it first? That sounds like me.'],
+      ['Fat Dudu', '\"Don\'t trust him\"… Wait. Who said it first? That sounds like me.'],
       ['Narration', 'I played it again. The words overlapped exactly; the breaths afterward split apart.'],
       ['Narration', 'I pocketed the record. The voice cut off there. Maybe the central mirror held the rest.'],
     ] },
