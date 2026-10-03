@@ -74,8 +74,10 @@
   background: rgba(180, 218, 225, .035);
   font-size: .8rem;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.quality-choice:has(input:checked) { border-color: rgba(174, 225, 232, .72); background: rgba(132, 185, 197, .13); }
+.quality-choice.is-selected { border-color: rgba(174, 225, 232, .72); background: rgba(132, 185, 197, .13); }
 .quality-choice input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: #a9cbd2; }
 .quality-welcome-enter {
   width: 100%;
@@ -88,6 +90,7 @@
   font: 600 .82rem/1 Georgia, "Songti SC", serif;
   letter-spacing: .06em;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .quality-welcome-enter:hover { background: rgba(135, 192, 205, .32); }
 .quality-welcome-enter:focus-visible, .quality-choice input:focus-visible { outline: 2px solid #c9edf1; outline-offset: 3px; }

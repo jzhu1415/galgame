@@ -23,6 +23,7 @@ import { AudioSystem } from './audio/AudioSystem.js';
 import { createPlayerAudioSnapshot, createReferenceAudioEnvironment,
   describeAudioRoom } from './audio/ReferenceAudioAdapter.js';
 import { createIceChapterLayer } from './ice-chapter-layer.js';
+import { bindIceQualityPicker } from './ice-quality-picker.js';
 
 // A single switch also lets geometry regression tests exercise the original layouts.
 const ROOM_LIGHTING_ENABLED = true;
@@ -2600,6 +2601,7 @@ function showSettings() {
 
 function showFirstQualityDialog() {
   if (!firstQualityPending) return;
+  const wasHidden = qualityWelcome.hidden;
   settingsMenu.hidden = true;
   settingsTrigger.hidden = true;
   qualityWelcome.hidden = false;
@@ -2607,10 +2609,9 @@ function showFirstQualityDialog() {
   keys.clear();
   resetTouchInputs();
   setTouchPlaying(false);
-  const selected = isCompactViewport ? 'performance' : 'balanced';
-  applyQualityPreset(selected, false);
-  qualityWelcomeInputs.forEach((input) => { input.checked = input.value === selected; });
-  qualityWelcomeInputs.find((input) => input.checked)?.focus({ preventScroll: true });
+  // Repeated parent init messages must not replace a choice already made.
+  if (!firstQualityPicker.value()) firstQualityPicker.select(isCompactViewport ? 'performance' : 'balanced', false);
+  if (wasHidden) qualityWelcomeInputs.find((input) => input.checked)?.focus({ preventScroll: true });
 }
 
 function requestGameFullscreen() {
@@ -2672,15 +2673,18 @@ touchMenu.addEventListener('click', () => {
 qualityWelcomeEnter.addEventListener('pointerdown', (event) => {
   if (event.pointerType === 'touch' || event.pointerType === 'pen') enableTouchInput();
 });
-qualityWelcomeInputs.forEach((input) => input.addEventListener('change', () => {
-  if (!input.checked || !firstQualityPending) return;
-  applyQualityPreset(input.value, false);
-}));
+const firstQualityPicker = bindIceQualityPicker({
+  container: qualityWelcome,
+  inputs: qualityWelcomeInputs,
+  canChoose: () => firstQualityPending,
+  // Selection updates the card immediately. Resize/rebuild only on confirmation.
+  onChoose: () => {},
+});
 qualityWelcomeEnter.addEventListener('click', () => {
   if (!firstQualityPending) return;
   keys.clear();
   resetTouchInputs();
-  const selected = qualityWelcomeInputs.find((input) => input.checked)?.value
+  const selected = firstQualityPicker.value()
     ?? (isCompactViewport ? 'performance' : 'balanced');
   applyQualityPreset(selected, false);
   qualityChosen = true;
@@ -2832,7 +2836,7 @@ if (firstQualityPending) {
   settingsTrigger.hidden = false;
 }
 window.__naiwaShowFirstQualityDialog = showFirstQualityDialog;
-window.addEventListener('pagehide', () => iceChapterLayer.dispose(), { once: true });
+window.addEventListener('pagehide', () => { firstQualityPicker.dispose(); iceChapterLayer.dispose(); }, { once: true });
 
 function render(frameTime = performance.now()) {
   requestAnimationFrame(render);
