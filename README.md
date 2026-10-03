@@ -1,4 +1,4 @@
-# 奶之救赎 · naiwa
+# 奶之救赎 · Naiwa
 
 一场雨夜的相遇，一段逐渐靠近的关系，和一个等待被找回的内心世界。**《奶之救赎》**是一款中英双语网页视觉小说，将恋爱日常、分支选择和探索解谜串成一段关于信任与记忆的故事。
 
@@ -24,7 +24,7 @@
 
 ## English overview
 
-**naiwa — The Redemption** is a bilingual browser visual novel about trust, memory, and finding a way back to someone you love. A meeting on a rainy night grows into a relationship, then leads into Naiwa’s inner world.
+**Naiwa — The Redemption** is a bilingual browser visual novel about trust, memory, and finding a way back to someone you love. A meeting on a rainy night grows into a relationship, then leads into Naiwa’s inner world.
 
 In **Chapter One: Origin**, follow the couple’s everyday moments and search a mistbound fairground for lost memories. In **Chapter Two: The Culprit in the Ice**, explore a frozen mirror hall, follow the minimap, and uncover the memories held inside each fragment.
 
