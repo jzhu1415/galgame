@@ -44,7 +44,14 @@ key('Escape');
 assert.equal(has('note'), false, 'Quality and settings dialogs block evidence interaction');
 assert.equal(messages.some(message => message.type === 'exit'), false, 'Escape cannot leave the hall behind a settings dialog');
 layer.setMenuPaused(false);
-approach(ICE_LAYOUT.note); key('KeyE');
+approach(ICE_LAYOUT.note);
+let controlKeyPrevented = false;
+listeners.get('keydown')({ code: 'Enter', target: { closest: () => ({}) },
+  preventDefault: () => { controlKeyPrevented = true; } });
+tick(12);
+assert.equal(has('note'), false, 'Enter on a menu/action button cannot collect nearby evidence instead');
+assert.equal(controlKeyPrevented, false, 'Native button activation is not cancelled by the hall');
+key('KeyE');
 assert.ok(has('note'), 'The entrance note is collected immediately without code input');
 assert.equal(has('routeOne'), false);
 collect('footage');

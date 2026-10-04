@@ -190,6 +190,7 @@ input[type="range"]::-moz-range-thumb {
 .settings-hint { color: rgba(178, 211, 219, .56); letter-spacing: .025em; }
 .settings-actions { grid-template-columns: 1fr 1.35fr; gap: .55rem; margin-top: .85rem; }
 .settings-actions button {
+  touch-action: manipulation;
   min-height: 2.6rem;
   padding: .65rem .75rem;
   border-color: rgba(180, 218, 226, .24);

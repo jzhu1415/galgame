@@ -4,6 +4,7 @@ import { hasClearEvidencePath } from './ice-interaction.js';
 import { ICE_LAYOUT, ICE_ROUTES, currentIceStage, canCollectIceEvidence } from './ice-progression.js';
 import { createIceLandmarks } from './ice-landmarks.js';
 import { createIceReflections } from './ice-reflections.js';
+import { isIceControlEvent } from './ice-input.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -507,7 +508,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     else if (clueCount() === CLUES.length && found.has('note') && found.has('route')) triggerCore();
   }
   function handleKey(event) {
-    if (storyPaused || menuPaused) return;
+    if (disposed || storyPaused || menuPaused || isIceControlEvent(event)) return;
     if (event.repeat) return;
     if (event.code === 'KeyE' || event.code === 'Enter') {
       event.preventDefault();

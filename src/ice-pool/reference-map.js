@@ -24,6 +24,7 @@ import { createPlayerAudioSnapshot, createReferenceAudioEnvironment,
   describeAudioRoom } from './audio/ReferenceAudioAdapter.js';
 import { createIceChapterLayer } from './ice-chapter-layer.js';
 import { bindIceQualityPicker } from './ice-quality-picker.js';
+import { bindIceHoldButton, isIceControlEvent } from './ice-input.js';
 
 // A single switch also lets geometry regression tests exercise the original layouts.
 const ROOM_LIGHTING_ENABLED = true;
@@ -2471,44 +2472,11 @@ touchStickZone.addEventListener('pointercancel', releaseTouchStick);
 touchStickZone.addEventListener('lostpointercapture', releaseTouchStick);
 
 function bindTouchHoldButton(button, setHeld, queueJump = false) {
-  let activePointerId = null;
-  const queueTouchJump = () => {
-    if (queueJump && touchPlaying) jumpQueued = true;
-  };
-  touchHoldResets.push(() => {
-    activePointerId = null;
-    button.classList.remove('is-pressed');
-    setHeld(false);
+  const binding = bindIceHoldButton({ button, canPress: () => touchPlaying, setHeld,
+    onPress: () => { if (queueJump) jumpQueued = true; },
   });
-  button.addEventListener('pointerdown', (event) => {
-    if (!touchPlaying || activePointerId !== null) return;
-    event.preventDefault();
-    event.stopPropagation();
-    activePointerId = event.pointerId;
-    button.setPointerCapture(event.pointerId);
-    button.classList.add('is-pressed');
-    setHeld(true);
-    queueTouchJump();
-  });
-  const release = (event) => {
-    if (event.pointerId !== activePointerId) return;
-    if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
-    activePointerId = null;
-    button.classList.remove('is-pressed');
-    setHeld(false);
-  };
-  button.addEventListener('pointerup', release);
-  button.addEventListener('pointercancel', release);
-  if (queueJump) {
-    // Some mobile browsers omit pointerdown during a viewport transition. Keep
-    // native touch and compatibility click fallbacks for the one-shot jump.
-    button.addEventListener('touchstart', (event) => {
-      if (!touchPlaying) return;
-      queueTouchJump();
-      if (event.cancelable) event.preventDefault();
-    }, { passive: false });
-    button.addEventListener('click', queueTouchJump);
-  }
+  touchHoldResets.push(binding.reset);
+  window.addEventListener('pagehide', binding.dispose, { once: true });
 }
 bindTouchHoldButton(touchRiseButton, (held) => { touchRiseHeld = held; }, true);
 bindTouchHoldButton(touchDiveButton, (held) => { touchDiveHeld = held; });
@@ -2667,6 +2635,9 @@ window.addEventListener('pointerdown', (event) => {
   if ((event.pointerType === 'touch' || event.pointerType === 'pen') && event.target === canvas) activateTouchGameplay();
 }, { passive: true });
 settingsContinue.addEventListener('click', enterExperience);
+settingsContinue.addEventListener('pointerdown', (event) => {
+  if (event.pointerType === 'touch' || event.pointerType === 'pen') enableTouchInput();
+});
 touchMenu.addEventListener('click', () => {
   showSettings();
 });
@@ -2794,6 +2765,8 @@ window.addEventListener('keydown', (event) => {
     }
     return;
   }
+  if (!settingsMenu.hidden || window.__naiwaIceLayer?.isStoryPaused()
+    || !(controls.isLocked || touchPlaying) || isIceControlEvent(event)) return;
   keys.add(event.code);
   if (event.code === 'Space' && !event.repeat) jumpQueued = true;
   if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight'].includes(event.code)) event.preventDefault();
