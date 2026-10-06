@@ -13,7 +13,7 @@ const s = (speaker: TheatreSpeaker, zh: string, en: string): TheatreLine => ({ s
 const c = (id: string, zh: string, en: string, descZh: string, descEn: string, next: string, effects: Partial<TheatreChoice> = {}): TheatreChoice => ({ id, text: b(zh, en), detail: b(descZh, descEn), next, ...effects })
 export const theatreMemoryIds: TheatreMemory[] = ['rain', 'breakfast', 'film']
 export const theatreEndingIds: TheatreEnding[] = ['saved', 'bargained', 'exhausted']
-export const theatreSpeakers: Record<TheatreSpeaker, Bilingual> = { narrator: b('旁白', 'Narration'), naifen: b('奶粉', 'Naifen'), naiba: b('奶霸', 'Naiba'), researcher: b('研究员', 'Researcher'), journal: b('奶蛙观察日记', 'Naiwa’s journal'), me: b('我', 'Me') }
+export const theatreSpeakers: Record<TheatreSpeaker, Bilingual> = { narrator: b('旁白', 'Narration'), naifen: b('奶粉', 'Naifen'), naiba: b('奶霸', 'Naiba'), researcher: b('研究员', 'Researcher'), journal: b('奶蛙观察日记', 'Naiwa\'s journal'), me: b('我', 'Me') }
 export const theatreMemoryNames: Record<TheatreMemory, Bilingual> = { rain: b('雨夜 · 歪斜的伞', 'Rain · The tilted umbrella'), breakfast: b('早餐 · 焦掉的松饼', 'Breakfast · The burnt pancake'), film: b('录像 · 偏转的车头', 'Film · The turning wheels') }
 export const theatreEndingNames: Record<TheatreEnding, Bilingual> = { saved: b('落幕之后', 'After the curtain'), bargained: b('掌声里的空位', 'An empty seat in the applause'), exhausted: b('无人谢幕', 'No curtain call') }
 
@@ -31,7 +31,7 @@ export const theatreStory: Record<string, TheatreNode> = {
     c('journal', '只带日记进入', 'Enter with the journal', '不用探针，潜入时会多消耗精神力。', 'Without the probe, entering costs more spirit.', 'threshold', { spirit: -6 }),
   ] },
   threshold: { title: b('第三声铃', 'The third bell'), act: 0, art: 'theatre', lines: [
-    n('我把血滴在奶蛙额头。医院的墙向两侧退开，红色帷幕贴着我的肩膀落下。有人在黑暗里数：一、二、三。', 'I touched a drop of blood to Naiwa’s forehead. The ward walls drew apart. Red curtains fell against my shoulders. Someone in the dark counted: one, two, three.'),
+    n('我把血滴在奶蛙额头。医院的墙向两侧退开，红色帷幕贴着我的肩膀落下。有人在黑暗里数：一、二、三。', 'I touched a drop of blood to Naiwa\'s forehead. The ward walls drew apart. Red curtains fell against my shoulders. Someone in the dark counted: one, two, three.'),
     n('观众席是空的，掌声却从每张椅子里传来。舞台上摆着餐桌、雨窗和一台放映机，头顶的红线缓慢收紧。', 'The seats were empty, but applause came from every chair. A table, a rainy window, and a projector stood on stage. Red threads tightened overhead.'),
     n('一个粉色身影背对着我。它猛地拽下一根线，窗里的雨夜碎成纸片，掌声立刻更响。', 'A pink figure stood with its back to me. It pulled down a thread. The rainy night in the window shattered into scraps, and the applause grew louder.'),
     s('naifen', '你来得太迟了。我把这出戏砸掉一次，它就再演一次。你看，他们连我的手都摆好了。', 'You’re late. I wreck the stage, and the whole thing starts over. Look. They’ve even put my hands where they want them.'),
@@ -77,7 +77,7 @@ export const theatreStory: Record<string, TheatreNode> = {
     n('餐桌边的红线断了一根。奶粉把焦掉的那半块松饼放回盘子，记忆落在我手里。', 'A thread snapped beside the table. Naifen put the burnt half back on the plate. The memory settled in my hand.'),
   ], next: 'explore' },
   film: { title: b('第三幕 · 车灯', 'Act III · Headlights'), act: 1, art: 'film', lines: [
-    n('放映机里卡着两卷胶片。组织给我的那卷，只反复播放奶霸按下控制器的手。', 'Two reels were caught in the projector. The institute’s reel repeated only Naiba’s hand pressing the controller.'),
+    n('放映机里卡着两卷胶片。组织给我的那卷，只反复播放奶霸按下控制器的手。', 'Two reels were caught in the projector. The institute\'s reel repeated only Naiba\'s hand pressing the controller.'),
     n('另一卷从雨前开始。奶霸站在路口，车辆向我驶来。撞击前一秒，车头却偏向了我身旁的护栏。', 'The other began before the rain. Naiba stood at the junction. The car headed toward me, then turned toward the barrier beside me a second before impact.'),
     s('me', '他确实操控了车。可为什么在最后一秒转向？', 'So he was controlling the car. Why steer away at the last second?'),
     s('naifen', '别替他解释。我还记得奶蛙倒下去。你也记得，对不对？', 'Don’t make excuses for him. I remember Naiwa falling. You remember too, don’t you?'),
@@ -87,7 +87,7 @@ export const theatreStory: Record<string, TheatreNode> = {
     c('film-fake', '只保留按控制器的画面', 'Keep only the controller shot', '证据更直接，但时间顺序被截断。', 'It shows his hand on the controller, but cuts out what happened next.', 'rehearsal', { spirit: -16, pollution: 10 }),
   ] },
   'film-kept': { title: b('不能剪掉的一秒', 'A second that must remain'), act: 1, art: 'film', lines: [
-    n('胶片烧出一小块空白。我护住两端，奶霸的手和偏转的车轮终于留在同一段记录里。', 'A blank patch burned into the film. I protected both ends. Naiba’s hand and the turning wheels remained in the same recording.'),
+    n('胶片烧出一小块空白。我护住两端，奶霸的手和偏转的车轮终于留在同一段记录里。', 'A blank patch burned into the film. I protected both ends. Naiba\'s hand and the turning wheels remained in the same recording.'),
     s('naifen', '好。可是等你问他的时候，我也要在场。', 'All right. But when you ask him, I want to be there.'),
   ], next: 'explore' },
   rehearsal: { title: b('又一次排演', 'Another rehearsal'), act: 1, art: 'theatre', character: true, lines: [
@@ -105,21 +105,21 @@ export const theatreStory: Record<string, TheatreNode> = {
     c('route-main', '照组织导览，推开正门', 'Follow the institute’s guide to the main door', '门更亮，里面传来“治疗已经准备好”。', 'A voice behind the brighter door says treatment is ready.', 'trap', { spirit: -24, pollution: 15 }),
   ] },
   'route-kept': { title: b('侧门后的空容器', 'An empty vessel behind the side door'), act: 1, art: 'backstage', lines: [
-    n('我依次碰过星星杯、歪伞和车轮。侧门打开，没有掌声。架子上放着一个与组织箱子里一模一样的空容器。', 'I touched the star mug, the umbrella, then the wheel. The side door opened without applause. On a shelf sat an empty vessel identical to the institute’s.'),
+    n('我依次碰过星星杯、歪伞和车轮。侧门打开，没有掌声。架子上放着一个与组织箱子里一模一样的空容器。', 'I touched the star mug, the umbrella, then the wheel. The side door opened without applause. On a shelf sat an empty vessel identical to the institute\'s.'),
     n('容器底部残留粉色颜料，外壁却亮得像真碎片。我收起它，把路线图折进日记。', 'Pink pigment clung to the bottom. Its walls glowed like a real fragment. I pocketed it and folded the map into the journal.'),
     s('journal', '容器外形相同。交易时别拿错。', 'The vessels look the same. Don’t hand over the wrong one.'),
   ], next: 'explore' },
   trap: { title: b('没有出口的掌声', 'Applause without an exit'), act: 1, art: 'backstage', character: true, lines: [
-    n('门内没有病床。银线贴上我的手腕，日记的字一行行变淡。我退了一步，鞋底却粘在地上。', 'There was no bed behind the door. Silver wires caught my wrist. The journal’s words faded line by line. I tried to step back, but my shoes stuck to the floor.'),
-    s('naifen', '别听它的，抓住我！这次我只砸门，不砸你。', 'Don’t listen to it. Hold onto me! This time I’ll break the door, not you.'),
+    n('门内没有病床。银线贴上我的手腕，日记的字一行行变淡。我退了一步，鞋底却粘在地上。', 'There was no bed behind the door. Silver wires caught my wrist. The journal\'s words faded line by line. I tried to step back, but my shoes stuck to the floor.'),
+    s('naifen', '别听它的，抓住我！这次我只砸门，不砸你。', 'Don\'t listen to it. Hold onto me! This time I\'ll break the door, not you.'),
     n('奶粉拽着我退回观众席。正门重新亮起来，里面仍用同样温和的语气说：治疗已经准备好。', 'Naifen pulled me back into the auditorium. The door lit up again, repeating in the same gentle voice: treatment is ready.'),
   ], next: 'explore' },
-  confrontation: { title: b('车是我引来的', 'I brought the car'), act: 2, art: 'backstage', lines: [
+  confrontation: { title: b('车是哪来的', 'Who brought the car'), act: 2, art: 'backstage', lines: [
     n('三幕记忆归位，舞台后露出一道医院走廊。奶霸站在走廊尽头，把发光容器递给组织的人。', 'The three memories settled into place. A hospital corridor appeared backstage. At its far end, Naiba handed a glowing vessel to an institute employee.'),
-    s('researcher', '东西给你。下一次，别让他自己选路。', 'Here are his things. Next time, don’t let him choose his own route.'),
-    n('奶霸接过我的旧手机。屏幕上还是奶蛙做早餐的照片。我不知道它什么时候被拿走了。', 'Naiba took my old phone. Its screen still showed Naiwa making breakfast. I hadn’t known it was missing.'),
+    s('researcher', '东西给你。下一次，别让他自己选路。', 'Here are his things. Next time, don\'t let him choose his own route.'),
+    n('奶霸接过我的旧手机。屏幕上还是奶蛙做早餐的照片。我不知道它什么时候被拿走了。', 'Naiba took my old phone. Its screen still showed Naiwa making breakfast. I hadn\'t known it was missing.'),
     s('me', '录像我看了。那辆车，是不是你控制的？', 'I saw the footage. Did you control that car?'),
-    s('naiba', '车是我引来的。', 'I brought the car.'),
+    s('naiba', '车确实是我引来的。', 'I did bring the car.'),
     n('奶粉从我身后冲出去，扯断一排红线。空椅子同时向前翻，像一群看不见的人急着起身。', 'Naifen rushed past me and tore down a row of threads. Empty seats tipped forward as though an invisible crowd were rising.'),
     s('naiba', '恨就恨吧。先把奶粉带出去，别再让他们取你的血。', 'Hate me if you want. Get Naifen out first. Don’t let them take any more of your blood.'),
     n('组织的人转身离开。奶霸抬手砸碎了交易容器，里面没有碎片，只有一滩发亮的颜料。他仍不肯看我。', 'The employee left. Naiba smashed the vessel he’d handed over. Glowing paint spilled out, with no fragment in it. He still wouldn’t look at me.'),
@@ -148,12 +148,12 @@ export const theatreStory: Record<string, TheatreNode> = {
     c('comfort-order', '立刻停下，你会毁掉一切', 'Stop now. You’ll destroy everything.', '奶粉听见命令，再次攥紧剧本；可以重新回应。', 'Naifen tightens its grip on the script. You’ll get another chance to answer.', 'resistance', { spirit: -12, pollution: 8 }),
   ] },
   resistance: { title: b('又一道命令', 'Another order'), act: 2, art: 'theatre', character: true, lines: [
-    s('naifen', '他们也这么说。停下，站好，照着演。可我到底什么时候能说我疼？', 'That’s what they say too. Stop. Stand there. Follow the script. When do I get to say it hurts?'),
+    s('naifen', '他们也这么说。停下，站好，照着演。可我到底什么时候能说我疼？', 'That\'s what they say too. Stop. Stand there. Follow the script. When do I get to say it hurts?'),
     n('红线又收紧了一寸。我把命令咽回去，重新伸出手。', 'The thread tightened another inch. I swallowed the order and offered my hand again.'),
   ], next: 'comfort' },
   'real-trade': { title: b('过于安静的舞台', 'A stage too quiet'), act: 2, art: 'theatre', character: true, lines: [
-    n('真碎片离开掌心。探针的灯变绿，研究员说奶蛙的心率正在恢复。我几乎松了一口气。', 'The real fragment left my palm. The probe turned green. The researcher said Naiwa’s pulse was recovering. I almost felt relieved.'),
-    s('naifen', '等一下……那把伞是什么颜色？你昨天和我说过，我现在记不清了。', 'Wait… What color was the umbrella? You told me yesterday. I can’t remember now.'),
+    n('真碎片离开掌心。探针的灯变绿，研究员说奶蛙的心率正在恢复。我几乎松了一口气。', 'The real fragment left my palm. The probe turned green. The researcher said Naiwa\'s pulse was recovering. I almost felt relieved.'),
+    s('naifen', '等一下……那把伞是什么颜色？你昨天和我说过，我现在记不清了。', 'Wait… What color was the umbrella? You told me yesterday. I can\'t remember now.'),
     n('奶粉盯着空餐盘，试着笑了一下。它没有再砸东西，可我叫它时，它迟了很久才转头。', 'Naifen stared at the empty plate and tried to smile. It stopped breaking things. When I called its name, it took a long time to turn.'),
     n('帷幕上打出“治疗完成”。幕后的监护声仍在重复同一段，连呼吸的间隔也没有变化。', 'The curtain announced that treatment was complete. The monitor behind it repeated the same sequence, down to the gaps between breaths.'),
   ], next: 'bargained' },
@@ -168,7 +168,7 @@ export const theatreStory: Record<string, TheatreNode> = {
     n('我把手绘路线图收好。下一层的门像笼子一样，在电梯倒影里缓缓合上。', 'I put the hand-drawn map away. In the lift’s reflection, the next door slowly closed like a cage.'),
   ] },
   bargained: { title: b('掌声里的空位', 'An empty seat in the applause'), act: 3, art: 'theatre', ending: 'bargained', lines: [
-    n('回到病房，奶蛙的手指动了一下。我低头去找日记里的第三层，纸上只剩一个空白的圆。', 'Back in the ward, Naiwa’s finger moved. I looked for Layer Three in the journal. Only a blank circle remained.'),
+    n('回到病房，奶蛙的手指动了一下。我低头去找日记里的第三层，纸上只剩一个空白的圆。', 'Back in the ward, Naiwa\'s finger moved. I looked for Layer Three in the journal. Only a blank circle remained.'),
     n('探针的绿色灯一直亮着，太阳穴却越来越疼。我打开手机，早餐照片里的星星杯变成了模糊的一团。', 'The probe stayed green, but my temples hurt more and more. On my phone, the star mug in the breakfast photograph had become a blur.'),
     s('naiba', '你把什么给了他们？', 'What did you give them?'),
     s('me', '他们说能让奶蛙醒。你有什么资格质问我？', 'They said they could wake Naiwa up. Who are you to question me?'),

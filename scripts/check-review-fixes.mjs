@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { compile, moduleUrl, tsModuleUrl } from './ts-module.mjs'
 import { initializeIceMap } from '../src/ice-pool/ice-map-bootstrap.js'
@@ -121,6 +121,22 @@ assert(log.innerHTML.includes(copy.en.approachLines.chase))
 assert(log.innerHTML.includes(copy.en.approachLines.comfort), 'actual history renders each recorded branch')
 controller.dispose()
 
+for (const language of ['zh', 'en']) {
+  for (const phase of ['hospital', 'threshold', 'core', 'ending']) {
+    for (let line = 0; line < copy[language][phase].length; line++) {
+      browserStorage.setItem('naiwa-chapter-two-v1', JSON.stringify({
+        ...newIceSave(), phase, line, approach: 'comfort', response: 'trust',
+        clues: ['note', 'footage', 'routeOne', 'shard', 'route', 'echo'],
+      }))
+      controller = mountChapterTwo(root, language, () => exits++)
+      const art = root.innerHTML.match(/--ice-art:url\('([^']+)'\)/)?.[1]
+      assert(art, `${language} ${phase}:${line} must render a storyboard image`)
+      assert(existsSync(resolve('public', art.replace(/^\//, ''))), `${language} ${phase}:${line} is missing its image: ${art}`)
+      controller.dispose()
+    }
+  }
+}
+
 await assert.rejects(initializeIceMap({ supportsWebGL2: () => false }), error => error.code === 'unsupported')
 await assert.rejects(initializeIceMap({ supportsWebGL2: () => true, loadWorld: async () => { throw new Error('network failed') } }), /network failed/)
 await assert.rejects(initializeIceMap({ supportsWebGL2: () => true, loadWorld: async () => ({ referenceReady: Promise.reject(new Error('shader failed')) }) }), /shader failed/)
@@ -138,4 +154,4 @@ assert.equal(font.media, 'all')
 font.onerror()
 assert(font.removed, 'font errors leave system fonts available')
 assert(!/<link[^>]+rel="stylesheet"[^>]+fonts\.googleapis/.test(readFileSync('index.html', 'utf8')))
-console.log('Review fixes OK: persistent iframe and language handshake; session-save warning and recovery; trusted messages, retry and cleanup; branch history and legacy migration; WebGL/network/shader failures; nonblocking fonts.')
+console.log('Review fixes OK: persistent iframe and language handshake; session-save warning and recovery; trusted messages, retry and cleanup; branch history and legacy migration; all chapter two storyboard images; WebGL/network/shader failures; nonblocking fonts.')

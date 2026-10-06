@@ -3,6 +3,7 @@
 - Chapter two updates map language in place. The iframe, player position and unfinished route remain intact; initialization uses the latest selected language.
 - Save and checkpoint writes share a visible session-only warning when browser storage fails. A later successful write clears the warning and persists the session progress.
 - Chapter two records branch context with each dialogue entry. Narrative text, narration paths and history use one resolver. Legacy single-run history uses the choices already recorded in its save.
+- A character rename no longer changes the chapter two ending image filename. Both languages check every narrative frame against the shipped image files.
 - Mirror hall initialization catches unsupported WebGL 2, module loading and shader compilation failures. The parent offers localized retry/back controls and a loading timeout. Retry restores collected clues through a new ready handshake.
 - Chapter one, chapter three and the coastal DLC protect controls and dialogue with device safe-area insets, including landscape and immersive views.
 - The development dependency `source-map-js` is updated to 1.2.2. Dependency audit reports no vulnerabilities.

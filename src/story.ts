@@ -33,8 +33,8 @@ export interface Scene {
 
 const b = (zh: string, en: string): Bilingual => ({ zh, en })
 const n = (zh: string, en: string): Line => ({ text: b(zh, en) })
-const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en), ...(nameZh === '奶蛙' ? { sound: 'naiwa-speech' as const } : {}) })
-const diary = (zh: string, en: string): Line => ({ speaker: b('奶蛙观察日记', 'naiwa’s journal'), text: b(zh, en) })
+const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'Naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en), ...(nameZh === '奶蛙' ? { sound: 'naiwa-speech' as const } : {}) })
+const diary = (zh: string, en: string): Line => ({ speaker: b('奶蛙观察日记', 'Naiwa\'s journal'), text: b(zh, en) })
 const laugh = (line: Line): Line => ({ ...line, sound: 'naiwa-laugh' })
 const shortSay = (zh: string, en: string): Line => ({ ...say(zh, en), sound: 'naiwa-short-reply' })
 const heroVoice = (line: Line, sound: 'protagonist-listen' | 'protagonist-home' | 'protagonist-choice'): Line => ({ ...line, sound })
@@ -236,7 +236,7 @@ export const story: Record<string, Scene> = {
     ], next: 'a03',
   },
   a02c: {
-    image: 'A02C', mood: 'real', chapter: b('第一幕 · 劝告', 'Act I · A friend’s warning'),
+    image: 'A02C', mood: 'real', chapter: b('第一幕 · 劝告', 'Act I · A friend\'s warning'),
     lines: [
       n('我把朋友的话原原本本告诉了奶蛙。它听完，沉默了一会儿。', 'I told Naiwa exactly what my friend had said. It listened, then fell quiet.'),
       say('你朋友是担心你吧。我听着难受，不过……你也是这么想的吗？', 'Your friend’s worried about you. I hate hearing it, but… do you feel the same way?'),
@@ -256,7 +256,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('光从奶蛙身上涌出，将道路和那些模糊的身影一同吞没。', 'Light burst from Naiwa until I could no longer see the road or the figures ahead.'),
       n('等光散去，它倒在我怀里。刚才还温暖的手，慢慢失去了力气。', 'When the light faded, it collapsed into my arms. The hand that had felt so warm went still.'),
-      shortSay('你没事……就好。', 'You’re safe… that’s enough.'),
+      shortSay('你没事……就好。', 'You\'re safe… that\'s enough.'),
     ], next: 'm01',
   },
   m01: {
@@ -281,7 +281,7 @@ export const story: Record<string, Scene> = {
     lines: [
       n('雨永远下着。旋转木马空转，破旧的玩偶盯着没有人的路。', 'The rain never stopped. A carousel spun on its own while worn dolls watched the empty paths.'),
       { ...n('每走几步，身后的路灯就灭掉一盏。我不敢回头看。', 'A streetlamp went out every few steps behind me. I kept my eyes ahead.'), when: 'uneasy' },
-      { ...n('我摸到口袋里那张合照的边角，沿着木马的铃声往前走。', 'The edge of our photo was still in my pocket. I followed the carousel’s faint jingle.'), when: 'secure' },
+      { ...n('我摸到口袋里那张合照的边角，沿着木马的铃声往前走。', 'The edge of our photo was still in my pocket. I followed the carousel\'s faint jingle.'), when: 'secure' },
     ], next: 'm04',
   },
   m04: {
@@ -300,8 +300,8 @@ export const story: Record<string, Scene> = {
   be01: {
     image: 'BE01', mood: 'ending', chapter: b('结局 · 失控的拥抱', 'Ending · An embrace too soon'),
     lines: [
-      n('我的手刚碰到它，所有怪偶同时转过头。木马的影子收拢，像一道锁。', 'The instant I touched it, every doll turned. The carousel’s shadows closed like a lock.'),
-      say('你真的留下来了……再也不要走，好吗？', 'You really stayed… You won’t leave again, will you?'),
+      n('我的手刚碰到它，所有怪偶同时转过头。木马的影子收拢，像一道锁。', 'The instant I touched it, every doll turned. The carousel\'s shadows closed like a lock.'),
+      say('你真的留下来了……再也不要走，好吗？', 'You really stayed… You won\'t leave again, will you?'),
       n('我还没来得及回答，世界便暗了下去。', 'Before I could answer, the world went dark.'),
     ], ending: 'embrace',
   },
