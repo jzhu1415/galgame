@@ -1,31 +1,21 @@
+import { browserStorage } from './browser-storage'
+import { loadOptionalFonts } from './fonts'
 import './style.css'
 import './release-notes.css'
+import './chapter-promo.css'
+import { renderChapterPromo, mountChapterPromo } from './chapter-promo'
 import { showReleaseNotes } from './release-notes'
-import { firstScene, memoryNames, story, type Language, type Line, type MemoryId, type Scene } from './story'
-import { chapterTwoStatus, resetChapterTwo, mountChapterTwo, previewChapterTwoRoutes } from './chapter-two'
-import { chapterThreeStatus, resetChapterThree, mountChapterThree, previewChapterThreeRoutes } from './chapter-three'
-import { mountRomanceDlc, romanceDlcStatus } from './romance-dlc'
+import { memoryNames, story, type Language, type Line, type Scene } from './story'
+import { chapterTwoStatus, chapterThreeStatus, romanceDlcStatus } from './chapter-status'
+import { loadChapterTwo, loadChapterThree, loadRomanceDlc } from './chapter-loader'
 import { isRomanceDlcUnlocked, loadDlcViews, showDlcUnlock } from './dlc-unlock'
 import { characterVoiceSequence } from './character-voice'
 import { enterAppFullscreen, isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
 import { confirmInApp } from './ui-confirm'
 import { setupStoryMap } from './story-map'
+import { transitionSceneImage } from './scene-image'
 
-type LogEntry = { sceneId: string; index: number }
-type GameState = {
-  version: 1
-  sceneId: string
-  lineIndex: number
-  language: Language
-  affection: number
-  anxiety: number
-  spirit: number
-  danger: number
-  memories: MemoryId[]
-  history: LogEntry[]
-}
-type Checkpoint = Pick<GameState, 'sceneId' | 'affection' | 'anxiety' | 'spirit' | 'danger' | 'memories'>
-type Progress = { version: 1; checkpoints: Record<string, Checkpoint>; endings: string[] }
+import { newOriginSave, normalizeOriginSave, normalizeOriginProgress, originLines, originLogLine, recordOriginCheckpoint, type GameState, type Progress } from './origin-state'
 
 const STORAGE_KEY = 'naiwa-origin-save-v1'
 const PROGRESS_KEY = 'naiwa-origin-progress-v1'
@@ -38,7 +28,7 @@ function systemLanguage(): Language {
 
 function languageOverride(): Language | null {
   try {
-    const value = localStorage.getItem(LANGUAGE_OVERRIDE_KEY)
+    const value = browserStorage.getItem(LANGUAGE_OVERRIDE_KEY)
     return value === 'zh' || value === 'en' ? value : null
   } catch { return null }
 }
@@ -47,24 +37,36 @@ const root = document.querySelector<HTMLDivElement>('#app')!
 let state: GameState | null = loadSave()
 let progress: Progress = loadProgress()
 let romanceDlcOpen = false
-let romanceDlcController: ReturnType<typeof mountRomanceDlc> | null = null
+let romanceDlcController: ReturnType<typeof import('./romance-dlc').mountRomanceDlc> | null = null
 let chapterPlaying = false
 let active = false
 let modal: 'log' | 'menu' | 'routes' | 'settings' | 'gallery' | null = null
 let preferredLanguage: Language = languageOverride() ?? systemLanguage()
 if (state) state.language = preferredLanguage
-let imageGeneration = 0
+let appDialog: HTMLDialogElement | null = null
+let modalFocus: HTMLElement | null = null
 type SoundPlayback = { key: string; audio: HTMLAudioElement; clips: string[]; clipIndex: number; status: 'playing' | 'finished' | 'error' }
 let soundPlayback: SoundPlayback | null = null
 let ambientLaugh: HTMLAudioElement | null = null
 let ambientEnabled = true
 let ambientError = false
-let selectedChapter: 0 | 1 | 2 | 3 = new URLSearchParams(window.location.search).get('chapter') === '3' ? 3 : 0
-let chapterTwoController: ReturnType<typeof mountChapterTwo> | null = null
-let chapterThreeController: ReturnType<typeof mountChapterThree> | null = null
+const requestedChapter = Number(new URLSearchParams(window.location.search).get('chapter'))
+let selectedChapter: 0 | 1 | 2 | 3 = requestedChapter === 1 || requestedChapter === 2 || requestedChapter === 3 ? requestedChapter : 0
+let chapterTwoModule: Awaited<ReturnType<typeof loadChapterTwo>> | null = null
+let chapterThreeModule: Awaited<ReturnType<typeof loadChapterThree>> | null = null
+let romanceModule: Awaited<ReturnType<typeof loadRomanceDlc>> | null = null
+let viewGeneration = 0
+let chapterPromoController: ReturnType<typeof mountChapterPromo> | null = null
+let chapterPromoChapter: 1 | 2 | 3 = 1
+const chapterPromoScroll = new Map<1 | 2 | 3, number>()
+let restartPending = false
+let chapterTwoController: ReturnType<typeof import('./chapter-two').mountChapterTwo> | null = null
+let chapterThreeController: ReturnType<typeof import('./chapter-three').mountChapterThree> | null = null
 let playbackMode: 'off' | 'auto' | 'skip' = 'off'
 let playbackTimer: number | null = null
-let audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
+let audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
+let savePersistent = true
+let progressPersistent = true
 
 function clearPlaybackTimer() {
   if (playbackTimer !== null) window.clearTimeout(playbackTimer)
@@ -114,7 +116,7 @@ const ui = {
     select: '选择你的回答', spirit: '精神力', memories: '回忆', danger: '玩偶警戒', found: '已找回', ending: '故事到此告一段落',
     finish: '《奶之救赎：缘起》完', replay: '再玩一次', returnTitle: '返回标题',
     confirmRestart: '确定重新开始吗？当前进度会被覆盖。', emptyLog: '故事开始后，对话会显示在这里。',
-    introNote: '一段关于相遇、信任与内心世界的互动故事', saveNote: '进度自动保存在此浏览器',
+    introNote: '从雨夜的纸箱，到那座一直下雨的游乐园。', saveNote: '进度自动保存在此浏览器',
     controls: '空格 / Enter 推进 · 点击选项作出选择 · Esc 关闭菜单',
     allFound: '三件回忆物已集齐',
     routesHint: '拖动画布查看剧情。点击已解锁节点可从这里重新开始；灰色节点尚未解锁。', endingGallery: '结局图鉴',
@@ -124,17 +126,17 @@ const ui = {
     pickObject: '将鼠标移到画面中的物品上并点击 · 手机可直接点选',
     laughPlaying: '奶蛙的笑声', naiwaSpeaking: '奶蛙的声音', heroPlaying: '主角男声', narratorPlaying: '旁白', soundSkip: '跳过', soundRetry: '重新播放',
     ambientOff: '关闭笑声', ambientOn: '开启笑声', ambientRetry: '播放笑声',
-    save: '存档', saved: '已保存', settings: '设置', gallery: '图鉴', auto: '自动', skip: '快进', audio: '语音播放', on: '开启', off: '关闭',
+    save: '存档', saved: '已保存', saveFailed: '无法保存 · 本次会话内保留', sessionSave: '进度仅在本次页面会话保留', settings: '设置', gallery: '图鉴', auto: '自动', skip: '快进', audio: '语音播放', on: '开启', off: '关闭',
   },
   en: {
-    title: 'naiwa', subtitle: 'Origin', tagline: 'After that rain, I stepped into your world.',
+    title: 'naiwa', subtitle: 'Origin', tagline: 'After that rainy night, I found my way into your world.',
     start: 'Begin story', continue: 'Continue', restart: 'Start over', log: 'History', routes: 'Story map', menu: 'Menu',
     fullscreen: 'Fullscreen', exitFullscreen: 'Exit fullscreen',
     language: 'ZH', languageLabel: 'Switch to Chinese', close: 'Close', next: 'Click the scene or press Space to continue',
     select: 'Choose your response', spirit: 'Spirit', memories: 'Memories', danger: 'Doll alert', found: 'Recovered', ending: 'This path ends here',
     finish: 'The End · naiwa: Origin', replay: 'Play again', returnTitle: 'Return to title',
     confirmRestart: 'Start over? Your current progress will be replaced.', emptyLog: 'Dialogue will appear here once the story begins.',
-    introNote: 'An interactive story of meeting, trust, and the world within', saveNote: 'Progress saves automatically in this browser',
+    introNote: 'From a box in the rain to a fairground where it never stops raining.', saveNote: 'Progress saves automatically in this browser',
     controls: 'Space / Enter to advance · Choose with a click · Esc to close the menu',
     allFound: 'All three memories found',
     routesHint: 'Drag to explore. Select any unlocked node to restart there; dimmed nodes are still locked.', endingGallery: 'Ending gallery',
@@ -144,7 +146,7 @@ const ui = {
     pickObject: 'Hover over an item and click · Tap an item on mobile',
     laughPlaying: 'naiwa’s laugh', naiwaSpeaking: 'naiwa’s voice', heroPlaying: 'Protagonist voice', narratorPlaying: 'Narration', soundSkip: 'Skip', soundRetry: 'Replay',
     ambientOff: 'Turn off laughter', ambientOn: 'Turn on laughter', ambientRetry: 'Play laughter',
-    save: 'Save', saved: 'Saved', settings: 'Settings', gallery: 'Gallery', auto: 'Auto', skip: 'Skip', audio: 'Voice playback', on: 'On', off: 'Off',
+    save: 'Save', saved: 'Saved', saveFailed: 'Session only · Saving unavailable', sessionSave: 'Progress kept for this page session only', settings: 'Settings', gallery: 'Gallery', auto: 'Auto', skip: 'Skip', audio: 'Voice playback', on: 'On', off: 'Off',
   },
 } as const
 
@@ -167,107 +169,27 @@ const objectScenes: Record<string, {
 }
 
 function loadSave(): GameState | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const saved: unknown = JSON.parse(raw)
-    if (!saved || typeof saved !== 'object') return null
-    const data = saved as Partial<GameState>
-    const sceneId = data.sceneId === 'false_trail' ? 'm06' : data.sceneId
-    if (data.version !== 1 || !sceneId || !Object.hasOwn(story, sceneId) || !Number.isInteger(data.lineIndex)) return null
-    if (data.language !== 'zh' && data.language !== 'en') return null
-    return {
-      version: 1, sceneId, lineIndex: data.sceneId === 'false_trail' ? 0 : Math.max(0, data.lineIndex ?? 0), language: data.language,
-      affection: Number.isFinite(data.affection) ? data.affection! : 0,
-      anxiety: Number.isFinite(data.anxiety) ? data.anxiety! : 0,
-      spirit: Number.isFinite(data.spirit) ? data.spirit! : 100,
-      danger: Number.isFinite(data.danger) ? Math.max(0, data.danger!) : 0,
-      memories: Array.isArray(data.memories) ? data.memories.filter((m): m is MemoryId => m === 'toy' || m === 'gift' || m === 'photo') : [],
-      history: Array.isArray(data.history) ? data.history.filter((entry): entry is LogEntry => !!entry && typeof entry.sceneId === 'string' && !!story[entry.sceneId] && Number.isInteger(entry.index)).slice(-120) : [],
-    }
-  } catch {
-    return null
-  }
+  try { return normalizeOriginSave(JSON.parse(browserStorage.getItem(STORAGE_KEY) ?? 'null')) } catch { return null }
 }
-
 function loadProgress(): Progress {
-  try {
-    const raw = localStorage.getItem(PROGRESS_KEY)
-    if (!raw) return { version: 1, checkpoints: {}, endings: [] }
-    const value = JSON.parse(raw) as Partial<Progress>
-    if (value.version !== 1 || !value.checkpoints || !Array.isArray(value.endings)) throw new Error('Invalid progress')
-    const checkpoints: Record<string, Checkpoint> = {}
-    for (const [id, snapshot] of Object.entries(value.checkpoints)) {
-      if (!Object.hasOwn(story, id) || !snapshot || snapshot.sceneId !== id) continue
-      checkpoints[id] = {
-        sceneId: id, affection: Number.isFinite(snapshot.affection) ? snapshot.affection : 0,
-        anxiety: Number.isFinite(snapshot.anxiety) ? snapshot.anxiety : 0,
-        spirit: Number.isFinite(snapshot.spirit) ? snapshot.spirit : 100,
-        danger: Number.isFinite(snapshot.danger) ? Math.max(0, snapshot.danger) : 0,
-        memories: Array.isArray(snapshot.memories) ? snapshot.memories.filter((m): m is MemoryId => m === 'toy' || m === 'gift' || m === 'photo') : [],
-      }
-    }
-    return { version: 1, checkpoints, endings: value.endings.filter(id => Object.hasOwn(story, id) && !!story[id].ending) }
-  } catch {
-    return { version: 1, checkpoints: {}, endings: [] }
-  }
+  let raw: unknown = null
+  try { raw = JSON.parse(browserStorage.getItem(PROGRESS_KEY) ?? 'null') } catch { /* Ignore malformed progress. */ }
+  return normalizeOriginProgress(raw, state)
 }
-
-function saveProgress() {
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
-}
-
+function saveProgress() { progressPersistent = browserStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); return progressPersistent }
 function unlockScene() {
   if (!state) return
-  const id = state.sceneId
-  if (!progress.checkpoints[id]) {
-    progress.checkpoints[id] = {
-      sceneId: id, affection: state.affection, anxiety: state.anxiety,
-      spirit: state.spirit, danger: state.danger, memories: [...state.memories],
-    }
-  }
-  if (story[id].ending && !progress.endings.includes(id)) progress.endings.push(id)
+  recordOriginCheckpoint(progress, state)
   saveProgress()
 }
-
-function migrateProgressFromSave() {
-  if (!state || Object.keys(progress.checkpoints).length) return
-  const sequence = state.history.filter(entry => entry.index === 0).map(entry => entry.sceneId)
-  const draft: Checkpoint = { sceneId: firstScene, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [] }
-  let previous: string | null = null
-  for (const id of sequence) {
-    if (!Object.hasOwn(story, id)) continue
-    const choice = previous ? story[previous].choices?.find(option => option.next === id) : undefined
-    if (choice) {
-      draft.affection = Math.max(0, draft.affection + (choice.affection ?? 0))
-      draft.anxiety = Math.max(0, draft.anxiety + (choice.anxiety ?? 0))
-      draft.spirit = Math.max(0, draft.spirit + (choice.spirit ?? 0))
-      draft.danger = Math.max(0, draft.danger + (choice.danger ?? 0))
-      if (choice.memory && !draft.memories.includes(choice.memory)) draft.memories.push(choice.memory)
-    } else if (id === 'exhausted') draft.spirit = 0
-    draft.sceneId = id
-    if (!progress.checkpoints[id]) progress.checkpoints[id] = { ...draft, memories: [...draft.memories] }
-    if (story[id].ending && !progress.endings.includes(id)) progress.endings.push(id)
-    previous = id
-  }
-  if (!progress.checkpoints[state.sceneId]) progress.checkpoints[state.sceneId] = {
-    sceneId: state.sceneId, affection: state.affection, anxiety: state.anxiety,
-    spirit: state.spirit, danger: state.danger, memories: [...state.memories],
-  }
-  if (story[state.sceneId].ending && !progress.endings.includes(state.sceneId)) progress.endings.push(state.sceneId)
-  saveProgress()
-}
-
-function save() {
-  if (state) localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-}
+function save() { if (state) savePersistent = browserStorage.setItem(STORAGE_KEY, JSON.stringify(state)); return savePersistent }
 
 function esc(value: string): string {
   return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 }
 
 function sceneLines(scene: Scene) {
-  return scene.lines.filter(line => !line.when || (line.when === 'uneasy' ? (state?.anxiety ?? 0) >= 20 : (state?.anxiety ?? 0) < 20))
+  return originLines(scene, state?.anxiety ?? 0)
 }
 
 function current() {
@@ -277,16 +199,20 @@ function current() {
 
 function stopSound() {
   if (!soundPlayback) return
-  soundPlayback.audio.pause()
-  soundPlayback.audio.src = ''
+  const playback = soundPlayback
   soundPlayback = null
+  playback.audio.pause()
+  playback.audio.removeAttribute('src')
+  playback.audio.load()
 }
 
 function stopAmbientLaugh() {
   if (!ambientLaugh) return
-  ambientLaugh.pause()
-  ambientLaugh.src = ''
+  const audio = ambientLaugh
   ambientLaugh = null
+  audio.pause()
+  audio.removeAttribute('src')
+  audio.load()
 }
 
 function syncAmbientLaugh() {
@@ -383,7 +309,7 @@ function recordLine() {
   if (!lines[state.lineIndex]) return
   const latest = state.history.at(-1)
   if (latest?.sceneId === state.sceneId && latest.index === state.lineIndex) return
-  state.history.push({ sceneId: state.sceneId, index: state.lineIndex })
+  state.history.push({ sceneId: state.sceneId, index: state.lineIndex, sourceIndex: current().lines.indexOf(lines[state.lineIndex]) })
   state.history = state.history.slice(-120)
 }
 
@@ -392,7 +318,7 @@ function start() {
   stopSound()
   stopAmbientLaugh()
   ambientEnabled = true
-  state = { version: 1, sceneId: firstScene, lineIndex: 0, language: preferredLanguage, affection: 0, anxiety: 0, spirit: 100, danger: 0, memories: [], history: [] }
+  state = newOriginSave(preferredLanguage)
   selectedChapter = 1
   active = true
   modal = null
@@ -422,7 +348,7 @@ function restartFrom(sceneId: string) {
 }
 
 function advance() {
-  if (!active || !state || modal) return
+  if (!active || !state || modal || root.querySelector('dialog[open]')) return
   const scene = current()
   const lines = sceneLines(scene)
   if (state.lineIndex < lines.length - 1) {
@@ -436,7 +362,7 @@ function advance() {
 }
 
 function select(index: number) {
-  if (!state || !active || modal) return
+  if (!state || !active || modal || root.querySelector('dialog[open]')) return
   const scene = current()
   if (state.lineIndex < sceneLines(scene).length - 1) return
   const choices = availableChoices(scene)
@@ -461,8 +387,8 @@ function availableChoices(scene: Scene) {
 function setPreferredLanguage(language: Language) {
   preferredLanguage = language
   try {
-    if (language === systemLanguage()) localStorage.removeItem(LANGUAGE_OVERRIDE_KEY)
-    else localStorage.setItem(LANGUAGE_OVERRIDE_KEY, language)
+    if (language === systemLanguage()) browserStorage.removeItem(LANGUAGE_OVERRIDE_KEY)
+    else browserStorage.setItem(LANGUAGE_OVERRIDE_KEY, language)
   } catch { /* The current session can still switch languages without storage. */ }
   if (state) {
     state.language = preferredLanguage
@@ -480,19 +406,22 @@ function confirmRestart(action: () => void, message: string = ui[preferredLangua
 }
 
 function openModal(kind: NonNullable<typeof modal>) {
+  if (!appDialog?.isConnected) modalFocus = document.activeElement as HTMLElement | null
   clearPlaybackTimer()
   modal = kind
   renderModal()
 }
 
 function manualSave() {
-  save()
-  saveProgress()
+  const saved = save()
+  const progressSaved = saveProgress()
+  const label = saved && progressSaved ? ui[preferredLanguage].saved : ui[preferredLanguage].saveFailed
   const button = root.querySelector<HTMLButtonElement>('#save-entry')
   if (button) {
-    button.textContent = ui[preferredLanguage].saved
+    button.textContent = label
     window.setTimeout(() => { if (button.isConnected) button.textContent = ui[preferredLanguage].save }, 1600)
   }
+  return label
 }
 
 function toggleLanguage() {
@@ -505,7 +434,7 @@ function imageUrl(id: string) { return `/images/${id}.webp` }
 function renderChapterSelect() {
   stopSound()
   stopAmbientLaugh()
-  audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
+  audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
   const lang = preferredLanguage
   const status = chapterTwoStatus()
   const thirdStatus = chapterThreeStatus()
@@ -516,7 +445,7 @@ function renderChapterSelect() {
       <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
       <p class="chapter-select-note">${lang === 'zh' ? '章节分别保存进度 · 可随时返回切换' : 'Each chapter saves separately · Switch at any time'}</p>
     </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What’s new'}</button><span>01 — 03</span></footer></div>`
-  root.querySelector('.chapter-cards')?.insertAdjacentHTML('beforeend', `<button class="chapter-card third" id="chapter-three" type="button"><span class="card-overline">CHAPTER 03 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '血色交易' : 'The Crimson Bargain'}</strong><span class="card-description">${lang === 'zh' ? '与奶粉走进血肉剧场，辨认真记忆，决定碎片的归属。' : 'Meet Naifen in the Flesh Theatre. Find the real memories and choose what to trade.'}</span><span class="card-action">${thirdStatus.started ? lang === 'zh' ? '继续第三章' : 'Resume chapter' : lang === 'zh' ? '进入血肉剧场' : 'Enter the theatre'} ↗</span></button>`)
+  root.querySelector('.chapter-cards')?.insertAdjacentHTML('beforeend', `<button class="chapter-card third" id="chapter-three" type="button"><span class="card-overline">CHAPTER 03 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '血色交易' : 'The Crimson Bargain'}</strong><span class="card-description">${lang === 'zh' ? '奶粉一次次砸毁舞台，那出戏却总会重新开始。' : 'Naifen keeps smashing the stage. The play keeps starting over.'}</span><span class="card-action">${thirdStatus.started ? lang === 'zh' ? '继续第三章' : 'Resume chapter' : lang === 'zh' ? '进入血肉剧场' : 'Enter the theatre'} ↗</span></button>`)
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   root.querySelector('#routes-select')?.addEventListener('click', () => openModal('routes'))
@@ -536,59 +465,37 @@ function renderIntro() {
   const t = ui[preferredLanguage]
   const lang = preferredLanguage
   const chapter = selectedChapter === 2 || selectedChapter === 3 ? selectedChapter : 1
-  const details = chapter === 2 ? {
-    cover: 'chapter-02-ice-hall', theme: 'ice', label: 'THE FROZEN MIRROR HALL',
-    subtitle: lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice',
-    tagline: lang === 'zh' ? '镜子记得的，未必就是真相。' : 'What the mirrors remember may not be the truth.',
-    note: lang === 'zh' ? '追踪病房中的紫色身影，探索冰封镜馆，收集残缺线索，辨认事故背后被裁切的记忆。' : 'Follow a purple shadow from the hospital into the Frozen Mirror Hall. Gather clues and piece together the memories cut from the accident.',
-    mechanics: lang === 'zh' ? '第二层 · 镜馆探索 · 线索解谜' : 'Layer two · Explore the hall · Solve the clues',
-    started: chapterTwoStatus().started,
-  } : chapter === 3 ? {
-    cover: 'chapter-03-theatre', theme: 'crimson', label: 'THE FLESH THEATRE',
-    subtitle: lang === 'zh' ? '血色交易' : 'The Crimson Bargain',
-    tagline: lang === 'zh' ? '幕布落下之前，你愿意付出什么？' : 'What will you give before the curtain falls?',
-    note: lang === 'zh' ? '与奶粉走进血肉剧场，辨认舞台上的真假记忆，在精神力耗尽之前，决定碎片与回忆的归属。' : 'Enter the Flesh Theatre with Naifen. Tell real memories from imitations, and decide the fate of the fragment before your spirit runs out.',
-    mechanics: lang === 'zh' ? '第三层 · 记忆辨认 · 多结局交易' : 'Layer three · Identify memories · Choose your bargain',
-    started: chapterThreeStatus().started,
-  } : {
-    cover: 'P02', theme: 'origin', label: 'ORIGIN', subtitle: t.subtitle,
-    tagline: t.tagline, note: t.introNote,
-    mechanics: lang === 'zh' ? '第一层 · 恋爱日常 · 迷雾游乐园' : 'Layer one · Life together · The mistbound fairground',
-    started: !!state,
-  }
+  const started = chapter === 2 ? chapterTwoStatus().started : chapter === 3 ? chapterThreeStatus().started : !!state
   const begin = (restart = false) => {
     enterFullscreen()
     if (chapter === 1) { if (restart || !state) start(); else { active = true; render() } }
     else {
-      if (restart) { if (chapter === 2) resetChapterTwo(); else resetChapterThree() }
+      restartPending = restart
       chapterPlaying = true
       render()
     }
   }
   const routes = () => {
     if (chapter === 1) openModal('routes')
-    else if (chapter === 2) previewChapterTwoRoutes(root, lang, () => begin())
-    else previewChapterThreeRoutes(root, lang, () => begin())
+    else {
+      const generation = viewGeneration
+      const show = () => {
+        if (viewGeneration !== generation || root.querySelector('dialog[open]')) return
+        if (chapter === 2) chapterTwoModule!.previewChapterTwoRoutes(root, preferredLanguage, () => begin())
+        else chapterThreeModule!.previewChapterThreeRoutes(root, preferredLanguage, () => begin())
+      }
+      if (chapter === 2) void loadChapterTwo().then(module => { chapterTwoModule = module; show() }).catch(() => showLoadError(generation, routes))
+      else void loadChapterThree().then(module => { chapterThreeModule = module; show() }).catch(() => showLoadError(generation, routes))
+    }
   }
-  root.innerHTML = `
-    <div class="intro chapter-detail detail-${details.theme}" style="--intro-image:url('${imageUrl(details.cover)}')">
-      <header class="intro-top"><button class="wordmark wordmark-btn" id="chapter-home" type="button" aria-label="${preferredLanguage === 'zh' ? '返回章节选择' : 'Back to chapters'}">← NAIWA <span>·</span> ${details.label}</button><div class="intro-tools"><button class="small-btn" id="chapter-return" type="button" aria-keyshortcuts="Escape">← ${lang === 'zh' ? '返回章节选择' : 'Back to chapters'}</button><button class="small-btn" id="routes-intro-top" type="button">${esc(t.routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(t.settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(t.gallery)}</button><button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${t.languageLabel}">${t.language}</button></div></header>
-      <main class="intro-body">
-        <div class="intro-kicker">A VISUAL NOVEL <span>✦</span> 0${chapter} / 03</div>
-        <h1>${esc(t.title)}<small>${esc(details.subtitle)}</small></h1>
-        <p class="intro-tagline">${esc(details.tagline)}</p>
-        <p class="intro-note">${esc(details.note)}</p>
-        <p class="chapter-detail-meta">${esc(details.mechanics)}</p>
-        <div class="intro-actions">
-          ${details.started ? `<button class="primary-btn" id="continue">${esc(t.continue)} <span aria-hidden="true">↗</span></button><button class="secondary-btn" id="start">${esc(t.restart)}</button>` : `<button class="primary-btn" id="start">${esc(t.start)} <span aria-hidden="true">↗</span></button>`}
-          <button class="secondary-btn" id="routes-intro">${esc(t.routes)}</button>
-        </div>
-        <p class="save-note">${esc(t.saveNote)}</p>
-        ${chapter === 1 ? `<button class="chapter-dlc-entry" id="romance-dlc-entry" type="button"><span>DLC / 01</span><div><strong>${lang === 'zh' ? '潮汐写给你的信' : 'A Letter from the Tide'}</strong><small>${lang === 'zh' ? '全新恋爱番外 · 两天一夜的海边旅行' : 'A new romance story · Two days by the sea'} · ${romanceDlcStatus().completed}/4</small><small class="dlc-entry-lock">${isRomanceDlcUnlocked() ? (lang === 'zh' ? '已解锁' : 'Unlocked') : (lang === 'zh' ? `观看视频解锁 · ${loadDlcViews()}/3` : `Watch to unlock · ${loadDlcViews()}/3`)}</small></div><span>↗</span></button>` : ''}
-      </main>
-      <footer class="intro-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What’s new'}</button><span>CHAPTER 0${chapter} · ${details.label}</span></footer>
-    </div>`
-  document.querySelector('#language')?.addEventListener('click', toggleLanguage)
+  root.innerHTML = renderChapterPromo({
+    chapter, language: lang, started,
+    saveNote: savePersistent && progressPersistent ? t.saveNote : t.sessionSave,
+    dlc: chapter === 1 ? { unlocked: isRomanceDlcUnlocked(), views: loadDlcViews(), completed: romanceDlcStatus().completed } : undefined,
+  })
+  chapterPromoChapter = chapter
+  chapterPromoController = mountChapterPromo(root, chapterPromoScroll.get(chapter) ?? 0)
+  root.querySelector('#language')?.addEventListener('click', () => { toggleLanguage(); root.querySelector<HTMLElement>('#language')?.focus({ preventScroll: true }) })
   document.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   document.querySelector('#chapter-home')?.addEventListener('click', () => { stopPlayback(); active = false; chapterPlaying = false; selectedChapter = 0; const url = new URL(window.location.href); url.searchParams.delete('chapter'); window.history.replaceState(null, '', url); render() })
   document.querySelector('#chapter-return')?.addEventListener('click', () => root.querySelector<HTMLButtonElement>('#chapter-home')?.click())
@@ -600,45 +507,29 @@ function renderIntro() {
       if (label) label.textContent = isRomanceDlcUnlocked() ? (lang === 'zh' ? '已解锁' : 'Unlocked') : (lang === 'zh' ? `观看视频解锁 · ${loadDlcViews()}/3` : `Watch to unlock · ${loadDlcViews()}/3`)
     })
   })
-  document.querySelector('#continue')?.addEventListener('click', () => begin())
-  document.querySelector('#start')?.addEventListener('click', () => { if (!details.started) begin(); else confirmRestart(() => begin(true), chapter === 3 ? (lang === 'zh' ? '重新开始第三章？当前进度会被清除，已解锁结局会保留。' : 'Restart chapter three? Progress will be cleared; unlocked endings will remain.') : t.confirmRestart) })
-  document.querySelector('#routes-intro')?.addEventListener('click', routes)
+  root.querySelectorAll('[data-promo-play]').forEach(button => button.addEventListener('click', () => begin()))
+  root.querySelectorAll('[data-promo-restart]').forEach(button => button.addEventListener('click', () => confirmRestart(() => begin(true), chapter === 3 ? (lang === 'zh' ? '重新开始第三章？当前进度会被清除，已解锁结局会保留。' : 'Restart chapter three? Progress will be cleared; unlocked endings will remain.') : t.confirmRestart)))
+  root.querySelectorAll('[data-promo-routes]').forEach(button => button.addEventListener('click', routes))
   document.querySelector('#routes-intro-top')?.addEventListener('click', routes)
   document.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
   document.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
   root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
+  root.querySelectorAll<HTMLAnchorElement>('[data-promo-chapter-link]').forEach(link => link.addEventListener('click', event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    const next = Number(link.dataset.promoChapterLink) as 1 | 2 | 3
+    if (next === chapter) {
+      root.querySelector('.chapter-promo')?.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+      return
+    }
+    stopPlayback(); active = false; chapterPlaying = false; selectedChapter = next; render()
+    root.querySelector<HTMLElement>('#chapter-home')?.focus({ preventScroll: true })
+  }))
   updateFullscreenButton()
 }
 
 function updateSceneImage(layer: HTMLElement, image: string, alt: string) {
-  if (layer.dataset.image === image) {
-    layer.querySelectorAll<HTMLImageElement>('img').forEach(img => { img.alt = alt })
-    return
-  }
-  const generation = ++imageGeneration
-  layer.querySelectorAll<HTMLImageElement>('.scene-image:not(.active)').forEach(img => img.remove())
-  const outgoing = layer.querySelector<HTMLImageElement>('.scene-image.active')
-  const incoming = document.createElement('img')
-  incoming.className = `scene-image${outgoing ? '' : ' active'}`
-  incoming.src = imageUrl(image)
-  incoming.alt = alt
-  layer.dataset.image = image
-  layer.append(incoming)
-  if (!outgoing) return
-  const reveal = () => {
-    if (generation !== imageGeneration || !incoming.isConnected) return
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (generation !== imageGeneration || !incoming.isConnected) return
-      incoming.classList.add('active')
-      outgoing.classList.remove('active')
-      window.setTimeout(() => outgoing.remove(), 650)
-    }))
-  }
-  if (incoming.complete) reveal()
-  else {
-    incoming.addEventListener('load', reveal, { once: true })
-    incoming.addEventListener('error', () => { incoming.remove(); layer.dataset.image = outgoing.src.split('/').at(-1)?.replace('.webp', '') ?? '' }, { once: true })
-  }
+  transitionSceneImage(layer, { id: image, src: imageUrl(image), alt, className: 'scene-image', visibleClass: 'active' })
 }
 
 function positionObjectHotspots(stage: HTMLElement) {
@@ -805,14 +696,14 @@ function renderGame() {
     stage.insertAdjacentHTML('beforeend', `<div class="object-hotspots" id="object-hotspots" aria-label="${esc(t.select)}">${choices.slice(0, 2).map((choice, index) => `<button class="object-hotspot" data-choice="${index}" aria-label="${esc(choice.text[lang])}"><span class="object-hotspot-label">${esc(labels[index])}</span></button>`).join('')}</div>`)
     positionObjectHotspots(stage)
   }
-  game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(t.controls)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
+  game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(savePersistent && progressPersistent ? t.controls : t.sessionSave)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
   clearPlaybackTimer()
-  if (playbackMode !== 'off' && !modal && !ended && (!finalLine || !!scene.next)) {
+  if (playbackMode !== 'off' && !modal && !root.querySelector('dialog[open]') && !ended && (!finalLine || !!scene.next)) {
     const expectedScene = state.sceneId
     const expectedLine = state.lineIndex
     playbackTimer = window.setTimeout(() => {
       playbackTimer = null
-      if (active && state?.sceneId === expectedScene && state.lineIndex === expectedLine && !modal) advance()
+      if (active && state?.sceneId === expectedScene && state.lineIndex === expectedLine && !modal && !root.querySelector('dialog[open]')) advance()
     }, playbackMode === 'skip' ? 220 : Math.max(2600, Math.min(7000, line.text[lang].length * 100)))
   }
 }
@@ -836,8 +727,8 @@ function renderMindMap(lang: Language) {
   const t = ui[lang]
   const links: { from: string; to: string; risk?: boolean }[] = []
   for (const [id, scene] of Object.entries(story)) {
-    if (scene.next && scene.next !== 'm06') links.push({ from: id, to: scene.next })
-    for (const choice of scene.choices ?? []) if (choice.next !== 'm06') links.push({ from: id, to: choice.next })
+    if (scene.next) links.push({ from: id, to: scene.next })
+    for (const choice of scene.choices ?? []) links.push({ from: id, to: choice.next })
   }
   links.push({ from: 'm06', to: 'doll_hunt', risk: true })
   links.push({ from: 'm06', to: 'exhausted', risk: true })
@@ -857,9 +748,10 @@ function renderMindMap(lang: Language) {
   ].map(tag => `<span class="map-chapter" style="top:${tag.y}px">${esc(tag[lang])}</span>`).join('')
   const nodes = Object.entries(mapNodes).map(([id, point]) => {
     const unlocked = !!progress.checkpoints[id]
+    const visited = progress.visited.includes(id)
     const ending = !!story[id].ending
     const currentNode = state?.sceneId === id
-    return `<button class="mind-node ${unlocked ? 'is-unlocked' : 'is-locked'} ${ending ? 'is-ending' : ''} ${currentNode ? 'is-current' : ''}" style="left:${point.x}px;top:${point.y}px" data-route="${id}" ${unlocked ? '' : 'disabled'} ${currentNode ? 'aria-current="step"' : ''} aria-label="${esc(unlocked ? `${story[id].chapter[lang]} · ${t.unlocked}` : `${id.toUpperCase()} · ${t.locked}`)}"><span class="mind-code">${esc(id.toUpperCase())}</span><span class="mind-title">${esc(unlocked ? story[id].chapter[lang] : '???')}</span>${ending ? '<span class="mind-ending-mark" aria-hidden="true">✦</span>' : ''}${story[id].next === 'm06' ? '<span class="mind-return-mark" aria-hidden="true">↻</span>' : ''}</button>`
+    return `<button class="mind-node ${unlocked ? 'is-unlocked' : 'is-locked'} ${ending ? 'is-ending' : ''} ${currentNode ? 'is-current' : ''}" style="left:${point.x}px;top:${point.y}px" data-route="${id}" ${unlocked ? '' : 'disabled'} ${visited && !unlocked ? `title="${lang === 'zh' ? '已抵达 · 重访后可回放' : 'Visited · Revisit to enable replay'}"` : ''} ${currentNode ? 'aria-current="step"' : ''} aria-label="${esc(unlocked ? `${story[id].chapter[lang]} · ${t.unlocked}` : `${id.toUpperCase()} · ${t.locked}`)}"><span class="mind-code">${esc(id.toUpperCase())}</span><span class="mind-title">${esc(unlocked || visited ? story[id].chapter[lang] : '???')}${visited && !unlocked ? `<small>${lang === 'zh' ? '已抵达 · 重访后可回放' : 'Visited · Revisit to replay'}</small>` : ''}</span>${ending ? '<span class="mind-ending-mark" aria-hidden="true">✦</span>' : ''}${story[id].next === 'm06' ? '<span class="mind-return-mark" aria-hidden="true">↻</span>' : ''}</button>`
   }).join('')
   return `<div class="map-viewport" id="map-viewport" role="region" tabindex="0" aria-label="${esc(t.mapLabel)}"><div class="map-scaled" id="map-scaled"><div class="mindmap" id="mindmap"><div class="map-grid"></div><svg class="map-lines" width="${MAP_WIDTH}" height="${MAP_HEIGHT}" viewBox="0 0 ${MAP_WIDTH} ${MAP_HEIGHT}" aria-hidden="true">${paths}</svg>${chapterTags}${nodes}</div></div></div>`
 }
@@ -870,17 +762,22 @@ function setupMindMap(dialog: HTMLDialogElement) {
 
 function renderModal() {
   if (!modal) return
-  document.querySelector('#app-dialog')?.remove()
+  const previous = appDialog
+  appDialog = null
+  if (previous?.open) previous.close()
+  previous?.remove()
   const lang = state?.language ?? preferredLanguage
   const t = ui[lang]
   const dialog = document.createElement('dialog')
+  appDialog = dialog
   dialog.id = 'app-dialog'
+  dialog.setAttribute('aria-labelledby', 'app-dialog-title')
   dialog.className = `app-dialog${modal === 'routes' ? ' route-dialog' : ''}`
   dialog.dataset.kind = modal
   if (modal === 'log') {
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.log)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="log-list">${state?.history.length ? state.history.map(entry => {
       const scene = story[entry.sceneId]
-      const line = sceneLinesForLog(scene, state!, entry.index)
+      const line = originLogLine(entry, progress)
       return line ? `<article class="log-entry"><small>${esc(scene.chapter[lang])} · ${esc(line.speaker?.[lang] ?? (lang === 'zh' ? '旁白' : 'Narration'))}</small><p>${esc(line.text[lang])}</p></article>` : ''
     }).join('') : `<p>${esc(t.emptyLog)}</p>`}</div>`
   } else if (modal === 'routes') {
@@ -899,24 +796,34 @@ function renderModal() {
   } else {
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.menu)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="menu-continue" class="primary-btn">${esc(t.continue)} ↗</button><button id="menu-save" class="secondary-btn">${esc(t.save)}</button><button id="menu-settings" class="secondary-btn">${esc(t.settings)}</button><button id="menu-gallery" class="secondary-btn">${esc(t.gallery)}</button><button id="menu-routes" class="secondary-btn">${esc(t.routes)}</button><button id="menu-restart" class="secondary-btn">${esc(t.restart)}</button><button id="menu-title" class="secondary-btn">${esc(t.returnTitle)}</button></div><p class="modal-note">${esc(t.saveNote)}</p>`
   }
+  dialog.querySelector('h2')!.id = 'app-dialog-title'
   root.append(dialog)
   dialog.addEventListener('close', () => {
-    if (modal === dialog.dataset.kind) modal = null
+    const currentDialog = appDialog === dialog
     dialog.remove()
+    if (!currentDialog) return
+    appDialog = null
+    modal = null
+    if (modalFocus?.isConnected) modalFocus.focus()
+    else if (modalFocus?.id) root.querySelector<HTMLElement>(`#${modalFocus.id}`)?.focus()
     if (active && playbackMode !== 'off' && !modal && root.querySelector(':scope > .game')) renderGame()
   })
-  dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close() })
+  dialog.addEventListener('click', event => {
+    if (event.target !== dialog) return
+    const bounds = dialog.getBoundingClientRect()
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close()
+  })
   dialog.querySelector('#close-dialog')?.addEventListener('click', () => dialog.close())
   dialog.querySelector('#menu-continue')?.addEventListener('click', () => dialog.close())
-  dialog.querySelector('#menu-save')?.addEventListener('click', () => { manualSave(); const button = dialog.querySelector<HTMLButtonElement>('#menu-save'); if (button) button.textContent = t.saved })
+  dialog.querySelector('#menu-save')?.addEventListener('click', () => { const label = manualSave(); const button = dialog.querySelector<HTMLButtonElement>('#menu-save'); if (button) button.textContent = label })
   dialog.querySelector('#menu-settings')?.addEventListener('click', () => openModal('settings'))
   dialog.querySelector('#menu-gallery')?.addEventListener('click', () => openModal('gallery'))
   dialog.querySelector('#menu-routes')?.addEventListener('click', () => openModal('routes'))
   dialog.querySelector('#menu-title')?.addEventListener('click', () => { modal = null; dialog.close(); stopPlayback(); active = false; render() })
   dialog.querySelector('#menu-restart')?.addEventListener('click', () => confirmRestart(start, t.confirmRestart))
   dialog.querySelector('#settings-language')?.addEventListener('click', () => { modal = null; dialog.close(); toggleLanguage(); openModal('settings') })
-  dialog.querySelector('#settings-audio')?.addEventListener('click', () => { audioEnabled = !audioEnabled; localStorage.setItem('naiwa-audio-enabled-v1', String(audioEnabled)); if (!audioEnabled) { stopSound(); stopAmbientLaugh() }; openModal('settings') })
-  dialog.querySelector('#settings-fullscreen')?.addEventListener('click', async () => { await toggleFullscreen(); openModal('settings') })
+  dialog.querySelector('#settings-audio')?.addEventListener('click', () => { audioEnabled = !audioEnabled; browserStorage.setItem('naiwa-audio-enabled-v1', String(audioEnabled)); if (!audioEnabled) { stopSound(); stopAmbientLaugh() }; openModal('settings') })
+  dialog.querySelector('#settings-fullscreen')?.addEventListener('click', async () => { await toggleFullscreen(); if (appDialog === dialog && dialog.open) openModal('settings') })
   dialog.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button => button.addEventListener('click', () => {
     const id = button.dataset.route
     if (id && progress.checkpoints[id]) confirmRestart(() => restartFrom(id), t.routeConfirm)
@@ -925,12 +832,38 @@ function renderModal() {
   if (modal === 'routes') setupMindMap(dialog)
 }
 
-function sceneLinesForLog(scene: Scene, saved: GameState, index: number) {
-  const lines = scene.lines.filter(line => !line.when || (line.when === 'uneasy' ? saved.anxiety >= 20 : saved.anxiety < 20))
-  return lines[index]
+function syncChapterUrl() {
+  const url = new URL(window.location.href)
+  if (selectedChapter) url.searchParams.set('chapter', String(selectedChapter))
+  else url.searchParams.delete('chapter')
+  if (url.href !== window.location.href) window.history.replaceState(null, '', url)
 }
-
+function showLoadError(generation: number, retry: () => void) {
+  if (generation !== viewGeneration || root.querySelector('dialog[open]')) return
+  const dialog = document.createElement('dialog')
+  dialog.className = 'app-dialog'
+  dialog.setAttribute('aria-labelledby', 'chapter-load-error-title')
+  dialog.innerHTML = `<div class="dialog-head"><h2 id="chapter-load-error-title">${preferredLanguage === 'zh' ? '章节尚未载入' : 'Chapter not loaded'}</h2><button class="small-btn" data-close>${preferredLanguage === 'zh' ? '返回' : 'Back'} ×</button></div><div class="menu-actions"><p>${preferredLanguage === 'zh' ? '请检查网络连接，然后重试。进度已保留。' : 'Check your connection and try again. Your progress is kept.'}</p><button class="primary-btn" data-retry>${preferredLanguage === 'zh' ? '重新载入' : 'Retry'}</button></div>`
+  const focus = document.activeElement as HTMLElement | null
+  dialog.addEventListener('close', () => { dialog.remove(); if (focus?.isConnected) focus.focus() }, { once: true })
+  dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close())
+  dialog.querySelector('[data-retry]')?.addEventListener('click', () => { dialog.close(); retry() })
+  dialog.addEventListener('click', event => { if (event.target !== dialog) return; const b = dialog.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close() })
+  root.append(dialog); dialog.showModal()
+}
+function renderLoading() {
+  root.innerHTML = `<main class="chapter-loading"><p role="status">${preferredLanguage === 'zh' ? '正在载入故事…' : 'Loading the story…'}</p><button class="small-btn" id="chapter-return" type="button">← ${preferredLanguage === 'zh' ? '章节详情' : 'Chapter details'}</button></main>`
+  root.querySelector('#chapter-return')?.addEventListener('click', () => { chapterPlaying = false; romanceDlcOpen = false; restartPending = false; render() })
+}
 function render() {
+  const generation = ++viewGeneration
+  if (chapterPromoController) {
+    if (selectedChapter === chapterPromoChapter && !chapterPlaying && !active && !romanceDlcOpen) chapterPromoScroll.set(chapterPromoChapter, chapterPromoController.getScrollTop())
+    else chapterPromoScroll.delete(chapterPromoChapter)
+    chapterPromoController.dispose()
+    chapterPromoController = null
+  }
+  syncChapterUrl()
   if (romanceDlcOpen && !isRomanceDlcUnlocked()) romanceDlcOpen = false
   if (!romanceDlcOpen && romanceDlcController) { romanceDlcController.dispose(); romanceDlcController = null }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
@@ -939,16 +872,32 @@ function render() {
   if ((selectedChapter !== 3 || !chapterPlaying) && chapterThreeController) { chapterThreeController.dispose(); chapterThreeController = null }
   if (romanceDlcOpen) {
     stopSound(); stopAmbientLaugh()
-    if (!romanceDlcController) romanceDlcController = mountRomanceDlc(root, preferredLanguage, () => { romanceDlcOpen = false; active = false; selectedChapter = 1; audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
+    if (!romanceModule) {
+      renderLoading()
+      void loadRomanceDlc().then(module => { romanceModule = module; if (generation === viewGeneration) render() }).catch(() => showLoadError(generation, render))
+    } else if (!romanceDlcController) romanceDlcController = romanceModule.mountRomanceDlc(root, preferredLanguage, () => { romanceDlcOpen = false; active = false; selectedChapter = 1; audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
     else romanceDlcController.setLanguage(preferredLanguage)
   } else if ((selectedChapter === 2 || selectedChapter === 3) && !chapterPlaying) renderIntro()
   else if (selectedChapter === 3) {
     stopSound(); stopAmbientLaugh()
-    if (!chapterThreeController) chapterThreeController = mountChapterThree(root, preferredLanguage, language => { setPreferredLanguage(language); chapterThreeController?.dispose(); chapterThreeController = null; chapterPlaying = false; selectedChapter = 3; const url = new URL(window.location.href); url.searchParams.delete('chapter'); window.history.replaceState(null, '', url); render() }, setPreferredLanguage)
-    else chapterThreeController.setLanguage(preferredLanguage)
+    if (!chapterThreeModule) {
+      renderLoading()
+      void loadChapterThree().then(module => { chapterThreeModule = module; if (generation === viewGeneration) render() }).catch(() => showLoadError(generation, render))
+    } else {
+      if (restartPending) { chapterThreeModule.resetChapterThree(); restartPending = false }
+      if (!chapterThreeController) chapterThreeController = chapterThreeModule.mountChapterThree(root, preferredLanguage, language => { setPreferredLanguage(language); chapterThreeController?.dispose(); chapterThreeController = null; chapterPlaying = false; selectedChapter = 3; audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
+      else chapterThreeController.setLanguage(preferredLanguage)
+    }
   } else if (selectedChapter === 2) {
-    if (!chapterTwoController) chapterTwoController = mountChapterTwo(root, preferredLanguage, language => { setPreferredLanguage(language); chapterTwoController?.dispose(); chapterTwoController = null; chapterPlaying = false; selectedChapter = 2; render() }, setPreferredLanguage)
-    else chapterTwoController.setLanguage(preferredLanguage)
+    stopSound(); stopAmbientLaugh()
+    if (!chapterTwoModule) {
+      renderLoading()
+      void loadChapterTwo().then(module => { chapterTwoModule = module; if (generation === viewGeneration) render() }).catch(() => showLoadError(generation, render))
+    } else {
+      if (restartPending) { chapterTwoModule.resetChapterTwo(); restartPending = false }
+      if (!chapterTwoController) chapterTwoController = chapterTwoModule.mountChapterTwo(root, preferredLanguage, language => { setPreferredLanguage(language); chapterTwoController?.dispose(); chapterTwoController = null; chapterPlaying = false; selectedChapter = 2; audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
+      else chapterTwoController.setLanguage(preferredLanguage)
+    }
   } else if (selectedChapter === 0) renderChapterSelect()
   else if (!active) renderIntro()
   else renderGame()
@@ -962,7 +911,7 @@ window.addEventListener('keydown', event => {
     event.stopImmediatePropagation()
     return // Keep the native dialog cancellation behavior.
   }
-  const settings = root.querySelector<HTMLDetailsElement>('.crimson-settings[open]')
+  const settings = root.querySelector<HTMLDetailsElement>('.crimson-settings[open], .promo-utility[open]')
   if (settings) {
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -978,14 +927,13 @@ window.addEventListener('keydown', event => {
 }, { capture: true })
 
 document.addEventListener('keydown', event => {
-  if (!active || modal || event.altKey || event.ctrlKey || event.metaKey) return
+  if (!active || modal || root.querySelector('dialog[open]') || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
   if (event.key !== ' ' && event.key !== 'Enter') return
-  if ((event.target as HTMLElement).closest('button, dialog')) return
+  if ((event.target as HTMLElement).closest('button, dialog, input, textarea, select, a, [contenteditable=true]')) return
   event.preventDefault()
   advance()
 })
 
-migrateProgressFromSave()
 window.addEventListener('languagechange', () => {
   if (languageOverride()) return
   preferredLanguage = systemLanguage()
@@ -1000,3 +948,4 @@ window.addEventListener('resize', () => {
 })
 render()
 showReleaseNotes(root, preferredLanguage, true)
+loadOptionalFonts()

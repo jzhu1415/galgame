@@ -2889,4 +2889,4 @@ function render(frameTime = performance.now()) {
   reflectionDebug.render(renderer);
 }
 
-renderer.compileAsync(scene, camera).finally(render);
+export const referenceReady = renderer.compileAsync(scene, camera).then(() => { render(); });

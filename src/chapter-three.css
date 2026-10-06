@@ -27,3 +27,13 @@ html[lang='en'] .crimson-heading h1{font-size:clamp(1.8rem,3.3vw,3.5rem);letter-
   .crimson-shot-frame .crimson-naifen{height:105%;max-width:50%;right:1%;bottom:-3%;z-index:1}
   .crimson-shot-frame+.crimson-dialogue{margin-top:12px;flex:none}
 }
+
+/* Protect chapter controls in immersive mode and on notched landscape screens. */
+.crimson-top{padding-top:max(14px,env(safe-area-inset-top));padding-right:max(clamp(16px,3vw,48px),env(safe-area-inset-right));padding-left:max(clamp(16px,3vw,48px),env(safe-area-inset-left))}
+.crimson-main{padding-right:max(clamp(20px,4vw,64px),env(safe-area-inset-right));padding-left:max(clamp(20px,4vw,64px),env(safe-area-inset-left))}
+.crimson-footer{padding-right:max(clamp(20px,4vw,64px),env(safe-area-inset-right));padding-left:max(clamp(20px,4vw,64px),env(safe-area-inset-left));padding-bottom:max(10px,env(safe-area-inset-bottom))}
+@media(max-width:750px){
+  .crimson-top{padding-top:max(9px,env(safe-area-inset-top));padding-right:max(15px,env(safe-area-inset-right));padding-left:max(15px,env(safe-area-inset-left))}
+  .crimson-main{padding-right:max(16px,env(safe-area-inset-right));padding-left:max(16px,env(safe-area-inset-left))}
+  .crimson-footer{padding-right:max(16px,env(safe-area-inset-right));padding-left:max(16px,env(safe-area-inset-left));padding-bottom:max(8px,env(safe-area-inset-bottom))}
+}

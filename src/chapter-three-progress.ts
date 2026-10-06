@@ -27,11 +27,11 @@ export function normalizeTheatreProgress(raw: unknown): TheatreProgress {
   progress.endings = Array.isArray(data.endings) ? [...new Set(data.endings.filter(id => theatreEndingIds.includes(id)))] : []
   return progress
 }
-export function recordTheatreCheckpoint(progress: TheatreProgress, save: TheatreSave): TheatreProgress {
+export function recordTheatreCheckpoint(progress: TheatreProgress, save: TheatreSave, arrival = true): TheatreProgress {
   // Keep the first arrival's state, rather than today's memories and resources.
   return {
     version: 1,
-    checkpoints: { ...progress.checkpoints, [save.node]: progress.checkpoints[save.node] ?? checkpoint(save) },
+    checkpoints: arrival && save.line === 0 && !progress.checkpoints[save.node] ? { ...progress.checkpoints, [save.node]: checkpoint(save) } : progress.checkpoints,
     visited: [...new Set([...progress.visited, ...save.visited, save.node])],
     endings: [...new Set([...progress.endings, ...save.endings])],
   }

@@ -1,79 +1,72 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-import ts from 'typescript'
-const compile = file => ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
-const url = js => `data:text/javascript;base64,${Buffer.from(js).toString('base64')}`
+import { compile, moduleUrl, tsModuleUrl } from './ts-module.mjs'
 const storage = new Map()
-let writes = 0
-let plays = 0
-let current
-// Preview controllers use dialog stubs: no game, Three.js, DOM or Audio initialization.
+let writes = 0, plays = 0, current, confirmSelection, confirmations = 0
+// These controllers own only a dialog; all gameplay/Audio/iframe APIs are absent.
 globalThis.localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => { writes++; storage.set(key, value) } }
-globalThis.previewDialog = (_root, _language, _title, content) => {
-  const buttons = new Map()
-  const button = key => {
-    if (!buttons.has(key)) buttons.set(key, { dataset: { iceRoute: key }, addEventListener: (_event, callback) => { buttons.get(key).click = callback } })
-    return buttons.get(key)
-  }
-  current = { content, closed: false, close() { this.closed = true }, querySelectorAll() { return [...content.matchAll(/data-ice-route="([^"]+)"/g)].map(match => button(match[1])) }, querySelector(selector) { return button(selector) }, buttons }
+globalThis.confirmPreview = (_root, _message, _language, callback) => { confirmations++; confirmSelection = callback }
+const iceProgressUrl = tsModuleUrl('src/chapter-two-progress.ts')
+const thirdStoryUrl = tsModuleUrl('src/chapter-three-story.ts')
+const thirdProgressUrl = tsModuleUrl('src/chapter-three-progress.ts')
+const { renderIceMindMap } = await import(tsModuleUrl('src/chapter-two-map.ts'))
+const { renderTheatreMindMap } = await import(tsModuleUrl('src/chapter-three-map.ts'))
+globalThis.previewIceMap = (_root, language, save, progress, onSelect) => {
+  current = { content: renderIceMindMap(save, progress, language), closed: false, close() { this.closed = true }, select: onSelect }
   return current
 }
-const stripImports = js => js.replace(/^import .*;\n/gm, '')
-const second = await import(url(`const showChapterRoutePreview = globalThis.previewDialog;\n${stripImports(compile('src/chapter-two.ts'))}`))
-const thirdStoryUrl = url(compile('src/chapter-three-story.ts'))
-const thirdProgressUrl = url(compile('src/chapter-three-progress.ts').replace(/(['"])\.\/chapter-three-story\1/g, JSON.stringify(thirdStoryUrl)))
-const canvasUrl = url(compile('src/story-map.ts'))
-const thirdMapUrl = url(compile('src/chapter-three-map.ts').replace(/(['"])\.\/chapter-three-story\1/g, JSON.stringify(thirdStoryUrl)).replace(/(['"])\.\/story-map\1/g, JSON.stringify(canvasUrl)))
-const { renderTheatreMindMap } = await import(thirdMapUrl)
-let confirmSelection
-let confirmations = 0
-globalThis.confirmPreview = (_root, _message, _language, callback) => { confirmations++; confirmSelection = callback }
-globalThis.previewMap = (_root, language, save, progress, onSelect) => {
+globalThis.previewTheatreMap = (_root, language, save, progress, onSelect) => {
   current = { content: renderTheatreMindMap(save, progress, language), closed: false, close() { this.closed = true }, select: onSelect }
   return current
 }
-const third = await import(url(`const showTheatreStoryMap = globalThis.previewMap;\nconst confirmInApp = globalThis.confirmPreview;\nconst { newTheatreSave, normalizeTheatreSave, theatreStory } = await import(${JSON.stringify(thirdStoryUrl)});\nconst { newTheatreProgress, normalizeTheatreProgress, recordTheatreCheckpoint, restartTheatreFrom } = await import(${JSON.stringify(thirdProgressUrl)});\n${stripImports(compile('src/chapter-three.ts'))}`))
+const stripImports = js => js.replace(/^import .*;\n/gm, '')
+const base = `const browserStorage = globalThis.localStorage; const confirmInApp = globalThis.confirmPreview;\n`
+const second = await import(moduleUrl(`${base}const showIceStoryMap = globalThis.previewIceMap;\nconst { iceSaveKey: KEY, iceProgressKey: PROGRESS_KEY, fragmentIds, newIceSave: blank, normalizeIceSave, normalizeIceProgress, recordIceCheckpoint, restartIceFrom } = await import(${JSON.stringify(iceProgressUrl)});\n${stripImports(compile('src/chapter-two.ts'))}`))
+const third = await import(moduleUrl(`${base}const showTheatreStoryMap = globalThis.previewTheatreMap;\nconst { newTheatreSave, normalizeTheatreSave, theatreStory } = await import(${JSON.stringify(thirdStoryUrl)});\nconst { newTheatreProgress, normalizeTheatreProgress, recordTheatreCheckpoint, restartTheatreFrom } = await import(${JSON.stringify(thirdProgressUrl)});\n${stripImports(compile('src/chapter-three.ts'))}`))
 for (const language of ['zh', 'en']) {
-  writes = 0; plays = 0
-  second.previewChapterTwoRoutes({}, language, () => plays++)
-  assert(current.content.includes('ice-route-tree'))
-  assert.equal(writes, 0, 'opening chapter two preview must not save')
-  assert.equal(plays, 0, 'opening chapter two preview must not start gameplay')
-  current.buttons.get('core').click()
-  assert.equal(plays, 0, 'locked phase must not start gameplay')
-  current.close()
-  assert.equal(writes, 0, 'closing preview must not save')
-  second.previewChapterTwoRoutes({}, language, () => plays++)
-  current.buttons.get('hospital').click()
-  assert(current.closed)
-  assert.equal(plays, 1, 'explicitly selecting an unlocked phase starts gameplay')
-  assert.equal(writes, 1)
-  writes = 0; plays = 0
-  third.previewChapterThreeRoutes({}, language, () => plays++)
-  assert(current.content.includes('map-viewport') && current.content.includes('mind-node') && current.content.includes('ending-gallery'))
-  assert.equal(writes, 0, 'opening chapter three preview must not save')
-  assert.equal(plays, 0, 'opening chapter three preview must not start gameplay')
-  current.close()
-  assert.equal(writes, 0)
-  third.previewChapterThreeRoutes({}, language, () => plays++)
-  const beforeConfirm = confirmations
-  current.select('saved')
-  assert.equal(confirmations, beforeConfirm, 'locked nodes cannot ask to enter gameplay')
-  current.select('invitation')
-  assert.equal(confirmations, beforeConfirm + 1)
-  assert.equal(plays, 0, 'selecting an unlocked node waits for confirmation')
-  assert.equal(writes, 0, 'no save is changed while confirmation is pending')
-  // Cancel by dismissing the callback, then choose the same node again.
-  confirmSelection = null
-  assert.equal(current.closed, false)
-  current.select('invitation')
-  confirmSelection()
-  assert(current.closed)
-  assert.equal(plays, 1, 'confirmed checkpoint selection starts gameplay')
-  assert.equal(writes, 2, 'selection saves cumulative progress and the restored checkpoint')
-  const restored = JSON.parse(storage.get('naiwa-chapter-three-v1'))
-  assert.equal(restored.node, 'invitation')
-  assert.equal(restored.line, 0)
-  assert.deepEqual(restored.history, [])
+  for (const [preview, locked, initial, key] of [
+    [second.previewChapterTwoRoutes, 'core', 'hospital', 'naiwa-chapter-two-v1'],
+    [third.previewChapterThreeRoutes, 'saved', 'invitation', 'naiwa-chapter-three-v1'],
+  ]) {
+    writes = 0; plays = 0
+    preview({}, language, () => plays++)
+    assert(current.content.includes('map-viewport') && current.content.includes('mind-node') && current.content.includes('ending-gallery'))
+    assert.equal(writes, 0, 'opening a preview must not save')
+    assert.equal(plays, 0, 'opening a preview must not start gameplay')
+    current.close()
+    assert.equal(writes, 0, 'closing a preview must not save')
+    preview({}, language, () => plays++)
+    const beforeConfirm = confirmations
+    current.select(locked)
+    assert.equal(confirmations, beforeConfirm, 'locked nodes cannot ask to enter gameplay')
+    current.select(initial)
+    assert.equal(confirmations, beforeConfirm + 1)
+    assert.equal(plays, 0, 'node selection waits for confirmation')
+    assert.equal(writes, 0, 'a pending confirmation cannot change saves')
+    confirmSelection = null // Cancel the confirmation.
+    assert.equal(current.closed, false)
+    current.select(initial)
+    confirmSelection()
+    assert(current.closed)
+    assert.equal(plays, 1)
+    assert.equal(writes, 2, 'entry saves the checkpoint and cumulative unlocks')
+    const restored = JSON.parse(storage.get(key))
+    assert.equal(restored.node ?? restored.phase, initial)
+    assert.equal(restored.line, 0)
+    assert.deepEqual(restored.history, [])
+  }
 }
-console.log('Route previews OK: both languages; no game/audio initialization or save changes on open/close; locked nodes stay locked; checkpoint entry requires confirmation.')
+// Legacy saves prove arrival but do not grant a fictional replay checkpoint.
+for (const [preview, key, save, node] of [
+  [second.previewChapterTwoRoutes, 'naiwa-chapter-two-v1', { version: 1, phase: 'core', line: 6, clues: ['footage', 'shard', 'echo', 'route'], approach: 'restore', history: [] }, 'core'],
+  [third.previewChapterThreeRoutes, 'naiwa-chapter-three-v1', { version: 1, node: 'rain', line: 2, spirit: 68, pollution: 10, memories: [], visited: ['invitation', 'rain'], history: [], endings: [] }, 'rain'],
+  [second.previewChapterTwoRoutes, 'naiwa-chapter-two-v1', { version: 1, phase: 'map', line: 0, clues: ['footage', 'note'], approach: 'restore', history: [] }, 'map'],
+  [third.previewChapterThreeRoutes, 'naiwa-chapter-three-v1', { version: 1, node: 'explore', line: 0, spirit: 68, pollution: 10, memories: ['rain'], visited: ['invitation', 'rain', 'explore'], history: [], endings: [] }, 'explore'],
+]) {
+  storage.clear(); storage.set(key, JSON.stringify(save)); writes = 0
+  preview({}, 'zh', () => plays++)
+  const beforeConfirm = confirmations
+  current.select(node)
+  assert.equal(confirmations, beforeConfirm)
+  assert.equal(writes, 0)
+}
+console.log('Route previews OK: shared maps in both languages; opening/closing is read-only; locked and legacy nodes stay gated; replay requires confirmation.')

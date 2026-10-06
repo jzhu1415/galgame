@@ -1,3 +1,4 @@
+import { browserStorage } from './browser-storage'
 import './chapter-three.css'
 import type { Language } from './story'
 import { characterVoiceSequence } from './character-voice'
@@ -12,7 +13,7 @@ const KEY = 'naiwa-chapter-three-v1'
 const PROGRESS_KEY = 'naiwa-chapter-three-progress-v1'
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 function load(): TheatreSave {
-  try { return normalizeTheatreSave(JSON.parse(localStorage.getItem(KEY) ?? 'null')) } catch { return newTheatreSave() }
+  try { return normalizeTheatreSave(JSON.parse(browserStorage.getItem(KEY) ?? 'null')) } catch { return newTheatreSave() }
 }
 export function chapterThreeStatus() {
   const save = load()
@@ -20,12 +21,12 @@ export function chapterThreeStatus() {
 }
 const text = {
   zh: { back: '章节详情', title: '血色交易', subtitle: '第三层 · 血肉剧场', next: '继续', enter: '走进剧场', stage: '回到舞台', log: '对话回顾', journal: '记忆日记', routes: '剧情树', voice: '声音', voiceOn: '声音已开启', voiceOff: '声音已关闭', play: '播放原声', stop: '跳过声音', blocked: '点击播放原声', audioError: '播放失败 · 点击重试', voiceNote: '奶粉和奶霸复用奶蛙原声片段，片段不与台词逐字对应。', spirit: '精神力', pollution: '精神污染', gathered: '真实记忆', route: '幕后路线', routeDone: '路线已核对', routeMissing: '路线待核对', replay: '重玩本章', restartConfirm: '重新开始第三章？本章当前进度将清除，已解锁结局会保留。', close: '关闭', saved: '进度已保存', saveFailed: '此浏览器无法保存进度，请保持页面开启。', exploreHint: '选择舞台上的场景，辨认三段真实记忆。首次调查每幕消耗 4 点精神力。', collected: '已找回 · 可重看', investigate: '调查此幕', backstage: '调查幕后', backstageDesc: '剧本里夹着一张手绘路线图。', confront: '去找奶霸', confrontLocked: '找齐三幕真实记忆后开启', confrontReady: '三幕已归位 · 进入对质', actNames: ['入场', '三幕记忆', '血色交易', '落幕'], ending: '第三章 · 完', completeSaved: '第三层已安抚。记忆、路线图都留在你手里。', completeDark: '治疗的代价已留下。你仍能前进，但记忆出现了空缺。', completeFailure: '精神力耗尽。可以重玩本章，重新辨认舞台里的记忆。', unlocked: '已解锁结局', emptyLog: '还没有对话记录。', emptyJournal: '尚未找回真实记忆。先调查舞台上的三幕。', noMemory: '尚未找回', current: '当前', visited: '已抵达', locked: '尚未抵达', routeDescription: '按星星杯 → 歪伞 → 车轮核对路线，侧门后藏着可用来交易的替代容器。', keyboard: '空格 / Enter 继续 · 点击选项作出选择', voiceLabel: '切换角色原声', languageLabel: 'Switch to English', full: '进入全屏', exitFull: '退出全屏' },
-  en: { back: 'Chapter details', title: 'The Crimson Bargain', subtitle: 'Layer three · The Flesh Theatre', next: 'Continue', enter: 'Enter the theatre', stage: 'Return to the stage', log: 'Dialogue history', journal: 'Memory journal', routes: 'Story tree', voice: 'Audio', voiceOn: 'Audio on', voiceOff: 'Audio off', play: 'Play voice clip', stop: 'Skip voice', blocked: 'Click to play voice', audioError: 'Playback failed · Retry', voiceNote: 'Naifen and Naiba share Naiwa’s original voice clips. The clips do not match the dialogue word for word.', spirit: 'Spirit', pollution: 'Pollution', gathered: 'True memories', route: 'Backstage route', routeDone: 'Route verified', routeMissing: 'Route unchecked', replay: 'Replay chapter', restartConfirm: 'Restart chapter three? Current progress will be cleared; unlocked endings will remain.', close: 'Close', saved: 'Progress saved', saveFailed: 'This browser cannot save progress. Keep the page open.', exploreHint: 'Choose a scene on stage and identify three real memories. Investigating an unrecovered act costs 4 spirit.', collected: 'Recovered · Revisit', investigate: 'Investigate act', backstage: 'Investigate backstage', backstageDesc: 'A hand-drawn map is tucked inside the script.', confront: 'Find Naiba', confrontLocked: 'Recover all three real memories first', confrontReady: 'Three acts recovered · Confront Naiba', actNames: ['Arrival', 'Three memories', 'The bargain', 'Curtain'], ending: 'Chapter three · End', completeSaved: 'The third layer is soothed. The memories and map are still with you.', completeDark: 'Treatment has left its price. You can continue, with gaps in your memory.', completeFailure: 'Your spirit ran out. Replay to look for the real memories on stage.', unlocked: 'Unlocked endings', emptyLog: 'No dialogue recorded yet.', emptyJournal: 'No true memories recovered. Investigate the three acts on stage.', noMemory: 'Not recovered', current: 'Current', visited: 'Reached', locked: 'Not reached', routeDescription: 'Match star mug → tilted umbrella → wheel. The side door hides a decoy vessel for the bargain.', keyboard: 'Space / Enter to continue · Choose an option at branches', voiceLabel: 'Toggle original character voice', languageLabel: '切换为中文', full: 'Fullscreen', exitFull: 'Exit fullscreen' },
+  en: { back: 'Chapter details', title: 'The Crimson Bargain', subtitle: 'Layer three · The Flesh Theatre', next: 'Continue', enter: 'Enter the theatre', stage: 'Return to the stage', log: 'Dialogue history', journal: 'Memory journal', routes: 'Story map', voice: 'Audio', voiceOn: 'Audio on', voiceOff: 'Audio off', play: 'Play voice clip', stop: 'Skip voice', blocked: 'Click to play voice', audioError: 'Playback failed · Retry', voiceNote: 'Naifen and Naiba share Naiwa’s original voice clips. The clips do not match the dialogue word for word.', spirit: 'Spirit', pollution: 'Pollution', gathered: 'Real memories', route: 'Backstage route', routeDone: 'Route verified', routeMissing: 'Route unchecked', replay: 'Replay chapter', restartConfirm: 'Restart chapter three? Current progress will be cleared; unlocked endings will remain.', close: 'Close', saved: 'Progress saved', saveFailed: 'This browser cannot save progress. Keep the page open.', exploreHint: 'Explore the scenes on stage to find three real memories. Each act costs 4 spirit until you recover its memory.', collected: 'Recovered · Revisit', investigate: 'Investigate act', backstage: 'Investigate backstage', backstageDesc: 'A hand-drawn map is tucked inside the script.', confront: 'Find Naiba', confrontLocked: 'Recover all three real memories first', confrontReady: 'All three memories found · Confront Naiba', actNames: ['Arrival', 'Three memories', 'The bargain', 'Curtain'], ending: 'Chapter three · End', completeSaved: 'Naifen is free of the stage. You still have the memories and the map.', completeDark: 'You can go on, but some of your memories are missing.', completeFailure: 'Your spirit ran out. Replay to look for the real memories on stage.', unlocked: 'Unlocked endings', emptyLog: 'No dialogue recorded yet.', emptyJournal: 'No memories found yet. Try the three scenes on stage.', noMemory: 'Not recovered', current: 'Current', visited: 'Reached', locked: 'Not reached', routeDescription: 'Match star mug → tilted umbrella → wheel. The side door hides a decoy vessel for the bargain.', keyboard: 'Space / Enter to continue · Choose an option at branches', voiceLabel: 'Toggle original character voice', languageLabel: '切换为中文', full: 'Fullscreen', exitFull: 'Exit fullscreen' },
 } as const
 
 function loadProgress(save: TheatreSave): TheatreProgress {
-  try { return recordTheatreCheckpoint(normalizeTheatreProgress(JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? 'null')), save) }
-  catch { return recordTheatreCheckpoint(newTheatreProgress(), save) }
+  try { return recordTheatreCheckpoint(normalizeTheatreProgress(JSON.parse(browserStorage.getItem(PROGRESS_KEY) ?? 'null')), save, false) }
+  catch { return recordTheatreCheckpoint(newTheatreProgress(), save, false) }
 }
 const routeConfirmation = (language: Language, id: string) => language === 'zh'
   ? `从“${theatreStory[id].title.zh}”重新开始？将恢复抵达此节点时的精神力、记忆和路线状态；已解锁节点与结局会保留。`
@@ -43,7 +44,8 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
   let disposed = false
   let storageAvailable = true
   let audioEnabled = true
-  try { audioEnabled = localStorage.getItem('naiwa-audio-enabled-v1') !== 'false' } catch { storageAvailable = false }
+  try { audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' } catch { storageAvailable = false }
+  let voiceKey = ''
   let audio: HTMLAudioElement | null = null
   let audioClips: string[] = []
   let clipIndex = 0
@@ -52,11 +54,11 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
   let restoreFocusId: string | null = null
   const t = () => text[language]
   const persist = () => {
-    progress = recordTheatreCheckpoint(progress, save)
+    progress = recordTheatreCheckpoint(progress, save, false)
     try {
-      localStorage.setItem(KEY, JSON.stringify(save))
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
-      storageAvailable = true
+      const saved = browserStorage.setItem(KEY, JSON.stringify(save))
+      const progressSaved = browserStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+      storageAvailable = saved && progressSaved
     } catch { storageAvailable = false }
   }
   function stopAudio() {
@@ -77,7 +79,10 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
     voiceButton(t().stop)
     void current.play().catch(() => { if (audio === current && !disposed) voiceButton(t().blocked) })
   }
-  function prepareAudio() {
+  function prepareAudio(force = false) {
+    const key = `${save.node}/${save.line}`
+    if (!force && voiceKey === key) { if (audio) voiceButton(audio.paused ? t().play : t().stop); return }
+    voiceKey = key
     const line = theatreStory[save.node].lines[save.line]
     if (!line || !audioEnabled || !['naifen', 'naiba'].includes(line.speaker)) return
     // One original clip per line lets all four voices rotate across four speeches.
@@ -95,7 +100,7 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
     playAudio()
   }
   function toggleVoiceClip() {
-    if (!audio) { prepareAudio(); return }
+    if (!audio) { prepareAudio(true); return }
     if (!audio.paused) { audio.pause(); clipIndex = 0; audio.src = audioClips[0]; voiceButton(t().play) }
     else { if (audio.ended) { clipIndex = 0; audio.src = audioClips[0] } playAudio() }
   }
@@ -108,8 +113,9 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
     const button = root.querySelector<HTMLButtonElement>('#crimson-fullscreen')
     if (button) { button.textContent = isAppFullscreen(root) ? t().exitFull : t().full; button.setAttribute('aria-pressed', String(isAppFullscreen(root))) }
   }
-  function update(next: TheatreSave) { save = next; persist(); render() }
+  function update(next: TheatreSave) { if (disposed) return; const arrived = next.node !== save.node; save = next; if (arrived) progress = recordTheatreCheckpoint(progress, save); render() }
   function advance() {
+    if (disposed || root.querySelector('dialog[open]')) return
     const node = theatreStory[save.node]
     if (node.map || (node.choices && save.line === node.lines.length - 1)) return
     if (node.ending && save.line === node.lines.length - 1) { onBack(language); return }
@@ -139,10 +145,14 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
   function render() {
     if (disposed) return
     const oldFocus = (document.activeElement as HTMLElement | null)?.id
-    closePanel(); stopAudio()
+    closePanel()
+    if (voiceKey !== `${save.node}/${save.line}` || !audioEnabled) stopAudio()
     const copy = t()
     const node = theatreStory[save.node]
     const visual = chapterThreeVisual(save.node, save.line)
+    const oldScenery = root.querySelector<HTMLElement>('.crimson-scenery')
+    const oldShot = root.querySelector<HTMLElement>('.crimson-shot-frame')
+    const shotKey = `${visual.background}/${visual.expression}/${visual.showCharacter}`
     if (!node.map) {
       const last = save.history.at(-1)
       if (!last || last.node !== save.node || last.line !== save.line) save.history = [...save.history, { node: save.node, line: save.line }].slice(-200)
@@ -152,6 +162,15 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
     document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'
     document.title = language === 'zh' ? '奶之救赎：血色交易 | naiwa' : 'naiwa: The Crimson Bargain'
     root.innerHTML = `<div class="chapter-three ${node.map ? 'is-exploring' : 'is-narrative'} art-${node.art} ${save.pollution >= 45 ? 'is-polluted' : ''}" style="--crimson-art:url('/images/${visual.background}.webp');--crimson-shot-position:${visual.position}"><a class="crimson-skip" href="#crimson-main">${language === 'zh' ? '跳到剧情' : 'Skip to story'}</a><div class="crimson-scenery" aria-hidden="true"></div><header class="crimson-top"><button type="button" id="crimson-back">← ${copy.back}</button><span class="crimson-wordmark">NAIWA <i aria-hidden="true">✦</i> CHAPTER 03</span><nav aria-label="${language === 'zh' ? '章节工具' : 'Chapter tools'}"><button type="button" id="crimson-journal">${copy.journal}</button><button type="button" id="crimson-log">${copy.log}</button><button type="button" id="crimson-routes">${copy.routes}</button><button type="button" id="crimson-audio" aria-label="${copy.voiceLabel}" aria-pressed="${audioEnabled}">${audioEnabled ? copy.voiceOn : copy.voiceOff}</button><button type="button" id="crimson-fullscreen" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? copy.exitFull : copy.full}</button><button type="button" id="crimson-language" aria-label="${copy.languageLabel}">${language === 'zh' ? 'EN' : '中文'}</button></nav></header><main id="crimson-main" class="crimson-main" tabindex="-1"><div class="crimson-heading"><div><span class="crimson-kicker">THE CRIMSON BARGAIN / 03</span><h1>${copy.title}</h1><p>${copy.subtitle} <span aria-hidden="true">—</span> ${esc(node.title[language])}</p></div><div class="crimson-ticket"><span>ADMIT ONE</span><strong>03</strong><span>${copy.actNames[node.act]}</span></div></div><div class="crimson-status" aria-label="${language === 'zh' ? '当前状态' : 'Current status'}"><div><span>${copy.spirit}</span><strong>${save.spirit}<small>/100</small></strong><meter min="0" max="100" value="${save.spirit}" aria-label="${copy.spirit}"></meter></div><div><span>${copy.pollution}</span><strong>${save.pollution}<small>/100</small></strong><meter min="0" max="100" value="${save.pollution}" aria-label="${copy.pollution}" class="pollution-meter"></meter></div><div class="crimson-memory-counter"><span>${copy.gathered}</span><strong>${save.memories.length}<small>/3</small></strong><span class="crimson-route-state">${save.routeVerified ? copy.routeDone : copy.routeMissing}</span></div></div>${node.map ? renderMap() : renderNarrative(visual)}</main><footer class="crimson-footer"><span>NAIFEN / ${copy.actNames[node.act]}</span><span role="status" class="${storageAvailable ? '' : 'save-warning'}">${storageAvailable ? copy.saved : copy.saveFailed}</span><button type="button" id="crimson-restart">${copy.replay}</button></footer></div>`
+    const newScenery = root.querySelector<HTMLElement>('.crimson-scenery')!
+    if (oldScenery?.dataset.art === visual.background) newScenery.replaceWith(oldScenery)
+    else newScenery.dataset.art = visual.background
+    const newShot = root.querySelector<HTMLElement>('.crimson-shot-frame')
+    if (newShot && oldShot?.dataset.shot === shotKey) {
+      newShot.replaceWith(oldShot)
+      const portrait = oldShot.querySelector<HTMLImageElement>('.crimson-naifen')
+      if (portrait) portrait.alt = naifenExpressions[visual.expression].description[language]
+    } else if (newShot) newShot.dataset.shot = shotKey
     root.querySelector('#crimson-back')?.addEventListener('click', () => onBack(language))
     root.querySelector('#crimson-finish')?.addEventListener('click', () => onBack(language))
     root.querySelector('#crimson-next')?.addEventListener('click', advance)
@@ -159,7 +178,8 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
     root.querySelector('#crimson-fullscreen')?.addEventListener('click', () => { void toggleAppFullscreen(root) })
     root.querySelector('#crimson-audio')?.addEventListener('click', () => {
       audioEnabled = !audioEnabled
-      try { localStorage.setItem('naiwa-audio-enabled-v1', String(audioEnabled)) } catch { /* Continue playing in memory when storage is unavailable. */ }
+      if (audioEnabled) voiceKey = ''
+      try { browserStorage.setItem('naiwa-audio-enabled-v1', String(audioEnabled)) } catch { /* Continue playing in memory when storage is unavailable. */ }
       render()
     })
     root.querySelector('#crimson-play')?.addEventListener('click', toggleVoiceClip)
@@ -236,8 +256,8 @@ export function mountChapterThree(root: HTMLElement, initialLanguage: Language, 
 
 export function resetChapterThree() {
   const progress = loadProgress(load())
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
-  localStorage.setItem(KEY, JSON.stringify(newTheatreSave(progress.endings)))
+  browserStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+  browserStorage.setItem(KEY, JSON.stringify(newTheatreSave(progress.endings)))
 }
 
 export function previewChapterThreeRoutes(root: HTMLElement, language: Language, onPlay: () => void) {
@@ -249,8 +269,8 @@ export function previewChapterThreeRoutes(root: HTMLElement, language: Language,
       const restored = restartTheatreFrom(progress, id)
       if (!restored) return
       try {
-        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
-        localStorage.setItem(KEY, JSON.stringify(restored))
+        browserStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+        browserStorage.setItem(KEY, JSON.stringify(restored))
       } catch {
         // The preview must not enter a different scene if its save could not be written.
         root.querySelector<HTMLDialogElement>('#app-confirm')?.close()

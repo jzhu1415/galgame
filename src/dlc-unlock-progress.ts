@@ -4,16 +4,16 @@ export function normalizeDlcViews(value: unknown): number {
   return typeof value === 'number' && Number.isInteger(value) ? Math.max(0, Math.min(DLC_REQUIRED_VIEWS, value)) : 0
 }
 export function loadDlcViews() {
-  try { return normalizeDlcViews(JSON.parse(localStorage.getItem(DLC_WATCH_KEY) ?? '0')) } catch { return 0 }
+  try { return normalizeDlcViews(JSON.parse(browserStorage.getItem(DLC_WATCH_KEY) ?? '0')) } catch { return 0 }
 }
 const DLC_KEY_UNLOCK = 'naiwa-romance-coastal-key-unlock-v1'
 export function isRomanceDlcUnlocked() {
-  try { if (localStorage.getItem(DLC_KEY_UNLOCK) === 'true') return true } catch { /* Fall back to completed views. */ }
+  if (browserStorage.getItem(DLC_KEY_UNLOCK) === 'true') return true
   return loadDlcViews() >= DLC_REQUIRED_VIEWS
 }
-export function redeemDlcKey(key: string): 'unlocked' | 'invalid' | 'storage-error' {
+export function redeemDlcKey(key: string): 'unlocked' | 'invalid' | 'session-unlocked' {
   if (key.trim() !== '442456') return 'invalid'
-  try { localStorage.setItem(DLC_KEY_UNLOCK, 'true'); return 'unlocked' } catch { return 'storage-error' }
+  return browserStorage.setItem(DLC_KEY_UNLOCK, 'true') ? 'unlocked' : 'session-unlocked'
 }
 
 // Track the continuous prefix actually played, so seeking to the end cannot count.
@@ -37,3 +37,4 @@ export class DlcWatchSession {
     return true
   }
 }
+import { browserStorage } from './browser-storage'

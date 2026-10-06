@@ -35,7 +35,8 @@ const root = { append: dialog => { current = dialog }, querySelector: () => curr
 let notes = await freshModule()
 for (const language of ['zh', 'en']) {
   const content = notes.renderReleaseNotes(language)
-  assert.equal((content.match(/<li>/g) ?? []).length, 5)
+  assert(notes.latestRelease.items.length > 0)
+  assert.equal((content.match(/<li>/g) ?? []).length, notes.latestRelease.items.length)
   for (const item of notes.latestRelease.items) assert(content.includes(item.title[language]) && content.includes(item.body[language]))
 }
 const savesBefore = [...storage.entries()]
@@ -72,5 +73,12 @@ assert(!notes.shouldShowReleaseNotes(), 'blocked storage still remembers dismiss
 assert.equal(notes.showReleaseNotes(root, 'en', true), null)
 const main = readFileSync('src/main.ts', 'utf8')
 assert(main.includes('showReleaseNotes(root, preferredLanguage, true)'))
-assert.equal((main.match(/id="release-entry"/g) ?? []).length, 2, 'home and chapter details both keep a manual entry')
+assert.equal((main.match(/id="release-entry"/g) ?? []).length, 1, 'home keeps a manual entry')
+const { tsModuleUrl } = await import('./ts-module.mjs')
+const { renderChapterPromo } = await import(tsModuleUrl('src/chapter-promo.ts'))
+assert(main.includes('root.innerHTML = renderChapterPromo('), 'chapter details render the campaign page')
+for (const chapter of [1, 2, 3]) for (const language of ['zh', 'en']) {
+  const content = renderChapterPromo({ chapter, language, started: false, saveNote: 'Autosave' })
+  assert.equal((content.match(/id="release-entry"/g) ?? []).length, 1, 'every chapter and language keeps a manual entry')
+}
 console.log('Update notes OK: both languages, first visit/new version/reload/manual entry, modal isolation, backdrop bounds, focus restoration, blocked storage fallback; game saves unchanged.')

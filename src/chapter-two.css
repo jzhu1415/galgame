@@ -105,6 +105,11 @@
 }
 
 /* Mobile map HUD lives in the iframe; keep the exploration view clear. */
+.ice-top .ice-save-status{display:block;flex-basis:100%;font-size:11px;line-height:1.5;letter-spacing:0;color:#ffdda4;white-space:normal}
+.ice-top .ice-save-status[hidden]{display:none}
+.pool-ice-error{position:absolute;inset:0;z-index:10;display:grid;place-items:center;background:#102d40;color:#effaff;padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));overflow:auto}
+.pool-ice-error>div{max-width:540px}.pool-ice-error h2{font-size:clamp(20px,4vw,30px)}.pool-ice-error p{line-height:1.7}
+.pool-ice-error-actions{display:flex;gap:12px;flex-wrap:wrap}.pool-ice-error button{min-height:44px;padding:10px 16px;background:#204b63;color:#effaff;border:1px solid #92cfdb77;cursor:pointer}.pool-ice-error button:focus-visible{outline:2px solid #ffdda4;outline-offset:3px}
 @media(max-width:700px), (max-width:1000px) and (pointer:coarse) and (max-height:560px){
   .chapter-two.is-map .ice-map-foot{display:none}
 }

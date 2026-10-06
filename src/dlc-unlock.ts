@@ -1,4 +1,5 @@
 import type { Language } from './story'
+import { browserStorage } from './browser-storage'
 import { DLC_REQUIRED_VIEWS, DLC_WATCH_KEY, DlcWatchSession, loadDlcViews, isRomanceDlcUnlocked, redeemDlcKey } from './dlc-unlock-progress'
 export { isRomanceDlcUnlocked, loadDlcViews } from './dlc-unlock-progress'
 
@@ -24,9 +25,10 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   let views = loadDlcViews()
   let session = new DlcWatchSession()
   let completed = false
+  let persistent = true
   const draw = () => {
     const unlocked = isRomanceDlcUnlocked()
-    status.textContent = unlocked ? text('DLC 已解锁', 'DLC unlocked') : `${text('完整观看', 'Completed views')} ${views} / ${DLC_REQUIRED_VIEWS}`
+    status.textContent = (unlocked ? text('DLC 已解锁', 'DLC unlocked') : `${text('完整观看', 'Completed views')} ${views} / ${DLC_REQUIRED_VIEWS}`) + (persistent ? '' : text(' · 仅保留在本次页面会话', ' · Kept for this page session only'))
     play.hidden = unlocked
     enter.hidden = !unlocked
     play.textContent = text(`播放第 ${views + 1} 遍`, `Play viewing ${views + 1}`)
@@ -44,12 +46,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
     sample()
     if (views < DLC_REQUIRED_VIEWS && session.finish(video.duration)) {
       views++
-      try { localStorage.setItem(DLC_WATCH_KEY, JSON.stringify(views)) } catch {
-        views--
-        session = new DlcWatchSession()
-        status.textContent = text('浏览器无法保存观看次数，请允许本地存储后重试。', 'The browser cannot save views. Allow local storage and try again.')
-        return
-      }
+      persistent = browserStorage.setItem(DLC_WATCH_KEY, JSON.stringify(views))
       completed = true
       draw(); onProgress()
     } else if (views < DLC_REQUIRED_VIEWS) {
@@ -69,13 +66,14 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
     const result = redeemDlcKey(input.value)
     input.setAttribute('aria-invalid', String(result === 'invalid'))
     if (result === 'invalid') { message.textContent = text('密钥不正确，请重试。', 'Incorrect key. Please try again.'); return }
-    if (result === 'storage-error') { message.textContent = text('无法保存解锁状态，请允许本地存储后重试。', 'Unable to save the unlock. Allow local storage and try again.'); return }
+    persistent = result !== 'session-unlocked'
     video.pause()
     input.value = ''
     message.textContent = text('密钥验证成功，已解锁 DLC。', 'Key accepted. DLC unlocked.')
     draw(); onProgress(); enter.focus()
   })
   dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close())
+  dialog.addEventListener('click', event => { if (event.target !== dialog) return; const bounds = dialog.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close() })
   dialog.addEventListener('close', () => { video.pause(); video.removeAttribute('src'); video.load(); dialog.remove(); if (focus?.isConnected) focus.focus() }, { once: true })
   draw()
   dialog.showModal()
