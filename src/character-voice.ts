@@ -1,8 +1,8 @@
 const characterVoiceFiles = [
   '/audio/naiwa-speech.m4a',
   '/audio/naiwa-short-reply.m4a',
-  '/audio/character-voice-03.m4a',
-  '/audio/character-voice-04.m4a',
+  '/audio/character-voice-03.m4a?v=20261007-volume',
+  '/audio/character-voice-04.m4a?v=20261007-volume',
 ] as const
 
 const ROTATION_KEY = 'naiwa-character-voice-rotation-v1'
