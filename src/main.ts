@@ -867,7 +867,7 @@ function render() {
   if (romanceDlcOpen && !isRomanceDlcUnlocked()) romanceDlcOpen = false
   if (!romanceDlcOpen && romanceDlcController) { romanceDlcController.dispose(); romanceDlcController = null }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
-  document.title = preferredLanguage === 'zh' ? selectedChapter === 3 ? '奶之救赎：血色交易 | naiwa' : selectedChapter === 2 ? '奶之救赎：冰镜疑凶 | naiwa' : '奶之救赎 | naiwa' : selectedChapter === 3 ? 'naiwa: The Crimson Bargain' : selectedChapter === 2 ? 'naiwa: The Culprit in the Ice' : 'naiwa'
+  document.title = selectedChapter === 3 ? 'Naiwa: The Crimson Bargain' : selectedChapter === 2 ? 'Naiwa: The Culprit in the Ice' : 'Naiwa'
   if ((selectedChapter !== 2 || !chapterPlaying) && chapterTwoController) { chapterTwoController.dispose(); chapterTwoController = null }
   if ((selectedChapter !== 3 || !chapterPlaying) && chapterThreeController) { chapterThreeController.dispose(); chapterThreeController = null }
   if (romanceDlcOpen) {
