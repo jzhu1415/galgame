@@ -144,7 +144,7 @@ const ui = {
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', mapLabel: 'Branching story mind map',
     exploreMap: 'Mistbound fairground map', needMemories: 'Find all three memories to continue',
     pickObject: 'Hover over an item and click · Tap an item on mobile',
-    laughPlaying: 'naiwa’s laugh', naiwaSpeaking: 'naiwa’s voice', heroPlaying: 'Protagonist voice', narratorPlaying: 'Narration', soundSkip: 'Skip', soundRetry: 'Replay',
+    laughPlaying: 'naiwa\'s laugh', naiwaSpeaking: 'naiwa\'s voice', heroPlaying: 'Protagonist voice', narratorPlaying: 'Narration', soundSkip: 'Skip', soundRetry: 'Replay',
     ambientOff: 'Turn off laughter', ambientOn: 'Turn on laughter', ambientRetry: 'Play laughter',
     save: 'Save', saved: 'Saved', saveFailed: 'Session only · Saving unavailable', sessionSave: 'Progress kept for this page session only', settings: 'Settings', gallery: 'Gallery', auto: 'Auto', skip: 'Skip', audio: 'Voice playback', on: 'On', off: 'Off',
   },
@@ -444,7 +444,7 @@ function renderChapterSelect() {
       <div class="chapter-cards"><button class="chapter-card first" id="chapter-one" type="button"><span class="card-overline">CHAPTER 01 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '缘起' : 'Origin'}</strong><span class="card-description">${lang === 'zh' ? '雨夜相遇，走进迷雾游乐园，找回遗失的回忆。' : 'A rainy meeting leads into the mistbound fairground.'}</span><span class="card-action">${state ? ui[lang].continue : ui[lang].start} ↗</span></button>
       <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
       <p class="chapter-select-note">${lang === 'zh' ? '章节分别保存进度 · 可随时返回切换' : 'Each chapter saves separately · Switch at any time'}</p>
-    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What’s new'}</button><span>01 — 03</span></footer></div>`
+    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What\'s new'}</button><span>01 — 03</span></footer></div>`
   root.querySelector('.chapter-cards')?.insertAdjacentHTML('beforeend', `<button class="chapter-card third" id="chapter-three" type="button"><span class="card-overline">CHAPTER 03 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '血色交易' : 'The Crimson Bargain'}</strong><span class="card-description">${lang === 'zh' ? '奶粉一次次砸毁舞台，那出戏却总会重新开始。' : 'Naifen keeps smashing the stage. The play keeps starting over.'}</span><span class="card-action">${thirdStatus.started ? lang === 'zh' ? '继续第三章' : 'Resume chapter' : lang === 'zh' ? '进入血肉剧场' : 'Enter the theatre'} ↗</span></button>`)
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)

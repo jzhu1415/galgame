@@ -56,7 +56,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   play.addEventListener('click', () => {
     video.pause(); video.currentTime = 0; session = new DlcWatchSession(); completed = false
     session.start(0, performance.now())
-    void video.play().catch(() => { status.textContent = text('播放失败，请点击视频的播放按钮重试。', 'Playback failed. Try the video’s play button.') })
+    void video.play().catch(() => { status.textContent = text('播放失败，请点击视频的播放按钮重试。', 'Playback failed. Try the video\'s play button.') })
   })
   enter.addEventListener('click', () => { if (!isRomanceDlcUnlocked()) return; dialog.close(); onUnlocked() })
   dialog.querySelector<HTMLFormElement>('.dlc-key-form')!.addEventListener('submit', event => {

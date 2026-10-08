@@ -15,7 +15,7 @@ export const romanceArt = {
   seaglass: art('seaglass-close', true, 'close', '奶蛙把找到的海玻璃举到阳光下', 'Naiwa holds the recovered sea glass up to the sun', '48% 30%'),
   hug: art('hug-close', true, 'interaction', '海风里，奶蛙微笑着接受你的拥抱', 'Naiwa smiles as it accepts your hug in the sea breeze', '60% 30%'),
   rainClose: art('rain-close', true, 'close', '奶蛙捏着没用上的车票，安静地失落了一会儿', 'Naiwa holds the unused tickets with quiet disappointment', '55% 30%'),
-  stars: art('stars-close', true, 'close', '星空投影映在奶蛙笑起来的脸上', 'Projected stars light Naiwa’s joyful face'),
+  stars: art('stars-close', true, 'close', '星空投影映在奶蛙笑起来的脸上', 'Projected stars light Naiwa\'s joyful face'),
   rainTogether: art('rain-together', true, 'interaction', '雨夜窗边，奶蛙放松下来，轻轻握住你的手', 'Naiwa relaxes beside the rainy window and gently holds your hand', '45% 30%'),
   dawnClose: art('dawn-close', true, 'interaction', '清晨海堤上，奶蛙迎着暖光与你相望', 'Naiwa meets your gaze in the warm sunrise on the seawall', '40% 30%'),
   letter: art('letter-close', true, 'close', '奶蛙认真地把写给未来的信递给你', 'Naiwa earnestly offers you the letter to your future selves', '45% 30%'),

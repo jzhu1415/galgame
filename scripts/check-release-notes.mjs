@@ -56,7 +56,7 @@ assert.equal(notes.showReleaseNotes(root, 'zh', true), null, 'same session does 
 notes = await freshModule()
 assert(!notes.shouldShowReleaseNotes(), 'same version stays read after a reload')
 const manual = notes.showReleaseNotes(root, 'en')
-assert(manual.open && manual.innerHTML.includes('What’s new'), 'manual entry works even after reading')
+assert(manual.open && manual.innerHTML.includes('What\'s new'), 'manual entry works even after reading')
 manual.buttons[0].click()
 assert(manual.removed)
 storage.set(notes.releaseSeenKey, 'older-release')

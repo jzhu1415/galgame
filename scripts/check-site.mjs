@@ -116,7 +116,7 @@ const resumed = normalizeRomanceSave({ ...newRomanceSave(), node: 'rain-end', li
 assert.equal(resumed.node, 'rain-end')
 assert.deepEqual(resumed.gear, ['blanket', 'recorder'])
 assert.equal(resumed.treasure, true)
-assert.equal(resumed.history[0].blanket, false, 'history carries the blanket variant instead of today’s luggage')
+assert.equal(resumed.history[0].blanket, false, 'history carries the blanket variant instead of today\'s luggage')
 assert.equal(normalizeRomanceSave({ ...newRomanceSave(), treasure: true }).treasure, false)
 const { newTheatreSave, normalizeTheatreSave } = await import(tsModuleUrl('src/chapter-three-story.ts'))
 assert.equal(normalizeTheatreSave({ ...newTheatreSave(), node: 'saved', memories: ['rain', 'breakfast', 'film'], trade: 'fake', routeVerified: false }).node, 'bargain', 'damaged third-chapter saves cannot bypass route verification')

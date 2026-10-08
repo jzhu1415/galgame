@@ -16,20 +16,20 @@ const chapters: Record<Chapter, PromoChapter> = {
   1: {
     title: b('缘起', 'Origin'), displayTitle: b('缘起', 'Origin'), theme: 'origin', location: 'A RAINY NIGHT',
     cover: 'P02', coverAlt: b('雨夜，奶蛙坐在巷口的纸箱里', 'Naiwa sitting in a cardboard box in a rainy alley'),
-    lead: b('纸箱里的小家伙，想借你的屋檐躲场雨。', 'There’s someone in that box. Could it stay until the rain stops?'),
+    lead: b('纸箱里的小家伙，想借你的屋檐躲场雨。', 'There\'s someone in that box. Could it stay until the rain stops?'),
     genre: b('恋爱日常 / 场景调查', 'Life together / Scene investigation'),
     storyTitle: b('你把它\n带回了家。', 'You brought\nit home.'),
-    storyBody: b('从那天起，厨房里多了一双碗筷。有人陪你逛市场，等你下班，也会因为一张拍糊的合照高兴很久。后来，奶蛙没能醒来。你得去它的记忆里，把这些小事找回来。', 'After that night, there was another place at the table. Someone to browse the market with, someone waiting after work, someone delighted by a blurry photo of you both. Then Naiwa wouldn’t wake up. You’ll have to find those ordinary days inside its memories.'),
+    storyBody: b('从那天起，厨房里多了一双碗筷。有人陪你逛市场，等你下班，也会因为一张拍糊的合照高兴很久。后来，奶蛙没能醒来。你得去它的记忆里，把这些小事找回来。', 'After that night, there was another place at the table. Someone to browse the market with, someone waiting after work, someone delighted by a blurry photo of you both. Then Naiwa wouldn\'t wake up. You\'ll have to find those ordinary days inside its memories.'),
     scenes: [
-      { place: 'THE ALLEY', title: b('雨还没停。', 'Still raining.'), body: b('下班回家的巷口，纸箱盖被顶开了一角。里面的小家伙说它叫奶蛙，还提醒你别把箱子落下。', 'On your way home from work, a box lid lifts. The creature inside introduces itself as Naiwa. If you’re taking it home, please remember the box.'), image: 'P02', alt: b('奶蛙躲在被雨淋湿的纸箱里', 'Naiwa sheltering in a rain-soaked box') },
-      { place: 'THE KITCHEN', title: b('第一张松饼焦了。', 'The first pancake burned.'), body: b('锅还是热的，奶蛙已经举起了锅铲。你可以陪它重做一张，也可以先尝尝眼前这张。早餐还早。', 'The pan is hot and Naiwa has the spatula ready. Make another together, or try the one in front of you. There’s time.'), image: 'R02_KITCHEN', alt: b('奶蛙和主角在阳光照进的厨房做松饼', 'Naiwa and the player making pancakes in a sunlit kitchen') },
+      { place: 'THE ALLEY', title: b('雨还没停。', 'Still raining.'), body: b('下班回家的巷口，纸箱盖被顶开了一角。里面的小家伙说它叫奶蛙，还提醒你别把箱子落下。', 'On your way home from work, a box lid lifts. The creature inside introduces itself as Naiwa. If you\'re taking it home, please remember the box.'), image: 'P02', alt: b('奶蛙躲在被雨淋湿的纸箱里', 'Naiwa sheltering in a rain-soaked box') },
+      { place: 'THE KITCHEN', title: b('第一张松饼焦了。', 'The first pancake burned.'), body: b('锅还是热的，奶蛙已经举起了锅铲。你可以陪它重做一张，也可以先尝尝眼前这张。早餐还早。', 'The pan is hot and Naiwa has the spatula ready. Make another together, or try the one in front of you. There\'s time.'), image: 'R02_KITCHEN', alt: b('奶蛙和主角在阳光照进的厨房做松饼', 'Naiwa and the player making pancakes in a sunlit kitchen') },
       { place: 'THE FAIRGROUND', title: b('旋转木马还在转。', 'The carousel is still turning.'), body: b('雾里没有游客，摊位上的旧东西却很眼熟。日记指向这里。找回玩具、礼物和照片之前，你得先走近一点。', 'There are no visitors in the fog, but the things on the stalls look familiar. The journal brought you here. Look closer for the toy, the gift, and the photograph.'), image: 'M03', alt: b('迷雾中的空荡游乐园，旋转木马亮着灯', 'An empty fairground in the fog, its carousel still lit') },
     ],
     person: {
       name: b('奶蛙', 'Naiwa'), roman: 'NAIWA', image: 'R03_PHOTO',
       alt: b('奶蛙与主角坐在厨房里拍合照', 'Naiwa posing for a photograph with the player in the kitchen'),
-      quote: b('这箱子不漏水，就是盖子总掉。', 'The box keeps the rain out. The lid’s the problem.'),
-      body: b('会做饭，会把晚饭热两遍，也会因为等不到消息生气。它想跟你一起过日子，告白却练了好几遍。', 'Naiwa cooks, reheats dinner when you’re late, and gets upset when you don’t text. The confession took a few rehearsals.'),
+      quote: b('这箱子不漏水，就是盖子总掉。', 'The box keeps the rain out. The lid\'s the problem.'),
+      body: b('会做饭，会把晚饭热两遍，也会因为等不到消息生气。它想跟你一起过日子，告白却练了好几遍。', 'Naiwa cooks, reheats dinner when you\'re late, and gets upset when you don\'t text. The confession took a few rehearsals.'),
     },
     playBody: b('陪奶蛙逛市场、做早餐，到了游乐园再找回那几件旧东西。选一句回答，或靠近一处摊位，故事就会往前走。', 'Browse the market, make breakfast, then search the fairground for things you remember. Choose a reply or investigate a stall to move the story along.'),
     closing: b('去巷口看看。', 'Take the alley home.'),
@@ -49,8 +49,8 @@ const chapters: Record<Chapter, PromoChapter> = {
     person: {
       name: b('奶鼠与奶霸', 'Naishu & Naiba'), roman: 'NAISHU / NAIBA', image: 'chapter-02-cg-cold-mirror',
       alt: b('冰镜隔开了奶鼠与奶霸', 'An icy mirror separating Naishu and Naiba'),
-      quote: b('你已经带回来一个了，别再进去。', 'You’ve brought back one fragment already. Don’t go in again.'),
-      body: b('奶霸让你离开，奶鼠还有话没说完。两个人的说法对不上。镜馆里那些不起眼的物证，也许能补上他们略过的部分。', 'Naiba wants you to leave. Naishu hasn’t finished talking. Their accounts don’t agree. The evidence scattered around the hall may fill in what they leave out.'),
+      quote: b('你已经带回来一个了，别再进去。', 'You\'ve brought back one fragment already. Don\'t go in again.'),
+      body: b('奶霸让你离开，奶鼠还有话没说完。两个人的说法对不上。镜馆里那些不起眼的物证，也许能补上他们略过的部分。', 'Naiba wants you to leave. Naishu hasn\'t finished talking. Their accounts don\'t agree. The evidence scattered around the hall may fill in what they leave out.'),
     },
     playBody: b('用键盘或摇杆在镜馆里走，靠近物证后调查。收集胶片和镜片，记录证词，再回到中央镜前核对。', 'Walk through the hall with the keyboard or joystick and examine the exhibits up close. Collect film and glass, note the testimony, then return to the central mirror.'),
     closing: b('电梯已经到了。', 'The elevator is here.'),
@@ -58,20 +58,20 @@ const chapters: Record<Chapter, PromoChapter> = {
   3: {
     title: b('血色交易', 'The Crimson Bargain'), displayTitle: b('血色\n交易', 'The Crimson\nBargain'), theme: 'crimson', location: 'THE FLESH THEATRE',
     cover: 'chapter-03-cg-entrance', coverAlt: b('红色幕布之间，血肉剧场的舞台亮着灯', 'The lit stage of the Flesh Theatre, framed by red curtains'),
-    lead: b('台下没有人。掌声却没停。', 'The seats are empty. The applause won’t stop.'),
+    lead: b('台下没有人。掌声却没停。', 'The seats are empty. The applause won\'t stop.'),
     genre: b('记忆辨认 / 剧场调查', 'Examine the memories / Search the theatre'),
     storyTitle: b('这出戏，\n它已经砸过很多次。', 'It wrecked the stage.\nThe play started over.'),
     storyBody: b('奶粉被困在一出反复重演的戏里。雨窗、餐桌和放映机都摆好了，头顶的吊线又开始收紧。组织说能让奶蛙醒来，但要你先带回这里的记忆。', 'Naifen is trapped in a play that keeps starting over. The rainy window, the table, and the projector are ready. The threads overhead tighten again. The institute says it can wake Naiwa, if you bring back the memories from this place.'),
     scenes: [
       { place: 'THE THIRD BELL', title: b('第三声铃响了。', 'The third bell rings.'), body: b('红色帷幕擦过肩膀，掌声从空椅子里传来。舞台中央有人扯断了一根线，窗里的雨夜碎成了纸片。', 'Red curtains brush your shoulders. Applause comes from empty chairs. Someone tears a thread down on stage, and the rainy window breaks into paper scraps.'), image: 'chapter-03-cg-entrance', alt: b('血肉剧场入口，空座位正对着红色舞台', 'The entrance to the Flesh Theatre, with empty seats facing the red stage') },
       { place: 'THE BREAKFAST TABLE', title: b('这顿早餐，你记得。', 'You remember this breakfast.'), body: b('还是那只杯子，还是那张焦掉的松饼。旁边却多了一份整齐得过头的早餐。道具都摆在眼前，你得认出自己经历过的那一段。', 'The same mug. The same burnt pancake. Beside them is a breakfast that looks a little too perfect. The props are right here. Which version did you live through?'), image: 'chapter-03-cg-breakfast', alt: b('舞台餐桌上，焦掉的松饼和完好的松饼并排摆着', 'A burnt pancake and a perfect one set side by side on the stage table') },
-      { place: 'THE OFFER', title: b('治疗也有条件。', 'The treatment has a price.'), body: b('研究员把银色箱子打开，探针和同意书都在里面。他催你先救奶蛙。至于那些记忆会被拿去做什么，他还没有回答。', 'The researcher opens the silver case. A probe and a consent form are waiting inside. He wants you to focus on saving Naiwa. He still hasn’t said what the memories are for.'), image: 'chapter-03-cg-offer', alt: b('病床旁的银色箱子里放着探针与同意书', 'A silver case beside the hospital bed, holding a probe and a consent form') },
+      { place: 'THE OFFER', title: b('治疗也有条件。', 'The treatment has a price.'), body: b('研究员把银色箱子打开，探针和同意书都在里面。他催你先救奶蛙。至于那些记忆会被拿去做什么，他还没有回答。', 'The researcher opens the silver case. A probe and a consent form are waiting inside. He wants you to focus on saving Naiwa. He still hasn\'t said what the memories are for.'), image: 'chapter-03-cg-offer', alt: b('病床旁的银色箱子里放着探针与同意书', 'A silver case beside the hospital bed, holding a probe and a consent form') },
     ],
     person: {
       name: b('奶粉', 'Naifen'), roman: 'NAIFEN', image: 'chapter-03-naifen-guarded', portrait: true,
       alt: b('奶粉皱着眉，一只手向前伸出', 'Naifen frowning, one hand held out'),
       quote: b('你要看戏，就站远一点；你要带我走，就别碰那些线。', 'Here to watch? Stay back. Here to get me out? Leave those threads alone.'),
-      body: b('它生气时会砸东西，也会把皱掉的剧本攥在手里。台上每次都要演到你受伤，它不想再看一遍。', 'It smashes things when it’s angry, but still clutches the crumpled script. Every performance ends with you getting hurt. It doesn’t want to watch that happen again.'),
+      body: b('它生气时会砸东西，也会把皱掉的剧本攥在手里。台上每次都要演到你受伤，它不想再看一遍。', 'It smashes things when it\'s angry, but still clutches the crumpled script. Every performance ends with you getting hurt. It doesn\'t want to watch that happen again.'),
     },
     playBody: b('在雨窗、餐桌和放映机之间查看记忆，听奶粉把话说完。带哪些碎片去见研究员，要由你决定。', 'Examine memories at the rainy window, the table, and the projector. Hear Naifen out. You decide which fragments to take to the researcher.'),
     closing: b('奶粉还在台上。', 'Naifen is still on stage.'),
@@ -125,7 +125,7 @@ export function renderChapterPromo({ chapter, language: lang, started, saveNote,
         </div>
       </section>
       <section class="promo-person promo-section" id="promo-character" tabindex="-1" aria-labelledby="promo-person-title">
-        <div class="promo-section-label" data-promo-reveal><span>02 / CHARACTERS</span><span>${zh ? '会遇见的人' : 'Who you’ll meet'}</span></div>
+        <div class="promo-section-label" data-promo-reveal><span>02 / CHARACTERS</span><span>${zh ? '会遇见的人' : 'Who you\'ll meet'}</span></div>
         <div class="promo-person-layout${data.person.portrait ? ' has-portrait' : ''}"><span class="promo-person-name" aria-hidden="true">${data.person.roman}</span>
           <div class="promo-person-image" data-promo-reveal data-promo-drift-frame>${img(data.person.image, data.person.alt[lang], 'promo-drift-image', false, !!data.person.portrait)}</div>
           <div class="promo-person-copy" data-promo-reveal><p class="promo-eyebrow">${data.person.roman}</p><h2 id="promo-person-title">${esc(data.person.name[lang])}</h2><blockquote>${esc(data.person.quote[lang])}</blockquote><p>${esc(data.person.body[lang])}</p></div>
@@ -135,7 +135,7 @@ export function renderChapterPromo({ chapter, language: lang, started, saveNote,
       ${chapter === 1 && dlc ? `<section class="promo-coast" aria-labelledby="promo-dlc-title"><div class="promo-coast-image" data-promo-drift-frame>${img('dlc-coastal-shore-smile', zh ? '奶蛙拿着地图，站在海边的灯塔步道上' : 'Naiwa holding a map on the coastal lighthouse path', 'promo-drift-image')}</div><div class="promo-coast-shade" aria-hidden="true"></div><div class="promo-coast-copy" data-promo-reveal><p class="promo-eyebrow">SIDE STORY / 01</p><h2 id="promo-dlc-title">${zh ? '潮汐写给<br>你的信' : 'A Letter<br>from the Tide'}</h2><p>${zh ? '买两张车票，带奶蛙去海边。找灯塔，捡海玻璃，晚上等雨停。两天一夜，暂时不用赶着回家。' : 'Two train tickets and a trip with Naiwa. Find the lighthouse, look for sea glass, wait out the evening rain. Two days by the sea, with no rush to get home.'}</p><button class="promo-play" id="romance-dlc-entry" type="button">${dlc.unlocked ? (zh ? '进入海边番外' : 'Play the coastal story') : (zh ? '解锁海边番外' : 'Unlock the coastal story')}<span aria-hidden="true">↗</span></button><p class="promo-dlc-status"><span class="dlc-entry-lock">${dlc.unlocked ? (zh ? '已解锁' : 'Unlocked') : (zh ? `观看视频解锁 · ${dlc.views}/3` : `Watch to unlock · ${dlc.views}/3`)}</span><span>${zh ? '约会进度' : 'Date progress'} ${dlc.completed}/4</span></p></div></section>` : ''}
       <section class="promo-ending promo-section" id="promo-start" tabindex="-1" aria-labelledby="promo-ending-title"><p class="promo-eyebrow" data-promo-reveal>CHAPTER ${number} / ${esc(data.title[lang])}</p><h2 id="promo-ending-title" data-promo-reveal>${esc(data.closing[lang])}</h2><div data-promo-reveal>${actions()}<p class="promo-save-note">${zh ? '每章单独保存进度。随时可以回来。' : 'Each chapter has its own save. Come back whenever you like.'}</p></div></section>
     </main>
-    <footer class="promo-footer"><div class="promo-footer-heading"><span>THE CHAPTERS</span><button id="release-entry" type="button">${zh ? '更新内容' : 'What’s new'} <span aria-hidden="true">＋</span></button></div><nav aria-label="${zh ? '切换章节' : 'Choose a chapter'}">${([1, 2, 3] as Chapter[]).map(id => `<a href="?chapter=${id}" data-promo-chapter-link="${id}"${id === chapter ? ' aria-current="page"' : ''}><span>0${id}</span><strong>${esc(chapters[id].title[lang])}</strong><span aria-hidden="true">${id === chapter ? '●' : '↗'}</span></a>`).join('')}</nav><div class="promo-colophon"><span>naiwa / 奶之救赎</span><span>© 2026 NAIWA</span><a href="#promo-title" data-promo-anchor>${zh ? '回到顶部' : 'Back to top'} ↑</a></div></footer>
+    <footer class="promo-footer"><div class="promo-footer-heading"><span>THE CHAPTERS</span><button id="release-entry" type="button">${zh ? '更新内容' : 'What\'s new'} <span aria-hidden="true">＋</span></button></div><nav aria-label="${zh ? '切换章节' : 'Choose a chapter'}">${([1, 2, 3] as Chapter[]).map(id => `<a href="?chapter=${id}" data-promo-chapter-link="${id}"${id === chapter ? ' aria-current="page"' : ''}><span>0${id}</span><strong>${esc(chapters[id].title[lang])}</strong><span aria-hidden="true">${id === chapter ? '●' : '↗'}</span></a>`).join('')}</nav><div class="promo-colophon"><span>naiwa / 奶之救赎</span><span>© 2026 NAIWA</span><a href="#promo-title" data-promo-anchor>${zh ? '回到顶部' : 'Back to top'} ↑</a></div></footer>
   </div>`
 }
 

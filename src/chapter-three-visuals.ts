@@ -8,7 +8,7 @@ export const naifenExpressions: Record<NaifenExpression, { image: string; descri
   neutral: { image: 'chapter-03-naifen', description: { zh: '奶粉向你伸出手', en: 'Naifen reaches toward you' } },
   angry: { image: 'chapter-03-naifen-angry', description: { zh: '奶粉皱眉握拳，显得愤怒', en: 'Naifen frowns and clenches its fists in anger' } },
   scared: { image: 'chapter-03-naifen-scared', description: { zh: '奶粉睁大眼睛，把手护在身前', en: 'Naifen holds its hands close with wide, frightened eyes' } },
-  sad: { image: 'chapter-03-naifen-sad', description: { zh: '奶粉低垂肩膀，委屈得快要哭了', en: 'Naifen’s shoulders droop, its eyes close to tears' } },
+  sad: { image: 'chapter-03-naifen-sad', description: { zh: '奶粉低垂肩膀，委屈得快要哭了', en: 'Naifen\'s shoulders droop, its eyes close to tears' } },
   guarded: { image: 'chapter-03-naifen-guarded', description: { zh: '奶粉警惕地望着你，伸手示意停下', en: 'Naifen watches warily and raises a hand to ask you to stop' } },
   relieved: { image: 'chapter-03-naifen-relieved', description: { zh: '奶粉放松肩膀，露出释然的微笑', en: 'Naifen relaxes with a small, relieved smile' } },
   happy: { image: 'chapter-03-naifen-happy', description: { zh: '奶粉开心地微笑，轻轻张开双手', en: 'Naifen smiles warmly, opening its arms a little' } },
