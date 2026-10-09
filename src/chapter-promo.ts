@@ -135,7 +135,7 @@ export function renderChapterPromo({ chapter, language: lang, started, saveNote,
       ${chapter === 1 && dlc ? `<section class="promo-coast" aria-labelledby="promo-dlc-title"><div class="promo-coast-image" data-promo-drift-frame>${img('dlc-coastal-shore-smile', zh ? '奶蛙拿着地图，站在海边的灯塔步道上' : 'Naiwa holding a map on the coastal lighthouse path', 'promo-drift-image')}</div><div class="promo-coast-shade" aria-hidden="true"></div><div class="promo-coast-copy" data-promo-reveal><p class="promo-eyebrow">SIDE STORY / 01</p><h2 id="promo-dlc-title">${zh ? '潮汐写给<br>你的信' : 'A Letter<br>from the Tide'}</h2><p>${zh ? '买两张车票，带奶蛙去海边。找灯塔，捡海玻璃，晚上等雨停。两天一夜，暂时不用赶着回家。' : 'Two train tickets and a trip with Naiwa. Find the lighthouse, look for sea glass, wait out the evening rain. Two days by the sea, with no rush to get home.'}</p><button class="promo-play" id="romance-dlc-entry" type="button">${dlc.unlocked ? (zh ? '进入海边番外' : 'Play the coastal story') : (zh ? '解锁海边番外' : 'Unlock the coastal story')}<span aria-hidden="true">↗</span></button><p class="promo-dlc-status"><span class="dlc-entry-lock">${dlc.unlocked ? (zh ? '已解锁' : 'Unlocked') : (zh ? `观看视频解锁 · ${dlc.views}/3` : `Watch to unlock · ${dlc.views}/3`)}</span><span>${zh ? '约会进度' : 'Date progress'} ${dlc.completed}/4</span></p></div></section>` : ''}
       <section class="promo-ending promo-section" id="promo-start" tabindex="-1" aria-labelledby="promo-ending-title"><p class="promo-eyebrow" data-promo-reveal>CHAPTER ${number} / ${esc(data.title[lang])}</p><h2 id="promo-ending-title" data-promo-reveal>${esc(data.closing[lang])}</h2><div data-promo-reveal>${actions()}<p class="promo-save-note">${zh ? '每章单独保存进度。随时可以回来。' : 'Each chapter has its own save. Come back whenever you like.'}</p></div></section>
     </main>
-    <footer class="promo-footer"><div class="promo-footer-heading"><span>THE CHAPTERS</span><button id="release-entry" type="button">${zh ? '更新内容' : 'What\'s new'} <span aria-hidden="true">＋</span></button></div><nav aria-label="${zh ? '切换章节' : 'Choose a chapter'}">${([1, 2, 3] as Chapter[]).map(id => `<a href="?chapter=${id}" data-promo-chapter-link="${id}"${id === chapter ? ' aria-current="page"' : ''}><span>0${id}</span><strong>${esc(chapters[id].title[lang])}</strong><span aria-hidden="true">${id === chapter ? '●' : '↗'}</span></a>`).join('')}</nav><div class="promo-colophon"><span>naiwa / 奶之救赎</span><span>© 2026 NAIWA</span><a href="#promo-title" data-promo-anchor>${zh ? '回到顶部' : 'Back to top'} ↑</a></div></footer>
+    <footer class="promo-footer"><div class="promo-footer-heading"><span>THE CHAPTERS</span><button id="release-entry" type="button">${zh ? '更新内容' : 'What\'s new'} <span aria-hidden="true">＋</span></button></div><nav aria-label="${zh ? '切换章节' : 'Choose a chapter'}">${([1, 2, 3] as Chapter[]).map(id => `<a href="?chapter=${id}" data-promo-chapter-link="${id}"${id === chapter ? ' aria-current="page"' : ''}><span>0${id}</span><strong>${esc(chapters[id].title[lang])}</strong><span aria-hidden="true">${id === chapter ? '●' : '↗'}</span></a>`).join('')}<a href="?chapter=4" data-promo-chapter-link="4"><span>04</span><strong>${zh ? '金笼' : 'The Gilded Cage'}<small>${zh ? '制作中' : 'In development'}</small></strong><span aria-hidden="true">↗</span></a></nav><div class="promo-colophon"><span>naiwa / 奶之救赎</span><span>© 2026 NAIWA</span><a href="#promo-title" data-promo-anchor>${zh ? '回到顶部' : 'Back to top'} ↑</a></div></footer>
   </div>`
 }
 
@@ -148,7 +148,7 @@ export function mountChapterPromo(root: HTMLElement, restoredScroll = 0) {
   const driftFrames = [...page.querySelectorAll<HTMLElement>('[data-promo-drift-frame]')]
   const reveals = [...page.querySelectorAll<HTMLElement>('[data-promo-reveal]')]
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const sceneCount = page.querySelector<HTMLElement>('[data-promo-scene-count]')!
+  const sceneCount = page.querySelector<HTMLElement>('[data-promo-scene-count]')
   let disposed = false, frame = 0, activeScene = -1
   page.scrollTop = restoredScroll
 
@@ -186,7 +186,7 @@ export function mountChapterPromo(root: HTMLElement, restoredScroll = 0) {
     if (nextScene !== activeScene) {
       activeScene = nextScene
       frames.forEach((element, index) => element.classList.toggle('is-active', index === activeScene))
-      sceneCount.textContent = `0${activeScene + 1} / 03`
+      if (sceneCount) sceneCount.textContent = `0${activeScene + 1} / 03`
     }
   }
   function schedule() {

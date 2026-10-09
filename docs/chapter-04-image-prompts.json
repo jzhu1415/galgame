@@ -1,0 +1,23 @@
+{
+  "created": "2026-10-09",
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "chapter-04-gilded-room",
+      "png": "assets/images/chapter-04-gilded-room.png",
+      "webp": "public/images/chapter-04-gilded-room.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神身份与油画质感硬约束"
+        },
+        {
+          "path": "public/images/R02_KITCHEN.webp",
+          "purpose": "记忆中的房间物件（杯、木桌、暖窗），不是角色身份与最终画风"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset type: a wide 16:9 visual-novel chapter hero and playable scene for Chapter Four, The Gilded Cage.\nInput images: image 1 is the HARD identity and oil-painting style reference for NAISHEN / 奶神. Keep that exact golden-yellow, short, round creature, cream oval belly, small dark brown/black round eyes with the same size and placement, small mouth, no nose, stubby limbs, tiny toes, and red plus ivory classical draped cloth. It is NOT the green-eyed Naiwa from image 2. Image 2 is ONLY a supporting spatial/prop reference for a remembered domestic room (wooden breakfast table, familiar white mug with a blue rim, warm window light); do NOT copy its characters, green eyes, photoreal finish, or human.\nPrimary request: turn a warm remembered home into a majestic but unsettling golden-thread cage, rendered as a richly textured classical oil painting on canvas with visible restrained brushwork and chiaroscuro. Landscape, wide 16:9 composition. On the right half Naishen stands at about one third of the image height, arms gently open, welcoming yet possessive, exact reference proportions and costume. Behind it a tall arched locked door and delicate straight golden threads stretching from ceiling to floor form a cage across the room. A modest wooden table with the familiar cup sits near the right side. Upper right warm amber window light, burgundy shadows and antique gold. Left 40% is dark quiet architectural negative space for webpage copy; lower 20% calm and dark for game dialogue, keep face and hands away from these areas. Eye-level environmental camera, coherent room geometry, dignified but domestic, no grand throne or religious insignia. Naishen is the only character. No lettering, no logos, no watermark, no inset views, no triptych. Preserve face/body/costume identity rigorously. The room is a new fourth-layer location; reference 2 supports only its memory objects.",
+      "review": "对照原始三视图：金黄身体、浅色椭圆肚皮、小型深色圆眼、无鼻小嘴、短肢与红白披布一致。金笼场景首次定稿，后续场景需实际传入本图作空间参考。"
+    }
+  ]
+}

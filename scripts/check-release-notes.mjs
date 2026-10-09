@@ -76,6 +76,10 @@ assert(main.includes('showReleaseNotes(root, preferredLanguage, true)'))
 assert.equal((main.match(/id="release-entry"/g) ?? []).length, 1, 'home keeps a manual entry')
 const { tsModuleUrl } = await import('./ts-module.mjs')
 const { renderChapterPromo } = await import(tsModuleUrl('src/chapter-promo.ts'))
+const { renderChapterFourPromo } = await import(tsModuleUrl('src/chapter-four-promo.ts'))
+for (const language of ['zh', 'en']) {
+  assert.equal((renderChapterFourPromo(language).match(/id="release-entry"/g) ?? []).length, 1, 'fourth chapter teaser keeps a manual update entry')
+}
 assert(main.includes('root.innerHTML = renderChapterPromo('), 'chapter details render the campaign page')
 for (const chapter of [1, 2, 3]) for (const language of ['zh', 'en']) {
   const content = renderChapterPromo({ chapter, language, started: false, saveNote: 'Autosave' })

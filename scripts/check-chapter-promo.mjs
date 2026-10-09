@@ -6,6 +6,30 @@ let writes = 0, plays = 0
 globalThis.localStorage = { setItem() { writes++; throw new Error('A chapter introduction must not write a save') } }
 globalThis.Audio = class { constructor() { plays++; throw new Error('A chapter introduction must not play audio') } }
 const { renderChapterPromo, mountChapterPromo } = await import(tsModuleUrl('src/chapter-promo.ts'))
+const { renderChapterFourEntry, renderChapterFourPromo } = await import(tsModuleUrl('src/chapter-four-promo.ts'))
+for (const language of ['zh', 'en']) {
+  const entry = renderChapterFourEntry(language)
+  const html = renderChapterFourPromo(language)
+  assert(entry.includes('href="?chapter=4"'), 'home teaser has a real deep link')
+  assert(entry.includes(language === 'zh' ? '制作中' : 'IN DEVELOPMENT'))
+  const ids = [...html.matchAll(/ id="([^"]+)"/g)].map(match => match[1])
+  assert.equal(ids.length, new Set(ids).size)
+  assert.equal((html.match(/<h1 /g) ?? []).length, 1)
+  for (const id of ['chapter-home', 'chapter-return', 'language', 'fullscreen', 'release-entry']) assert(ids.includes(id))
+  assert(!/data-promo-(?:play|restart|routes)|id="(?:start|continue|routes-intro)/.test(html), 'teaser must never offer gameplay or replay')
+  assert(html.includes(language === 'zh' ? '开放时间尚未确定' : 'a release date has not been set'))
+  for (const match of html.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(match[1]), 'teaser anchors resolve')
+  assert.equal((html.match(/aria-current="page"/g) ?? []).length, 1)
+  assert(html.includes('data-promo-chapter-link="4" aria-current="page"'))
+  assert(html.includes(language === 'zh' ? '奶神' : 'Naishen'))
+  for (const match of html.matchAll(/<img ([^>]+)>/g)) {
+    const attributes = match[1]
+    const src = attributes.match(/src="([^"]+)"/)?.[1]
+    assert(src && existsSync('public' + src))
+    assert(attributes.includes('alt="') && attributes.includes('width="') && attributes.includes('height="'))
+  }
+  for (const spoiler of ['第二人格', 'second personality', '抽取标记', 'extraction mark', '纯白摇篮', 'White Cradle']) assert(!html.includes(spoiler), 'author-only revelations stay out of the teaser')
+}
 for (const chapter of [1, 2, 3]) for (const language of ['zh', 'en']) for (const started of [false, true]) {
   const html = renderChapterPromo({ chapter, language, started, saveNote: '<Session only>', dlc: { unlocked: false, views: 2, completed: 1 } })
   const ids = [...html.matchAll(/ id="([^"]+)"/g)].map(match => match[1])
@@ -141,6 +165,18 @@ assert.equal(window.listeners.get('resize')?.size, 0)
 assert.equal(motion.listeners.get('change')?.size, 0)
 page.fire('scroll'); resize.callback()
 assert.equal(queue.size, 0, 'a stale resize callback cannot restart a disposed page')
+assert.equal(writes, 0)
+assert.equal(plays, 0)
+// The fourth chapter uses the shared scrolling/focus controller without scene plates.
+page.querySelector = selector => ({ '.promo-header': header, '#promo-story': story })[selector]
+page.querySelectorAll = () => []
+const teaserController = mountChapterPromo(root, 900)
+flush()
+assert.equal(teaserController.getScrollTop(), 900)
+page.fire('click', click)
+assert.deepEqual(story.focusOptions, { preventScroll: true })
+teaserController.dispose()
+assert.equal(queue.size, 0)
 assert.equal(writes, 0)
 assert.equal(plays, 0)
 const main = readFileSync('src/main.ts', 'utf8')
