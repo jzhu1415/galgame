@@ -5,6 +5,7 @@
   --ice-line: rgba(159, 224, 239, .26);
   --ice-glass: rgba(8, 26, 44, .64);
   --ice-glow: rgba(100, 215, 239, .22);
+  --ice-nav-width: 19rem;
 }
 
 body {
@@ -27,7 +28,7 @@ body {
 }
 
 .ice-map-heading {
-  max-width: min(32rem, 72vw);
+  max-width: min(32rem, calc(100vw - var(--ice-nav-width) - 3.5rem));
   padding: .8rem 1rem .9rem;
   border: 1px solid var(--ice-line);
   border-radius: 1rem 1.35rem 1rem 1.2rem;
@@ -130,12 +131,17 @@ body {
   box-shadow: 0 0 .5rem rgba(151, 241, 255, .85);
 }
 
-.ice-nav-map {
+.ice-nav-stack {
   position: absolute;
-  left: max(1.15rem, env(safe-area-inset-left));
-  bottom: max(1.15rem, env(safe-area-inset-bottom));
-  width: 15rem;
-  padding: .65rem;
+  top: max(1.15rem, env(safe-area-inset-top));
+  right: max(1.15rem, env(safe-area-inset-right));
+  width: min(var(--ice-nav-width), calc(100vw - 2.3rem));
+  display: grid;
+  gap: .5rem;
+}
+.ice-nav-map {
+  min-width: 0;
+  padding: .75rem;
   border: 1px solid rgba(178, 229, 238, .52);
   border-radius: .35rem;
   background: rgba(4, 19, 31, .88);
@@ -144,11 +150,11 @@ body {
   backdrop-filter: blur(9px);
 }
 .ice-nav-head,.ice-nav-footer { display:flex;align-items:center;justify-content:space-between;gap:.5rem }
-.ice-nav-head { margin-bottom:.45rem;color:#e8fbff;font:700 .68rem/1.2 "Noto Sans SC",sans-serif;letter-spacing:.08em }
+.ice-nav-head { margin-bottom:.5rem;color:#e8fbff;font:700 .78rem/1.2 "Noto Sans SC",sans-serif;letter-spacing:.08em }
 .ice-nav-head span { color:#91d8e8;font:.64rem/1 monospace }
-#ice-nav-canvas { display:block;width:100%;height:12.8rem;border:1px solid rgba(160,220,230,.25);background:#061722 }
-.ice-nav-footer { margin-top:.5rem;color:#d2edf2;font-size:.63rem;line-height:1.35 }
-#ice-nav-target { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+#ice-nav-canvas { display:block;width:100%;height:min(16rem,48dvh);border:1px solid rgba(160,220,230,.25);background:#061722 }
+.ice-nav-footer { margin-top:.55rem;color:#d2edf2;font-size:.72rem;line-height:1.4;align-items:flex-start }
+#ice-nav-target { min-width:0;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden }
 #ice-nav-distance { flex:none;color:#ffe398;font:.7rem/1.2 monospace }
 
 .ice-map-prompt {
@@ -198,13 +204,8 @@ body {
 
 /* The archive reads like a field case file: silvered edges, paper grain and numbered evidence. */
 .ice-archive {
-  position: absolute;
-  top: clamp(9.5rem, 21vh, 13rem);
-  right: max(1.15rem, env(safe-area-inset-right));
-  width: min(21rem, 31vw);
-  max-height: min(58vh, 34rem);
-  overflow: auto;
-  padding: 1rem 1rem .9rem;
+  position: relative;
+  min-width: 0;
   border: 1px solid rgba(206, 235, 241, .28);
   border-radius: .22rem .8rem .28rem .74rem;
   color: rgba(226, 241, 242, .9);
@@ -217,6 +218,22 @@ body {
   backdrop-filter: blur(13px) saturate(.82);
   pointer-events: auto;
 }
+.ice-archive-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  min-height: 2.75rem;
+  padding: .6rem .75rem;
+  cursor: pointer;
+  list-style: none;
+  touch-action: manipulation;
+}
+.ice-archive-toggle::-webkit-details-marker { display: none; }
+.ice-archive-toggle::after { content: "+"; color: #91d8e8; font: 1.2rem/1 monospace; }
+.ice-archive[open] > .ice-archive-toggle::after { content: "−"; }
+.ice-archive-toggle:focus-visible { outline: 2px solid #c9edf1; outline-offset: 2px; }
+.ice-archive-body { max-height: min(30dvh, 18rem, max(4rem, calc(100dvh - 24rem))); overflow-y: auto; padding: .15rem .75rem .75rem; }
 .ice-archive::before {
   content: "";
   position: absolute;
@@ -232,7 +249,7 @@ body {
 #ice-archive-title {
   margin: 0;
   color: rgba(242, 251, 252, .96);
-  font: 500 1.08rem/1.2 Georgia, "Songti SC", serif;
+  font: 500 .78rem/1.35 Georgia, "Songti SC", serif;
   letter-spacing: .07em;
 }
 .ice-archive-intro { margin: .4rem 0 .75rem; color: rgba(191, 218, 223, .63); font-size: .61rem; line-height: 1.5; }
@@ -348,7 +365,7 @@ html:lang(en) .ice-evidence-record > p, html:lang(en) #ice-route-status { font-s
 
 .ice-map-exit {
   position: absolute;
-  top: max(1.15rem, env(safe-area-inset-top));
+  bottom: max(4.4rem, calc(env(safe-area-inset-bottom) + 4.5rem));
   right: max(1.15rem, env(safe-area-inset-right));
   min-height: 2.2rem;
   padding: .42rem .72rem;
@@ -375,7 +392,6 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
   #ice-map-prompt-text { font-size: .62rem; }
   .ice-map-hint { right: .8rem; bottom: max(.8rem, env(safe-area-inset-bottom)); max-width: 52vw; font-size: .49rem; }
   .ice-map-exit { top: max(.8rem, env(safe-area-inset-top)); right: .8rem; }
-  .ice-archive { top: max(5.5rem, calc(env(safe-area-inset-top) + 5rem)); right: .72rem; bottom: auto; width: min(17rem, 54vw); max-height: 26vh; padding: .7rem .72rem; }
   #ice-archive-title { font-size: .92rem; }
   .ice-archive-kicker { font-size: .42rem; }
   .ice-archive-intro { font-size: .55rem; margin: .3rem 0 .5rem; }
@@ -384,21 +400,18 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
   .ice-route-readout { top: auto; bottom: max(6.8rem, calc(env(safe-area-inset-bottom) + 6.6rem)); width: min(21rem, calc(100vw - 1.4rem)); padding: .55rem .7rem; }
   .ice-route-steps { margin: .3rem 0; }
   .ice-route-steps li { width: 1.95rem; height: 1.95rem; }
-  .ice-nav-map { top:12.5rem;bottom:auto;left:.7rem;width:9.3rem;padding:.4rem }
-  #ice-nav-canvas { height:7.8rem }
   .ice-nav-head { font-size:.55rem;margin-bottom:.3rem }
   .ice-nav-footer { font-size:.5rem;margin-top:.28rem }
 }
 
-@media (max-width:600px) and (max-height:650px){.ice-nav-map{top:10.7rem;width:8.4rem}#ice-nav-canvas{height:6.6rem}}
-
 /* Mobile exploration keeps only the minimap and contextual touch controls. */
 @media(max-width:700px), (max-width:1000px) and (pointer:coarse) and (max-height:560px){
   .ice-map-heading,.ice-map-status,.ice-route-readout,.ice-archive,.ice-map-hint,.ice-map-exit{display:none}
-  .ice-nav-map{top:max(.55rem,env(safe-area-inset-top));bottom:auto;left:max(.55rem,env(safe-area-inset-left));width:min(9rem,43vw);padding:.38rem}
-  #ice-nav-canvas{height:min(7.1rem,18dvh)}
-  .ice-nav-head{font-size:.55rem;margin-bottom:.28rem}
-  .ice-nav-footer{font-size:.53rem;margin-top:.3rem}
+  .ice-nav-stack{top:max(.65rem,env(safe-area-inset-top));right:max(.65rem,env(safe-area-inset-right));width:min(11.5rem,48vw)}
+  .ice-nav-map{padding:.5rem}
+  #ice-nav-canvas{height:min(9.6rem,26dvh)}
+  .ice-nav-head{font-size:.65rem;margin-bottom:.35rem}
+  .ice-nav-footer{font-size:.62rem;margin-top:.35rem}
   .ice-map-prompt{left:50%;bottom:max(1rem,env(safe-area-inset-bottom));width:auto;max-width:45vw;padding:0;border:0;background:none;box-shadow:none;backdrop-filter:none}
   #ice-map-prompt-text{display:none}
   .ice-map-prompt:not(:has(#ice-interact:not([hidden]))){display:none}
@@ -408,8 +421,9 @@ html:lang(en) .ice-map-hint { letter-spacing: .015em; }
   .touch-action{border-color:rgba(248,255,253,.3);color:rgba(248,255,253,.75);background:rgba(9,35,49,.3)}
 }
 @media(max-width:700px) and (max-height:560px), (max-width:1000px) and (pointer:coarse) and (max-height:560px){
-  .ice-nav-map{width:min(7rem,28vw)}
-  #ice-nav-canvas{height:4.7rem}
+  .ice-nav-stack{width:min(9.5rem,32vw)}
+  #ice-nav-canvas{height:min(6rem,30dvh)}
+  #ice-nav-target{-webkit-line-clamp:2}
   .touch-stick-zone,.touch-actions{bottom:max(5rem,calc(env(safe-area-inset-bottom) + 4.5rem))}
 }
 

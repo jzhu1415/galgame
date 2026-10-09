@@ -459,21 +459,16 @@
           <span class="ice-map-clue" data-ice-clue="echo" role="listitem">声纹 / 录音</span>
         </div>
       </div>
+      <div class="ice-nav-stack">
       <aside class="ice-nav-map" aria-label="镜馆地图">
         <div class="ice-nav-head"><strong id="ice-nav-title">镜馆地图</strong><span>N ↑</span></div>
         <canvas id="ice-nav-canvas" width="240" height="236" aria-hidden="true"></canvas>
         <div class="ice-nav-footer"><span id="ice-nav-target">当前目标：入口便笺</span><b id="ice-nav-distance">—</b></div>
       </aside>
-      <section class="ice-route-readout" id="ice-route-readout" aria-live="polite" hidden>
-        <p class="ice-route-label">NAVIGATION NOTE · 04</p>
-        <ol class="ice-route-steps">
-          <li data-route-step="0">镜门</li><li data-route-step="1">拖痕</li><li data-route-step="2">出口</li><li data-route-step="3">镜片</li>
-        </ol>
-        <p id="ice-route-status"></p>
-      </section>
-      <aside class="ice-archive" id="ice-archive" aria-label="镜面物证档案">
+      <details class="ice-archive" id="ice-archive" aria-label="镜面物证档案">
+        <summary class="ice-archive-toggle"><h2 id="ice-archive-title">镜面物证档案</h2></summary>
+        <div class="ice-archive-body">
         <p class="ice-archive-kicker">CASE FILE · 02 / MIRROR HALL</p>
-        <h2 id="ice-archive-title">镜面物证档案</h2>
         <p class="ice-archive-intro">靠近并收取后，展开条目查看物证细节。</p>
         <details class="ice-evidence-record">
           <summary><span class="record-index">01</span><span data-ice-clue="footage">监控胶片</span><span class="record-state"></span></summary>
@@ -489,7 +484,16 @@
         </details>
         <div class="ice-evidence-record ice-note-record"><span class="record-index">04</span><span>入口便笺</span><span id="ice-note-status">未取得</span></div>
         <div class="ice-evidence-record ice-note-record"><span class="record-index">05</span><span>四步路线</span><span id="ice-route-archive">尚未探索</span></div>
-      </aside>
+        </div>
+      </details>
+      </div>
+      <section class="ice-route-readout" id="ice-route-readout" aria-live="polite" hidden>
+        <p class="ice-route-label">NAVIGATION NOTE · 04</p>
+        <ol class="ice-route-steps">
+          <li data-route-step="0">镜门</li><li data-route-step="1">拖痕</li><li data-route-step="2">出口</li><li data-route-step="3">镜片</li>
+        </ol>
+        <p id="ice-route-status"></p>
+      </section>
       <div class="ice-map-prompt" id="ice-map-prompt" hidden>
         <p id="ice-map-prompt-text"></p>
         <button id="ice-interact" type="button"></button>

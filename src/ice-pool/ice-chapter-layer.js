@@ -351,7 +351,17 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     if (navDistance) navDistance.textContent = distance < .5 ? '●' : `${Math.round(distance)} m`;
     const ctx = navCanvas.getContext('2d');
     if (!ctx) return;
-    const width = navCanvas.width; const height = navCanvas.height;
+    // Draw at the displayed size so a larger HUD stays sharp and undistorted,
+    // including when a phone rotates. Limit the backing buffer on dense screens.
+    const width = navCanvas.clientWidth; const height = navCanvas.clientHeight;
+    if (!width || !height) return;
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const bufferWidth = Math.round(width * pixelRatio);
+    const bufferHeight = Math.round(height * pixelRatio);
+    if (navCanvas.width !== bufferWidth || navCanvas.height !== bufferHeight) {
+      navCanvas.width = bufferWidth; navCanvas.height = bufferHeight;
+    }
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     const minX = Math.min(-34, camera.position.x - 8, target.position.x - 8);
     const maxX = Math.max(49, camera.position.x + 8, target.position.x + 8);
     const minZ = Math.min(-4, camera.position.z - 8, target.position.z - 8);

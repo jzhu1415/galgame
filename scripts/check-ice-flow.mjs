@@ -7,11 +7,13 @@ const listeners = new Map();
 const messages = [];
 const noop = () => {};
 const ctx = new Proxy({}, { get: (_, key) => key === 'createLinearGradient' ? () => ({ addColorStop: noop }) : noop });
+const navCanvas = { width: 240, height: 236, clientWidth: 300, clientHeight: 280, getContext: () => ctx };
 globalThis.document = {
-  querySelector: () => null, querySelectorAll: () => [], pointerLockElement: null,
+  querySelector: selector => selector === '#ice-nav-canvas' ? navCanvas : null, querySelectorAll: () => [], pointerLockElement: null,
   createElement: () => ({ getContext: () => ctx, setAttribute: noop, remove: noop }),
 };
 globalThis.window = {
+  devicePixelRatio: 2,
   parent: { postMessage: message => messages.push(message) }, location: { origin: 'http://localhost' },
   matchMedia: () => ({ matches: false }), dispatchEvent: noop,
   addEventListener: (type, callback) => listeners.set(type, callback), removeEventListener: noop,
@@ -35,6 +37,13 @@ const collect = id => {
 };
 
 layer.setInit({ found: [] });
+assert.deepEqual([navCanvas.width, navCanvas.height], [600, 560], 'The enlarged map uses a sharp buffer sized to its displayed bounds');
+const mapResizePose = camera.position.clone();
+navCanvas.clientWidth = 136; navCanvas.clientHeight = 96; window.devicePixelRatio = 3;
+tick(4);
+assert.deepEqual([navCanvas.width, navCanvas.height], [272, 192], 'Rotation resizes the map without stretching its canvas or exceeding 2x density');
+assert(camera.position.equals(mapResizePose), 'Resizing the HUD does not move the player');
+navCanvas.clientWidth = 300; navCanvas.clientHeight = 280; window.devicePixelRatio = 2;
 assert.ok(camera.getWorldDirection(new THREE.Vector3()).z > .99, 'Entering the hall faces the route, rather than the entrance wall');
 approach(ICE_LAYOUT.echo); key('KeyE'); tick(12);
 assert.equal(has('echo'), false, 'Walking ahead cannot collect a future exhibit');
