@@ -31,11 +31,11 @@
 .gilded-wordmark { color: var(--gilded-gold); font-size: .73rem; letter-spacing: .12em; white-space: nowrap; }
 .gilded-hud { display: flex; flex-wrap: wrap; align-items: center; align-self: flex-end; gap: 22px; margin: 18px max(5vw, env(safe-area-inset-right)) 0; padding: 8px 18px; border: 1px solid #e9c78542; background: #17120cce; color: var(--gilded-muted); font-size: .74rem; font-variant-numeric: tabular-nums; }
 .gilded-hud strong { color: var(--gilded-gold); font-size: 1rem; font-weight: 500; }
-.gilded-main { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; width: min(1180px, 90%); margin: 28px auto 0; padding-bottom: 20px; }
+.gilded-main { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; width: auto; margin: 28px max(5vw, env(safe-area-inset-right)) 0 max(5vw, env(safe-area-inset-left)); padding-bottom: 4px; }
 .gilded-kicker { font-size: .7rem; line-height: 1.6; color: var(--gilded-gold); letter-spacing: .1em; }
-.gilded-dialogue { margin-top: clamp(90px, 18svh, 250px); padding: 28px 36px; border: 1px solid #e9c78561; border-top: 2px solid var(--gilded-gold); background: #17120ced; box-shadow: 0 16px 60px #0007; }
+.gilded-dialogue { align-self: flex-start; width: min(900px, 100%); margin-top: auto; padding: 24px 28px; border: 1px solid #e9c78561; border-top: 2px solid var(--gilded-gold); background: #17120ced; box-shadow: 0 16px 60px #0007; }
 .gilded-dialogue h1 { font-size: 1.3rem; margin: 12px 0 18px; color: var(--gilded-gold); }
-.gilded-line { font-family: 'Noto Serif SC', Georgia, serif; font-size: clamp(1rem, 1.25vw, 1.18rem); line-height: 1.95; max-width: 65em; }
+.gilded-line { font-family: 'Noto Serif SC', Georgia, serif; font-size: clamp(1rem, 1.25vw, 1.18rem); line-height: 1.8; max-width: 60ch; }
 .gilded-dialogue-next { display: flex; align-items: center; gap: 20px; justify-content: flex-end; margin-top: 22px; }
 .gilded-dialogue-next > span { font-size: .72rem; color: var(--gilded-muted); font-variant-numeric: tabular-nums; }
 .gilded-choices { display: grid; gap: 10px; margin-top: 24px; }
@@ -46,8 +46,8 @@
 .gilded-ending-note { margin-top: 25px !important; font-size: .8rem; color: var(--gilded-gold); line-height: 1.8; }
 .gilded-game :is(.primary-btn, .secondary-btn) { font-size: .85rem; line-height: 1.65; white-space: normal; }
 .gilded-game button:disabled { opacity: .5; cursor: not-allowed; }
-.gilded-action-notice { min-height: 28px; margin: 12px 0 0 !important; font-size: .8rem; line-height: 1.7; color: var(--gilded-gold); }
-.gilded-audio-controls { display: flex; align-items: center; gap: 16px; padding: 0 max(5vw, env(safe-area-inset-right)) 12px max(5vw, env(safe-area-inset-left)); }
+.gilded-action-notice { min-height: 0; margin: 4px 0 0 !important; font-size: .8rem; line-height: 1.7; color: var(--gilded-gold); }
+.gilded-audio-controls { display: flex; align-items: center; gap: 16px; padding: 0 max(5vw, env(safe-area-inset-right)) 8px max(5vw, env(safe-area-inset-left)); }
 .gilded-audio-controls[hidden] { display: none; }
 .gilded-audio-controls span { color: var(--gilded-muted); font-size: .75rem; line-height: 1.65; }
 .gilded-sound-settings { display: grid; gap: 18px; }
@@ -69,18 +69,18 @@
 .gilded-art-figure { margin: 0; padding: 16px; background: #17120c; }
 .gilded-art-figure img { display: block; width: 100%; height: auto; max-height: 70dvh; object-fit: contain; }
 .gilded-art-figure figcaption { max-width: 65em; margin: 16px auto 4px; color: #c8baa1; font: .85rem/1.85 'Noto Serif SC', Georgia, serif; }
-.gilded-puzzle, .gilded-film { padding: 26px; background: #17120cf5; border: 1px solid #e9c78561; margin-top: 26px; }
+.gilded-puzzle, .gilded-film { padding: 18px; background: #17120cf5; border: 1px solid #e9c78561; margin-top: 12px; }
 .gilded-puzzle-heading { display: flex; align-items: center; gap: 24px; }
-.gilded-puzzle h1, .gilded-film h1 { font-size: clamp(1.35rem, 2.4vw, 2.1rem); margin: 8px 0 12px; }
+.gilded-puzzle h1, .gilded-film h1 { font-size: clamp(1.3rem, 2.2vw, 1.9rem); margin: 6px 0 8px; }
 .gilded-puzzle-heading p:not(.gilded-kicker), .gilded-film > p { font-size: .9rem; line-height: 1.85; color: var(--gilded-muted); }
 .gilded-puzzle-count { margin-left: auto; color: var(--gilded-gold); font: 2.2rem Georgia, serif; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .gilded-puzzle-count small { font-size: .95rem; color: var(--gilded-muted); }
-.gilded-puzzle-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin: 16px 0 24px; font-size: .8rem; }
+.gilded-puzzle-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 10px 0 14px; font-size: .8rem; }
 .gilded-puzzle-tools label { display: flex; align-items: center; min-height: 44px; gap: 6px; cursor: pointer; }
 .gilded-puzzle-tools input { width: 20px; height: 20px; accent-color: #c99b4e; }
 .gilded-puzzle-tools > span { margin-left: auto; color: var(--gilded-muted); }
-.gilded-jigsaw-workspace { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-.gilded-jigsaw-frame { padding: 10px; border: 6px ridge #a87935; background: #7b5b2c; box-shadow: 0 12px 28px #0006; }
+.gilded-jigsaw-workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.gilded-jigsaw-frame { justify-self: start; width: min(100%, 68svh); padding: 7px; border: 5px ridge #a87935; background: #7b5b2c; box-shadow: 0 12px 28px #0006; }
 .gilded-jigsaw-board { position: relative; aspect-ratio: 1470 / 1070; background: #2f271c; isolation: isolate; }
 .gilded-jigsaw-guide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .2; pointer-events: none; }
 .gilded-jigsaw-guide[hidden] { display: none; }
@@ -94,14 +94,13 @@
 .gilded-fixed-piece { position: absolute; pointer-events: none; }
 .gilded-fixed-piece svg, .gilded-jigsaw-piece svg, .gilded-drag-piece svg { display: block; width: 100%; height: 100%; }
 .gilded-piece-outline { fill: none; stroke: #f7dfae99; stroke-width: .65; pointer-events: none; }
-.gilded-jigsaw-tray { padding: 16px; background: #302316; border: 1px solid #aa80424d; }
-.gilded-jigsaw-tray h2 { font-size: .9rem; margin-bottom: 14px; color: var(--gilded-muted); }
-.gilded-jigsaw-pieces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.gilded-jigsaw-tray { padding: 12px; background: #302316; border: 1px solid #aa80424d; }
+.gilded-jigsaw-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .gilded-jigsaw-piece { position: relative; min-width: 0; padding: 0; border: 1px solid transparent; background: transparent; aspect-ratio: 4410 / 4280; cursor: grab; touch-action: none !important; filter: drop-shadow(0 3px 3px #0009); }
 .gilded-jigsaw-piece:hover, .gilded-jigsaw-piece.is-selected { background: #e9c78515; border-color: #e9c785; }
 .gilded-jigsaw-piece > span { position: absolute; bottom: 3px; right: 4px; background: #17120cdd; padding: 2px 5px; color: #e9c785; font-size: .65rem; pointer-events: none; }
 .gilded-drag-piece { position: fixed; z-index: 1000; transform: translate(-50%, -50%); pointer-events: none; filter: drop-shadow(0 8px 10px #0009); }
-.gilded-puzzle-feedback { min-height: 30px; padding-top: 20px; color: var(--gilded-gold); font-size: .85rem; line-height: 1.8; }
+.gilded-puzzle-feedback { min-height: 0; padding-top: 8px; color: var(--gilded-gold); font-size: .8rem; line-height: 1.6; }
 .gilded-film { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; gap: 12px; margin: 0 !important; padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important; border: 0; background: #000; }
 .gilded-film-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
 .gilded-film-heading h1 { margin: 0; font-size: 1.1rem; }
@@ -116,28 +115,36 @@
 .gilded-journal-art img { width: 100%; height: auto; }
 .gilded-journal-art span { font-size: .8rem; line-height: 1.6; }
 @media (max-width: 850px) {
-  .gilded-toolbar { flex-wrap: wrap; gap: 10px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .gilded-toolbar { flex-wrap: wrap; gap: 8px; padding: max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); }
   .gilded-wordmark { margin-left: auto; }
   .gilded-toolbar > div { width: 100%; justify-content: flex-start; margin-left: 0; gap: 8px; }
   .gilded-toolbar .small-btn { font-size: .7rem; padding: 8px 10px; }
-  .gilded-hud { margin: 14px 5% 0; gap: 14px; align-self: flex-start; font-size: .68rem; }
-  .gilded-main { width: 90%; }
-  .gilded-dialogue { padding: 22px; margin-top: 15svh; }
+  .gilded-hud { margin: 8px 5% 0; padding: 6px 12px; gap: 10px; align-self: flex-start; font-size: .68rem; }
+  .gilded-main { width: auto; margin: 8px max(5vw, env(safe-area-inset-right)) 0 max(5vw, env(safe-area-inset-left)); }
+  .gilded-dialogue { padding: 15px 16px; margin-top: auto; }
+  .gilded-line { font-size: 1rem; line-height: 1.65; }
   .gilded-game-footer > span:last-child { display: none; }
   .gilded-backdrop-layer { position: fixed; height: 100dvh; }
   .gilded-scrim { position: fixed; height: 100dvh; }
-  .gilded-puzzle, .gilded-film { padding: 16px; margin-top: 12px; }
-  .gilded-jigsaw-workspace { grid-template-columns: 1fr; gap: 18px; }
+  .gilded-puzzle, .gilded-film { padding: 10px; margin-top: 8px; }
+  .gilded-puzzle h1 { margin: 4px 0 6px; font-size: clamp(1.2rem, 4vw, 1.65rem); }
+  .gilded-puzzle-heading p:not(.gilded-kicker) { font-size: .78rem; line-height: 1.5; }
+  .gilded-puzzle-tools { gap: 6px 10px; margin: 7px 0 9px; font-size: .72rem; }
+  .gilded-jigsaw-workspace { grid-template-columns: 1fr; gap: 10px; }
   .gilded-jigsaw-pieces { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .gilded-puzzle-heading { align-items: flex-start; gap: 12px; }
   .gilded-puzzle-count { font-size: 1.8rem; }
-  .gilded-jigsaw-frame { padding: 4px; border-width: 4px; }
+  .gilded-jigsaw-frame { width: 100%; padding: 4px; border-width: 4px; }
+  .gilded-jigsaw-tray { padding: 8px; }
+  .gilded-jigsaw-tray h2 { margin-bottom: 5px; }
+  .gilded-jigsaw-pieces { gap: 4px; }
+  .gilded-puzzle-feedback { padding-top: 5px; font-size: .72rem; line-height: 1.45; }
   .gilded-puzzle-tools { gap: 8px 16px; }
   .gilded-puzzle-tools > span { margin-left: 0; }
   .gilded-journal-art { grid-template-columns: 1fr; }
 }
 @media (max-height: 550px) {
-  .gilded-dialogue { margin-top: 38px; }
+  .gilded-dialogue { margin-top: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .gilded-game button, .gilded-backdrop { transition: none; }
