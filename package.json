@@ -12,6 +12,8 @@
     "check:chapter-promo": "node scripts/check-chapter-promo.mjs",
     "check:story": "node scripts/check-story.mjs",
     "check:chapter-three": "node scripts/check-chapter-three.mjs",
+    "check:chapter-four": "node scripts/check-chapter-four.mjs",
+    "check:chapter-four-audio": "node scripts/check-chapter-four-audio.mjs",
     "check:ice-route": "node scripts/check-ice-route.mjs",
     "check:ice-interaction": "node scripts/check-ice-interaction.mjs",
     "check:ice-flow": "node scripts/check-ice-flow.mjs",
@@ -20,7 +22,9 @@
     "check:romance-dlc": "node scripts/check-romance-dlc.mjs",
     "check:route-preview": "node scripts/check-route-preview.mjs",
     "check:dlc-unlock": "node scripts/check-dlc-unlock.mjs",
-    "check:release-notes": "node scripts/check-release-notes.mjs"
+    "check:release-notes": "node scripts/check-release-notes.mjs",
+    "check:chapter-four-puzzle": "node scripts/check-chapter-four-puzzle.mjs",
+    "check:chapter-four-ending": "node scripts/check-chapter-four-ending.mjs"
   },
   "dependencies": {
     "three": "^0.185.1"

@@ -1,4 +1,4 @@
-type Shot = { id: string; src: string; alt: string; className: string; visibleClass: string; position?: string; fallback?: string }
+type Shot = { id: string; src: string; alt: string; className: string; visibleClass: string; position?: string; fallback?: string; onReveal?: () => void }
 const generations = new WeakMap<HTMLElement, number>()
 
 // Keep at most the outgoing frame and its replacement, including during rapid clicks.
@@ -31,6 +31,7 @@ export function transitionSceneImage(layer: HTMLElement, shot: Shot): void {
       incoming.classList.add(shot.visibleClass)
       outgoing?.classList.remove(shot.visibleClass)
       if (outgoing) window.setTimeout(() => outgoing.remove(), 700)
+      shot.onReveal?.()
     }))
   }
   incoming.onerror = () => {

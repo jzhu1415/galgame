@@ -80,6 +80,17 @@ for (const [id, node] of Object.entries(romanceStory)) {
 }
 
 const paths = new Set()
+const gildedSource = readFileSync(new URL('../src/chapter-four-story.ts', import.meta.url), 'utf8')
+const gildedJs = ts.transpileModule(gildedSource, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
+const { gildedStory } = await import(`data:text/javascript;base64,${Buffer.from(gildedJs).toString('base64')}`)
+for (const [id, node] of Object.entries(gildedStory)) {
+  node.lines.forEach((line, index) => {
+    // Established character voices retain the user's original four-clip rotation.
+    if (line.speaker === 'naishen' || line.speaker === 'naiba') return
+    for (const lang of ['zh', 'en']) add(`tts/chapter-04-${id}-${index}-${lang}.mp3`, line.text[lang], line.speaker === 'me' ? 'hero' : 'narrator', lang)
+  })
+}
+
 for (const entry of entries) {
   if (!entry.text.trim()) throw new Error(`Empty TTS text: ${entry.path}`)
   if (paths.has(entry.path)) throw new Error(`Duplicate TTS path: ${entry.path}`)

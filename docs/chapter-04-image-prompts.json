@@ -18,6 +18,461 @@
       ],
       "prompt": "Use case: illustration-story. Asset type: a wide 16:9 visual-novel chapter hero and playable scene for Chapter Four, The Gilded Cage.\nInput images: image 1 is the HARD identity and oil-painting style reference for NAISHEN / 奶神. Keep that exact golden-yellow, short, round creature, cream oval belly, small dark brown/black round eyes with the same size and placement, small mouth, no nose, stubby limbs, tiny toes, and red plus ivory classical draped cloth. It is NOT the green-eyed Naiwa from image 2. Image 2 is ONLY a supporting spatial/prop reference for a remembered domestic room (wooden breakfast table, familiar white mug with a blue rim, warm window light); do NOT copy its characters, green eyes, photoreal finish, or human.\nPrimary request: turn a warm remembered home into a majestic but unsettling golden-thread cage, rendered as a richly textured classical oil painting on canvas with visible restrained brushwork and chiaroscuro. Landscape, wide 16:9 composition. On the right half Naishen stands at about one third of the image height, arms gently open, welcoming yet possessive, exact reference proportions and costume. Behind it a tall arched locked door and delicate straight golden threads stretching from ceiling to floor form a cage across the room. A modest wooden table with the familiar cup sits near the right side. Upper right warm amber window light, burgundy shadows and antique gold. Left 40% is dark quiet architectural negative space for webpage copy; lower 20% calm and dark for game dialogue, keep face and hands away from these areas. Eye-level environmental camera, coherent room geometry, dignified but domestic, no grand throne or religious insignia. Naishen is the only character. No lettering, no logos, no watermark, no inset views, no triptych. Preserve face/body/costume identity rigorously. The room is a new fourth-layer location; reference 2 supports only its memory objects.",
       "review": "对照原始三视图：金黄身体、浅色椭圆肚皮、小型深色圆眼、无鼻小嘴、短肢与红白披布一致。金笼场景首次定稿，后续场景需实际传入本图作空间参考。"
+    },
+    {
+      "id": "chapter-04-naiba-threshold",
+      "png": "assets/images/chapter-04-naiba-threshold.png",
+      "webp": "public/images/chapter-04-naiba-threshold.webp",
+      "references": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸身份、紫色体型、绿色眼睛、右手宝石手甲"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "第四层场景空间、光照与油画风格"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset type: wide 16:9 visual-novel Chapter Four scene. Input 1 / naiba-character-turnaround.png is the HARD identity constraint for NAIBA: purple rounded creature, cream oval belly, green irises, short gray hands and toes, same face and proportions. Metal gauntlet with colored inset gemstones on the CHARACTER'S RIGHT hand (viewer left in a frontal view), never both hands. Input 2 / chapter-04-gilded-room.png defines the established golden cage room, its arched door, golden threads, chiaroscuro, oil brushwork, antique furnishings, burgundy and ivory cloth accents. Paint the outer doorway of this same room. Naiba stands on the right of the landscape frame at the threshold with right gauntlet held across the door to bar entry, left hand low, angry exhausted protective ambiguity, small restrained frown. No other characters. A single thread runs from the doorway across the gauntlet. Keep his skin purple and irises green despite amber light. View from outside facing him, unlit passage in left half, golden room light behind him, thick classical oil canvas texture, hand-painted edges, no photoreal 3D finish. The gold room reference is only scene/style, NOT Naiba's identity or costume. Left 35% negative space and lower 22% calm darkness for dialogue. No letters, captions, watermark, weapons, halo, crown, robe, humans or extra fingers. Same visual novel painting style as input2.",
+      "review": "逐项对照奶霸原始三视图：紫色轮廓、绿色眼睛、浅色肚皮一致；手甲在角色右手（画面左侧）。没有套用奶神披布。"
+    },
+    {
+      "id": "chapter-04-memory-gallery",
+      "png": "assets/images/chapter-04-memory-gallery.png",
+      "webp": "public/images/chapter-04-memory-gallery.webp",
+      "references": [
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "同一房间的附属画廊墙、材质、油画质感"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset type: a wide 16:9 oil-painted visual novel investigation room. Reference image 1 / chapter-04-gilded-room.png is the HARD established location and painting style: same antique gold thread architecture, heavy burgundy drapes, worn wooden table, soft ivory fabrics, and warm windowlight. We are looking at the adjoining gallery wall of that exact domestic cage room. NO people or creatures. On the wall THREE separate old gilt framed canvases spaced clearly left, center, right, none touching: left canvas depicts a rainy open window with a tilted umbrella leaning beside it; middle canvas depicts a white blue-rim mug resting beside a shut small notebook; right canvas depicts an ordinary open doorway with a plain brass key on the inside table. Each painting has a few thin gold overpaint threads on its surface but the objects are still identifiable. These are actual framed paintings within one coherent room, not an infographic or three panels in the output. Warm amber light from offscreen right, deep umber shadows, visible oil paint brush strokes and canvas tooth, refined muted colors. Foreground lower 22% is unobtrusive dark floor for game dialogue. The frames occupy upper middle 60% so clickable investigation markers can align to them. Cinematic eye-level still life, 1672x941-type landscape. No text, numbers, letterlike scribbles, captions, halo, throne, watermark, characters. Preserve room continuity and oil texture.",
+      "review": "无角色。对照金笼场景：红帘、暗金墙面、暖窗与油画笔触一致；三幅实景画框分别含雨窗与伞、杯与合上的书、内侧钥匙与开门。",
+      "status": "superseded",
+      "supersededBy": [
+        "chapter-04-puzzle-gallery"
+      ],
+      "note": "旧版三画玩法素材保留归档，2026-10-09 新版剧情与日记不再引用。"
+    },
+    {
+      "id": "chapter-04-open-door",
+      "png": "assets/images/chapter-04-open-door.png",
+      "webp": "public/images/chapter-04-open-door.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份与红白披布硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "同一房间、拱门与杯子位置，油画与光照连续性"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset type: wide 16:9 visual-novel concluding scene for The Gilded Cage. Input1 / naishen-character-turnaround.png is the HARD character identity constraint: golden yellow round stubby body, cream belly, SAME small dark round eyes and their placement, small mouth, no nose, red and ivory classical draped cloth, short hands and tiny toes. Input2 / chapter-04-gilded-room.png is the HARD established room, antique door, golden-thread architecture, oil brushwork and palette continuity. Show the same room after its door has opened. The door visible near center opens toward a dim blue-gray dawn exterior; several slack golden threads hang harmlessly beside it rather than blocking passage. Naishen on RIGHT half at one third frame height turns slightly toward the open door with arms gently lowered, same silhouette and exact clothes. Expression thoughtful and relieved, no tears, no huge anime eyes. Warm amber interior and muted cool dawn outside, tangible classical oil canvas with moderate impasto in light, painterly edges. Familiar blue-rim cup remains on wooden table at far right. Left 35% dark architectural space and lower22% subdued for interface copy. Single coherent landscape, environmental medium-wide shot. No other characters, crowns, halo, text, captions, watermark, split panels or religious imagery. This is a change of pose and doorway state; preserve the original identity in input1, never copy a drifted secondary identity.",
+      "review": "对照奶神原始身份：金黄、浅色肚皮、同尺寸深色眼、小嘴与红白布一致；侧向站姿保留原轮廓。门开启、金线松弛，与前一场景一致。"
+    },
+    {
+      "id": "chapter-04-naishen-welcome",
+      "png": "assets/images/chapter-04-naishen-welcome.png",
+      "webp": "public/images/chapter-04-naishen-welcome.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始三视图：身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "金笼房间：空间、照明与油画风格参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: welcoming face close-up. Naishen's face and upper chest fill much of the frame, face centered at x=55%, y=36%, with a small open-mouth smile, attentive dark round eyes and inviting warmth. A raised palm partly visible lower left, red and ivory drapery on shoulders. Golden window light from right, softly blurred golden room and suspended threads behind. A genuinely intimate camera distance, face approximately 38% of frame height; keep proportions of small reference eyes unchanged. Gentle welcoming mood, not triumphant.",
+      "review": "对照三视图：金黄圆头、深棕圆眼、无鼻小嘴、浅色肚皮、红／米白布一致；表情与动作近景沿用同一金笼空间，未添加神环或皇冠。"
+    },
+    {
+      "id": "chapter-04-naishen-guarded",
+      "png": "assets/images/chapter-04-naishen-guarded.png",
+      "webp": "public/images/chapter-04-naishen-guarded.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始三视图：身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "金笼房间：空间、照明与油画风格参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: guarded expression close-up during the argument about leaving. Naishen head and shoulders, centered, face fills 40% of frame height; identical small dark round eyes, slightly lowered mouth corners, eyes looking toward a door off-camera left. No human brows added. One yellow hand nervously pinches a single fine GOLD THREAD at chest height, red robe folds on the other shoulder. Warm light fading toward a darker ochre background, threads softly blurred, a hint of the locked arch. Emotion is quiet fear expressed through gaze and hand tension, not monstrous anger. Distinct pose and lighting from the welcoming shot.",
+      "review": "对照三视图：金黄圆头、深棕圆眼、无鼻小嘴、浅色肚皮、红／米白布一致；表情与动作近景沿用同一金笼空间，未添加神环或皇冠。"
+    },
+    {
+      "id": "chapter-04-naishen-mural",
+      "png": "assets/images/chapter-04-naishen-mural.png",
+      "webp": "public/images/chapter-04-naishen-mural.webp",
+      "references": [
+        {
+          "path": "references/naishen-supplied-mural.png",
+          "purpose": "用户原画：去水印目标，保持完整构图"
+        },
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份参考，仅提供上下文，不重画原作"
+        }
+      ],
+      "prompt": "Use case: precise-object-edit. Image 1 is the supplied painting EDIT TARGET. Remove ONLY the white text/watermark in the top-right corner (尼采的caT). Seamlessly paint the tiny affected area with the surrounding gold and gray oil-painted clouds and canvas texture. Preserve the ENTIRE existing composition, central yellow character, poses, eyes, red/ivory drapery, small winged figures, bottom crowd, golden light, cloud shapes and original landscape aspect ratio. No crop, no redesign, no extra objects or lettering. Image 2 is the original Naishen identity reference for context only: do not redraw the supplied painting's characters. Deliver the original whole painting with the corner text removed, no watermark anywhere.",
+      "review": "对照用户原画：右上角白字已去除，金灰云层连续；中央人物、红／米白布、飞翼群像与底部人物保留，全幅无裁切。保留原作眼色，仅作画中画，不作为奶神身份参考。"
+    },
+    {
+      "id": "chapter-04-naishen-vulnerable",
+      "png": "assets/images/chapter-04-naishen-vulnerable.png",
+      "webp": "public/images/chapter-04-naishen-vulnerable.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "原始三视图：角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: vulnerable face, very close and quiet. Naishen's round face centered x=50%, y=33%, same tiny dark round eyes, gaze lowered slightly toward its own hands, mouth barely open as if asking whether it will be remembered. One loose gold thread hangs between fingertips at chest level, other yellow hand clutches the red cloth edge. No crying or extra brows. Window light gently touches one cheek; background dark and out of focus. Three-quarter view, not side profile. Facial identity is exact. A tender anxious pause, entirely different posture from welcoming.",
+      "review": "与三视图对照：金黄圆头、深棕圆眼、无鼻小嘴、浅色肚皮、红／米白披布一致；抓住披布、低头看线表达犹豫。"
+    },
+    {
+      "id": "chapter-04-naishen-relieved",
+      "png": "assets/images/chapter-04-naishen-relieved.png",
+      "webp": "public/images/chapter-04-naishen-relieved.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "原始三视图：角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: relieved close-up after deciding to open the door. The same Naishen head and shoulders centered, face fills 38% of image height. Small understated smile, closed lips, dark round eyes looking toward the viewer with a gentle sense of loss and relief. Both shoulders lower; one open empty palm near its chest instead of gripping. Red/ivory drapery. Cool blue early morning light now enters from the left through the SAME arch, mixed with amber interior light on the right. Fine gold threads slack and out of focus, no halo; do not place a bright disc behind the head. This is an intimate farewell, not a celebratory pose.",
+      "review": "与三视图对照：金黄圆头、深棕圆眼、无鼻小嘴、红／米白布一致；张开空掌，门外蓝光和室内暖光形成释然近景，无神环。"
+    },
+    {
+      "id": "chapter-04-thread-grip",
+      "png": "assets/images/chapter-04-thread-grip.png",
+      "webp": "public/images/chapter-04-thread-grip.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "原始三视图：角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: extreme close-up of Naishen's yellow fingers controlling gold threads, NO face in the frame. Camera at chest and table level. Its rounded yellow hand extends toward the viewer at center, several delicate golden strings trail from BETWEEN the fingers toward a pale ivory fabric sleeve visible foreground lower right. Red and ivory folded robe at left confirms identity; wooden chair edge and amber room blur behind. Thin elegant golden thread, not heavy chains; small yellow rounded digits exactly consistent with the turnaround. Main hand in central 40% at mid-height, lower fifth dim. A soft gesture that feels unsettlingly restrictive. No other person or human hand, only a pale fabric sleeve.",
+      "review": "与原始身份和房间对照：金黄色圆指与红／米白披布保留，牵线手部和前景布袖清晰，细线连接袖口，没有新增其他角色。"
+    },
+    {
+      "id": "chapter-04-thread-release",
+      "png": "assets/images/chapter-04-thread-release.png",
+      "webp": "public/images/chapter-04-thread-release.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "原始三视图：角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Create one cinematic widescreen 16:9 visual-novel CG, not a collage or contact sheet. Hand-painted classical oil on canvas, tactile brush strokes, warm ochre and red, soft chiaroscuro, painterly depth, no photorealistic CGI, no text, no watermark. Reference 1 is the HARD character identity reference: Naishen, round GOLDEN YELLOW head/body, small round dark brown eyes spaced exactly as reference, tiny mouth, NO nose, NO green eyes, NO ears or hair, red and ivory folded drapery. Reference 2 defines the SAME golden-thread room, lighting and oil style; it must not change the character identity. Camera is actually closer, with new painting and new pose; preserve a quiet lower fifth for dialogue. Face or important subject must be within the central 45% so mobile portrait cropping retains it. No halos, crowns, crosses, religious symbols or extra characters. SHOT: hand and thread release detail. NO face in frame. Naishen's two rounded GOLDEN YELLOW hands gently UNTYING a single thin golden thread from an ivory FABRIC sleeve at center. One hand loosely opens, the other supports the falling loop; loose ends curl naturally downward. No human hands or wrists visible; sleeve is fabric only. Large red and ivory robe folds occupy the left; background has soft cool-blue light from the now open room arch. Three-quarter camera, close enough to see canvas strokes and fabric fibers, main hands central midheight. It must look like careful release, not gripping, binding or pulling tight. This image contrasts the earlier taut threads.",
+      "review": "与原始身份对照：两只金黄圆手、红／米白布保持一致，手掌打开且细线下垂。画面着重松线动作，未清楚展示另一人的袖口，不作为袖口解结的唯一镜头。"
+    },
+    {
+      "id": "chapter-04-gauntlet-key",
+      "png": "assets/images/chapter-04-gauntlet-key.png",
+      "webp": "public/images/chapter-04-gauntlet-key.webp",
+      "references": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "原始三视图：角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-naiba-threshold.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Create one wide 16:9 cinematic close-up, hand-painted oil on canvas matching image 2's warm gold room and shadows. Image 1 is HARD identity: Naiba PURPLE round body, his RIGHT hand wears the ornate antique metal gem gauntlet. Image 2 is the established threshold and oil style. Extreme close-up of ONLY the right jeweled gauntlet on a short purple forearm, entering from upper right toward center, crushing a slender luminous GOLD KEY between its armored fingers. Bent key with tiny golden fragments, not an explosion. Colored gems and carved metal remain consistent with the original reference; visible central yellow gem subdued, no magical beam. Background softly blurred golden arch and dark stone passage. No face, no new costume, no other characters, no lettering or watermark. Hand and key stay within central 40% for mobile cropping. Lower fifth dark for dialogue. The cracked luminous key is distinct from the ordinary brass door key on the table.",
+      "review": "与奶霸三视图和门槛场景对照：紫色前臂、古铜雕刻金属手甲、多色宝石一致；仅右臂的手甲局部，发光钥匙被折断，碎片无夸张爆炸。"
+    },
+    {
+      "id": "chapter-04-cup-detail",
+      "png": "assets/images/chapter-04-cup-detail.png",
+      "webp": "public/images/chapter-04-cup-detail.webp",
+      "references": [
+        {
+          "path": "assets/images/chapter-04-memory-gallery.png",
+          "purpose": "既有画廊：对应记忆画的物件和空间硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Use case: illustration-story. One 16:9 hand-painted classical oil CG with tactile canvas brush strokes. Reference 1 is the HARD object and painting identity: the CENTRAL memory picture in the established gallery, its white BLUE-RIM cup and CLOSED brown notebook. Reference 2 defines the golden room style/lighting, not new objects. Paint a NEW close camera view INSIDE that central painting: a white enamel cup with navy blue rim and a small nick on its rim beside a closed worn brown notebook on the warm wooden table. Fine gold overpaint threads trace across the notebook cover, but it remains CLOSED. Center both cup and book within the middle 40% of image, cup large at upper-middle, notebook foreground; blurred ochre wall and sunlit window behind. Tiny corner of gilded frame visible at extreme edges, showing this is an old painting. Quiet dark lower fifth for UI. No characters, no eyes hovering above, no readable words, no watermark, no additional props.",
+      "review": "与画廊中央画对照：白色蓝边杯、杯沿缺口、合拢棕色日记、木桌与金线一致，油画笔触及框边保留。",
+      "status": "superseded",
+      "supersededBy": [
+        "chapter-04-puzzle-assembled"
+      ],
+      "note": "旧版三画玩法素材保留归档，2026-10-09 新版剧情与日记不再引用。"
+    },
+    {
+      "id": "chapter-04-window-detail",
+      "png": "assets/images/chapter-04-window-detail.png",
+      "webp": "public/images/chapter-04-window-detail.webp",
+      "references": [
+        {
+          "path": "assets/images/chapter-04-memory-gallery.png",
+          "purpose": "既有画廊：对应记忆画的物件和空间硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Use case: illustration-story. One wide 16:9 painterly oil CG matching the established memory gallery. Reference 1 is the HARD location/object reference: the LEFT painting showing rain window, folded dark umbrella and an outside road. Reference 2 defines the golden room's oil brushwork and chiaroscuro, not a character reference. New close-up from INSIDE the left picture: large beads of rain on window glass, a narrow gray-blue road outside leading away through rain, folded dark umbrella with curved wood handle leaning beside the wooden window sill. Place window road and umbrella around center x=50%, upper and middle area for mobile crop. Fine gold overpaint along cracks of the pane, with underlying cool gray-blue rainy color peeking through. Warm indoor light on wood, cool outdoors; hint of gilded painting frame at far edges. Detailed tactile paint, real close camera, no characters, no writing, no watermark. Dim unobtrusive lower fifth for dialogue.",
+      "review": "与画廊左画对照：雨窗、弯柄收拢黑伞、窗外灰蓝道路与金线一致，冷暖光和油画框边延续既有场景。",
+      "status": "superseded",
+      "supersededBy": [
+        "chapter-04-puzzle-pieces"
+      ],
+      "note": "旧版三画玩法素材保留归档，2026-10-09 新版剧情与日记不再引用。"
+    },
+    {
+      "id": "chapter-04-key-detail",
+      "png": "assets/images/chapter-04-key-detail.png",
+      "webp": "public/images/chapter-04-key-detail.webp",
+      "references": [
+        {
+          "path": "assets/images/chapter-04-memory-gallery.png",
+          "purpose": "既有画廊：对应记忆画的物件和空间硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "既有场景：空间、照明与油画质感参考"
+        }
+      ],
+      "prompt": "Use case: illustration-story. One 16:9 classical oil-painted close-up CG with thick tactile canvas strokes. Reference 1 is the HARD scene and object identity: the RIGHT picture in the memory gallery, a plain small BRASS KEY on a wood table INSIDE a closed wood doorway. Reference 2 is the established golden room and light style. Repaint from a near table-level camera: ordinary old brass key in sharp focus at center x=50%, y=47% on scarred wood, round simple bow and toothed stem, definitely NOT glowing. A closed dark wood door and its metal handle in soft background, thin gold threads reach toward its handle. Warm angled light from right catches the key, deep ochre shadows, gold frame edge faint at extreme perimeter. Main key large enough to occupy 25% frame width, central for mobile crop. Lower fifth dark and quiet. No characters, no hands, no text, no watermark, no ornate magic key, no new objects.",
+      "review": "与画廊右画对照：普通黄铜钥匙放在门内木桌，木门及细金线保留，不发光且明显不同于奶霸折断的钥匙。",
+      "status": "superseded",
+      "supersededBy": [
+        "chapter-04-ending-key-surrender"
+      ],
+      "note": "旧版三画玩法素材保留归档，2026-10-09 新版剧情与日记不再引用。"
+    },
+    {
+      "id": "chapter-04-puzzle-gallery",
+      "png": "assets/images/chapter-04-puzzle-gallery.png",
+      "webp": "public/images/chapter-04-puzzle-gallery.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始三视图：身份、深棕小眼、金黄体型与红白披布硬约束"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "已定金笼空间、暖光、金线、木桌及油画风格"
+        },
+        {
+          "path": "assets/images/chapter-04-naishen-mural.png",
+          "purpose": "群像画的拼片图案，不替代奶神身份"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Generate ONE cinematic widescreen 16:9 oil-painted visual novel CG, tactile brush strokes on canvas, warm ochre, red fabric and antique gold, matching reference 2. Input image 1 is HARD character identity: the original NAISHEN turnaround, golden yellow short round creature, cream oval belly, SMALL dark brown round eyes with exactly the original spacing/size, tiny mouth and no nose, rounded short arms and toes, red and ivory folded drapery. No green eyes, no halo/crown. Input image 2 is HARD location/style reference: same gilded room with tall locked arch, amber window light, subtle thin gold threads, dark red curtains, wooden furniture. Input image 3 is ONLY the exact painting motif: yellow central figure in red/ivory, golden clouds, winged figures and lower crowd; preserve that motif on picture pieces, NOT its green eyes for the living Naishen. NEW SHOT: THE BROKEN PAINTING AND ITS TABLE. A single large empty ornate gold frame centered on the wall, with a few pieces of the reference 3 painting remaining at corners, most of the painting absent. Beneath it a broad wooden table bearing about twelve large interlocking jigsaw pieces of THAT gold-cloud/red-cloth painting, scattered and face up. Clearly visible jigsaw tabs, not shards or paper scraps. Living Naishen stands right of the frame near center-right, about half image height, looking down toward the pieces, hands resting loosely at its belly, anxious gentle face; exact reference1 appearance. No other living characters. Camera eye-level medium-wide, frame and pieces in central 60%, bottom 18% dark calm for dialogue. NO THREE PICTURES/TRIPTYCH, no rain-window artwork, no cup artwork, no key artwork anywhere. Only ONE broken ensemble painting. No lettering, no watermark, no UI, no collage. Coherent perspective and realistic relative prop sizes.",
+      "review": "已查看生成图并与三视图、房间和群像画对照：奶神金黄体型、小型深棕圆眼、无鼻小嘴、浅色肚皮及红／米白披布一致。画廊仅有一幅缺片群像画和桌面拼片，没有旧三幅画；群像图案在拼片中保留。"
+    },
+    {
+      "id": "chapter-04-puzzle-pieces",
+      "png": "assets/images/chapter-04-puzzle-pieces.png",
+      "webp": "public/images/chapter-04-puzzle-pieces.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份：金黄圆手与红白披布"
+        },
+        {
+          "path": "assets/images/chapter-04-puzzle-gallery.png",
+          "purpose": "已核对的新画廊：木桌、金框、光线与油画笔触"
+        },
+        {
+          "path": "assets/images/chapter-04-naishen-mural.png",
+          "purpose": "拼片表面的唯一群像画图案"
+        }
+      ],
+      "prompt": "Use case: illustration-story. One NEW wide 16:9 oil-painted visual novel CG with visible brushwork, no text, no watermark. Image1 is HARD original Naishen identity, golden yellow rounded fingers, red/ivory drapery; do NOT use the painting's green eyes for living character. Image2 is HARD new puzzle-gallery location: dark wood table, single gold picture frame, amber side light. Image3 is the EXACT sole mural design to appear across jigsaw pieces: yellow central figure red/ivory, golden clouds, winged figures and bottom crowd. SHOT: CLOSE VIEW OF PIECES ON THE TABLE, camera overhead at a 35-degree angle, several LARGE thick interlocking jigsaw pieces scattered across the wooden table. The central red-cloth/cream-belly piece and cloudy winged-figure pieces must be unmistakable fragments of image3. Living Naishen's one rounded yellow hand with short fingers rests just next to a loose piece at upper-right, red/ivory cloth edge visible, NO face. The frame edge in soft background, same amber light. Make meaningful tactile detail and clear puzzle tabs. Main pieces within central 50%, lower18% dim calm for dialogue. Not three separate paintings; no rain window artwork, no cup artwork, no key artwork. No other people, no extra fingers, no new objects.",
+      "review": "对照奶神三视图：金黄圆手、短指与红／米白披布一致，未展示脸部。画片有凹凸边，表面群像、金云与红布延续原画；同一深色木桌和金框背景，没有旧三画。"
+    },
+    {
+      "id": "chapter-04-puzzle-assembled",
+      "png": "assets/images/chapter-04-puzzle-assembled.png",
+      "webp": "public/images/chapter-04-puzzle-assembled.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神身份上下文，画中人物保持原作"
+        },
+        {
+          "path": "assets/images/chapter-04-puzzle-gallery.png",
+          "purpose": "同一新画廊、单一金框、红帘、木桌与照明"
+        },
+        {
+          "path": "assets/images/chapter-04-naishen-mural.png",
+          "purpose": "完整群像画：中央奶神、云层、飞翼与人群"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Generate ONE widescreen16:9 classical oil CG in tactile painterly style, not CGI, no text/watermark. Image1 is original Naishen identity context, do not add any new living character. Image2 is HARD room location and composition: same ONE ornate gold frame, amber window and burgundy drapery, wooden table; NONE of the old three memory pictures. Image3 is HARD complete painting design: preserve its exact central yellow figure's red/ivory cloth, pose, gold clouds, winged figures and lower crowd. SHOT: THE FINISHED PAINTING IN THE FRAME. Front-on close-medium camera on the large completed image3 picture fitted inside the same gold frame, subtle twelve-piece 4-column/3-row jigsaw joins, no missing areas, no loose pieces. The artwork must remain a continuous full landscape picture, not panels and not a new painting composition. A small strip of the now empty wooden table below the frame, warm side light catching raised brush strokes, soft golden threads slack along the frame's outside edges. Frame fills about80% height, picture centered; lower18% darker for dialogue. No living character, no rain/cup/key paintings, no extra art, no halos added to the room.",
+      "review": "对照群像画与新画廊：同一单幅金框，中央奶神张臂、红／米白披布、云层、飞翼人物与底部人群保留，拼缝完整无缺片。作为场景中的重绘群像；实际可玩拼图继续使用用户去水印原画。"
+    },
+    {
+      "id": "chapter-04-ending-bedside",
+      "png": "assets/images/chapter-04-ending-bedside.png",
+      "webp": "public/images/chapter-04-ending-bedside.webp",
+      "references": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "现实奶蛙原始三视图：金黄身体、绿眼区域、深色指尖、浅色肚皮"
+        },
+        {
+          "path": "public/images/M01.webp",
+          "purpose": "第一章已定病房：病床、白被、监护仪、窗与晨光"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "第四章油画笔触与冷暖光绘画风格，非病房地点／角色"
+        }
+      ],
+      "prompt": "Use case: illustration-story. ONE widescreen16:9 hand-painted classical oil visual-novel ending CG, tactile brushwork. Image1 is HARD living NAIWA identity: golden yellow elongated round creature, cream oval belly, rounded head no nose, short rounded arms, DARK gray fingertips, original green eye areas; eyes CLOSED asleep, no red robe. Image2 is HARD established hospital bedside: white pillow and blanket, metal bedrail, simple monitor behind, morning windowlight. Image3 is oil painting STYLE ONLY, not its room or red-robed character. NEW SHOT: BACK AT THE HOSPITAL. Naiwa still asleep propped on the same pillows, same proportions, no costume. Medium intimate three-quarter bedside composition: face center x50% upper-third, near hand with dark fingertips resting LOOSELY on white sheet middle center, fingers visibly relaxed rather than clenched. Gentle blue ambient and faint warm morning windowlight, quietly hopeful but not awake, no grin. No human or human hands, no purple character, no extra person, no tubes attached to character. Lower18% dim calm for dialogue. No readable text, watermark, inset, split-screen or montage.",
+      "review": "对照奶蛙三视图与 M01 病房：金黄身体、浅色椭圆肚皮、绿眼区域和深灰指尖保留，双眼闭合、手指放松，未加红白披布。病床、监护仪与晨光延续同一地点，油画笔触清晰。"
+    },
+    {
+      "id": "chapter-04-ending-journal",
+      "png": "assets/images/chapter-04-ending-journal.png",
+      "webp": "public/images/chapter-04-ending-journal.webp",
+      "references": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始身份：背景床上的轮廓与颜色"
+        },
+        {
+          "path": "public/images/M01.webp",
+          "purpose": "病房及合拢棕色日记／白被／晨光的位置参考"
+        },
+        {
+          "path": "assets/images/chapter-04-naishen-mural.png",
+          "purpose": "日记夹入的小画：群像画的原始图案"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "第四章油画笔触与暖光风格"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Create one cinematic widescreen16:9 oil-painted CG, tactile restrained brushwork, gentle cool blue and warm morninglight. Image1 is HARD NAIWA identity (yellow round body, cream belly, dark fingertips), image2 HARD established hospital BEDROOM and brown journal prop, image3 HARD painting motif for a small postcard inserted in the journal, image4 oil STYLE only not room/location. NEW SHOT: THE MEMORY BROUGHT HOME. Close-up at bedside looking down at an open worn brown notebook on the white bed-edge blanket. One small rectangular picture of EXACT image3 golden cloud group composition is tucked between two cream pages, only faint indistinct writing with no readable letters. Picture at center x50% y45%, notebook occupies middle60%. Naiwa's yellow sleeping forearm and gray fingertips softly out of focus at upper edge, no face needed, no human hands or extra people. Matching hospital rail/windowlight in soft background. A quiet empty chair edge in far corner implies the viewer is sitting bedside. No red-robed living Naishen in hospital. No watermarks, readable text, labels, numbers, UI, collage. Lower18% darker blanket and brush strokes for dialogue.",
+      "review": "对照 M01 与奶蛙三视图：棕色日记、白被与床栏相符，背景金黄色前臂和灰色指尖保持身份；原群像的小画夹在日记里，未添加可读文字或新角色，近景油画笔触保留。"
+    },
+    {
+      "id": "chapter-04-ending-key-surrender",
+      "png": "assets/images/chapter-04-ending-key-surrender.png",
+      "webp": "public/images/chapter-04-ending-key-surrender.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份：金黄手部、短指、红白披布"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "同一金笼房间与黄铜物件、木桌、光线"
+        },
+        {
+          "path": "assets/images/chapter-04-puzzle-gallery.png",
+          "purpose": "新版画廊空间：单幅拼图金框和木桌"
+        }
+      ],
+      "prompt": "Use case: illustration-story. One wide16:9 oil-painted close-up ending CG, painterly canvas texture, amber and burgundy. Reference1 HARD original NAISHEN identity for two GOLDEN YELLOW rounded short-fingered hands, cream belly/red and ivory drapery; reference2 HARD golden room and ordinary brass key style; reference3 the new SINGLE painting gallery location with dark wood table. SHOT: THE KEY HANDED OVER. Camera table/chest level, Naishen's two yellow rounded hands gently receiving and enclosing an ORDINARY NON-GLOWING brass door key with simple round bow and toothed shaft, palms center x50% y45%. No other hands or human body visible. A small section of cream belly and red/ivory robe fills upper background, NO FACE. Thin golden thread loops around key's bow leading toward locked door blurred behind. Amber glow is warm yet uneasy; not a magic explosion or jeweled gauntlet. Clear tangible brass key, distinct camera from thread-grip/release scenes. Lower18% calm dark table for dialogue. No old three paintings, no lettering, watermark or collage.",
+      "review": "对照奶神三视图：金黄圆手、短圆指、浅色肚皮与红／米白布一致。普通黄铜钥匙没有发光，双手收住钥匙，背景是原金笼拱门，无旧三幅画。"
+    },
+    {
+      "id": "chapter-04-ending-closed-room",
+      "png": "assets/images/chapter-04-ending-closed-room.png",
+      "webp": "public/images/chapter-04-ending-closed-room.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份：金黄圆头、深棕小眼、浅肚皮、红白布"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "被金线封住的拱门、晨前暖光与红帘"
+        },
+        {
+          "path": "assets/images/chapter-04-puzzle-gallery.png",
+          "purpose": "新画廊单一画框、桌椅"
+        },
+        {
+          "path": "assets/images/chapter-04-naishen-mural.png",
+          "purpose": "完成的群像画在背景框中，非角色眼色参考"
+        }
+      ],
+      "prompt": "Use case: illustration-story. ONE widescreen16:9 oil-painted ending CG matching reference2 warm gold/burgundy canvas brushwork. Ref1 HARD original NAISHEN living identity: golden yellow short round creature, small DARK BROWN round eyes exact size/placement, tiny mouth no nose, cream oval belly and RED/IVORY drapery. Ref2 SAME gilded locked-arch room; ref3 SAME single puzzle-painting gallery setup; ref4 exact golden-cloud ensemble painting motif on the wall only, not living Naishen identity. SHOT: STAYING INSIDE, quiet uneasy POV from the chair. Living Naishen in center-right, medium full-body, gently smiling at viewer, holds small ordinary brass key close to cream belly. Empty wooden chair drawn beside it in foreground, no human/player shown. Locked arched door at center background sealed by several fine gold threads, warm windowlight narrower than before. ONE completed reference4 painting on left-center wall in ornate frame, no missing pieces, no old three pictures. Fine gold threads hang close to camera edges, making viewer feel enclosed, never over Naishen face. Character and lock remain in central60%, lower18% subdued for dialogue. No halos/crowns, no extra character, no text or watermark, no panel layout.",
+      "review": "与奶神原始三视图对照：金黄圆头和短圆身体、小型深棕圆眼、无鼻小嘴、浅肚皮及红／米白披布一致。只挂完成的群像一幅画，锁门、细金线与前景椅子延续金笼，手里有黄铜钥匙，没有旧三画。"
+    },
+    {
+      "id": "chapter-04-ending-fallen-journal",
+      "png": "assets/images/chapter-04-ending-fallen-journal.png",
+      "webp": "public/images/chapter-04-ending-fallen-journal.webp",
+      "references": [
+        {
+          "path": "references/naishen-character-turnaround.png",
+          "purpose": "奶神原始身份：远景金黄体型与红白披布"
+        },
+        {
+          "path": "assets/images/chapter-04-gilded-room.png",
+          "purpose": "金笼房间拱门、金线、木桌和油画光照"
+        },
+        {
+          "path": "assets/images/chapter-04-puzzle-gallery.png",
+          "purpose": "新版画廊只有群像金框，地板和桌面空间"
+        },
+        {
+          "path": "public/images/M01.webp",
+          "purpose": "玩家携带的棕色观察日记物件"
+        }
+      ],
+      "prompt": "Use case: illustration-story. ONE 16:9 hand-painted oil ending CG, thick subtle brushwork, deep brown and desaturated gold. Ref1 HARD Naishen identity yellow round creature red/ivory drapery, same proportions; ref2 HARD locked golden-thread room, arch, woodtable and lighting; ref3 new SINGLE painting gallery, remove all old three pictures; ref4 ONLY brown journal/notebook prop identity, not hospital location or human. SHOT: TOO WEAK TO RETURN. Low floor-level tilted camera (about8 degrees), worn brown CLOSED journal slipped onto dark wooden floor near table leg, centered x50% y55%, a single loose golden thread crosses notebook cover and trails toward locked arch. Naishen appears only as softly blurred partial yellow legs and red/ivory cloth at upper-center background, no face required, not a different character. Door in distant dark blur, golden light nearly gone; upper shadows deepen and subtle vignette conveys dizziness without text/overlays. No injured bodies, no human, no blood, no symbolic skull. Main journal and thin thread central50%, lower18% dark calm for UI. No text, watermark, three paintings, split-screen or collage.",
+      "review": "对照原始身份与房间：背景金黄脚和红／米白披布保持奶神身份，没有新增人物。棕色日记滑落木地板，细金线和模糊的锁门呼应耗尽精神力；不显示旧三画或伤害画面。"
+    },
+    {
+      "id": "chapter-04-ending-bedside-reality",
+      "png": "assets/images/chapter-04-ending-bedside-reality.png",
+      "webp": "public/images/chapter-04-ending-bedside-reality.webp",
+      "references": [
+        {
+          "path": "assets/images/chapter-04-ending-bedside.png",
+          "purpose": "油画编辑目标，严格保持病床、角色姿势、构图、晨光与物件位置，用于渐变配准"
+        },
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始身份硬约束：黄色轮廓、绿色眼部、浅色肚皮、灰色手指"
+        },
+        {
+          "path": "public/images/M01.webp",
+          "purpose": "原版柔和电影感 3D CG 质感与病房材质参考，不复制人手或日记"
+        }
+      ],
+      "prompt": "Use case: style-transfer.\nAsset: final 16:9 hospital CG for a visual novel, matched oil-painting-to-reality dissolve.\nImage 1 is the EDIT TARGET and strict camera/composition/pose reference: keep its exact layout, silhouette, framing, bedding folds, bed rails, monitor, right window, flowers, warm morning sunlight, and all object locations. Image 2 is the ORIGINAL character identity reference for Naiwa: golden yellow round elongated body, pale cream oval belly, green eyelid/eye areas, tiny mouth, gray fingertips, short arms; preserve this identity precisely. Image 3 is the ORIGINAL GAME RENDERING STYLE and hospital material reference ONLY: polished soft cinematic 3D CG, smooth subtly textured character surface, realistic white bedding, glass, metal, medical monitor, natural depth and warm daylight. Do NOT copy image 3's foreground human hand or open journal.\nPrimary request: render Image 1 in Image 3's original cinematic 3D style. Change only the rendering medium, removing every oil brushstroke, impasto, painted edge and canvas texture. Preserve the exact sleeping pose and closed green eyelids; left-center character and cream belly, gray fingers resting on white blanket; sunlit window and flowers on right. Same camera angle and wide crop, no reframing. The two images will dissolve over each other, so strongly prioritize geometric registration with Image 1.\nNo additional people, human hands, journal, robes, new objects, text, logo or watermark. No oil painting, illustration, cartoon line art or plastic toy appearance.",
+      "review": "对照原始三视图与原版 M01：黄色身体、绿色闭眼区域、浅色肚皮、灰色手指一致。对照油画目标：病床姿势、角色位置、右侧晨光窗、监护仪和花束保持同构图；原版柔和 3D CG 材质取代明显油画笔触。未新增人手、日记、红披布或文字。"
     }
   ]
 }

@@ -1,0 +1,144 @@
+.gilded-game {
+  --gilded-ink: #f4ead6;
+  --gilded-muted: #c8baa1;
+  --gilded-gold: #e9c785;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: clip;
+  background: #17120c;
+  color: var(--gilded-ink);
+}
+.gilded-game :is(h1, h2, h3, p) { margin: 0; }
+.gilded-game :is(button, a) { touch-action: manipulation; }
+.gilded-game button { min-height: 44px; }
+.gilded-game button:focus-visible { outline: 2px solid var(--gilded-gold); outline-offset: 4px; }
+.gilded-game [tabindex="-1"]:focus-visible { outline: 2px solid var(--gilded-gold); outline-offset: 6px; }
+.gilded-game :is(h1, h2, h3) { font-family: 'Noto Serif SC', Georgia, serif; font-weight: 500; text-wrap: balance; }
+.gilded-game:lang(en) :is(h1, h2, h3) { font-family: Baskerville, Georgia, serif; font-weight: 400; }
+.gilded-backdrop-layer, .gilded-scrim { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 100dvh; z-index: -2; pointer-events: none; }
+.gilded-backdrop-layer { overflow: hidden; }
+.gilded-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .55s ease; }
+.gilded-backdrop.gilded-return-image { transition-timing-function: ease-in-out; }
+.gilded-backdrop.is-visible { opacity: 1; }
+.gilded-scrim { z-index: -1; background: linear-gradient(0deg, #17120cf5, #17120caa 22%, #17120c0a 68%, #17120c88), linear-gradient(90deg, #17120c66, transparent); }
+.gilded-toolbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; padding: max(12px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) 12px max(22px, env(safe-area-inset-left)); background: #17120cba; border-bottom: 1px solid #e9c78538; backdrop-filter: blur(10px); }
+.gilded-toolbar > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.gilded-wordmark { color: var(--gilded-gold); font-size: .73rem; letter-spacing: .12em; white-space: nowrap; }
+.gilded-hud { display: flex; flex-wrap: wrap; align-items: center; align-self: flex-end; gap: 22px; margin: 18px max(5vw, env(safe-area-inset-right)) 0; padding: 8px 18px; border: 1px solid #e9c78542; background: #17120cce; color: var(--gilded-muted); font-size: .74rem; font-variant-numeric: tabular-nums; }
+.gilded-hud strong { color: var(--gilded-gold); font-size: 1rem; font-weight: 500; }
+.gilded-main { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; width: min(1180px, 90%); margin: 28px auto 0; padding-bottom: 20px; }
+.gilded-kicker { font-size: .7rem; line-height: 1.6; color: var(--gilded-gold); letter-spacing: .1em; }
+.gilded-dialogue { margin-top: clamp(90px, 18svh, 250px); padding: 28px 36px; border: 1px solid #e9c78561; border-top: 2px solid var(--gilded-gold); background: #17120ced; box-shadow: 0 16px 60px #0007; }
+.gilded-dialogue h1 { font-size: 1.3rem; margin: 12px 0 18px; color: var(--gilded-gold); }
+.gilded-line { font-family: 'Noto Serif SC', Georgia, serif; font-size: clamp(1rem, 1.25vw, 1.18rem); line-height: 1.95; max-width: 65em; }
+.gilded-dialogue-next { display: flex; align-items: center; gap: 20px; justify-content: flex-end; margin-top: 22px; }
+.gilded-dialogue-next > span { font-size: .72rem; color: var(--gilded-muted); font-variant-numeric: tabular-nums; }
+.gilded-choices { display: grid; gap: 10px; margin-top: 24px; }
+.gilded-choice { display: grid; gap: 7px; width: 100%; padding: 15px 20px; border: 1px solid #e9c78566; background: #f7e7bd0b; color: var(--gilded-ink); text-align: left; transition: background-color .2s ease, border-color .2s ease; }
+.gilded-choice:hover { background: #e9c78522; border-color: var(--gilded-gold); }
+.gilded-choice strong { font-weight: 500; font-size: 1rem; line-height: 1.6; }
+.gilded-choice small { color: var(--gilded-muted); line-height: 1.7; font-size: .8rem; }
+.gilded-ending-note { margin-top: 25px !important; font-size: .8rem; color: var(--gilded-gold); line-height: 1.8; }
+.gilded-game :is(.primary-btn, .secondary-btn) { font-size: .85rem; line-height: 1.65; white-space: normal; }
+.gilded-game button:disabled { opacity: .5; cursor: not-allowed; }
+.gilded-action-notice { min-height: 28px; margin: 12px 0 0 !important; font-size: .8rem; line-height: 1.7; color: var(--gilded-gold); }
+.gilded-audio-controls { display: flex; align-items: center; gap: 16px; padding: 0 max(5vw, env(safe-area-inset-right)) 12px max(5vw, env(safe-area-inset-left)); }
+.gilded-audio-controls[hidden] { display: none; }
+.gilded-audio-controls span { color: var(--gilded-muted); font-size: .75rem; line-height: 1.65; }
+.gilded-sound-settings { display: grid; gap: 18px; }
+.gilded-sound-settings label { display: flex; align-items: center; gap: 12px; color: #f4ead6; font-size: .95rem; }
+.gilded-sound-settings output { margin-left: auto; color: #e9c785; font-variant-numeric: tabular-nums; }
+.gilded-sound-settings input[type="range"] { width: 100%; min-height: 44px; accent-color: #d4ae69; }
+.gilded-sound-check { min-height: 44px; cursor: pointer; }
+.gilded-sound-check input { width: 20px; height: 20px; accent-color: #d4ae69; }
+.gilded-sound-settings input:focus-visible { outline: 2px solid #e9c785; outline-offset: 5px; }
+.gilded-game-footer { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 10px max(5vw, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left)); font-size: .65rem; color: var(--gilded-muted); background: #17120cdd; }
+.gilded-panel { width: min(760px, calc(100vw - 24px)); max-height: 88dvh; overflow: auto; overscroll-behavior: contain; }
+.gilded-panel-body { padding: 24px; }
+.gilded-panel-body p { font-size: .95rem; line-height: 1.9; margin: 0 0 20px; }
+.gilded-panel-body article { padding: 20px 0; border-bottom: 1px solid #e9c78533; }
+.gilded-panel-body h3 { font-size: 1.1rem; margin: 0 0 18px; }
+.gilded-art-dialog { width: min(1120px, calc(100vw - 24px)); max-height: 92dvh; padding: 0; overflow: auto; overscroll-behavior: contain; }
+.gilded-art-dialog .dialog-head { position: sticky; top: 0; z-index: 1; background: #17120cf5; }
+.gilded-art-dialog .small-btn { min-height: 44px; }
+.gilded-art-figure { margin: 0; padding: 16px; background: #17120c; }
+.gilded-art-figure img { display: block; width: 100%; height: auto; max-height: 70dvh; object-fit: contain; }
+.gilded-art-figure figcaption { max-width: 65em; margin: 16px auto 4px; color: #c8baa1; font: .85rem/1.85 'Noto Serif SC', Georgia, serif; }
+.gilded-puzzle, .gilded-film { padding: 26px; background: #17120cf5; border: 1px solid #e9c78561; margin-top: 26px; }
+.gilded-puzzle-heading { display: flex; align-items: center; gap: 24px; }
+.gilded-puzzle h1, .gilded-film h1 { font-size: clamp(1.35rem, 2.4vw, 2.1rem); margin: 8px 0 12px; }
+.gilded-puzzle-heading p:not(.gilded-kicker), .gilded-film > p { font-size: .9rem; line-height: 1.85; color: var(--gilded-muted); }
+.gilded-puzzle-count { margin-left: auto; color: var(--gilded-gold); font: 2.2rem Georgia, serif; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gilded-puzzle-count small { font-size: .95rem; color: var(--gilded-muted); }
+.gilded-puzzle-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin: 16px 0 24px; font-size: .8rem; }
+.gilded-puzzle-tools label { display: flex; align-items: center; min-height: 44px; gap: 6px; cursor: pointer; }
+.gilded-puzzle-tools input { width: 20px; height: 20px; accent-color: #c99b4e; }
+.gilded-puzzle-tools > span { margin-left: auto; color: var(--gilded-muted); }
+.gilded-jigsaw-workspace { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.gilded-jigsaw-frame { padding: 10px; border: 6px ridge #a87935; background: #7b5b2c; box-shadow: 0 12px 28px #0006; }
+.gilded-jigsaw-board { position: relative; aspect-ratio: 1470 / 1070; background: #2f271c; isolation: isolate; }
+.gilded-jigsaw-guide { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .2; pointer-events: none; }
+.gilded-jigsaw-guide[hidden] { display: none; }
+.gilded-jigsaw-slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); position: absolute; inset: 0; }
+.gilded-jigsaw-slot { min-height: 0 !important; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.gilded-jigsaw-slot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.gilded-jigsaw-slot path { fill: transparent; stroke: #c4a77a55; stroke-width: .8; stroke-dasharray: 3 3; }
+.gilded-jigsaw-slot.is-drop-target path, .gilded-jigsaw-slot:hover:not(:disabled) path { fill: #e9c78524; stroke: #edcf95; stroke-dasharray: none; }
+.gilded-jigsaw-slot:disabled { opacity: 1 !important; cursor: default; }
+.gilded-jigsaw-slot:focus-visible { outline-offset: -4px !important; }
+.gilded-fixed-piece { position: absolute; pointer-events: none; }
+.gilded-fixed-piece svg, .gilded-jigsaw-piece svg, .gilded-drag-piece svg { display: block; width: 100%; height: 100%; }
+.gilded-piece-outline { fill: none; stroke: #f7dfae99; stroke-width: .65; pointer-events: none; }
+.gilded-jigsaw-tray { padding: 16px; background: #302316; border: 1px solid #aa80424d; }
+.gilded-jigsaw-tray h2 { font-size: .9rem; margin-bottom: 14px; color: var(--gilded-muted); }
+.gilded-jigsaw-pieces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.gilded-jigsaw-piece { position: relative; min-width: 0; padding: 0; border: 1px solid transparent; background: transparent; aspect-ratio: 4410 / 4280; cursor: grab; touch-action: none !important; filter: drop-shadow(0 3px 3px #0009); }
+.gilded-jigsaw-piece:hover, .gilded-jigsaw-piece.is-selected { background: #e9c78515; border-color: #e9c785; }
+.gilded-jigsaw-piece > span { position: absolute; bottom: 3px; right: 4px; background: #17120cdd; padding: 2px 5px; color: #e9c785; font-size: .65rem; pointer-events: none; }
+.gilded-drag-piece { position: fixed; z-index: 1000; transform: translate(-50%, -50%); pointer-events: none; filter: drop-shadow(0 8px 10px #0009); }
+.gilded-puzzle-feedback { min-height: 30px; padding-top: 20px; color: var(--gilded-gold); font-size: .85rem; line-height: 1.8; }
+.gilded-film { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; gap: 12px; margin: 0 !important; padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important; border: 0; background: #000; }
+.gilded-film-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+.gilded-film-heading h1 { margin: 0; font-size: 1.1rem; }
+.gilded-film-heading > span { margin-left: auto; color: var(--gilded-muted); font-size: .75rem; }
+.gilded-film video { display: block; width: 100%; height: 100%; min-height: 0; flex: 1; object-fit: contain; background: #000; }
+.gilded-film video:fullscreen { width: 100vw; height: 100dvh; object-fit: contain; background: #000; }
+.gilded-film #gilded-film-status:empty { display: none; }
+.gilded-film-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end; margin: 0; }
+.gilded-film [hidden] { display: none; }
+.gilded-journal-art { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.gilded-journal-art button { display: grid; gap: 10px; padding: 8px; border: 1px solid #c99b4e66; background: #302316; color: #f4ead6; text-align: left; }
+.gilded-journal-art img { width: 100%; height: auto; }
+.gilded-journal-art span { font-size: .8rem; line-height: 1.6; }
+@media (max-width: 850px) {
+  .gilded-toolbar { flex-wrap: wrap; gap: 10px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .gilded-wordmark { margin-left: auto; }
+  .gilded-toolbar > div { width: 100%; justify-content: flex-start; margin-left: 0; gap: 8px; }
+  .gilded-toolbar .small-btn { font-size: .7rem; padding: 8px 10px; }
+  .gilded-hud { margin: 14px 5% 0; gap: 14px; align-self: flex-start; font-size: .68rem; }
+  .gilded-main { width: 90%; }
+  .gilded-dialogue { padding: 22px; margin-top: 15svh; }
+  .gilded-game-footer > span:last-child { display: none; }
+  .gilded-backdrop-layer { position: fixed; height: 100dvh; }
+  .gilded-scrim { position: fixed; height: 100dvh; }
+  .gilded-puzzle, .gilded-film { padding: 16px; margin-top: 12px; }
+  .gilded-jigsaw-workspace { grid-template-columns: 1fr; gap: 18px; }
+  .gilded-jigsaw-pieces { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .gilded-puzzle-heading { align-items: flex-start; gap: 12px; }
+  .gilded-puzzle-count { font-size: 1.8rem; }
+  .gilded-jigsaw-frame { padding: 4px; border-width: 4px; }
+  .gilded-puzzle-tools { gap: 8px 16px; }
+  .gilded-puzzle-tools > span { margin-left: 0; }
+  .gilded-journal-art { grid-template-columns: 1fr; }
+}
+@media (max-height: 550px) {
+  .gilded-dialogue { margin-top: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gilded-game button, .gilded-backdrop { transition: none; }
+}
