@@ -35,6 +35,7 @@ const b = (zh: string, en: string): Bilingual => ({ zh, en })
 const n = (zh: string, en: string): Line => ({ text: b(zh, en) })
 const say = (zh: string, en: string, nameZh = '奶蛙', nameEn = 'Naiwa'): Line => ({ speaker: b(nameZh, nameEn), text: b(zh, en), ...(nameZh === '奶蛙' ? { sound: 'naiwa-speech' as const } : {}) })
 const diary = (zh: string, en: string): Line => ({ speaker: b('奶蛙观察日记', 'Naiwa\'s journal'), text: b(zh, en) })
+export const quoteJournalSpeech = (text: string, language: Language): string => language === 'en' ? `"${text}"` : `“${text}”`
 const laugh = (line: Line): Line => ({ ...line, sound: 'naiwa-laugh' })
 const shortSay = (zh: string, en: string): Line => ({ ...say(zh, en), sound: 'naiwa-short-reply' })
 const heroVoice = (line: Line, sound: 'protagonist-listen' | 'protagonist-home' | 'protagonist-choice'): Line => ({ ...line, sound })

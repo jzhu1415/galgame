@@ -9,7 +9,7 @@ import { renderChapterFourPromo } from './chapter-four-promo'
 import { renderFinalePromo, mountFinalePromo } from './finale-promo'
 import { renderHomePage, mountHomePage, type HomeController, type HomeSnapshot } from './home-page'
 import { showReleaseNotes } from './release-notes'
-import { memoryNames, story, type Language, type Line, type Scene } from './story'
+import { memoryNames, quoteJournalSpeech, story, type Language, type Line, type Scene } from './story'
 import { chapterTwoStatus, chapterThreeStatus, chapterFourStatus, romanceDlcStatus, finaleStatus } from './chapter-status'
 import { loadChapterTwo, loadChapterThree, loadChapterFour, loadRomanceDlc, loadFinale } from './chapter-loader'
 import { isRomanceDlcUnlocked, loadDlcViews, showDlcUnlock } from './dlc-unlock'
@@ -759,7 +759,7 @@ function renderGame() {
     <div class="dialogue-meta"><span class="scene-counter">${String(state.lineIndex + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</span><span class="scene-rule"></span><span>NAIWA · ORIGIN</span></div>
     <div class="dialogue-box" aria-live="polite">
       <div class="speaker">${line.speaker ? esc(line.speaker[lang]) : lang === 'zh' ? '旁白' : 'Narration'}</div>
-      <p>${esc(line.text[lang])}</p>
+      <p>${esc(line.speaker?.en === 'Naiwa\'s journal' ? quoteJournalSpeech(line.text[lang], lang) : line.text[lang])}</p>
       ${hasLineSound && soundStatus === 'playing' ? `<div class="sound-status" role="status"><span class="sound-pulse" aria-hidden="true">♪</span><span>${esc(soundLabel)}</span><button id="sound-skip" type="button">${esc(t.soundSkip)}</button></div>` : hasLineSound && soundStatus === 'error' ? `<div class="sound-status" role="status"><button id="sound-retry" type="button">▶ ${esc(t.soundRetry)}</button></div>` : ''}
       ${objectChoiceScene ? `<div class="object-controls"><span>${esc(t.pickObject)}</span><button class="object-return" data-choice="2">← ${esc(choices[2].text[lang])}</button></div>` : ''}
       ${!finalLine || scene.next ? `<span class="advance-hint">${esc(t.next)} <span aria-hidden="true">⌄</span></span>` : ''}
@@ -854,7 +854,7 @@ function renderModal() {
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.log)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="log-list">${state?.history.length ? state.history.map(entry => {
       const scene = story[entry.sceneId]
       const line = originLogLine(entry, progress)
-      return line ? `<article class="log-entry"><small>${esc(scene.chapter[lang])} · ${esc(line.speaker?.[lang] ?? (lang === 'zh' ? '旁白' : 'Narration'))}</small><p>${esc(line.text[lang])}</p></article>` : ''
+      return line ? `<article class="log-entry"><small>${esc(scene.chapter[lang])} · ${esc(line.speaker?.[lang] ?? (lang === 'zh' ? '旁白' : 'Narration'))}</small><p>${esc(line.speaker?.en === 'Naiwa\'s journal' ? quoteJournalSpeech(line.text[lang], lang) : line.text[lang])}</p></article>` : ''
     }).join('') : `<p>${esc(t.emptyLog)}</p>`}</div>`
   } else if (modal === 'routes') {
     const endingIds = ['n01', 'be01', 'be02', 'exhausted', 'e02']
@@ -1017,7 +1017,14 @@ function render() {
 
 // Escape closes the current overlay first, then returns one navigation level.
 window.addEventListener('keydown', event => {
-  if (event.key !== 'Escape' || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
+  if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
+  if (event.key === 'F11') {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    void toggleFullscreen()
+    return
+  }
+  if (event.key !== 'Escape') return
   if (root.querySelector('dialog[open]')) {
     event.stopImmediatePropagation()
     return // Keep the native dialog cancellation behavior.
