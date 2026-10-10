@@ -1,0 +1,230 @@
+{
+  "tool": "built-in image_gen",
+  "scope": "非对战分镜与特写；不接入已生成的对战图",
+  "assets": [
+    {
+      "key": "abyss-beacon",
+      "refs": [
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment.  Reference 1 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Macro foreground silver tracking beacon with a tiny blue light on the wet railing, opened journal with illegible lines beside it, cavernous dark tiled flooded abyss behind. Low first-person camera, cinematic ominous investigation opening. No visible person. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-a2cc6bab-a632-4190-a06c-75e579699042.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "ledger-close",
+      "refs": [
+        "assets/images/finale-archive.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment.  Reference 1 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Extreme cinematic insert close-up of a gloved anonymous hand pointing at pressed serial impressions on an old patient ledger, film reels and waveform display blur behind. Document text illegible; no actual written identifiers. No human face. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-1140d459-aa13-4f1e-8498-b7fa229e38a4.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "banana-monitor",
+      "refs": [
+        "references/banana-cat-character-turnaround.png",
+        "assets/images/finale-archive.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Banana Cat: ginger tabby kitten, round cat face with huge blue-black eyes, pink nose, ivory muzzle, enclosed in intact yellow banana costume with brown stem and peel speckles, orange furry paws and short legs, orange striped tail. Keep banana costume. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Medium cinematic shot of Banana Cat operating surveillance console, one furry paw adjusting camera joystick, attentive sly expression, camera feed abstractions in background, close warm face lighting against teal lab. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-5be11211-f5ca-4314-9f94-0ea9647b0471.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "niulai-contract",
+      "refs": [
+        "references/niulai-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Niulai: yellow stout anthropomorphic bull, upward curved purple speckled horns, pointed ears with pink insides, huge pink bovine muzzle, dark eyes/eyebrows, white hands and feet, thin yellow tail with dark-brown tuft. No clothes. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Medium shot Niulai pushing a blank consent paper toward camera across steel desk, white hand resting heavily on unsigned area, cold deliberate expression with pink muzzle and purple horns fully in frame. Dramatic negotiating menace, no other characters. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-84fae9ef-a807-4566-b062-0cafd9814723.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "niulai-close",
+      "refs": [
+        "references/niulai-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Niulai: yellow stout anthropomorphic bull, upward curved purple speckled horns, pointed ears with pink insides, huge pink bovine muzzle, dark eyes/eyebrows, white hands and feet, thin yellow tail with dark-brown tuft. No clothes. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Intense cinematic face CLOSE-UP of Niulai, half-lidded calculating dark eyes, pink muzzle, purple speckled horns framing upper edge, orange warning light on one side and cold teal light on other. Keep exact reference facial geometry, no villain costume. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-06628efd-9c25-4392-94d1-01e1524999c7.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naidou-confession",
+      "refs": [
+        "references/naidou-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naidou: yellow rounded pear body with cream oval belly, human-like cute face, dark-brown side-parted chin-length bob hair, large brown eyes/black eyeliner, small nose/orange lips, grey hands and feet. No additional clothes except scene rescue coat props. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Medium shot Naidou clutching a stack of medical records tightly in grey hands, dark brown bob and original big brown eyes, remorseful expression, empty extraction bed behind, soft amber rim and blue lab light. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-83e35d19-6a96-43bd-8ef8-b616e1a21c15.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naidou-close",
+      "refs": [
+        "references/naidou-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naidou: yellow rounded pear body with cream oval belly, human-like cute face, dark-brown side-parted chin-length bob hair, large brown eyes/black eyeliner, small nose/orange lips, grey hands and feet. No additional clothes except scene rescue coat props. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Close-up Naidou face and shoulders, conflicted worried brown eyes downcast, a slight tear welling, dark-brown chin-length bob shape intact, original yellow face and grey hand holding an old record at chest, shallow focus cold laboratory. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-6c6c96d8-ed47-45f9-a804-52e723e405c2.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "ward-naiwa",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-awakening.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiwa: smooth bright golden-yellow pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, simple small curved mouth, dark-grey fingertips and feet, no ears, no horns, no hair, no human face. Match reference silhouette. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Wide bedside shot Naiwa lying unconscious under a white hospital blanket, only original yellow upper body/head with green eye surrounds visible, eyes closed, one dark-grey hand outside blanket, glowing monitor and extraction leads near bed. Tender vulnerable cinematic 3D scene, not horror, no human. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-7374de70-a3e3-4ac0-97f5-dbc4db4fb628.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naiba-confession",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-core.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiba: smooth PURPLE pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, small curved mouth, no ears/hair/horns; ornate bronze gem gauntlet ONLY on its RIGHT hand (viewer left front view), left hand plain grey. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Cinematic CLOSE-UP Naiba face and upper torso with green eyes, exhausted remorseful small mouth, violet body and cream belly, bronze gauntlet on RIGHT hand near lower-left of viewer frame, luminous core softly defocused behind. No human-like facial conversion. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-708e264f-a130-4638-8829-bc7715e3409d.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naiba-gauntlet",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-core.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiba: smooth PURPLE pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, small curved mouth, no ears/hair/horns; ornate bronze gem gauntlet ONLY on its RIGHT hand (viewer left front view), left hand plain grey. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Extreme detail insert of Naiba RIGHT bronze gem-set gauntlet at an untouched control switch, purple forearm visible, gemstones dimmed, its other plain dark-grey left hand nowhere visible. Express hesitation before acting, luminous core ring background soft blur. No floating hand or human skin. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-3d69f64f-065a-482f-97e5-b17c5a7c0b19.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "relay-naidou",
+      "refs": [
+        "references/naidou-character-turnaround.png",
+        "assets/images/finale-city.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naidou: yellow rounded pear body with cream oval belly, human-like cute face, dark-brown side-parted chin-length bob hair, large brown eyes/black eyeliner, small nose/orange lips, grey hands and feet. No additional clothes except scene rescue coat props. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Naidou kneeling at a rooftop relay panel, grey hands pulling the main breaker, blue extraction indicators go dark, brown bob and yellow body visible in profile, intact city night beyond. Tense action preparation. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-ca16f88d-12df-4142-ac73-24ff1ff49ce4.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naiwa-resolve",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-city.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiwa: smooth bright golden-yellow pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, simple small curved mouth, dark-grey fingertips and feet, no ears, no horns, no hair, no human face. Match reference silhouette. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Cinematic face CLOSE-UP Naiwa, green-ringed black eyes determined but kind, simple small mouth, smooth yellow rounded head/no appendages, grey hand lifted protectively near upper belly; blue city lights bokeh at night behind. Not human, no eyebrows added. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-5507ef40-0bb5-4f77-8a2b-1ab1c7865a15.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "naiwa-awake-close",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-awakening.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 visual-novel full-screen cinematic CLOSE-UP. Ref1 is Naiwa's original HARD IDENTITY: same smooth yellow rounded creature, green round eye surrounds with black pupils, small simple mouth, cream belly, grey fingertips, no human face, no hair/ears/horns. Ref2 is exact WARD LOCATION and established 3D style. Naiwa has just physically woken after a long coma, bracing one grey hand on the hospital door frame, luminous green eyes looking tenderly toward camera, surprised and weak but determined. Close framing from upper belly up, head and hand clearly visible, character occupies center-right upper two-thirds, cool ward light rim and warm bedside bounce, beautiful soft 3D materials matching original. Empty hospital bed softly blurred behind. Quiet lower quarter for subtitles. Single Naiwa only, do not add a human/other creature, no text/logo/watermark.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-3f1a7a48-f64a-4d95-8314-82c808ee7f1a.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "banana-close",
+      "refs": [
+        "references/banana-cat-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Banana Cat: ginger tabby kitten, round cat face with huge blue-black eyes, pink nose, ivory muzzle, enclosed in intact yellow banana costume with brown stem and peel speckles, orange furry paws and short legs, orange striped tail. Keep banana costume. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Cinematic tearful face CLOSE-UP Banana Cat inside yellow banana hood with brown stem visible, ginger fur and huge blue-black eyes looking ashamed and frightened, dusty paws near face, blurred ruined concrete city behind. No new clothing, not angry. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-25ed7a4a-56d6-4429-94a6-323d675cf120.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "dawn-naiwa",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-dawn.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiwa: smooth bright golden-yellow pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, simple small curved mouth, dark-grey fingertips and feet, no ears, no horns, no hair, no human face. Match reference silhouette. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Hopeful medium shot original Naiwa sitting outside medical relief tent at sunrise amid ruined city, gentle green-ring eyes and small smile, grey hand resting on closed worn journal, cream belly visible. Warm dawn on yellow body, collapsed towers behind remain destroyed. No other person. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-bf5a8f51-0d6d-4bf2-80c0-dfe662d8a5b9.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "sever-naiwa",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-dawn.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiwa: smooth bright golden-yellow pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, simple small curved mouth, dark-grey fingertips and feet, no ears, no horns, no hair, no human face. Match reference silhouette. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Poignant close-up Naiwa in relief tent, green-ring eyes quietly confused and melancholy, grey hand pressed against cream belly where faint single gold light fades, worn journal at foreground. Ruined city visible beyond tent at dawn, original simple mouth, no human hair. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-98b7cd1e-491e-4dc0-8d69-fa284120060f.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "captured-naiwa",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: landscape 1536x1024 full-screen cinematic visual novel CG, polished soft 3D animated characters in established game environment. Reference 1 is the ORIGINAL HARD IDENTITY for Naiwa: smooth bright golden-yellow pear-shaped creature, cream oval belly, circular green eye surrounds with black pupils, simple small curved mouth, dark-grey fingertips and feet, no ears, no horns, no hair, no human face. Match reference silhouette. Reference 2 is LOCATION AND ART STYLE only; preserve its architecture, time, and destruction state. Primary scene: Cinematic close medium shot Naiwa through side window of institute medical van, grey hand pressed on glass, green-ring eyes frightened and sad, yellow body/cream belly, a simple grey monitoring band at wrist, ruined city reflected in window, dark confined composition. No readable labels, no human or extra creature. Frame main faces/hands in upper two-thirds and leave lower quarter quiet/darker for subtitle overlay. No typography, subtitles, logos, watermark, UI, extra characters or altered identities. Do not use turnarounds as multi-view composition: this is ONE single scene.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-da9450c4-1877-456c-ac1a-1f875c235707.png",
+      "status": "accepted: noncombat CG, inspected against originals"
+    },
+    {
+      "key": "abyss-descent",
+      "refs": [
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: extraordinary wide establishing view from a doorway at the lip of the deep flooded chamber, cold white wall strips descending into vast dark mist, rusty catwalk zigzags through empty tiled pillars, wet railing in foreground. No characters. Low-eye-level immersive lonely arrival, darkness remains readable, cinematic depth.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-0bf27b66-6ba2-48ae-84b8-37153203a407.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    },
+    {
+      "key": "abyss-depth",
+      "refs": [
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: extreme high-angle looking DOWN past the broken edge of a narrow wet rusty catwalk toward black water deep below, a few distant blue exit lights between pillar bases. Vertigo and isolation, floating scrap of paper, no characters, no creatures. Same tiled architecture, more dramatic camera angle than reference.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-ed8ffe56-5a73-449f-8fc3-d99a1c06a8e5.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    },
+    {
+      "key": "abyss-screen",
+      "refs": [
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: first-person medium-wide view down a misty tiled corridor toward a lone OLD WALL MONITOR glowing pale blue amid darkness. Its surface shows vague ABSTRACT distorted grayscale blocks and a waveform only, NO identifiable person or creature, no text. Silver beacon rests at foot of screen, puddles reflect its light, wires disappear into wall.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-109cc515-269e-4dcd-af12-8cfe6e0f87eb.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    },
+    {
+      "key": "abyss-feidudu-whisper",
+      "refs": [
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "The FIRST image is the ORIGINAL HARD CHARACTER IDENTITY of Feidudu: golden-yellow stout creature, exactly two thick long rounded ears, broad black mask around two bright BLUE eyes, huge brown oval nose, pink tongue, pale cream oval belly, dark grey hands and feet, short yellow tail. Match exact facial proportions and body color. The SECOND image is LOCATION/STYLE only. Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: medium shot of Feidudu standing STILL partly hidden behind a wet tiled pillar, shoulders lowered, looking tentatively toward camera, worried blue eyes, tongue remains visible, ears and brown nose intact. Vulnerable quiet whisper in fog, cold pale side light, no battle pose, no running or attack.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-39e761e3-4f48-4bbe-966d-fe8b64b2661c.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    },
+    {
+      "key": "abyss-feidudu-close",
+      "refs": [
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-pursuit.png"
+      ],
+      "prompt": "The FIRST image is the ORIGINAL HARD CHARACTER IDENTITY of Feidudu: golden-yellow stout creature, exactly two thick long rounded ears, broad black mask around two bright BLUE eyes, huge brown oval nose, pink tongue, pale cream oval belly, dark grey hands and feet, short yellow tail. Match exact facial proportions and body color. The SECOND image is LOCATION/STYLE only. Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: very expressive CLOSE-UP of Feidudu's face and upper cream belly, wary BLUE eyes in original black mask glancing backwards sadly, big brown nose and pink tongue clearly visible, two rounded ears fit within frame. Soft teal reflected water light, rusty walkway blurred behind. A hesitant old friend, no threat, fists or battle.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-012aa632-7104-466e-8f15-33f0848e1a9c.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    },
+    {
+      "key": "abyss-journal",
+      "refs": [
+        "assets/images/finale-abyss.png"
+      ],
+      "prompt": "Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: cinematic extreme INSERT of the opened worn journal at bottom edge of rusty railing, faint impression in otherwise blank page, water droplets and silver tracker with blue light beside book, vast tiled pillar darkness blurred behind. No person or visible hands, all writing illegible, precise material textures, quiet mysterious investigation.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-b69d9214-c274-412b-bb10-d7cf2b5e25c6.png",
+      "status": "accepted noncombat opening CG, inspected against identity/location references"
+    }
+  ]
+}

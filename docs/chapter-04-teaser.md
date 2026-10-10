@@ -13,7 +13,7 @@
 
 沿用 `world-bible.md` 与 `naiba-arc-draft.md` 的第四章《金笼》／The Gilded Cage、第四层金丝牢笼及保护与控制主题。网页文字为不剧透的预告改写，奶霸入口引语依据草案。
 
-不公开奶霸身份、保护机制、组织真实目的、章节解法或结局。现实奶蛙的阳光性格不变；控制欲属于第四层精神碎片。用户指定第四章主角为奶神（Naishen），身份参考保存于 `references/naishen-character-turnaround.png`，不得沿用奶蛙的绿色眼睛。
+不公开奶霸身份、保护机制、组织真实目的、章节解法或结局。现实奶蛙的阳光性格不变；控制欲属于第四层精神碎片。用户指定第四章主角为奶神（naigod），身份参考保存于 `references/naishen-character-turnaround.png`，不得沿用奶蛙的绿色眼睛。
 
 ## 视觉与素材
 

@@ -73,8 +73,12 @@ assert(!notes.shouldShowReleaseNotes(), 'blocked storage still remembers dismiss
 assert.equal(notes.showReleaseNotes(root, 'en', true), null)
 const main = readFileSync('src/main.ts', 'utf8')
 assert(main.includes('showReleaseNotes(root, preferredLanguage, true)'))
-assert.equal((main.match(/id="release-entry"/g) ?? []).length, 1, 'home keeps a manual entry')
 const { tsModuleUrl } = await import('./ts-module.mjs')
+const { renderHomePage } = await import(tsModuleUrl('src/home-page.ts'))
+for (const language of ['zh', 'en']) {
+  assert.equal((renderHomePage(language, []).match(/id="release-entry"/g) ?? []).length, 1, 'home keeps a manual update entry in both languages')
+}
+assert(main.includes("root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))"), 'home wires its update entry to the native notes dialog')
 const { renderChapterPromo } = await import(tsModuleUrl('src/chapter-promo.ts'))
 const { renderChapterFourPromo } = await import(tsModuleUrl('src/chapter-four-promo.ts'))
 for (const language of ['zh', 'en']) {

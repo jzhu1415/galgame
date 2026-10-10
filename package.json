@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "check:site": "node scripts/check-site.mjs",
+    "check:home": "node scripts/check-home.mjs",
     "check:review-fixes": "node scripts/check-review-fixes.mjs",
     "check:chapter-promo": "node scripts/check-chapter-promo.mjs",
     "check:story": "node scripts/check-story.mjs",
@@ -24,7 +25,12 @@
     "check:dlc-unlock": "node scripts/check-dlc-unlock.mjs",
     "check:release-notes": "node scripts/check-release-notes.mjs",
     "check:chapter-four-puzzle": "node scripts/check-chapter-four-puzzle.mjs",
-    "check:chapter-four-ending": "node scripts/check-chapter-four-ending.mjs"
+    "check:chapter-four-ending": "node scripts/check-chapter-four-ending.mjs",
+    "check:finale": "node scripts/check-finale.mjs",
+    "generate:finale-tts": "python3 scripts/generate-finale-tts.py",
+    "check:finale-preview": "node scripts/check-finale-preview.mjs",
+    "check:finale-bgm": "node scripts/check-finale-bgm.mjs",
+    "check:finale-campaign": "node scripts/check-finale-campaign.mjs"
   },
   "dependencies": {
     "three": "^0.185.1"

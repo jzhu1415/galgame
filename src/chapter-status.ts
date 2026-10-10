@@ -25,3 +25,9 @@ export function romanceDlcStatus() {
   const completed = ['departure', 'shore', 'rain', 'dawn'].filter(id => Array.isArray(save?.completed) && save.completed.includes(id)).length
   return { started: !!save?.node || completed > 0, completed }
 }
+export function finaleStatus(chapter: 5 | 6) {
+  const current = read(chapter === 5 ? 'naiwa-chapter-five-v1' : 'naiwa-final-chapter-v1')
+  const legacy = chapter === 5 ? read('naiwa-final-chapter-v1') : null
+  const save = current && (current.mergedFinale === true || typeof current.node === 'string' && current.node.startsWith('f6-')) ? current : legacy ?? current
+  return { started: !!save && typeof save.node === 'string' && (typeof save.line === 'number' && save.line > 0 || Array.isArray(save.visited) && save.visited.length > 1 || Array.isArray(save.history) && save.history.length > 0), completed: !!save && Array.isArray(save.endings) && save.endings.some(id => typeof id === 'string' && (id.startsWith('f6-') || id === 'f5-exhausted')) }
+}

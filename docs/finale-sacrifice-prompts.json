@@ -1,0 +1,90 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "key": "ruin-naiwa-injured",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: illustration-story. Wide cinematic 3D visual novel CG, no text or UI. Image 1 is mandatory ORIGINAL Naiwa identity reference: EXACT yellow smooth pear-shaped mascot, bulging green eyes with black pupils, simple mouth, cream belly, grey fingers and feet, no ears horns hair. Image 2 is location/style reference: same destroyed violet night city AFTER the battle, calm rubble foreground. Naiwa lies unconscious on his side, head and one grey-tipped hand visible in the left-middle of frame. A dark rescue blanket COMPLETELY covers his abdomen and lower body, no visible injury or blood or gore, body under blanket should not be specified graphically. Frayed journal by his hand, dust softly settling, distant dim fires. Tragic still moment, NO action NO attack NO fighting NO other characters. Upper two thirds cinematic composition and lower area subdued for dialogue. Keep mascot facial identity precisely, do not humanize him.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-d1735e41-b471-459e-9c78-44a9e3845cc3.png",
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "Original character identity"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "Established aftermath setting and style"
+        }
+      ],
+      "status": "accepted; original identity and postbattle composition inspected"
+    },
+    {
+      "key": "naiba-sacrifice",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: illustration-story. Wide cinematic 3D visual novel CG no text UI. Image 1 original Naiba identity MUST match smooth purple pear shaped mascot green bulging eyes cream oval belly, grey feet, ornate bronze gem gauntlet ONLY on anatomical RIGHT hand (viewer LEFT in frontal view), no ears horns hair. Image 2 original Naiwa identity yellow same pear mascot green eyes cream belly grey fingers feet no ears horns hair. Image 3 rubble location/style reference after battle violet city night. Naiba kneels peacefully beside an unconscious Naiwa on a blanket, Naiba in near frontal view on right of composition, gauntleted RIGHT hand extended gently LEFTWARD towards Naiwa upper chest. Naiwa lies horizontally on left, abdomen and lower body fully covered by opaque dark rescue blanket. Soft golden life light travels from gauntlet into Naiwa chest, purple Naiba silhouette gently dissolving in fine glowing particles at edges, face calm sad farewell. This is voluntary healing SACRIFICE after battle, not combat. No attacker weapon strike, NO blood gore visible wounds exposed anatomy, no extra limbs no extra gauntlet. Faces and source identities must match exactly. Keep lower third dark open for dialogue.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-e141de9d-ea15-4168-a8e7-76a667eb779b.png",
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "Original character identity"
+        },
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "Original character identity"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "Established aftermath setting and style"
+        }
+      ],
+      "status": "accepted; original identity and postbattle composition inspected"
+    },
+    {
+      "key": "naiwa-returned",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case illustration-story. Wide cinematic 3D CG, no UI or text. Image 1 mandatory ORIGINAL Naiwa yellow pear shaped smooth mascot green protruding eyes with black pupils simple mouth cream belly grey fingers feet no ears horns hair. Image 2 scene style reference for same rubble city, dawn arriving after violet night. Naiwa newly revived, intact whole body, seated leaning against low broken concrete in foreground slightly left of center, grey-tipped hand holding a worn journal loosely. Dark rescue blanket draped across lap, eyes freshly open with quiet tears, not cheerful. One tiny fading purple mote near his chest is the last trace of Naiba sacrifice; Naiba is NOT physically present. Warm dawn rimlight, smoking empty ruined street and faint distant rescue lamps. Emotional peaceful aftermath only, NO fighting NO attack NO blood wounds gore. Exact original facial proportions and silhouette, upper two-thirds subject, subdued lower area for dialogue.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-404281e1-b201-4fea-9118-352960ee33ca.png",
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "Original character identity"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "Established aftermath setting and style"
+        }
+      ],
+      "status": "accepted; original identity and postbattle composition inspected"
+    },
+    {
+      "key": "naiwa-bisected",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: illustration-story. Cinematic WIDE 3D visual novel CG, no text no UI. Image 1 mandatory original Naiwa identity smooth yellow pear-shaped mascot protruding green eyes black pupils small simple mouth cream belly grey-tipped fingers and grey feet, no ears hair horns. Image 2 destroyed city location and style reference. AFTER final battle, Naiwa lies unconscious on rubble at night. His body has been clearly severed horizontally at the WAIST: show his upper torso with recognizable head and both arms lying on the left, and the detached lower half with both legs lying a SHORT distance to the right, aligned naturally as a single character that has been bisected, NOT two duplicate characters. The silhouette must clearly communicate separation at waist. Small traces of dark red at the cut surfaces, but fantastical stylized mascot material, NO exposed organs intestines bone or detailed flesh. His face has pain/exhaustion, eyes nearly closed. Damaged journal near one grey hand. Quiet tragic aftermath, settling dust, purple fading city skyline and dim fires. No attacker no sword no fight no combat action. Anatomically coherent, only one head exactly two arms two legs, keep original character identity and scale. Subject middle upper region, subdued lower third for dialogue.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-fd21bfaf-e65d-4288-bbb5-7b01a2e036e0.png",
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "Original character identity"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "Established aftermath setting and style"
+        }
+      ],
+      "status": "accepted; original identity and postbattle composition inspected"
+    }
+  ]
+}

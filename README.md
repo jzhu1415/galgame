@@ -11,16 +11,20 @@
 - **Chapter One: Origin** — Meet Naiwa, share everyday moments, and search a mistbound fairground for lost memories.
 - **Chapter Two: The Culprit in the Ice** — Follow clues from a hospital into a frozen mirror hall, exploring in 3D to recover fragments of the truth.
 - **Chapter Three: The Crimson Bargain** — Meet Naifen in the Flesh Theatre, investigate conflicting memories, and face a difficult bargain.
+- **Chapter Four: The Gilded Cage** — Complete the gallery painting and find a way back to reality.
+- **Chapter Five: Finale** — A continuous journey through pursuit, laboratory clashes, the core, a fullscreen city battle film and rescue in the ruins.
 - **Romance DLC: A Letter from the Tide** — Take a separate two-day coastal trip with Naiwa, with four date chapters, interactive puzzles, and endings shaped by your shared experiences.
 
-The repository includes all three main chapters and the coastal DLC. Development is ongoing; the hosted demo may differ from the latest source version.
+The repository includes all five main chapters and the coastal DLC. Development is ongoing; the hosted demo may differ from the latest source version.
 
 ## Features
 
+- A yellow-and-white project introduction with character cards, five chapter previews and an interactive production timeline.
 - Chinese and English dialogue, with language switching that preserves your progress.
 - Branching choices, multiple endings, an interactive story map, and replay of unlocked scenes.
 - Memory collection, spirit management, illustrated object puzzles, and a Three.js exploration level.
 - Scene illustrations, character recordings, and prerecorded protagonist and narrator voices in supported scenes.
+- Thirty-nine noncombat finale CG shots, ten locations and six character sprites; view full artwork without advancing dialogue.
 - Dialogue history, browser autosaves, independent chapter and DLC progress, and fullscreen play.
 - Desktop and touch controls, including a mobile joystick for 3D exploration.
 
@@ -69,6 +73,6 @@ Built with **TypeScript, Vite, and Three.js**.
 | `docs/` | Worldbuilding, storyboards, and production notes |
 | `scripts/` | Story checks and voice generation tools |
 
-Run `npm run check:story`, `npm run check:chapter-three`, and `npm run check:romance-dlc` to validate story routes and assets. Additional checks cover route previews, DLC unlocking, release notes, and the mirror hall; see `package.json` for the full list.
+Run `npm run check:story`, `npm run check:chapter-three`, and `npm run check:romance-dlc` to validate story routes and assets. Run `npm run check:home` to verify homepage interactions without opening a browser. Additional checks cover route previews, DLC unlocking, release notes, and the mirror hall; see `package.json` for the full list.
 
 Contributor conventions are in [AGENTS.md](AGENTS.md). Major game updates should include a new version ID and bilingual player notes in `src/release-notes.ts`. Story and production documents in `docs/` contain spoilers.

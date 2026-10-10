@@ -5,11 +5,13 @@ import './release-notes.css'
 import './chapter-promo.css'
 import { renderChapterPromo, mountChapterPromo } from './chapter-promo'
 import './chapter-four-promo.css'
-import { renderChapterFourEntry, renderChapterFourPromo } from './chapter-four-promo'
+import { renderChapterFourPromo } from './chapter-four-promo'
+import { renderFinalePromo, mountFinalePromo } from './finale-promo'
+import { renderHomePage, mountHomePage, type HomeController, type HomeSnapshot } from './home-page'
 import { showReleaseNotes } from './release-notes'
 import { memoryNames, story, type Language, type Line, type Scene } from './story'
-import { chapterTwoStatus, chapterThreeStatus, chapterFourStatus, romanceDlcStatus } from './chapter-status'
-import { loadChapterTwo, loadChapterThree, loadChapterFour, loadRomanceDlc } from './chapter-loader'
+import { chapterTwoStatus, chapterThreeStatus, chapterFourStatus, romanceDlcStatus, finaleStatus } from './chapter-status'
+import { loadChapterTwo, loadChapterThree, loadChapterFour, loadRomanceDlc, loadFinale } from './chapter-loader'
 import { isRomanceDlcUnlocked, loadDlcViews, showDlcUnlock } from './dlc-unlock'
 import { characterVoiceSequence } from './character-voice'
 import { enterAppFullscreen, isAppFullscreen, toggleAppFullscreen } from './app-fullscreen'
@@ -53,19 +55,25 @@ let ambientLaugh: HTMLAudioElement | null = null
 let ambientEnabled = true
 let ambientError = false
 const requestedChapter = Number(new URLSearchParams(window.location.search).get('chapter'))
-let selectedChapter: 0 | 1 | 2 | 3 | 4 = requestedChapter === 1 || requestedChapter === 2 || requestedChapter === 3 || requestedChapter === 4 ? requestedChapter : 0
+type ChapterNumber = 1 | 2 | 3 | 4 | 5
+let selectedChapter: 0 | ChapterNumber = requestedChapter === 6 ? 5 : requestedChapter === 1 || requestedChapter === 2 || requestedChapter === 3 || requestedChapter === 4 || requestedChapter === 5 ? requestedChapter : 0
 let chapterTwoModule: Awaited<ReturnType<typeof loadChapterTwo>> | null = null
 let chapterThreeModule: Awaited<ReturnType<typeof loadChapterThree>> | null = null
 let chapterFourModule: Awaited<ReturnType<typeof loadChapterFour>> | null = null
+let finaleModule: Awaited<ReturnType<typeof loadFinale>> | null = null
 let romanceModule: Awaited<ReturnType<typeof loadRomanceDlc>> | null = null
 let viewGeneration = 0
-let chapterPromoController: ReturnType<typeof mountChapterPromo> | null = null
-let chapterPromoChapter: 1 | 2 | 3 | 4 = 1
-const chapterPromoScroll = new Map<1 | 2 | 3 | 4, number>()
+let homeController: HomeController | null = null
+let homeSnapshot: HomeSnapshot = { scrollTop: 0, chapter: 1 }
+let chapterPromoController: { getScrollTop: () => number; dispose: () => void } | null = null
+let chapterPromoChapter: ChapterNumber = 1
+const chapterPromoScroll = new Map<ChapterNumber, number>()
 let restartPending = false
 let chapterTwoController: ReturnType<typeof import('./chapter-two').mountChapterTwo> | null = null
 let chapterThreeController: ReturnType<typeof import('./chapter-three').mountChapterThree> | null = null
 let chapterFourController: ReturnType<typeof import('./chapter-four').mountChapterFour> | null = null
+let finaleController: ReturnType<typeof import('./finale').mountFinale> | null = null
+let finaleControllerChapter: 5 | 6 | null = null
 let playbackMode: 'off' | 'auto' | 'skip' = 'off'
 let playbackTimer: number | null = null
 let audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
@@ -396,7 +404,7 @@ function setPreferredLanguage(language: Language) {
   } catch { /* The current session can still switch languages without storage. */ }
   if (state) {
     state.language = preferredLanguage
-    if (selectedChapter !== 4) save()
+    if (selectedChapter > 0 && selectedChapter < 4) save()
   }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
 }
@@ -439,19 +447,22 @@ function renderChapterSelect() {
   stopSound()
   stopAmbientLaugh()
   audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
-  const lang = preferredLanguage
-  const status = chapterTwoStatus()
-  const thirdStatus = chapterThreeStatus()
-  root.innerHTML = `<div class="chapter-select" style="--cover:url('${imageUrl('P02')}')">
-    <header class="chapter-select-top"><span class="wordmark">NAIWA <span>·</span> ${lang === 'zh' ? '奶之救赎' : 'THE REDEMPTION'}</span><div class="chapter-select-tools"><button class="small-btn" id="routes-select" type="button">${esc(ui[lang].routes)}</button><button class="small-btn" id="settings-entry" type="button">${esc(ui[lang].settings)}</button><button class="small-btn" id="gallery-entry" type="button">${esc(ui[lang].gallery)}</button>${state ? `<button class="small-btn" id="replay-select" type="button">${esc(ui[lang].restart)}</button>` : ''}<button class="small-btn" id="fullscreen" type="button"></button><button class="small-btn" id="language" aria-label="${ui[lang].languageLabel}">${ui[lang].language}</button></div></header>
-    <main class="chapter-select-main"><div class="chapter-select-heading"><span>AN INTERACTIVE STORY / 2026</span><h1>${lang === 'zh' ? '奶之救赎' : 'Naiwa'}</h1><p>${lang === 'zh' ? '选择章节，走进奶蛙的世界。' : 'Choose a chapter and step into Naiwa\'s world.'}</p></div>
-      <div class="chapter-cards"><button class="chapter-card first" id="chapter-one" type="button"><span class="card-overline">CHAPTER 01 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '缘起' : 'Origin'}</strong><span class="card-description">${lang === 'zh' ? '雨夜相遇，走进迷雾游乐园，找回遗失的回忆。' : 'A rainy meeting leads into the mistbound fairground.'}</span><span class="card-action">${state ? ui[lang].continue : ui[lang].start} ↗</span></button>
-      <button class="chapter-card second" id="chapter-two" type="button"><span class="card-overline">CHAPTER 02 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '冰镜疑凶' : 'The Culprit in the Ice'}</strong><span class="card-description">${lang === 'zh' ? '追踪紫色身影，穿过冰封镜馆，拼出被裁切的真相。' : 'Follow a purple shadow through the frozen mirror hall.'}</span><span class="card-action">${status.started ? lang === 'zh' ? '继续第二章' : 'Resume chapter' : lang === 'zh' ? '进入冰晶世界' : 'Enter the ice world'} ↗</span></button></div>
-      <p class="chapter-select-note">${lang === 'zh' ? '章节分别保存进度 · 可随时返回切换' : 'Each chapter saves separately · Switch at any time'}</p>
-    </main><footer class="chapter-select-bottom"><span>© NAIWA / 2026</span><button class="release-entry" id="release-entry" type="button">${lang === 'zh' ? '更新内容' : 'What\'s new'}</button><span>01 — 04</span></footer></div>`
-  root.querySelector('.chapter-cards')?.insertAdjacentHTML('beforeend', `<button class="chapter-card third" id="chapter-three" type="button"><span class="card-overline">CHAPTER 03 / ${lang === 'zh' ? '已开放' : 'AVAILABLE'}</span><strong>${lang === 'zh' ? '血色交易' : 'The Crimson Bargain'}</strong><span class="card-description">${lang === 'zh' ? '奶粉一次次砸毁舞台，那出戏却总会重新开始。' : 'Naifen keeps smashing the stage. The play keeps starting over.'}</span><span class="card-action">${thirdStatus.started ? lang === 'zh' ? '继续第三章' : 'Resume chapter' : lang === 'zh' ? '进入血肉剧场' : 'Enter the theatre'} ↗</span></button>`)
-  root.querySelector('.chapter-select-note')?.insertAdjacentHTML('beforebegin', renderChapterFourEntry(lang))
-  bindChapterFourEntry()
+  const statuses = [
+    { started: !!state, completed: progress.endings.length > 0 },
+    chapterTwoStatus(), chapterThreeStatus(), chapterFourStatus(), finaleStatus(5),
+  ]
+  root.innerHTML = renderHomePage(preferredLanguage, statuses, homeSnapshot.chapter, homeSnapshot)
+  homeController = mountHomePage(root, preferredLanguage, homeSnapshot)
+  root.querySelectorAll<HTMLAnchorElement>('[data-home-chapter]').forEach(link => link.addEventListener('click', event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    const chapter = Number(link.dataset.homeChapter)
+    if (![1, 2, 3, 4, 5].includes(chapter)) return
+    event.preventDefault()
+    stopPlayback(); active = false; chapterPlaying = false; selectedChapter = chapter as ChapterNumber
+    if (chapter <= 3) enterFullscreen()
+    render()
+    root.querySelector<HTMLElement>('#promo-title')?.focus({ preventScroll: true })
+  }))
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   root.querySelector('#routes-select')?.addEventListener('click', () => openModal('routes'))
@@ -459,19 +470,7 @@ function renderChapterSelect() {
   root.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
   root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
   root.querySelector('#replay-select')?.addEventListener('click', () => confirmRestart(() => { selectedChapter = 1; start() }))
-  root.querySelector('#chapter-one')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 1; active = false; chapterPlaying = false; render() })
-  root.querySelector('#chapter-two')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 2; active = false; chapterPlaying = false; render() })
-  root.querySelector('#chapter-three')?.addEventListener('click', () => { stopPlayback(); enterFullscreen(); selectedChapter = 3; active = false; chapterPlaying = false; const url = new URL(window.location.href); url.searchParams.set('chapter', '3'); window.history.replaceState(null, '', url); render() })
   updateFullscreenButton()
-}
-
-function bindChapterFourEntry() {
-  root.querySelector<HTMLAnchorElement>('#chapter-four')?.addEventListener('click', event => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-    event.preventDefault()
-    stopPlayback(); active = false; chapterPlaying = false; selectedChapter = 4; render()
-    root.querySelector<HTMLElement>('#promo-title')?.focus({ preventScroll: true })
-  })
 }
 
 function renderChapterFourIntro() {
@@ -500,21 +499,48 @@ function renderChapterFourIntro() {
   updateFullscreenButton()
 }
 
-function bindPromoNavigation(chapter: 1 | 2 | 3 | 4) {
+function renderFinaleIntro(chapter: 5) {
+  stopSound(); stopAmbientLaugh()
+  root.innerHTML = renderFinalePromo(chapter, preferredLanguage, finaleStatus(chapter).started, savePersistent && progressPersistent ? ui[preferredLanguage].saveNote : ui[preferredLanguage].sessionSave)
+  chapterPromoChapter = chapter
+  chapterPromoController = mountFinalePromo(root, chapterPromoScroll.get(chapter) ?? 0)
+  bindPromoNavigation(chapter)
+  const begin = (restart = false) => { enterFullscreen(); restartPending = restart; chapterPlaying = true; render() }
+  const routes = () => {
+    const generation = viewGeneration
+    void loadFinale().then(module => {
+      finaleModule = module
+      if (generation === viewGeneration && !root.querySelector('dialog[open]')) module.previewFinaleRoutes(root, chapter, preferredLanguage, () => begin())
+    }).catch(() => showLoadError(generation, routes))
+  }
+  root.querySelectorAll('[data-promo-play]').forEach(button => button.addEventListener('click', () => begin()))
+  root.querySelectorAll('[data-promo-restart]').forEach(button => button.addEventListener('click', () => confirmRestart(() => begin(true), preferredLanguage === 'zh' ? '重新开始本章？当前进度清除，已解锁剧情节点和结局会保留。' : 'Restart this chapter? Current progress will be cleared; unlocked nodes and endings remain.')))
+  root.querySelectorAll('[data-promo-routes]').forEach(button => button.addEventListener('click', routes))
+  root.querySelector('#routes-intro-top')?.addEventListener('click', routes)
+  root.querySelector('[data-finale-home]')?.addEventListener('click', event => {
+    if (event instanceof MouseEvent && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return
+    event.preventDefault()
+    root.querySelector<HTMLElement>('#chapter-home')?.click()
+  })
+  updateFullscreenButton()
+}
+
+function bindPromoNavigation(chapter: ChapterNumber) {
   root.querySelector('#language')?.addEventListener('click', () => { toggleLanguage(); root.querySelector<HTMLElement>('#language')?.focus({ preventScroll: true }) })
   document.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
   root.querySelector('#chapter-home')?.addEventListener('click', event => {
     if (event instanceof MouseEvent && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return
     event.preventDefault()
     stopPlayback(); active = false; chapterPlaying = false; selectedChapter = 0; render()
-    root.querySelector<HTMLElement>(chapter === 4 ? '#chapter-four' : chapter === 3 ? '#chapter-three' : chapter === 2 ? '#chapter-two' : '#chapter-one')?.focus({ preventScroll: true })
+    root.querySelector<HTMLElement>(chapter === 5 ? '#chapter-five' : chapter === 4 ? '#chapter-four' : chapter === 3 ? '#chapter-three' : chapter === 2 ? '#chapter-two' : '#chapter-one')?.focus({ preventScroll: true })
   })
   root.querySelector('#chapter-return')?.addEventListener('click', () => root.querySelector<HTMLElement>('#chapter-home')?.click())
   root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
+  if (chapter < 5) root.querySelector('.promo-footer nav')?.insertAdjacentHTML('beforeend', `<a href="?chapter=5" data-promo-chapter-link="5"><span>05</span><strong>${preferredLanguage === 'zh' ? '终章' : 'Finale'}</strong><span aria-hidden="true">↗</span></a>`)
   root.querySelectorAll<HTMLAnchorElement>('[data-promo-chapter-link]').forEach(link => link.addEventListener('click', event => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
     event.preventDefault()
-    const next = Number(link.dataset.promoChapterLink) as 1 | 2 | 3 | 4
+    const next = Number(link.dataset.promoChapterLink) as ChapterNumber
     if (next === chapter) {
       root.querySelector('.chapter-promo')?.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
       return
@@ -907,6 +933,11 @@ function renderLoading() {
 }
 function render() {
   const generation = ++viewGeneration
+  if (homeController) {
+    homeSnapshot = homeController.snapshot()
+    homeController.dispose()
+    homeController = null
+  }
   if (chapterPromoController) {
     if (selectedChapter === chapterPromoChapter && !chapterPlaying && !active && !romanceDlcOpen) chapterPromoScroll.set(chapterPromoChapter, chapterPromoController.getScrollTop())
     else chapterPromoScroll.delete(chapterPromoChapter)
@@ -917,10 +948,11 @@ function render() {
   if (romanceDlcOpen && !isRomanceDlcUnlocked()) romanceDlcOpen = false
   if (!romanceDlcOpen && romanceDlcController) { romanceDlcController.dispose(); romanceDlcController = null }
   document.documentElement.lang = preferredLanguage === 'zh' ? 'zh-CN' : 'en'
-  document.title = selectedChapter === 4 ? (preferredLanguage === 'zh' ? '奶之救赎 · 第四章 金笼' : 'Naiwa: The Gilded Cage') : selectedChapter === 3 ? 'Naiwa: The Crimson Bargain' : selectedChapter === 2 ? 'Naiwa: The Culprit in the Ice' : 'Naiwa'
+  document.title = selectedChapter === 5 ? (preferredLanguage === 'zh' ? '奶之救赎 · 第五章 终章' : 'Naiwa: Finale') : selectedChapter === 4 ? (preferredLanguage === 'zh' ? '奶之救赎 · 第四章 金笼' : 'Naiwa: The Gilded Cage') : selectedChapter === 3 ? 'Naiwa: The Crimson Bargain' : selectedChapter === 2 ? 'Naiwa: The Culprit in the Ice' : 'Naiwa'
   if ((selectedChapter !== 2 || !chapterPlaying) && chapterTwoController) { chapterTwoController.dispose(); chapterTwoController = null }
   if ((selectedChapter !== 3 || !chapterPlaying) && chapterThreeController) { chapterThreeController.dispose(); chapterThreeController = null }
   if ((selectedChapter !== 4 || !chapterPlaying) && chapterFourController) { chapterFourController.dispose(); chapterFourController = null }
+  if ((selectedChapter !== finaleControllerChapter || !chapterPlaying || romanceDlcOpen) && finaleController) { finaleController.dispose(); finaleController = null; finaleControllerChapter = null }
   if (romanceDlcOpen) {
     stopSound(); stopAmbientLaugh()
     if (!romanceModule) {
@@ -928,6 +960,22 @@ function render() {
       void loadRomanceDlc().then(module => { romanceModule = module; if (generation === viewGeneration) render() }).catch(() => showLoadError(generation, render))
     } else if (!romanceDlcController) romanceDlcController = romanceModule.mountRomanceDlc(root, preferredLanguage, () => { romanceDlcOpen = false; active = false; selectedChapter = 1; audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'; render() }, setPreferredLanguage)
     else romanceDlcController.setLanguage(preferredLanguage)
+  } else if (selectedChapter === 5) {
+    stopSound(); stopAmbientLaugh()
+    const chapter = selectedChapter
+    if (!chapterPlaying) renderFinaleIntro(chapter)
+    else if (!finaleModule) {
+      renderLoading()
+      void loadFinale().then(module => { finaleModule = module; if (generation === viewGeneration) render() }).catch(() => showLoadError(generation, render))
+    } else {
+      if (restartPending) { finaleModule.resetFinale(chapter); restartPending = false }
+      if (!finaleController) {
+        finaleControllerChapter = chapter
+        finaleController = finaleModule.mountFinale(root, chapter, preferredLanguage, language => {
+          setPreferredLanguage(language); finaleController?.dispose(); finaleController = null; finaleControllerChapter = null; chapterPlaying = false; render()
+        }, setPreferredLanguage)
+      } else finaleController.setLanguage(preferredLanguage)
+    }
   } else if (selectedChapter === 4) {
     stopSound(); stopAmbientLaugh()
     if (!chapterPlaying) renderChapterFourIntro()
@@ -974,7 +1022,7 @@ window.addEventListener('keydown', event => {
     event.stopImmediatePropagation()
     return // Keep the native dialog cancellation behavior.
   }
-  const settings = root.querySelector<HTMLDetailsElement>('.crimson-settings[open], .promo-utility[open]')
+  const settings = root.querySelector<HTMLDetailsElement>('.crimson-settings[open], .finale-settings[open], .promo-utility[open], .home-utility[open]')
   if (settings) {
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -982,7 +1030,7 @@ window.addEventListener('keydown', event => {
     settings.querySelector<HTMLElement>('summary')?.focus()
     return
   }
-  const back = root.querySelector<HTMLButtonElement>('#ice-routes-close, #chapter-return, #chapter-back, #ice-back, #crimson-back, #gilded-back, #romance-back')
+  const back = root.querySelector<HTMLButtonElement>('#ice-routes-close, #chapter-return, #chapter-back, #ice-back, #crimson-back, #gilded-back, #finale-back, #romance-back')
   if (!back) return
   event.preventDefault()
   event.stopImmediatePropagation()
@@ -1000,7 +1048,7 @@ document.addEventListener('keydown', event => {
 window.addEventListener('languagechange', () => {
   if (languageOverride()) return
   preferredLanguage = systemLanguage()
-  if (state) { state.language = preferredLanguage; if (selectedChapter !== 4) save() }
+  if (state) { state.language = preferredLanguage; if (selectedChapter < 4) save() }
   render()
 })
 document.addEventListener('fullscreenchange', updateFullscreenButton)

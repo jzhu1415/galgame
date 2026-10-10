@@ -1,0 +1,148 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-10",
+  "assets": [
+    {
+      "key": "naiba-farewell-close",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case: illustration-story. WIDE 16:9 cinematic 3D visual novel emotional close-up, no text or UI. Reference 1 is the mandatory ORIGINAL Naiba identity: exactly the smooth purple pear-shaped mascot with TWO round protruding green eyes and black circular pupils, simple small curved mouth, cream oval belly, grey fingertips, no hair ears horns eyebrows human nose. Reference 2 is ONLY the established ruined city location and rendering style, violet night AFTER the battle. Tight head-and-upper-chest close-up of Naiba, looking gently toward the viewer, calm sorrow and final resolve, a tiny glint of moisture at the green eyes. Face centered and large in upper middle, rounded head fully visible with space over it, soft warm reflected light across purple cheek, defocused violet rubble behind. Not dissolving yet. Only this single character, no other person, no attacker, no fighting no clenched fist no weapon. If any hand is shown the ornate bronze multigem gauntlet belongs ONLY to anatomical RIGHT hand, viewer LEFT; preferably crop both hands out. Exact original facial proportions, no stylized human anatomy. Keep lower fifth subdued for dialogue, dignified farewell.",
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "原始角色身份及标志物设计"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定地点与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-2a3be096-dfd4-4e53-8fab-ec0f173f4ac9.png",
+      "status": "accepted; original identity and framing inspected",
+      "png": "assets/images/finale-naiba-farewell-close.png",
+      "webp": "public/images/finale-naiba-farewell-close.webp"
+    },
+    {
+      "key": "feidudu-doubt-close",
+      "refs": [
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "prompt": "Use case: illustration-story. WIDE 16:9 polished 3D cinematic visual novel CG, no UI no writing. Reference 1 mandatory ORIGINAL dark Feidudu identity: yellow mascot with exactly TWO long rounded upright ears, black connected eye band, BLUE irises black pupils, big oval BROWN nose, pink tongue, cream belly, grey fingertips, no extra horns. Reference 2 ONLY same laboratory location/style with cool blue windows and monitors. Tight centered head and shoulders portrait of Feidudu during a VERBAL argument, looking down slightly toward an offscreen screen with doubtful wounded expression, relaxed closed mouth or tiny bit of pink tongue, hands OUT of frame, no fist no strike no threat no motion. Both ears fully in frame. The face occupies the upper center and is large enough to read the blue eyes; shallow depth of field blurs laboratory. No weapons combat action injuries or other characters. Original identity strictly, no new facial features. Framing correction: pull the camera BACK enough that BOTH long ears and their rounded tips are COMPLETELY visible with at least 10% canvas height of blue background above the highest tip. Never crop any ear at the image edge. Portrait from chest up, not an extreme face crop.",
+      "refRoles": [
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "原始角色身份及标志物设计"
+        },
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "既定地点与画风"
+        }
+      ],
+      "status": "accepted; original identity, complete head/ears and accessory inspected",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-a0d96768-a438-460c-b6c4-d066a0bf2b31.png",
+      "png": "assets/images/finale-feidudu-doubt-close.png",
+      "webp": "public/images/finale-feidudu-doubt-close.webp"
+    },
+    {
+      "key": "naiba-hand-fading",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case illustration-story. WIDE 16:9 cinematic 3D extreme detail close-up, no text UI. Reference 1 original Naiba identity and ornate BRONZE multigem gauntlet design; reference 2 ruined violet night city style. Show only Naiba's anatomical RIGHT purple forearm and its single bronze gauntleted right hand in close-up, gently opened relaxed palm, NO fist. Right hand anatomy coherent with thumb on its correct side, no second hand or duplicated fingers. Fine purple glowing motes gently lifting from the fingertips as Naiba voluntarily gives away his final consciousness. Warm golden life light from gems, shallow depth of field with grey rubble. Gauntlet match reference engraved bronze and colored gem placement. Not a weapon, not punching, no other characters, no exposed wounds gore. Hand and gauntlet centered in upper two thirds large, lower fifth darker for dialogue. A quiet final farewell detail, not battle.",
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "原始角色身份及标志物设计"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定地点与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-67579bbb-eb1c-4a6c-a395-e88e94d17e77.png",
+      "status": "accepted; original identity and framing inspected",
+      "png": "assets/images/finale-naiba-hand-fading.png",
+      "webp": "public/images/finale-naiba-hand-fading.webp"
+    },
+    {
+      "key": "empty-gauntlet-journal",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case illustration-story. WIDE 16:9 cinematic 3D still life emotional object close-up, no readable letters UI. Reference 1 is original Naiba identity reference used ONLY for the exact bronze multigem RIGHT-hand gauntlet design. Reference 2 is established destroyed city ground/style, now subtle dawn grey light. The EMPTY bronze gauntlet lies on grey rubble beside a dusty worn open journal. It is a hollow abandoned glove, nobody inside it and NO Naiba figure or purple face reflection. Colored gems entirely dark, NO glowing purple particles NO spiritual figure. Journal pages have faint indistinct sketches, one yellow and one purple small abstract hand mark, no readable text. Object fills center upper-middle with shallow depth of field, dust, calm lonely loss. No combat no blood gore. Preserve engraved bronze and gems from reference, only one empty gauntlet, not a pair. Lower fifth subdued for dialogue.",
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始右手护腕设计；不生成奶霸角色"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定地点与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-84cac795-7d76-4914-b0da-17371f83b9ef.png",
+      "status": "accepted; original identity and framing inspected",
+      "png": "assets/images/finale-empty-gauntlet-journal.png",
+      "webp": "public/images/finale-empty-gauntlet-journal.webp"
+    },
+    {
+      "key": "naiwa-grief-close",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-empty-gauntlet-journal.png"
+      ],
+      "prompt": "Use case illustration-story. WIDE 16:9 polished 3D visual novel CG, no UI text. Reference 1 is mandatory ORIGINAL Naiwa identity: exactly yellow smooth pear mascot, TWO protruding round green eyes with black pupils, simple small mouth, cream belly, grey fingers, NO ears horns hair eyebrows human nose. Reference 2 is ONLY the design of Naiba's empty bronze multigem gauntlet, NOT a second character in scene. Reference 3 the established ruined city location/style, soft grey dawn after violet night. Close portrait of the REVIVED INTACT Naiwa's head and upper torso, eyes wet and looking down, one restrained tear, simple mouth trembling. He gently holds the EMPTY unlit gauntlet against cream upper belly with grey-tipped hands. Head centered large in upper-middle, exact source green eyes and pear outline, no human hands. Background defocused broken city grey dawn. Naiba is fully absent, NO purple figure ghost reflection light or particles. No fight no injuries exposed no blood gore. Grief and silence, subdued lower fifth for dialogue. Reference 4 is supporting accessory continuity: match this exact abandoned bronze glove with all SIX dark colored gemstones still seated in their bezels, including the large dull golden central stone. Empty means no hand inside, NOT removed gems; NO hollow empty gem sockets. Eyes remain round and protruding green exactly as original Naiwa, even when downcast; do not flatten into rectangular eyelids. Keep the full head within frame with 10% space above it.",
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始身份：颜色、体型、绿眼睛、五官、灰色指尖"
+        },
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始右手青铜宝石护腕设计；不作为同场角色"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定废墟地点及画风"
+        },
+        {
+          "path": "assets/images/finale-empty-gauntlet-journal.png",
+          "purpose": "已验收空护腕的宝石与附件连续性；原始身份参考仍同时传入"
+        }
+      ],
+      "status": "accepted; original identity, complete head/ears and accessory inspected",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-930227e3-bab2-4822-a44a-f09eaaffa841.png",
+      "png": "assets/images/finale-naiwa-grief-close.png",
+      "webp": "public/images/finale-naiwa-grief-close.webp"
+    },
+    {
+      "key": "naiwa-journal-close",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png"
+      ],
+      "prompt": "Use case illustration-story. WIDE 16:9 cinematic 3D visual novel close-up no text UI. Reference 1 mandatory original yellow Naiwa mascot identity, protruding round GREEN eyes BLACK pupils simple mouth cream belly grey fingers no ears horns hair human nose. Reference 2 same ruined city location/style, now quiet dawn warm light but buildings still ruined. Tight head and chest portrait of intact revived Naiwa holding a battered journal against his cream belly with both grey-tipped hands, lifting his green eyes toward the viewer with exhausted tender resolve, no cheerful grin. Head entirely inside frame centered large upper-middle, exact original facial proportions and yellow color. No Naiba or other characters, no ghost glow. Shallow depth of field, journal slightly open indistinct sketches no readable text. No combat, no wounds blood gore. Lower fifth dark enough for dialogue, a quiet decision to go on.",
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "原始角色身份及标志物设计"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定地点与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-95c37ed4-9d97-4a29-8f5b-20d38d6ddfde.png",
+      "status": "accepted; original identity and framing inspected",
+      "png": "assets/images/finale-naiwa-journal-close.png",
+      "webp": "public/images/finale-naiwa-journal-close.webp"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ dist/
 .DS_Store
 logs/
 .workbuddy/
+tmp/
 scripts/gen.sh
 scripts/generate.mjs
 scripts/prompts.json

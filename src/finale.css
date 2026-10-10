@@ -1,0 +1,432 @@
+/* Shared Chapter Five / Final Chapter immersive presentation. */
+.finale-game {
+  --finale-ink: #eff7f5;
+  --finale-muted: #bfd0ce;
+  --finale-accent: #88d5cf;
+  --finale-accent-soft: #88d5cf44;
+  --finale-panel: #071b20ed;
+  --finale-edge: #88d5cf62;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow-x: clip;
+  overflow-y: auto;
+  background: #071318;
+  color: var(--finale-ink);
+  scrollbar-color: var(--finale-accent-soft) transparent;
+}
+.finale-game.finale-chapter-6 {
+  --finale-ink: #fff9ec;
+  --finale-muted: #d9c9a7;
+  --finale-accent: #f0ca7a;
+  --finale-accent-soft: #f0ca7a44;
+  --finale-panel: #21180feb;
+  --finale-edge: #f0ca7a66;
+  background: #18130e;
+}
+.finale-game :is(h1, h2, h3, p) { margin: 0; }
+.finale-game :is(button, a) { touch-action: manipulation; }
+.finale-game button { min-height: 44px; }
+.finale-game button:focus-visible,
+.finale-game a:focus-visible,
+.finale-game [tabindex="-1"]:focus-visible { outline: 2px solid var(--finale-accent); outline-offset: 4px; }
+.finale-game :is(h1, h2, h3) { font-family: 'Noto Serif SC', Georgia, serif; font-weight: 500; text-wrap: balance; }
+.finale-game:lang(en) :is(h1, h2, h3) { font-family: Baskerville, Georgia, serif; font-weight: 400; }
+.finale-art-layer,
+.finale-scene-scrim { position: fixed; inset: 0; z-index: -2; width: 100%; height: 100dvh; pointer-events: none; }
+.finale-art-layer { overflow: hidden; }
+.finale-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+.finale-backdrop.is-visible { opacity: 1; }
+.finale-backdrop[data-art^="memory/"] { filter: saturate(.78) sepia(.15); }
+.finale-scene-scrim { z-index: -1; background: linear-gradient(0deg, #061317f7 0%, #061317d8 23%, #0613171c 68%, #06131780 100%), linear-gradient(90deg, #06131788, transparent 78%); }
+.finale-chapter-6 .finale-scene-scrim { background: linear-gradient(0deg, #17120ef5 0%, #17120edb 25%, #17120e22 68%, #17120e66 100%), linear-gradient(90deg, #17120e55, transparent 78%); }
+.finale-portrait {
+  position: fixed;
+  z-index: 0;
+  right: clamp(3vw, 8vw, 140px);
+  bottom: clamp(180px, 24vh, 250px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(42vw, 620px);
+  height: min(76vh, 820px);
+  margin: 0;
+  pointer-events: none;
+}
+.finale-portrait[hidden] { display: none; }
+.finale-portrait img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 14px 32px #0009); }
+.finale-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: max(8px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 8px max(20px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--finale-edge);
+  background: #07151ae8;
+  backdrop-filter: blur(12px);
+}
+.finale-chapter-6 .finale-toolbar { background: #19140eef; }
+.finale-toolbar :is(button, a) { flex: 0 0 auto; }
+.finale-toolbar .small-btn { min-height: 44px; color: var(--finale-ink); }
+.finale-back { white-space: nowrap; }
+.finale-wordmark { color: var(--finale-accent); font-size: .72rem; letter-spacing: .14em; white-space: nowrap; }
+.finale-toolset { display: flex; align-items: center; justify-content: flex-end; gap: 7px; margin-left: auto; }
+.finale-toolset button { padding: 8px 11px; }
+.finale-status {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  align-self: flex-end;
+  margin: 18px max(5vw, env(safe-area-inset-right)) 0;
+  padding: 8px 16px;
+  border: 1px solid var(--finale-edge);
+  background: #07171be8;
+  color: var(--finale-muted);
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+.finale-chapter-6 .finale-status { background: #21180fe8; }
+.finale-status strong { color: var(--finale-accent); font-size: 1rem; font-weight: 500; }
+.finale-status .finale-clue-count { padding-left: 14px; border-left: 1px solid var(--finale-edge); }
+.finale-main {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: min(1180px, 90%);
+  min-height: min(64vh, 620px);
+  margin: 26px auto 0;
+  padding-bottom: 18px;
+}
+.finale-node-heading { margin: auto 0 20px; text-shadow: 0 2px 18px #000; }
+.finale-node-heading .finale-memory-label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 6px 11px;
+  border-left: 2px solid #ddbc85;
+  background: #201b14e8;
+  color: #f1d9ad;
+  font-size: .75rem;
+  line-height: 1.5;
+  letter-spacing: .04em;
+}
+.finale-kicker { color: var(--finale-accent); font-size: .7rem; line-height: 1.7; letter-spacing: .14em; text-transform: uppercase; }
+.finale-node-heading h1 { margin-top: 7px; font-size: clamp(1.45rem, 3vw, 2.2rem); }
+.finale-dialogue {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding: 24px clamp(20px, 3vw, 38px) 22px;
+  border: 1px solid var(--finale-edge);
+  border-top: 2px solid var(--finale-accent);
+  background: var(--finale-panel);
+  box-shadow: 0 14px 54px #0008;
+  backdrop-filter: blur(10px);
+}
+.finale-speaker { margin-bottom: 10px !important; color: var(--finale-accent); font: 500 1.04rem/1.5 'Noto Serif SC', Georgia, serif; }
+.finale-line { max-width: 68ch; min-height: 1.6em; color: var(--finale-ink); font: 1.03rem/1.9 'Noto Serif SC', Georgia, serif; }
+.finale-line-counter { margin-right: auto; color: var(--finale-muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.finale-dialogue-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.finale-dialogue-actions .primary-btn { margin-left: auto; min-width: 124px; }
+.finale-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; margin-top: 20px; }
+.finale-choice {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-height: 70px !important;
+  padding: 12px 15px;
+  border: 1px solid var(--finale-edge);
+  background: #c8f4ef0d;
+  color: var(--finale-ink);
+  text-align: left;
+  transition: background-color .18s ease, border-color .18s ease, opacity .18s ease;
+  cursor: pointer;
+}
+.finale-chapter-6 .finale-choice { background: #f0ca7a0d; }
+.finale-choice:hover:not(:disabled) { border-color: var(--finale-accent); background: var(--finale-accent-soft); }
+.finale-choice strong { font-size: .95rem; font-weight: 500; line-height: 1.55; }
+.finale-choice small { color: var(--finale-muted); font-size: .78rem; line-height: 1.55; }
+.finale-choice:disabled { opacity: .48; cursor: not-allowed; }
+.finale-ending-note { margin-top: 18px !important; color: var(--finale-accent); font-size: .8rem; line-height: 1.7; }
+.finale-audio-status { min-height: 1.4em; color: var(--finale-muted); font-size: .72rem; }
+.finale-save-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px max(5vw, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
+  background: #07151ae0;
+  color: var(--finale-muted);
+  font-size: .68rem;
+}
+.finale-chapter-6 .finale-save-footer { background: #19140ee8; }
+.finale-save-footer [role="status"] { color: var(--finale-accent); }
+.finale-panel {
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(88dvh, 860px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.finale-panel-body { padding: clamp(18px, 4vw, 28px); }
+.finale-panel-body p { margin: 0 0 18px; color: var(--finale-ink); font-size: .94rem; line-height: 1.8; }
+.finale-panel-body h3 { margin: 24px 0 12px; color: var(--finale-accent); font: 500 1rem/1.5 'Noto Serif SC', Georgia, serif; }
+.finale-panel-body ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.finale-panel-body li { padding: 7px 10px; border: 1px solid var(--finale-edge); color: var(--finale-ink); font-size: .8rem; line-height: 1.5; }
+.finale-panel-body .finale-history-entry { display: grid; gap: 6px; margin: 0; padding: 15px 0; border-bottom: 1px solid var(--finale-edge); }
+.finale-history-entry small { color: var(--finale-muted); font-size: .7rem; }
+.finale-history-entry strong { color: var(--finale-accent); font-weight: 500; }
+.finale-history-entry p { margin: 0; }
+.finale-panel .dialog-head { position: sticky; top: 0; z-index: 2; background: #08171bf5; }
+.finale-chapter-6 .finale-panel .dialog-head { background: #1c160ff5; }
+.finale-panel .dialog-head .small-btn { min-height: 44px; }
+.finale-film-screen {
+  position: fixed;
+  z-index: 15;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100dvh;
+  min-height: 0;
+  padding: max(78px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  background: #030709;
+}
+.finale-film-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 16px; }
+.finale-film-heading .finale-kicker { margin-right: auto; }
+.finale-film-heading h1 { font-size: clamp(1rem, 2vw, 1.45rem); }
+.finale-film-screen video { display: block; flex: 1; width: 100%; height: 100%; min-height: 0; object-fit: contain; background: #000; }
+.finale-film-screen video:fullscreen { width: 100vw; height: 100dvh; object-fit: contain; background: #000; }
+.finale-film-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
+.finale-film-actions button { min-height: 44px; }
+.finale-film-status { min-height: 1.5em; color: #d8e4e3; font-size: .8rem; text-align: right; }
+.finale-film-status:empty { display: none; }
+
+/* Read-only chapter overviews share the game's color and typography tokens. */
+.promo-finale { --finale-promo-accent: #8bd9d1; --finale-promo-base: #061419; }
+.promo-finale-6 { --finale-promo-accent: #f0ca7a; --finale-promo-base: #19130d; }
+.promo-finale .promo-header { border-bottom-color: color-mix(in srgb, var(--finale-promo-accent) 24%, transparent); }
+.promo-finale .promo-brand span,
+.promo-finale .promo-chapter-label,
+.promo-finale .promo-eyebrow,
+.promo-finale .promo-footer-heading,
+.promo-finale .finale-promo-status { color: var(--finale-promo-accent); }
+.finale-promo-hero { background: var(--finale-promo-base); }
+.finale-promo-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--finale-promo-base) 0%, color-mix(in srgb, var(--finale-promo-base) 73%, transparent) 42%, transparent 86%), linear-gradient(0deg, var(--finale-promo-base) 0%, transparent 46%, color-mix(in srgb, var(--finale-promo-base) 28%, transparent)); }
+.finale-promo-media .promo-hero-image { filter: saturate(.82) contrast(1.06); }
+.promo-finale-6 .finale-promo-media .promo-hero-image { filter: saturate(.83) sepia(.12) contrast(1.02); }
+.finale-promo-grain { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .11; background-image: radial-gradient(circle at 20% 36%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 72% 68%, #fff 0 1px, transparent 1.5px); background-size: 7px 9px, 11px 13px; mix-blend-mode: screen; }
+.finale-hero-question { margin: 18px 0 10px !important; color: var(--finale-promo-accent); font: 500 clamp(1.1rem, 2vw, 1.45rem)/1.5 'Noto Serif SC', Georgia, serif; }
+.promo-finale .promo-play { background: var(--finale-promo-accent); color: var(--finale-promo-base); }
+.promo-finale .promo-play:hover { background: #fff5df; }
+.promo-finale .promo-text-button:hover,
+.promo-finale .promo-tools button:hover,
+.promo-finale .promo-utility-menu button:hover { color: var(--finale-promo-accent); }
+.finale-promo-story { background: #091b20; }
+.promo-finale-6 .finale-promo-story { background: #21180f; }
+.finale-promo-story-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(280px, 1fr); gap: clamp(30px, 9vw, 150px); align-items: start; }
+.finale-promo-story-grid h2,
+.finale-promo-theme-heading h2,
+.finale-promo-play-body h2 { color: #eff7f5; font: 500 clamp(2rem, 5vw, 4.7rem)/1.08 'Noto Serif SC', Georgia, serif; letter-spacing: -.025em; }
+.promo-finale:lang(en) :is(.finale-promo-story-grid h2, .finale-promo-theme-heading h2, .finale-promo-play-body h2) { font-family: Baskerville, Georgia, serif; font-weight: 400; letter-spacing: -.01em; }
+.promo-finale-6 :is(.finale-promo-story-grid h2, .finale-promo-theme-heading h2, .finale-promo-play-body h2) { color: #fff5df; }
+.finale-promo-story-grid > div { max-width: 60ch; color: #d0dfdc; font-size: 1rem; line-height: 1.9; }
+.finale-promo-story-grid > div p + p { margin-top: 20px; color: var(--finale-promo-accent); }
+.finale-promo-line { display: flex; align-items: center; gap: 16px; margin-top: clamp(45px, 8vw, 110px); color: var(--finale-promo-accent); font: .72rem/1 Georgia, serif; letter-spacing: .14em; }
+.finale-promo-line i { display: block; flex: 1; height: 1px; background: linear-gradient(90deg, var(--finale-promo-accent), transparent); }
+.finale-promo-themes { background: #0b2025; }
+.promo-finale-6 .finale-promo-themes { background: #261d13; }
+.finale-promo-theme-heading { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: 40px; }
+.finale-promo-theme-heading h2 { max-width: 15ch; font-size: clamp(1.8rem, 4vw, 3.5rem); }
+.finale-promo-theme-heading p { max-width: 34ch; color: #cad9d7; font-size: .92rem; line-height: 1.8; }
+.finale-promo-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 38px; margin: 0; padding: 0; list-style: none; }
+.finale-promo-notes li { display: grid; grid-template-columns: 52px 1fr; gap: 18px; padding: 23px 0; border-top: 1px solid color-mix(in srgb, var(--finale-promo-accent) 28%, transparent); }
+.finale-promo-notes li > span { color: var(--finale-promo-accent); font: 1.7rem/1 Georgia, serif; }
+.finale-promo-notes .promo-eyebrow { margin-bottom: 8px; font-size: .65rem; letter-spacing: .14em; }
+.finale-promo-notes h3 { margin: 0 0 9px; color: #eff7f5; font: 500 1.12rem/1.5 'Noto Serif SC', Georgia, serif; }
+.promo-finale:lang(en) .finale-promo-notes h3 { font-family: Baskerville, Georgia, serif; font-weight: 400; }
+.finale-promo-notes p:last-child { max-width: 48ch; color: #c5d3d0; font-size: .86rem; line-height: 1.75; }
+.finale-promo-play { background: var(--finale-promo-base); }
+.finale-promo-play-body { max-width: 920px; }
+.finale-promo-play-body h2 { margin: 16px 0 20px; font-size: clamp(2.2rem, 6vw, 5.3rem); }
+.finale-promo-play-body > p:not(.finale-promo-status) { max-width: 54ch; margin-bottom: 22px; color: #cbd9d7; line-height: 1.8; }
+.finale-home-link { display: inline-flex; margin-top: 16px; min-height: 44px; align-items: center; gap: 8px; }
+.finale-entry-pair { display: grid; gap: 12px; width: min(1080px, 92vw); margin: 0 auto 14px; }
+.finale-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 150px;
+  padding: 24px clamp(22px, 5vw, 54px);
+  overflow: hidden;
+  border: 1px solid #76d3ce55;
+  background: #082027;
+  color: #f0f7f5;
+  text-decoration: none;
+  isolation: isolate;
+  transition: border-color .22s ease, transform .22s ease, background-color .22s ease;
+}
+.finale-entry-six { border-color: #eac77955; background: #251b11; }
+.finale-entry:hover { transform: translateY(-2px); border-color: #8bd9d1; background: #0b2a31; }
+.finale-entry-six:hover { border-color: #f0ca7a; background: #302314; }
+.finale-entry:focus-visible { outline: 3px solid #f0ca7a; outline-offset: 4px; }
+.finale-entry-art { position: absolute; z-index: -1; inset: 0; opacity: .36; background: linear-gradient(90deg, #07171df5 0%, #07171dca 48%, transparent 100%), url('/images/finale-abyss.webp') center 50% / cover; }
+.finale-entry-six .finale-entry-art { background-image: linear-gradient(90deg, #1a130df5 0%, #1a130dca 48%, transparent 100%), url('/images/finale-city.webp'); }
+.finale-entry-copy { display: grid; gap: 8px; max-width: 740px; }
+.finale-entry .card-overline { color: #8bd9d1; font-size: .68rem; letter-spacing: .14em; }
+.finale-entry-six .card-overline { color: #f0ca7a; }
+.finale-entry-copy strong { font: 500 clamp(1.45rem, 3vw, 2.3rem)/1.25 'Noto Serif SC', Georgia, serif; }
+.finale-entry-six .finale-entry-copy strong { color: #fff1d1; }
+.finale-entry-copy .card-description { max-width: 54ch; color: #d0dcd9; font-size: .86rem; line-height: 1.65; }
+.finale-entry-action { margin-top: 3px; color: #8bd9d1; font-size: .77rem; letter-spacing: .03em; }
+.finale-entry-six .finale-entry-action { color: #f0ca7a; }
+.finale-entry-number { color: #c8eee9; font: clamp(3rem, 8vw, 6.6rem)/1 Georgia, serif; opacity: .56; }
+
+@media (max-width: 900px) {
+  .finale-toolbar { align-items: flex-start; flex-wrap: wrap; gap: 7px 10px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  .finale-wordmark { align-self: center; margin-left: auto; }
+  .finale-toolset { order: 3; width: 100%; justify-content: flex-start; margin: 0; overflow-x: auto; padding: 1px 1px 5px; scrollbar-width: thin; }
+  .finale-toolset button { padding: 7px 10px; font-size: .72rem; }
+  .finale-status { align-self: flex-start; margin: 12px 5% 0; gap: 13px; font-size: .72rem; }
+  .finale-main { width: 90%; min-height: min(58vh, 590px); margin-top: 20px; }
+  .finale-node-heading { margin-bottom: 12px; }
+  .finale-dialogue { padding: 19px 20px 17px; }
+  .finale-line { font-size: .98rem; }
+  .finale-portrait { right: 3vw; bottom: clamp(220px, 38vh, 360px); width: min(68vw, 480px); height: min(57vh, 600px); opacity: .94; }
+  .finale-game-footer > span:last-child { display: none; }
+  .finale-promo-story-grid { grid-template-columns: 1fr; gap: 24px; }
+  .finale-promo-theme-heading { align-items: start; flex-direction: column; gap: 17px; }
+  .finale-promo-notes { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .finale-toolbar .finale-back { min-width: 44px; max-width: 46vw; overflow: hidden; text-overflow: ellipsis; }
+  .finale-wordmark { font-size: .62rem; letter-spacing: .09em; }
+  .finale-status { width: max-content; max-width: 90%; }
+  .finale-main { width: 92%; min-height: 52vh; margin-top: 12px; }
+  .finale-dialogue { padding: 17px 16px 15px; }
+  .finale-speaker { margin-bottom: 6px !important; font-size: .94rem; }
+  .finale-line { font-size: .94rem; line-height: 1.75; }
+  .finale-choices { grid-template-columns: 1fr; gap: 8px; margin-top: 14px; }
+  .finale-choice { min-height: 60px !important; padding: 10px 12px; }
+  .finale-dialogue-actions { margin-top: 14px; }
+  .finale-dialogue-actions .primary-btn { min-width: 110px; }
+  .finale-portrait { right: -4vw; bottom: clamp(260px, 40vh, 390px); width: 78vw; height: 47vh; opacity: .9; }
+  .finale-save-footer { padding-top: 8px; font-size: .63rem; }
+  .finale-film-screen { gap: 8px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .finale-film-heading { gap: 6px 10px; }
+  .finale-film-actions { justify-content: center; }
+  .finale-film-actions button { flex: 1 1 29%; padding: 9px 8px; font-size: .75rem; }
+  .finale-film-status { text-align: center; }
+  .finale-entry-pair { width: 92vw; }
+  .finale-entry { min-height: 142px; padding: 20px; }
+  .finale-entry-number { font-size: 3.2rem; }
+  .finale-entry-copy .card-description { font-size: .8rem; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .finale-game { min-height: 100dvh; }
+  .finale-toolbar { flex-wrap: nowrap; min-height: 52px; padding-top: max(5px, env(safe-area-inset-top)); padding-bottom: 5px; }
+  .finale-toolbar .finale-back { min-height: 40px; }
+  .finale-wordmark { display: none; }
+  .finale-toolset { order: initial; width: auto; flex: 1; justify-content: flex-end; overflow-x: auto; }
+  .finale-toolset button { min-height: 40px; padding: 5px 8px; }
+  .finale-status { position: absolute; top: max(58px, calc(env(safe-area-inset-top) + 53px)); right: 3vw; margin: 0; font-size: .65rem; }
+  .finale-main { align-items: flex-start; width: 94%; min-height: 0; margin-top: auto; margin-bottom: 4px; padding-bottom: 0; }
+  .finale-node-heading { width: 57%; margin: auto 0 8px; }
+  .finale-node-heading h1 { font-size: 1.2rem; }
+  .finale-kicker { font-size: .6rem; }
+  .finale-dialogue { width: min(64%, 760px); padding: 12px 16px; }
+  .finale-line { max-width: 62ch; font-size: .84rem; line-height: 1.6; }
+  .finale-speaker { margin-bottom: 4px !important; font-size: .86rem; }
+  .finale-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 9px; }
+  .finale-choice { min-height: 48px !important; padding: 6px 9px; }
+  .finale-choice strong { font-size: .76rem; }
+  .finale-choice small { font-size: .65rem; }
+  .finale-dialogue-actions { margin-top: 7px; }
+  .finale-dialogue-actions button { min-height: 40px; }
+  .finale-portrait { right: 3vw; bottom: 52px; width: min(43vw, 430px); height: 76dvh; }
+  .finale-save-footer { min-height: 32px; padding-top: 4px; padding-bottom: max(5px, env(safe-area-inset-bottom)); }
+  .finale-save-footer > span:last-child { display: none; }
+  .finale-promo-hero { min-height: 620px; }
+  .finale-promo-story-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 35px; }
+  .finale-promo-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .finale-game :is(button, a), .finale-backdrop, .finale-entry { transition: none; }
+}
+
+/* One continuous finale entry and unobstructed character CG. */
+.finale-entry-single { grid-template-columns: 1fr; }
+/* The deep's speakers occupy the stage, rather than the right screen edge.
+   Leave their lower bodies behind the dialogue so faces stay large and clear. */
+.finale-chapter-5 .finale-portrait {
+  right: 44%;
+  top: 84px;
+  bottom: 48px;
+  width: min(62vw, 880px);
+  height: auto;
+  transform: translateX(50%);
+  opacity: 1;
+}
+.finale-chapter-5 .finale-portrait img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+}
+.finale-chapter-5 .finale-backdrop[data-art="abyss-feidudu-whisper"] {
+  transform: scale(1.32);
+  transform-origin: 0% 20%;
+}
+.finale-chapter-5 .finale-backdrop[data-art="banana-monitor"] {
+  transform: scale(1.15);
+  transform-origin: 0% 20%;
+}
+.finale-chapter-5 .finale-backdrop[data-art="naidou-confession"] {
+  transform: scale(1.1);
+  transform-origin: 100% 20%;
+}
+@media (max-width: 900px) {
+  .finale-chapter-5 .finale-portrait {
+    right: 50%;
+    top: 148px;
+    bottom: 108px;
+    width: min(90vw, 660px);
+  }
+}
+@media (max-width: 620px) {
+  .finale-chapter-5 .finale-portrait {
+    top: max(148px, calc(env(safe-area-inset-top) + 132px));
+    bottom: max(104px, calc(env(safe-area-inset-bottom) + 88px));
+    width: 94vw;
+  }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .finale-chapter-5 .finale-portrait {
+    right: 30%;
+    top: 58px;
+    bottom: 16px;
+    width: min(54vw, 640px);
+  }
+}
+.finale-has-cg .finale-scene-scrim { background: linear-gradient(0deg, #061317e8 0%, #0613177a 28%, transparent 65%, #06131740 100%); }
+.finale-image-panel { width: min(96vw, 1500px); max-width: none; padding: 16px; background: #071318; }
+.finale-image-panel .dialog-head { margin-bottom: 12px; }
+.finale-image-view { display: block; width: 100%; height: min(78dvh, 950px); object-fit: contain; }
+@media (max-width: 600px) {
+  .finale-image-panel { padding: 10px; }
+  .finale-image-view { height: 75dvh; }
+}

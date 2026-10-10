@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-10",
+  "note": "此前章节旧图原样复用；字幕区显示双语回忆标记，每次回忆同节点内回切当前场景。索引为零基对白序号。",
+  "memories": [
+    {
+      "key": "naiba-threshold",
+      "src": "/images/chapter-04-naiba-threshold.webp",
+      "title": {
+        "zh": "金色门前的奶霸",
+        "en": "Naiba at the golden door"
+      },
+      "sha256": "4df2254e941e09a63b30ea17b988108c10360b618c14c65a7a60efb8c2443e03",
+      "uses": [
+        {
+          "node": "f6-origin",
+          "line": 0,
+          "position": "73% 30%"
+        },
+        {
+          "node": "f6-revival",
+          "line": 5,
+          "position": "73% 30%"
+        }
+      ]
+    },
+    {
+      "key": "rain-headlights",
+      "src": "/images/A03.webp",
+      "title": {
+        "zh": "雨夜的车灯",
+        "en": "Rain and headlights"
+      },
+      "sha256": "231cccdd4a2153008968d8bf6cd2f21aa4ae9a4dbc17e0c14abdfd813686605e",
+      "uses": [
+        {
+          "node": "f6-crash-truth",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-naiba-farewell",
+          "line": 2,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "memory-gallery",
+      "src": "/images/chapter-04-memory-gallery.webp",
+      "title": {
+        "zh": "记忆画廊",
+        "en": "The memory gallery"
+      },
+      "sha256": "1b97b0bc95f4ff62bc269cf3489c05c8d2274f424c68fd775dd1820d07669f2c",
+      "uses": [
+        {
+          "node": "f6-accountability",
+          "line": 1,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "rain-meeting",
+      "src": "/images/P02.webp",
+      "title": {
+        "zh": "雨夜相遇",
+        "en": "The rainy-night meeting"
+      },
+      "sha256": "ae50c8fef6d0788c0947d6b4a3cf66da1d961b9757cd9bda87cc8a138ff42e76",
+      "uses": [
+        {
+          "node": "f6-body-awake",
+          "line": 1,
+          "position": "50% 30%"
+        }
+      ]
+    },
+    {
+      "key": "quiet-journal",
+      "src": "/images/R04_QUIET.webp",
+      "title": {
+        "zh": "写日记的夜晚",
+        "en": "A quiet evening with the journal"
+      },
+      "sha256": "222dbf61377e42d06f5d6cf982390c32330a92440606cd9da8b28b640a6f8776",
+      "uses": [
+        {
+          "node": "f6-naiba-farewell",
+          "line": 9,
+          "position": "30% 35%"
+        },
+        {
+          "node": "f6-ending-reconcile",
+          "line": 2,
+          "position": "30% 35%"
+        }
+      ]
+    },
+    {
+      "key": "dinner-for-two",
+      "src": "/images/A01.webp",
+      "title": {
+        "zh": "两人份的晚餐",
+        "en": "Dinner for two"
+      },
+      "sha256": "705c37ed27edce90eb97cc8cfa0fa2181082963790c95183fc450b4a94de1082",
+      "uses": [
+        {
+          "node": "f6-naiba-sacrifice",
+          "line": 6,
+          "position": "65% 35%"
+        }
+      ]
+    },
+    {
+      "key": "window-photo",
+      "src": "/images/R03_PHOTO.webp",
+      "title": {
+        "zh": "窗边合照",
+        "en": "The window photograph"
+      },
+      "sha256": "188ee3b6501747359d2aa33204ecb9f45d7c00bac46a51f0a08856115a2ab7b2",
+      "uses": [
+        {
+          "node": "f6-revival",
+          "line": 7,
+          "position": "50% 30%"
+        }
+      ]
+    },
+    {
+      "key": "breakfast-together",
+      "src": "/images/R02_KITCHEN.webp",
+      "title": {
+        "zh": "一起做早餐",
+        "en": "Breakfast together"
+      },
+      "sha256": "0bb20eafaa68085566c9bb73fe8c03c77e32f798b51786b3f020a16d3c2d545f",
+      "uses": [
+        {
+          "node": "f6-ending-cradle",
+          "line": 3,
+          "position": "35% 30%"
+        }
+      ]
+    }
+  ]
+}

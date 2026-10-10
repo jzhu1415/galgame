@@ -1,0 +1,188 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-10",
+  "assets": [
+    {
+      "key": "sacrifice-palm-heart",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-naiba-sacrifice.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始身份及右手护腕设计"
+        },
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始身份与身体配色"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定战后废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-naiba-sacrifice.png",
+          "purpose": "既有献祭镜头的体位、毯子与光线连续性"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: WIDE 16:9 cinematic 3D visual novel CG, one single frame, no panels, NO text or UI. Quiet voluntary sacrifice AFTER the battle in the established violet-night ruined city. NO combat poses, attacker, weapon, extra character or human anatomy. Main detail large in center upper two thirds, lower fifth subdued for existing dialogue. Preserve exact original smooth mascot design. Reference 1 is ORIGINAL Naiba identity and RIGHT-hand engraved bronze multigem gauntlet (no left gauntlet). Reference 2 ORIGINAL yellow Naiwa, cream oval belly, grey fingertips, green eyes. Reference 3 location/style ONLY. Reference 4 supporting shot continuity ONLY, original identities prevail. Extreme close-up of Naiba's ONE anatomical RIGHT forearm entering from viewer LEFT, the bronze gauntleted open palm laid gently on unconscious Naiwa's upper cream chest. Bronze hand relaxed, coherent fingers and correct right thumb, back of gauntlet angled enough to see colored gems including large golden central gem, no duplicated hand. A first soft warm light begins at the palm-to-chest contact. Yellow torso reclines diagonally on rubble with same coarse dark blanket below chest. Crop heads OUT. No dissolution yet, no exposed wound or gore; a careful lifesaving touch, not pressing violently.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-eef73b00-dbd9-4992-a775-f0412a4448f2.png",
+      "png": "assets/images/finale-sacrifice-palm-heart.png",
+      "webp": "public/images/finale-sacrifice-palm-heart.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    },
+    {
+      "key": "sacrifice-life-light",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-naiba-sacrifice.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始身体颜色、奶油色肚皮与体型"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "既定废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-naiba-sacrifice.png",
+          "purpose": "献祭体位、毯子、金色生命光连续性"
+        }
+      ],
+      "prompt": "Use case: illustration-story. WIDE 16:9 cinematic 3D visual novel single CG, no panels text UI. Reference 1 ORIGINAL Naiwa identity: yellow smooth SHORT ROUND pear body, ONE SINGLE cream oval belly patch only. Reference 2 established violet night ruined city location and 3D style. Reference 3 supports reclining rescue pose and coarse dark blanket; do NOT include Naiba in this image. Upper torso close-up of intact yellow Naiwa reclining on rubble, HEAD AND HANDS OUTSIDE FRAME. Show the upper cream chest with fine gentle golden life-light threads flowing over its surface, coming from above-left, and gathering as a small warm heartbeat glow. The same ONE continuous cream oval extends DOWNWARD OUT OF VIEW under coarse dark blanket which covers ALL lower belly and WAIST. Waist is entirely hidden, no seam or exposed injury in this shot. Original short pear anatomy; no long neck, no second oval or circle, no decorative patch, no extra limbs. Golden energy symbolizes body restoration occurring beneath blanket. Quiet and intimate noncombat detail, no attacker weapon fist blood gore or purple ghost. Violet blurred ruined city behind. Light focus center-upper, lower fifth darker for dialogue.",
+      "discarded": [
+        {
+          "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-9ad5d541-8193-47c0-8e3b-b10841bee9fe.png",
+          "reason": "腰部构图过高，角色躯干拉长"
+        },
+        {
+          "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-c67e42ca-3a40-43ee-b812-576723c2e08e.png",
+          "reason": "肚皮被画成两个独立椭圆，与原始身份不一致"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-48a988d8-8213-4678-a5e7-fe8a622cd741.png",
+      "png": "assets/images/finale-sacrifice-life-light.png",
+      "webp": "public/images/finale-sacrifice-life-light.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    },
+    {
+      "key": "sacrifice-shoulder-fading",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-naiba-sacrifice.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始身份、体型、紫色表面与奶油色肚皮"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-naiba-sacrifice.png",
+          "purpose": "既有消散效果与献祭光线"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: WIDE 16:9 cinematic 3D visual novel CG, one single frame, no panels, NO text or UI. Quiet voluntary sacrifice AFTER the battle in the established violet-night ruined city. NO combat poses, attacker, weapon, extra character or human anatomy. Main detail large in center upper two thirds, lower fifth subdued for existing dialogue. Preserve exact original smooth mascot design. Reference 1 mandatory ORIGINAL Naiba smooth PURPLE pear body, cream oval belly, no hair ears horns eyebrows nose. Reference 2 established location/style ONLY, reference 3 supporting violet/gold mote effect ONLY. Tight side-detail of Naiba's LEFT SHOULDER and upper torso, the edge gently coming apart into sparse purple and warm golden light particles. Camera is deliberately close enough that BOTH head and hands are OUTSIDE the crop; the focus is rounded purple shoulder outline breaking into light and part of cream upper belly. No skeletal injury, no amputated tissue, no explosive blast. A voluntary quiet fading of consciousness, drifting motes lead toward offscreen Naiwa at lower left. Controlled glow, silhouette still recognizably pear-shaped, soft blurred violet city rubble. No gauntlet in frame.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-88e791c4-b878-48b9-837a-c274a8c60c40.png",
+      "png": "assets/images/finale-sacrifice-shoulder-fading.png",
+      "webp": "public/images/finale-sacrifice-shoulder-fading.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    },
+    {
+      "key": "sacrifice-last-eyes",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-naiba-farewell-close.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始头部、绿眼睛黑瞳、嘴形与紫色"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-naiba-farewell-close.png",
+          "purpose": "已验收告别特写的情绪与光线连续性"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: WIDE 16:9 cinematic 3D visual novel CG, one single frame, no panels, NO text or UI. Quiet voluntary sacrifice AFTER the battle in the established violet-night ruined city. NO combat poses, attacker, weapon, extra character or human anatomy. Main detail large in center upper two thirds, lower fifth subdued for existing dialogue. Preserve exact original smooth mascot design. Reference 1 mandatory ORIGINAL Naiba: PURPLE smooth rounded head, TWO round protruding GREEN eyes BLACK pupils, small curved mouth, no hair ears horns eyebrows human nose. Reference 2 location/style ONLY; reference 3 accepted facial light and emotion support, original identity still mandatory. Very close HEAD-and-upper-chest portrait at his FINAL response, green eyes wet, mouth a tiny quiet reassuring curve, facing viewer. Full rounded head in frame with 10% air above, face large upper middle. ONLY one outer shoulder edge beneath face fades into few purple motes; do not dissolve the eyes or distort face. Naiba is still alive in this moment. Warm life light reflected gently in BOTH black pupils, violet rubble bokeh. Both hands cropped OUT. No other person, no ghost duplicate or fight.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-fd8ec21d-e57a-40f8-8b97-b822190f4fa6.png",
+      "png": "assets/images/finale-sacrifice-last-eyes.png",
+      "webp": "public/images/finale-sacrifice-last-eyes.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    },
+    {
+      "key": "sacrifice-final-mote",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "references/naiba-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-empty-gauntlet-journal.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始胸腹颜色与身体轮廓"
+        },
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "purpose": "奶霸原始右手护腕设计；不生成奶霸本人"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-empty-gauntlet-journal.png",
+          "purpose": "已验收空护腕的宝石与镂空附件连续性"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: WIDE 16:9 cinematic 3D visual novel CG, one single frame, no panels, NO text or UI. Quiet voluntary sacrifice AFTER the battle in the established violet-night ruined city. NO combat poses, attacker, weapon, extra character or human anatomy. Main detail large in center upper two thirds, lower fifth subdued for existing dialogue. Preserve exact original smooth mascot design. Reference 1 mandatory ORIGINAL Naiwa yellow smooth body cream belly; reference 2 used ONLY for exact bronze multigem RIGHT-hand gauntlet, Naiba is ABSENT. Reference 3 location/style ONLY. Reference 4 accepted EMPTY glove design, all SIX colored gemstones seated including central gold, hollow wrist opening with no hand inside. Close low-angle still frame: EMPTY bronze gauntlet on grey rubble foreground-left, all gemstones now dark, background-right Naiwa's cream upper chest and yellow torso recline under same coarse dark blanket. Naiwa head cropped OUT to focus on chest. ONE tiny last purple pinprick of light touches Naiwa's chest, no stream cloud or figure; this is the last transfer. NO Naiba body face ghost reflection duplicate silhouette anywhere. Night violet ruins, no sunrise. Macro shallow focus makes glove and last tiny mote readable; quiet irreversible disappearance, no gore.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-2218d4cb-848b-4f68-9a69-645da99d76b0.png",
+      "png": "assets/images/finale-sacrifice-final-mote.png",
+      "webp": "public/images/finale-sacrifice-final-mote.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    },
+    {
+      "key": "sacrifice-first-breath",
+      "refs": [
+        "references/naiwa-character-turnaround.png",
+        "assets/images/finale-aftermath.png",
+        "assets/images/finale-naiwa-returned.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "purpose": "奶蛙原始黄色头部、绿眼睛黑瞳与简单五官"
+        },
+        {
+          "path": "assets/images/finale-aftermath.png",
+          "purpose": "废墟地点与画风"
+        },
+        {
+          "path": "assets/images/finale-naiwa-returned.png",
+          "purpose": "既有复活镜头的毯子、坐靠体位与疲倦情绪"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: WIDE 16:9 cinematic 3D visual novel CG, one single frame, no panels, NO text or UI. Quiet voluntary sacrifice AFTER the battle in the established violet-night ruined city. NO combat poses, attacker, weapon, extra character or human anatomy. Main detail large in center upper two thirds, lower fifth subdued for existing dialogue. Preserve exact original smooth mascot design. Reference 1 mandatory ORIGINAL Naiwa smooth yellow pear mascot TWO protruding round GREEN eyes BLACK pupils, small simple mouth cream belly, no ears horns hair human nose eyebrows. Reference 2 location/style ONLY. Reference 3 supporting reclining blanket and exhaustion ONLY, choose still violet late night light before sunrise. Tight face-and-upper-chest close-up as Naiwa takes FIRST breath after being restored. He reclines gently against rubble, BOTH green eyes just open, round green globes exact reference with black pupils, weary and bewildered, mouth slightly open in a simple small curved slit, no human lips teeth or nostrils. Full rounded head centered upper middle with space above, shallow focus rubble, coarse dark blanket at lower chest. Intact single body, no wounds blood, NO Naiba NO ghost or ANY purple particles leftover; only violet ambient lighting and faint warm skin reflection. Hands cropped out. Strong emotional close-up, life returns into silence.",
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-c9d94900-520a-4e9c-9199-d4a771a7d4a3.png",
+      "png": "assets/images/finale-sacrifice-first-breath.png",
+      "webp": "public/images/finale-sacrifice-first-breath.webp",
+      "status": "accepted; original identity, accessory and postbattle continuity inspected"
+    }
+  ]
+}

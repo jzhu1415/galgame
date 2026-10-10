@@ -24,7 +24,7 @@ for (const language of ['zh', 'en']) for (const started of [false, true]) {
   for (const match of html.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(match[1]), 'teaser anchors resolve')
   assert.equal((html.match(/aria-current="page"/g) ?? []).length, 1)
   assert(html.includes('data-promo-chapter-link="4" aria-current="page"'))
-  assert(html.includes(language === 'zh' ? '奶神' : 'Naishen'))
+  assert(html.includes(language === 'zh' ? '奶神' : 'naigod'))
   for (const match of html.matchAll(/<img ([^>]+)>/g)) {
     const attributes = match[1]
     const src = attributes.match(/src="([^"]+)"/)?.[1]

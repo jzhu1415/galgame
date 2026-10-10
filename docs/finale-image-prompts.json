@@ -1,0 +1,240 @@
+{
+  "date": "2026-10-09",
+  "images": [
+    {
+      "key": "niulai",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/niulai-character-turnaround.png",
+          "purpose": "牛来原始身份硬约束"
+        }
+      ],
+      "promptSummary": "单角色透明全身立绘：牛来保持金黄色圆润牛形、紫色斑点弯角、粉鼻粉耳、深色眼睛、白色手足、深棕色尾穗。三分之四站姿，平静交涉表情，完整角与脚，精致柔和 3D 渲染，无文字、地面与额外角色。",
+      "outputPNG": "assets/images/finale-niulai.png",
+      "outputWebP": "public/images/finale-niulai.webp",
+      "verified": "已对照用户三视图，黄色身体、紫角、粉鼻、白手足、尾巴一致，RGBA透明边缘保留。"
+    },
+    {
+      "key": "banana-cat",
+      "transparent": true,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/banana-cat-character-turnaround.png",
+          "purpose": "角色原始身份硬约束"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Single full-body transparent visual novel sprite of Banana Cat. Input 1 HARD IDENTITY: identical ginger tabby kitten with round face, big dark blue-black eyes, pink nose, ivory muzzle and whiskers, encased in a whole yellow banana costume with brown stem and organic fine brown peel speckles. Furry paws and short legs emerge, orange striped tail behind. Exact reference proportions. One character only, front three-quarter standing, alert attentive expression and one paw slightly lifted. Full feet and banana stem visible with safe margins. Soft polished 3D render. Real transparent background, no backdrop, no glow, no floor or cast shadow, no text or panel, no other character.",
+      "outputPNG": "assets/images/finale-banana-cat.png",
+      "outputWebP": "public/images/finale-banana-cat.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "naidou",
+      "transparent": true,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/naidou-character-turnaround.png",
+          "purpose": "角色原始身份硬约束"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Single transparent full-body visual novel sprite of Naidou. Input 1 is HARD IDENTITY: yellow rounded pear-shaped body, ivory oval belly, dark brown side-parted chin-length bob hair, human-like cute face with large brown eyes and upper black eyeliner, small nose, orange lips, grey fingertips/hands and feet. Preserve original proportions and bob silhouette exactly. One character only, front three-quarter standing, conflicted but composed expression, arms down, one palm raised slightly as if explaining a dangerous experiment. Entire hair and feet visible. Soft high quality 3D render. Genuinely transparent, no background, no glow, no floor or cast shadow, no text, no logo, no clothing added.",
+      "outputPNG": "assets/images/finale-naidou.png",
+      "outputWebP": "public/images/finale-naidou.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "feidudu-dark",
+      "transparent": true,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/feidudu-dark-character-turnaround.png",
+          "purpose": "角色原始身份硬约束"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Single transparent full-body visual novel sprite of DARK FEIDUDU. Input 1 HARD identity: bright yellow rounded creature, TWO long thick rounded upright ears, black band-like marking around both eyes, bright BLUE irises white eyes, huge brown oval nose, open smiling mouth with long pink tongue hanging down, pale oval belly, dark grey hands and feet, short yellow thick tail. Keep original yellow body and same proportions, do not turn black or red-eyed. One character only, threatening forward three-quarter stance leaning a little with fists closed, eyes focused, full feet ears visible. Polished soft 3D render consistent with reference. Real transparent background, absolutely no black backdrop, no halo/glow, no floor shadow, no text.",
+      "outputPNG": "assets/images/finale-feidudu-dark.png",
+      "outputWebP": "public/images/finale-feidudu-dark.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "abyss",
+      "transparent": false,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/public/images/chapter-02-ice-hall.webp",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset: 16:9 wide cinematic visual novel background for the fifth layer, Beneath the Dark. Input 1 LOCATION AND STYLE reference only: maintain the believable shallow-water tiled liminal interior, concrete tiled columns and cinematic 3D rendering. Transform the frozen hall into an underground abandoned flood tunnel opening on a vast lightless reservoir, narrow damp walkway at right, a single distant blue work light and faint gold light reflected from a torn journal page on the railing. Cold deep petrol teal darkness, readable foreground, atmospheric mist, no gothic arches. No people, no characters, no typography or UI. Leave bottom 25 percent quiet for a dialogue overlay. Detailed cinematic lighting and spacious depth.",
+      "outputPNG": "assets/images/finale-abyss.png",
+      "outputWebP": "public/images/finale-abyss.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "naiwa",
+      "transparent": true,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/naiwa-character-turnaround.png",
+          "purpose": "角色原始身份硬约束"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Single transparent full-body sprite of Naiwa, exactly the first original identity reference: smooth bright yellow rounded pear-shaped body, cream oval belly, small simple smiling mouth, two circular green eye surrounds with black pupils high on head, no human hair no ears no horns no tail, short arms and broad dark grey fingertips and feet. Same lovable silhouette and proportions. Standing front three-quarter, determined but kind expression, right arm extended to protect someone beyond frame; both feet fully visible. Soft polished 3D visual novel character rendering. Genuinely transparent background without any halo, colored mist, backdrop, floor shadow, text or extra figure. Only one same original Naiwa.",
+      "outputPNG": "assets/images/finale-naiwa.png",
+      "outputWebP": "public/images/finale-naiwa.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "naiba",
+      "transparent": true,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/naiba-character-turnaround.png",
+          "purpose": "角色原始身份硬约束"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Single transparent full-body sprite of NAIBA. Input 1 HARD identity: smooth purple rounded pear body, large ivory oval belly, green circular eye surrounds black pupils, simple small mouth, short arms broad feet dark grey, NO ears tail hair. The bronze mechanical gauntlet inset with colored gemstone is on the CHARACTER'S RIGHT arm/hand (viewer left in front view), left hand plain dark grey. Exact original silhouette and proportions. One character standing front three-quarter, solemn protective stance bracing right gauntlet ahead as a shield, feet fully visible. High-quality soft 3D render. Truly transparent background, no black backdrop, no halo or glow or floor shadow, no text, no additional character.",
+      "outputPNG": "assets/images/finale-naiba.png",
+      "outputWebP": "public/images/finale-naiba.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "laboratory",
+      "transparent": false,
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/public/images/M01.webp",
+          "purpose": "地点、风格与事件参考"
+        },
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/public/images/chapter-02-ice-hall.webp",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Wide 16:9 detailed cinematic 3D visual novel BACKGROUND without characters. Input1 style and believable hospital furnishings reference; input2 tiled architectural material/rendering reference only. A clandestine experimental ward on the upper floor of a city tower at night: empty padded reclining medical bed at center left, curved steel extraction apparatus above it, glass wall and monitors with abstract waveforms but NO readable text, cable bundles running to wall relays, open steel service door on right, dark city skyscrapers visible behind tall windows. Deep charcoal blue with cold teal instrument lighting and a small amber warning light. Narrative readable, costly cinematic atmosphere, no gore. Bottom25percent quiet for dialogue. No character silhouette, no typography UI logo watermark.",
+      "outputPNG": "assets/images/finale-laboratory.png",
+      "outputWebP": "public/images/finale-laboratory.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "aftermath",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/final-battle-city-end.jpg",
+          "purpose": "地点、风格与事件参考"
+        },
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "Create a 1536x1024 wide cinematic 3D animated-game background, with no characters and no text. Scene reference 1 is an actual frame from the user's final-battle video: use the modern Chinese-style city skyline and purple explosion as location and event reference only. Reference 2 supplies the established polished 3D game lighting and architectural style. Show the SAME CITY immediately AFTER this catastrophic duel explosion: city has become a vast ruin, collapsed skyscrapers in the distance, broken concrete, shattered asphalt streets, tilted traffic lights, fractured rooftop slab in foreground, exposed steel, drifting smoke and falling dust, violet sparks fading in the sky. Destruction unmistakable, no intact pristine skyline. No corpses or gore. Leave center-left open for character overlays and lower quarter darker with simple debris for subtitles. Warm distant fire with cool blue moonlight, cinematic depth. No logos, watermarks, symbols, captions, people or creatures.",
+      "outputPNG": "assets/images/finale-aftermath.png",
+      "outputWebP": "public/images/finale-aftermath.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "city",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/final-battle-city-middle.jpg",
+          "purpose": "地点、风格与事件参考"
+        },
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "Create a 1536x1024 wide cinematic polished 3D animated-game city rooftop background, NO characters or text. Reference 1: exact modern city rooftop and high-rise location before the user's duel. Reference 2: game's polished 3D lighting/art style. At dusk-blue night, intact dense high-rise city, elevated rooftop foreground with extractor power relay, rooftop access door, distant streets and windows, tense azure-violet glow gathering above rooftops, no damage yet. Clear contrast with later destroyed city. Keep center and lower quarter uncluttered for transparent game character and dialogue overlays. No creatures, people, logos, watermarks, readable labels.",
+      "outputPNG": "assets/images/finale-city.png",
+      "outputWebP": "public/images/finale-city.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "archive",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 wide cinematic polished 3D animated-game environment ONLY, no characters, no text. Use attached established laboratory scene as LOCATION and ART STYLE reference. Interior institute archive adjoining the same lab: three cabinets with open drawers, medical papers, waveform monitor with generic unlabelled dual curves, spools of recorded footage, dark blue glass walls, warm amber desk light and icy overhead lighting. Foreground investigation desk, generous open center for overlays. Bottom quarter dark and simple for dialogue. No people, creatures, words, watermark.",
+      "outputPNG": "assets/images/finale-archive.png",
+      "outputWebP": "public/images/finale-archive.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "core",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        },
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-abyss.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 cinematic wide polished 3D animated-game environment only. Reference 1 supplies institute LOCATION and architectural/art style; reference 2 supplies the supernatural abyss palette. An immense psychic core chamber inside the research tower: glowing milky white spherical suspended energy core framed by broken concentric rings, two streams of gold and violet light winding separately toward it, dark teal glass floor, cables lead to console and empty medical platform, modern city lights through upper glass wall. NOT a character, no humanoid forms. Atmospheric powerful reveal scene, carefully lit, center/lower area readable for character overlay and subtitles. No characters, logos, lettering or watermark.",
+      "outputPNG": "assets/images/finale-core.png",
+      "outputWebP": "public/images/finale-core.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "awakening",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 wide cinematic polished 3D animated-game environment, no characters. Use attached laboratory as exact LOCATION and ART STYLE reference. Side medical ward inside same research institute, an empty hospital bed with detached glowing cables, bedside monitor with abstract heartbeat curve, rumpled white blanket, cold blue glass window overlooking modern city before destruction. Quiet vulnerable recovery atmosphere, moonlight and warm bedside lamp, foreground floor empty for a character overlay, lower quarter dark and uncluttered for subtitles. No readable text, people, creatures, logos or watermark.",
+      "outputPNG": "assets/images/finale-awakening.png",
+      "outputWebP": "public/images/finale-awakening.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "cradle",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 wide cinematic polished 3D animated-game environment, no characters. Attached reference supplies established institute architectural and rendered ART STYLE. Secret white comfort room behind a laboratory wall: old empty wooden cradle, a small round bell above it, faded sheets of musical notes with only illegible strokes, circular warm lamp, softly lit white curved walls, surrounding hints of cold blue institutional corridor. Poignant comforting yet mysterious, not a nursery advertisement. Leave foreground empty and bottom quarter simple for dialogue/character overlays. No people, creatures, legible letters, logos or watermark.",
+      "outputPNG": "assets/images/finale-cradle.png",
+      "outputWebP": "public/images/finale-cradle.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "pursuit",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-abyss.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 wide cinematic polished 3D animated-game environment ONLY. Attached reference supplies exact LIGHTLESS ABYSS location and style. Perspective along a shattered suspended walkway above deep dark water, cables and distant blue watchlights, a sharp turn blocked by metal gate, approaching amber searchlights from rear reflected in water, atmospheric pursuit tension, drifting teal fog, subtle gold remnants on stepping stones. No characters, no silhouettes, no readable text or watermark. Clear central composition suitable for game overlays, lower quarter dark and simple.",
+      "outputPNG": "assets/images/finale-pursuit.png",
+      "outputWebP": "public/images/finale-pursuit.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    },
+    {
+      "key": "dawn",
+      "refs": [
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/references/final-battle-city-end.jpg",
+          "purpose": "地点、风格与事件参考"
+        },
+        {
+          "path": "/Users/claw/Documents/galgame-nailong/assets/images/finale-laboratory.png",
+          "purpose": "地点、风格与事件参考"
+        }
+      ],
+      "prompt": "1536x1024 wide cinematic polished 3D animated-game environment ONLY, no characters or readable text. Reference 1 supplies actual city and catastrophic purple explosion location from user's final-battle video; reference 2 supplies game art style. The SAME CITY at sunrise AFTER it was reduced to ruins by the duel: collapsed skyscrapers, broken asphalt, rubble and twisted steel clearly visible, golden dawn through smoke, temporary medical relief tent and emergency lamps in foreground, simple blanket on a folding cot. Hopeful recovery without magically undoing destruction. Keep center open for overlays, lower quarter darker/simple for dialogue. No people, creatures, corpses, logos or watermark.",
+      "outputPNG": "assets/images/finale-dawn.png",
+      "outputWebP": "public/images/finale-dawn.webp",
+      "verified": "已逐张查看：角色与原始三视图核对身份；背景核对地点、无角色和画面衔接。"
+    }
+  ]
+}
