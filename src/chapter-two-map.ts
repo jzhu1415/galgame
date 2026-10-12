@@ -39,12 +39,13 @@ export function showIceStoryMap(root: HTMLElement, language: Language, save: Cha
   dialog.className = 'app-dialog route-dialog'
   dialog.setAttribute('aria-labelledby', 'ice-map-title')
   dialog.innerHTML = `<header class="dialog-head"><h2 id="ice-map-title">${language === 'zh' ? '冰镜剧情树' : 'Ice hall story map'}</h2><button class="small-btn" type="button" data-map-close>${language === 'zh' ? '关闭' : 'Close'} ×</button></header>${renderIceMindMap(save, progress, language)}`
-  root.append(dialog)
+  const host = document.getElementById('app') ?? root
+  host.append(dialog)
   dialog.querySelector('[data-map-close]')?.addEventListener('click', () => dialog.close())
   dialog.addEventListener('close', () => { dialog.remove(); if (focus?.isConnected) focus.focus() }, { once: true })
   dialog.addEventListener('click', event => { if (event.target !== dialog) return; const b = dialog.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close() })
   dialog.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button => button.addEventListener('click', () => { if (!button.disabled) onSelect(button.dataset.route!) }))
   dialog.showModal()
-  setupStoryMap(dialog, { width: 1100, height: 1330, current: iceMapNodes[iceCurrentNode(save)] })
+  setupStoryMap(dialog, { language, chapter: 2, width: 1100, height: 1330, current: iceMapNodes[iceCurrentNode(save)] })
   return dialog
 }

@@ -24,7 +24,7 @@ The repository includes all five main chapters and the coastal DLC. Development 
 - Branching choices, multiple endings, an interactive story map, and replay of unlocked scenes.
 - Memory collection, spirit management, illustrated object puzzles, and a Three.js exploration level.
 - Scene illustrations, character recordings, and prerecorded protagonist and narrator voices in supported scenes.
-- Thirty-nine noncombat finale CG shots, ten locations and six character sprites; view full artwork without advancing dialogue.
+- Forty-six noncombat finale CG shots, ten locations and six character sprites; investigation close-ups, staged character entrances and full artwork viewing without advancing dialogue.
 - Dialogue history, browser autosaves, independent chapter and DLC progress, and fullscreen play.
 - Desktop and touch controls, including a mobile joystick for 3D exploration.
 

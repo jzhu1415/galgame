@@ -19,6 +19,7 @@ assert.equal(finaleSaveKey(5), 'naiwa-chapter-five-v1')
 assert.equal(finaleSaveKey(6), 'naiwa-final-chapter-v1')
 assert.equal(finaleProgressKey(5), 'naiwa-chapter-five-progress-v1')
 assert.equal(finaleProgressKey(6), 'naiwa-final-chapter-progress-v1')
+assert.equal(stateApi.finaleSpeakers.feidudu.en, 'Fat Dudu')
 
 const forbiddenFifthChapterReveal = /第二人格|另一个完整人格|奶霸是奶蛙|naiba is (part of|a part of) naiwa|second personality|alter ego|another complete personality/i
 for (const chapter of [5, 6]) {
@@ -36,6 +37,7 @@ for (const chapter of [5, 6]) {
     for (const line of node.lines) {
       assert(stateApi.finaleSpeakers[line.speaker]?.zh && stateApi.finaleSpeakers[line.speaker]?.en, `${id}: unknown speaker`)
       assert(line.text?.zh?.trim() && line.text?.en?.trim(), `${id}: missing bilingual dialogue`)
+      assert(!/\bFeidudu\b/i.test(line.text.en), `${id}: use Fat Dudu in displayed English`)
       if (id.startsWith('f5-')) assert(!forbiddenFifthChapterReveal.test(`${line.text.zh} ${line.text.en}`), `${id}: the fifth chapter reveals Naiba's identity too early`)
     }
     const choices = node.choices ?? []
@@ -414,6 +416,30 @@ const legacyVisits = progressApi.mergeFinaleProgress(null, { version: 0, chapter
 assert(legacyVisits.visited.includes('f6-core') && !legacyVisits.checkpoints['f6-core'])
 
 const artworkApi = await import(tsModuleUrl('src/finale-artwork.ts'))
+const introductionApi = await import(tsModuleUrl('src/finale-introductions.ts'))
+const introduced = new Set()
+for (const [node, introductions] of Object.entries(introductionApi.finaleIntroductions)) {
+  assert(fifth.firstArrival.has(node), node + ': introductions belong to the playable route')
+  for (const introduction of introductions) {
+    assert(introduction.from >= 0 && introduction.to >= introduction.from && introduction.to < finaleStories[5][node].lines.length)
+    introduced.add(introduction.speaker)
+    const save = { ...newFinaleSave(5), node, line: introduction.from }
+    const before = structuredClone(save)
+    for (const language of ['zh', 'en']) {
+      const content = introductionApi.renderFinaleIntroduction(save, language)
+      assert(content.includes(stateApi.finaleSpeakers[introduction.speaker][language]) && content.includes(introduction.role[language]) && content.includes(introduction.detail[language]))
+      assert(!content.includes('<button'), 'Introductions stay part of reading, without extra choice gates')
+    }
+    assert.deepEqual(save, before, 'Character introductions never write progress')
+    assert.equal(introductionApi.renderFinaleIntroduction({ ...save, line: introduction.to + 1 }, 'zh'), '')
+  }
+}
+assert.deepEqual([...introduced].sort(), ['banana-cat', 'feidudu', 'naidou', 'niulai'])
+for (const node of ['f5-descent', 'f5-cat-ambush', 'f5-film-kept', 'f5-bargain', 'f6-revival']) {
+  assert.equal(introductionApi.renderFinaleIntroduction({ ...newFinaleSave(5), node, line: 0 }, 'zh'), '', 'No identity plaque before its introduction')
+}
+const mainSource = readFileSync('src/finale.ts', 'utf8')
+assert(mainSource.includes('renderFinaleIntroduction(save, language)'), 'Game dialogue renders the introductions')
 const cgKeys = new Set()
 const memoryKeys = new Set()
 const memoryLog = JSON.parse(readFileSync('docs/finale-memory-shots.json')).memories
@@ -437,6 +463,7 @@ for (const [id, cuts] of Object.entries(artworkApi.finaleCuts)) {
       assert.equal(shot.id, 'memory/' + cut.key)
       const logged = memoryLog.find(entry => entry.key === cut.key)
       assert(logged && logged.src === shot.src && logged.title.zh === cut.memory.zh && logged.title.en === cut.memory.en)
+      assert(logged.uses.some(use => use.node === id && use.line === cut.from && use.position === shot.position), 'Memory record must include each actual cut')
       assert.equal(createHash('sha256').update(readFileSync('public' + shot.src)).digest('hex'), logged.sha256, 'Reused artwork stays unchanged')
       // Every flashback must return to the present before the current node ends.
       assert(cuts.some(next => next.from > cut.from && !next.memory), id + ': memory needs a return cut')
@@ -447,9 +474,40 @@ for (const [id, cuts] of Object.entries(artworkApi.finaleCuts)) {
     cgKeys.add(cut.key)
   }
 }
-assert.equal(cgKeys.size, 39)
-assert.equal(memoryKeys.size, 8)
-assert.equal(memoryLog.length, 8)
+assert.equal(cgKeys.size, 46)
+assert.equal(memoryKeys.size, 10)
+assert.equal(memoryLog.length, 10)
+// A finale flashback follows the live fourth-chapter gallery, rather than a stale path.
+const fourthArt = await import(tsModuleUrl('src/chapter-four-visuals.ts'))
+const galleryShot = artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f6-accountability', line: 1 })
+assert.equal(galleryShot.src, fourthArt.gildedVisualSrc('gallery'))
+assert.equal(galleryShot.id, 'memory/memory-gallery')
+// Both investigation sequences have explicit artwork, not long fallback backgrounds.
+for (const id of ['f5-trace', 'f5-ledger', 'f5-ledger-kept', 'f5-film', 'f5-film-kept', 'f5-roster', 'f5-roster-kept', 'f5-cradle', 'f5-cradle-kept', 'f5-lab-entry', 'f6-investigation', 'f6-medical', 'f6-medical-kept', 'f6-waveform', 'f6-waveform-kept', 'f6-accident-log', 'f6-accident-kept']) {
+  const shots = finaleStories[5][id].lines.map((_, line) => artworkApi.finaleArtwork({ ...newFinaleSave(5), node: id, line }))
+  assert(shots.every(shot => shot.cg), id + ': every investigation line has an explicit frame')
+  if (shots.length > 1) assert(new Set(shots.map(shot => shot.id)).size > 1, id + ': change frames as records unfold')
+}
+// Early appearances belong to the main route and lead to their later physical entrances.
+assert.equal(finaleStories[5]['f5-descent'].next, 'f5-voice')
+assert(finaleStories[5]['f5-voice'].lines.some(line => line.speaker === 'niulai'))
+for (const id of ['f5-pursuit', 'f5-call']) assert.equal(finaleStories[5][id].next, 'f5-cat-ambush')
+assert(finaleStories[5]['f5-cat-ambush'].lines.some(line => line.speaker === 'banana-cat'))
+// The monitored junction stays empty until the player connects the remote operator.
+const bananaEntrance = finaleStories[5]['f5-cat-ambush']
+const firstBananaLine = bananaEntrance.lines.findIndex(line => line.speaker === 'banana-cat')
+assert(firstBananaLine >= 5, 'route anomaly, camera and call precede Banana Cat speaking')
+for (let line = 0; line < 4; line++) {
+  const save = { ...newFinaleSave(5), node: 'f5-cat-ambush', line }
+  assert.equal(artworkApi.finalePortraitSpeaker(save, { 'banana-cat': '/images/finale-banana-cat.webp' }), undefined, 'no future-speaker portrait before an entrance')
+  assert(!artworkApi.finaleArtwork(save).id.startsWith('banana-'), 'establish the junction before showing its operator')
+}
+assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-cat-ambush', line: 4 }).id, 'memory/monitor-attendant', 'Recognizing the attendant recalls the earlier duty desk')
+assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-cat-ambush', line: 5 }).id, 'banana-monitor', 'The response returns to the current control-room feed')
+assert.equal(artworkApi.finalePortraitSpeaker({ ...newFinaleSave(5), node: 'f5-cat-ambush', line: firstBananaLine }, { 'banana-cat': '/images/finale-banana-cat.webp' }), 'banana-cat')
+assert.equal(finaleStories[5]['f5-film'].next, 'f5-film-kept')
+assert(finaleStories[5]['f5-film-kept'].lines.some(line => line.speaker === 'naidou'))
+assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-encounter', line: 7 }).id, 'feidudu-hardening-close')
 for (const id of ['f6-revival', 'f6-resolution', 'f6-ending-reconcile', 'f6-ending-sever', 'f6-ending-cradle']) {
   for (let line = 0; line < finaleStories[5][id].lines.length; line++) {
     const shot = artworkApi.finaleArtwork({ ...newFinaleSave(5), node: id, line })
@@ -477,8 +535,27 @@ for (const entry of sacrificeLog) {
   assert(entry.refs.some(ref => ref.startsWith('references/')), 'Original identity reference remains mandatory')
   assert(entry.refs.includes('assets/images/finale-aftermath.png'), 'Established sacrifice scene reference is required')
 }
-const cgLog = [...JSON.parse(readFileSync('docs/finale-closeup-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-sacrifice-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-memory-closeup-prompts.json')).assets, ...sacrificeLog]
-assert.equal(cgLog.length, 39)
+const investigationLog = JSON.parse(readFileSync('docs/finale-investigation-prompts.json')).assets
+assert.equal(investigationLog.length, 7)
+for (const entry of investigationLog) {
+  assert(entry.status.startsWith('accepted') && existsSync(entry.png) && existsSync(entry.webp))
+  assert(entry.refRoles.length === entry.refs.length && entry.refRoles.every(role => role.purpose))
+  assert(entry.refs.some(ref => ref.startsWith('assets/images/finale-')), 'New frames retain their original location reference')
+  if (entry.key === 'feidudu-hardening-close') assert(entry.refs.includes('references/feidudu-dark-character-turnaround.png'), 'Fat Dudu close-up requires the original identity reference')
+  for (const correction of entry.corrections ?? []) {
+    assert(correction.prompt && correction.refRoles.length === correction.refs.length)
+    correction.refs.forEach(ref => assert(existsSync(ref), ref))
+  }
+}
+const cgLog = [...JSON.parse(readFileSync('docs/finale-closeup-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-sacrifice-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-memory-closeup-prompts.json')).assets, ...sacrificeLog, ...investigationLog]
+assert.equal(cgLog.length, 46)
+const aftermathOnlyKeys = new Set(cgLog.filter(entry => entry.refs.some(ref => /finale-(aftermath|dawn)\.png$/.test(ref))).map(entry => entry.key))
+for (const [id, arrival] of fifth.firstArrival) {
+  if (arrival.flags.includes('film-completed')) continue
+  for (let line = 0; line < finaleStories[5][id].lines.length; line++) {
+    assert(!aftermathOnlyKeys.has(artworkApi.finaleArtwork({ ...arrival, line }).id), id + ': ruined-city art must follow the film')
+  }
+}
 for (const entry of cgLog) {
   assert(cgKeys.has(entry.key), entry.key + ': accepted art should be connected')
   assert(entry.refs.length && entry.prompt)
@@ -486,10 +563,10 @@ for (const entry of cgLog) {
 }
 const speech = JSON.parse(execFileSync('node', ['scripts/finale-tts-manifest.mjs']))
 const hashes = JSON.parse(readFileSync('public/audio/tts/finale-manifest.json'))
-assert.equal(speech.length, 350)
+assert.equal(speech.length, 422)
 for (const entry of speech) {
   assert(existsSync('public/audio/' + entry.path) && statSync('public/audio/' + entry.path).size > 1024, entry.path)
   assert.equal(hashes[entry.path], entry.hash, entry.path + ': speech must match current text')
 }
 assert.equal(createHash('sha256').update(readFileSync(videoPath)).digest('hex'), 'cb1256883e6190f0ad768a6117683652de7e05afe6e80f3e5a9c1994d66f5a49')
-console.log(`Finale OK: ${Object.keys(finaleStories[5]).length} scenes in ONE chapter, ${finaleEndingIds[5].length} endings; continuous state, arguments, mandatory sacrifice and revival, first-arrival replay, 39 noncombat CGs, 8 labeled memories, complete sacrifice cuts, 350 speech files and original battle film.`)
+console.log(`Finale OK: ${Object.keys(finaleStories[5]).length} scenes in ONE chapter, ${finaleEndingIds[5].length} endings; continuous state, arguments, staged entrances, mandatory sacrifice and revival, first-arrival replay, ${cgKeys.size} noncombat CGs, 10 current labeled memories, investigation and sacrifice cuts, ${speech.length} speech files and original battle film.`)

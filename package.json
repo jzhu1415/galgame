@@ -30,7 +30,11 @@
     "generate:finale-tts": "python3 scripts/generate-finale-tts.py",
     "check:finale-preview": "node scripts/check-finale-preview.mjs",
     "check:finale-bgm": "node scripts/check-finale-bgm.mjs",
-    "check:finale-campaign": "node scripts/check-finale-campaign.mjs"
+    "check:finale-campaign": "node scripts/check-finale-campaign.mjs",
+    "prebuild": "node scripts/generate-game-statistics.mjs",
+    "check:game-statistics": "node scripts/generate-game-statistics.mjs --check",
+    "check:story-map-ui": "node scripts/check-story-map-ui.mjs",
+    "check:finale-dialogue-ui": "node scripts/check-finale-dialogue-ui.mjs"
   },
   "dependencies": {
     "three": "^0.185.1"

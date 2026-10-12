@@ -5,6 +5,8 @@ import { tsModuleUrl } from './ts-module.mjs'
 let writes = 0, plays = 0
 globalThis.localStorage = { setItem() { writes++; throw new Error('A campaign page must not write a save') } }
 globalThis.Audio = class { constructor() { plays++; throw new Error('A campaign page must not play audio') } }
+const { gameStatistics } = await import(tsModuleUrl('src/game-statistics.ts'))
+const statValues = [gameStatistics.chineseCharacters, gameStatistics.storyNodes, gameStatistics.visualAssets, gameStatistics.dialogueLines]
 const { renderFinalePromo, renderFinaleEntries, mountFinalePromo } = await import(tsModuleUrl('src/finale-promo.ts'))
 
 const spoilers = ['第二人格', '纯白摇篮', '牺牲', '第二个完整人格', 'second personality', 'alter ego', 'White Cradle', 'sacrifice', 'true ending']
@@ -47,7 +49,9 @@ for (const language of ['zh', 'en']) {
     assert.equal((html.match(/data-fl-note="[^"]*"[^>]*tabindex="-1"/g) ?? []).length, 16, 'duplicated stills are the ones skipped by the keyboard')
     assert.equal((html.match(/data-fl-parallax="/g) ?? []).length, 3, 'hero, hero figure and gate layer stay parallaxed')
     assert.equal((html.match(/data-fl-route-item="/g) ?? []).length, 5, 'the route lists all five chapters')
-    assert.equal((html.match(/data-fl-count="/g) ?? []).length, 3, 'the finale counters are read-only numbers')
+    assert.equal((html.match(/data-fl-count="/g) ?? []).length, 4, 'the whole-game counters are read-only numbers')
+    for (const value of statValues) assert(html.includes(`data-fl-count="${value}" aria-label="${value.toLocaleString(language)}">${value.toLocaleString(language)}</strong>`), 'Counters show final accessible totals even without motion or JavaScript')
+    assert(html.includes(language === 'zh' ? '五章主线 ＋ 海岸 DLC' : 'Five main chapters + coastal DLC'), 'The scope is explicit')
     assert(html.includes('class="fl-plate is-active"') && html.includes('class="fl-route-plate is-active"'), 'the first plate and the current chapter are shown before any script runs')
     assert(html.includes('data-fl-current="true"'), 'the route marks the chapter the reader is on')
     assert.equal((html.match(/data-fl-strip-(prev|next)/g) ?? []).length, 2, 'the contact sheet also has pointer controls')
@@ -213,7 +217,7 @@ const plateSurfaces = [new Surface(), new Surface(), new Surface()]
 const revealSurfaces = [new Surface(), new Surface(), new Surface()]
 // These two start active in the rendered markup, so the controller only reacts to changes.
 plateSurfaces[0].classes.add('is-active')
-const counts = ['23', '10', '6'].map(value => { const element = new Surface(); element.dataset.flCount = value; return element })
+const counts = statValues.map(value => { const element = new Surface(); element.dataset.flCount = String(value); return element })
 revealSurfaces[0].querySelectorAll = () => counts
 const shotSurfaces = Array.from({ length: 24 }, (_, index) => {
   const shot = new Surface()
@@ -394,8 +398,8 @@ assert.equal(routeNote.textContent, '穿过冰封镜馆，拼出被裁切的那�
 intersection.callback([{ isIntersecting: true, target: revealSurfaces[0] }])
 assert(revealSurfaces[0].classes.has('is-revealed'))
 assert(!intersection.targets.has(revealSurfaces[0]), 'a revealed block stops being observed')
-flush(1000)
-assert.deepEqual(counts.map(element => element.textContent), ['23', '10', '6'], 'the finale counters settle on their real values')
+flush(1600)
+assert.deepEqual(counts.map(element => element.textContent), statValues.map(value => value.toLocaleString('zh-CN')), 'the whole-game counters settle on their real values')
 
 // Reduced motion swaps to a static layout without losing any copy.
 motion.matches = true

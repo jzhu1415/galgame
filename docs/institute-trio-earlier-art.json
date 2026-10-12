@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-11",
+  "tool": "Built-in image_gen",
+  "purpose": "组织三人组前章铺垫；第二章日常接触，第三章同一套操作暴露合作，终章认出旧人。",
+  "shots": [
+    {
+      "asset": "chapter-02-cg-ward-handover",
+      "node": "chapter-two/hospital",
+      "lines": [
+        0,
+        5
+      ],
+      "references": [
+        {
+          "path": "references/niulai-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/naidou-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/banana-cat-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/naiwa-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "public/images/chapter-02-hospital.webp",
+          "role": "医院场景与画风"
+        }
+      ],
+      "prompt": "Use case: illustration-story. Asset: cinematic 16:9 visual novel CG, one full scene, no panels, no text or UI. Input images 1 Niulai, 2 Naidou, 3 Banana Cat, 4 Naiwa are strict ORIGINAL identity references; image 5 only hospital architecture, cool blue night atmosphere and rendered style reference. Create a NEW hospital ward bedside scene, no purple character from scene reference. Sleeping yellow green-eyed Naiwa under a white blanket on the right; show rounded head accurately. Center Naidou, exactly yellow round body, ivory belly, dark-brown SIDE PART bob hair, large brown eyes, charcoal hands, crouches at an external pump beside the bed, reconnecting a tube with professional calm. Left Niulai, golden-yellow cow with purple spotted horns, pink muzzle, light hands, brown tail tuft holds a transfer clipboard and pen. In open doorway behind them, Banana Cat with intact yellow banana shell, brown stem, orange tabby face, blue eyes, orange exposed paws and striped tail swipes a door card. Quiet routine clinical service, subtly unsettling but no overt villain expressions. All three faces readable in upper middle, physical actions and equipment visible, lower 22 percent calm floor/bed space for dialogue overlay. Soft 3D cartoon identity in richly detailed cinematic environment, balanced blue ambient light and small warm bedside light. No humans, no combat, no extra characters, no costumes covering identity, no readable lettering.",
+      "correction": {
+        "reason": "用户指出奶蛙闭眼被错误画成细绿色弧线。保留圆形绿色眼部体积，在眼睑中部表现闭合缝。",
+        "references": [
+          {
+            "path": "assets/images/chapter-02-cg-ward-handover.png",
+            "role": "改图目标与医院场景"
+          },
+          {
+            "path": "references/naiwa-character-turnaround.png",
+            "role": "原始角色身份硬约束"
+          },
+          {
+            "path": "references/niulai-character-turnaround.png",
+            "role": "原始角色身份硬约束"
+          },
+          {
+            "path": "references/naidou-character-turnaround.png",
+            "role": "原始角色身份硬约束"
+          },
+          {
+            "path": "references/banana-cat-character-turnaround.png",
+            "role": "原始角色身份硬约束"
+          }
+        ],
+        "prompt": "Edit target image 1, one surgical correction ONLY: fix sleeping Naiwa's CLOSED EYES on the right. Image 2 is strict original Naiwa identity. His eyes are TWO large round green protruding eye mounds in the reference; when shut they must RETAIN their rounded green eye volume and original size/position, with a soft eyelid closure seam THROUGH each rounded green eye mound, black pupils completely hidden. Do NOT replace the eyes with thin green eyebrow strokes on flat yellow face. Show two rounded green closed eyelids, recognizable as the original round eyes gently shut. No eyebrows, no eyelashes, no human eye sockets, no open pupils. Preserve Naiwa's original smooth yellow head, small mouth and proportions. Images 3 4 5 are ORIGINAL identity references for Niulai, Naidou and Banana Cat respectively; image 1 also provides the hospital scene and style. Keep those three people exactly as in edit target, keep their pose, faces, hands, equipment, door, clipboard, tubes, blanket, camera composition, lighting, resolution and all other pixels as close to unchanged as possible. Do not redesign anything else. Cinematic 16:9 CG, no text."
+      }
+    },
+    {
+      "asset": "chapter-02-cg-monitor-attendant",
+      "node": "chapter-two/hospital",
+      "lines": [
+        2
+      ],
+      "references": [
+        {
+          "path": "references/banana-cat-character-turnaround.png",
+          "role": "香蕉猫原始身份"
+        },
+        {
+          "path": "public/images/chapter-02-hospital.webp",
+          "role": "医院场景与画风"
+        },
+        {
+          "path": "assets/images/chapter-02-cg-ward-handover.png",
+          "role": "新病房光线连续性（不替代身份参考）"
+        }
+      ],
+      "prompt": "Use case illustration-story. Generate one cinematic 16:9 visual novel CG, no panels, no UI overlay, no text. Image 1 is ORIGINAL strict Banana Cat identity: orange tabby, blue eyes, tiny pink nose, entire closed yellow banana shell around torso and head with round face opening and brown stem; exposed fur paws and striped tail. Image 2 is hospital environment/style only; ignore purple background figure. Image 3 provides newly established night ward lighting and rendering continuity, never replaces original character identity. Hospital duty desk in same blue-lit corridor at 2am. Medium close view of Banana Cat seated behind desk, one orange paw on mouse, other paw turning a desktop surveillance monitor toward viewer as if politely helping retrieve footage. Its face is quietly composed and very recognizable, intact banana shell. Screen shows small empty corridor camera thumbnails and static, NO people or readable text. A door key card and closed equipment log sit on desk, card scanner beside door behind. One lens above door points toward ward. Camera viewpoint from visitor side at face height; character and screen in upper middle with spacious quiet desk lower 22 percent for dialogue. Blue ambient with soft monitor glow, detailed cinematic 3D-rendered game CG matching references. No extra characters, no peeled banana, no crying, no villain costume, no watermark."
+    },
+    {
+      "asset": "chapter-03-cg-organization-handoff",
+      "node": "chapter-three/confrontation",
+      "lines": [
+        0,
+        7
+      ],
+      "references": [
+        {
+          "path": "references/niulai-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/naidou-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/banana-cat-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "role": "原始角色身份硬约束"
+        },
+        {
+          "path": "assets/images/chapter-03-cg-backstage.png",
+          "role": "剧场后台地点与画风"
+        }
+      ],
+      "prompt": "Use case illustration-story. ONE new cinematic 16:9 CG for third chapter visual novel. Images 1 Niulai, 2 Naidou, 3 Banana Cat, 4 purple Naiba are strict ORIGINAL character identity references, preserve body silhouettes, exact faces, colors, markings and limbs. Image 5 is LOCATION and style reference: the rainy hospital corridor revealed behind red theatre curtains, dark tiled reflective floor, rich red velvet curtains, warm amber lamps and cool blue exit. Stage a quiet conspiratorial equipment handoff in upper central area: purple rounded green-eyed Naiba at left with cream belly, dark hands and jeweled metal gauntlet watches a small glowing cylindrical vessel on silver equipment case. Center Naidou, yellow round body, ivory belly, dark-brown side-part bob, big brown eyes, charcoal hands, connects a thin tube from vessel to case. Beside her Niulai, golden cow, purple spotted horns, pink muzzle, light hands and brown tail tuft checks a clipboard and intact seal attached to the case. At right Banana Cat in complete yellow banana shell, brown stem, orange tabby face and exposed paws/tail operates a tripod surveillance camera, turning its lens AWAY from the vessel toward the empty wall. All four recognizable and not obscured. No humans or researcher visible: frame is specifically this group next to the offscreen researcher. This is a covert memory transaction, no combat/action, no triumphant smile. Rich cinematic 3D cartoon characters naturally in detailed environment, soft practical light, thoughtful eye direction, depth. Lower quarter mostly quiet reflective floor for dialogue overlay. No text, no panels, no watermark, no extra characters."
+    }
+  ],
+  "validation": "逐张核对身份；修正闭眼样图后才接入正式画面。所有正式 PNG 保存在 assets/images，对应 WebP 保存在 public/images。终章回忆使用前章图并在同一节点回切现场。保持节点 ID、对白数量、选项索引与进度逻辑。"
+}

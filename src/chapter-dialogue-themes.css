@@ -1,0 +1,121 @@
+/* Only background fills become translucent. Text, controls and focus stay solid. */
+
+/* I · A warm journal page with a folded corner and a stitched paper spine. */
+.game[data-dialogue-theme="origin"] .scene-scrim { background:linear-gradient(0deg,#070c128c, #070c1240 23%,transparent 65%),linear-gradient(180deg,#04090e47,transparent 25%); }
+.game[data-dialogue-theme="origin"] .game-top { background:#271b12a3; border-bottom-color:#d8b17a59; }
+.game[data-dialogue-theme="origin"] .game-tools .small-btn { color:#f3dfbf; background:#4c382433; border-color:#cda66d47; border-radius:5px; }
+.game[data-dialogue-theme="origin"] .dialogue-box {
+  color: #3c3125;
+  background: linear-gradient(115deg,#fff8e71a,transparent 65%),#fcf0d8b3;
+  border: 1px solid #f3dca494;
+  border-left: 4px double #ad7e42;
+  border-radius: 3px 15px 3px 3px;
+  backdrop-filter: blur(7px);
+  box-shadow: 0 13px 32px #1d100f35,inset 0 1px #fff8e180;
+}
+.game[data-dialogue-theme="origin"] .dialogue-box::before { content:''; position:absolute; left:8px; top:15px; bottom:15px; width:1px; background:repeating-linear-gradient(0deg,#8c612553 0 4px,transparent 4px 10px); pointer-events:none; }
+.game[data-dialogue-theme="origin"] .dialogue-box::after { content:''; position:absolute; top:0; right:0; width:25px; height:25px; background:linear-gradient(45deg,#bd99514a 48%,#fff8dd96 50%); clip-path:polygon(0 0,100% 0,100% 100%); border-radius:0 13px 0 0; pointer-events:none; }
+.game[data-dialogue-theme="origin"] .dialogue-box p { color:#332a22; text-shadow:none; }
+.game[data-dialogue-theme="origin"] .speaker { color:#694622; background:#fff7df70; padding:4px 10px; border:1px solid #ad7e4238; border-radius:4px; letter-spacing:.06em; }
+.game[data-dialogue-theme="origin"] .advance-hint { color:#694622; }
+.game[data-dialogue-theme="origin"] .sound-status { color:#514032; }
+.game[data-dialogue-theme="origin"] :is(.sound-status button,.object-return) { color:#654421; border-color:#a57e4866; background:#fff5d74d; }
+.game[data-dialogue-theme="origin"] .object-controls { color:#514032; }
+.game[data-dialogue-theme="origin"] .choice { background:#fff0d4ad; border-color:#e6c58c9c; color:#3f3020; border-radius:4px 12px 4px 4px; backdrop-filter:blur(7px); }
+.game[data-dialogue-theme="origin"] .choice-number { color:#705023; }
+.game[data-dialogue-theme="origin"] .choice-arrow { color:#705023; }
+.game[data-dialogue-theme="origin"] .choice:hover { background:#fff4dfaD; border-color:#bd883c; }
+.game[data-dialogue-theme="origin"] .choice:focus-visible { outline:3px solid #ffe0a0; outline-offset:3px; box-shadow:0 0 0 2px #6e4a26; }
+
+/* II · Frosted ice, offset crystal corners and a thin white seam. */
+.chapter-two[data-dialogue-theme="ice"] .ice-atmosphere::after { background:linear-gradient(0deg,#07172280,transparent 68%); }
+.chapter-two[data-dialogue-theme="ice"] .ice-top { background:#082b3c99; border-color:#9bd0dc66; }
+.chapter-two[data-dialogue-theme="ice"] :is(.ice-copy,.ice-fragment-dialogue) {
+  background:linear-gradient(135deg,#83c3dd20,transparent 58%),#082a3d9c;
+  border:1px solid #b5eaf296;
+  border-top:2px solid #d4f5faad;
+  border-radius:3px 18px 3px 18px;
+  backdrop-filter:blur(7px);
+  box-shadow:0 16px 40px #03162340,inset 0 0 0 4px #c3f1ff07;
+}
+.chapter-two[data-dialogue-theme="ice"] .ice-copy::before { content:''; position:absolute; right:8px; top:10px; bottom:10px; width:5px; border-right:1px solid #e3faff59; border-left:1px solid #e3faff20; pointer-events:none; }
+.chapter-two[data-dialogue-theme="ice"] .ice-speaker { display:inline-flex; padding:4px 12px; border:1px solid #b0e9f859; border-radius:2px 11px 2px 11px; background:#abdef718; color:#e8faff; }
+.chapter-two[data-dialogue-theme="ice"] :is(.ice-copy>p,.ice-fragment-dialogue p) { color:#effbff; text-shadow:0 1px 5px #06172466; }
+.chapter-two[data-dialogue-theme="ice"] :is(.ice-next,.ice-end button,#ice-fragment-next) { background:#c3eff4c9; color:#0a3445; border-color:#e0fcffb3; border-radius:2px 10px 2px 10px; }
+.chapter-two[data-dialogue-theme="ice"] .ice-copy [data-response] { background:#163e5294; border:1px solid #a7d8ea80; border-radius:3px 12px 3px 12px; color:#edfbff; }
+.chapter-two[data-dialogue-theme="ice"] .ice-voice { color:#d7f8ff; border-color:#b6e5f75c; background:#85c6e012; border-radius:5px; }
+
+/* III · A wine-red theatre ticket, a pink nameplate and a gold lower hem. */
+.chapter-three[data-dialogue-theme="theatre"] .crimson-scenery { background-image:linear-gradient(180deg,#17091080,transparent 38%,#13080b35 70%,#13080b85),var(--crimson-art); }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-top { background:#321326a3; border-bottom-color:#d6a1b759; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-dialogue {
+  background:linear-gradient(120deg,#712d4729,transparent 60%),#2c10239c;
+  border:1px solid #e99ab875;
+  border-left:4px solid #d984a6;
+  border-top:1px solid #e8b98975;
+  border-bottom:3px double #d6aa7580;
+  border-radius:15px 4px 15px 4px;
+  backdrop-filter:blur(7px);
+  box-shadow:0 18px 42px #1707134d,inset 0 0 0 4px #ffc8db05;
+}
+.chapter-three[data-dialogue-theme="theatre"] .crimson-dialogue::before { content:''; position:absolute; right:8px; top:13px; bottom:13px; width:1px; background:repeating-linear-gradient(0deg,#e9b99559 0 3px,transparent 3px 9px); pointer-events:none; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-speaker { color:#ffccdf; border:1px solid #e99eb545; border-radius:13px 3px 13px 3px; background:#ef8fb51c; padding:5px 12px; }
+.chapter-three[data-dialogue-theme="theatre"] .speaker-mark { border-radius:0; transform:rotate(45deg); background:#eab37b; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-line { color:#fff0f6; text-shadow:0 1px 5px #1c071777; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-line-count { color:#f0c7d7; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-choices button { background:#5022378a; border:1px solid #e7a1ba75; border-left:3px solid #e7af80; border-radius:12px 3px 12px 3px; color:#fff0f5; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-choices button:hover:not(:disabled) { background:#75405ba3; border-color:#f3bed1; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-next { border-radius:12px 3px 12px 3px; background:#f5b4cac7; border-color:#ffceded9; color:#432336; }
+.chapter-three[data-dialogue-theme="theatre"] .crimson-voice { border-radius:8px; color:#f7ccde; }
+
+/* IV · An oil-painting frame with a double gold edge and raised corner strokes. */
+.gilded-game[data-dialogue-theme="gilded"] .gilded-scrim { background:linear-gradient(0deg,#17120c80,#17120c4d 22%,#17120c0a 68%,#17120c66),linear-gradient(90deg,#17120c26,transparent); }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-toolbar { background:#30261aa3; border-bottom-color:#d9bb7c59; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue {
+  position:relative;
+  background:linear-gradient(140deg,#9a723225,transparent 62%),#3025199c;
+  border:3px double #e6c47e96;
+  border-top:3px double #f4d998b8;
+  border-radius:3px;
+  backdrop-filter:blur(7px);
+  box-shadow:0 18px 46px #20120845,inset 0 0 0 5px #1c140e29;
+}
+.gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue::before { content:''; position:absolute; inset:6px; border:1px solid #f1ce8830; pointer-events:none; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue::after { content:''; position:absolute; inset:-3px; background:linear-gradient(#ffe4a7,#ffe4a7) left top/29px 2px,linear-gradient(#ffe4a7,#ffe4a7) left top/2px 29px,linear-gradient(#ffe4a7,#ffe4a7) right top/29px 2px,linear-gradient(#ffe4a7,#ffe4a7) right top/2px 29px,linear-gradient(#d4ac65,#d4ac65) left bottom/29px 2px,linear-gradient(#d4ac65,#d4ac65) left bottom/2px 29px,linear-gradient(#d4ac65,#d4ac65) right bottom/29px 2px,linear-gradient(#d4ac65,#d4ac65) right bottom/2px 29px; background-repeat:no-repeat; pointer-events:none; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue h1 { display:inline-block; padding:5px 12px; border:1px solid #e6c47e5c; background:#d9ad5112; border-radius:2px; color:#ffdfa0; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-line { color:#fff5de; text-shadow:0 1px 5px #23180c80; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-choice { background:#70582f55; border:1px solid #ddbb7785; border-radius:2px; color:#fff4d8; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-choice:hover:not(:disabled) { background:#8f733f73; border-color:#ffe0a2; }
+.gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue .primary-btn { border-radius:2px; background:#ebc881c2; color:#46351d; border:1px solid #f5d69ba8; }
+
+/* Coastal DLC · A sea-glass travel card, separate from all five main chapters. */
+.romance-dlc[data-dialogue-theme="coastal"] .romance-dialogue { position:relative; border:1px solid #a8ddd4a3; border-left:4px solid #88cfc0; background:linear-gradient(120deg,#4c958529,transparent 65%),#153c3a9c; border-radius:19px 19px 5px 19px; backdrop-filter:blur(7px); color:#effcf8; box-shadow:0 17px 38px #062b2540; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-dialogue>strong { display:inline-block; color:#d6fff0; border:1px solid #aadfc756; border-radius:20px; padding:4px 11px; background:#98d2b91a; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-next { border:1px solid #b7e9d86e; border-radius:20px; color:#e3fff1; background:#abdabe1a; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-choices>button { color:#eafcf5; background:#28554d8a; border-color:#a1d7c98a; border-radius:13px; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-choices>button:hover { background:#3d7a6b94; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-choices>button>span { color:#bff2dc; }
+.romance-dlc[data-dialogue-theme="coastal"] .romance-dialogue .small-btn { color:#c5efdd; border-radius:18px; }
+
+/* Match chapter maps by palette, retaining the same branching canvas and controls. */
+.route-dialog.is-story-archive[data-chapter="1"] { --chapter-map-head:#fff3d580; --chapter-map-accent:#785126; --chapter-map-rule:#b58a4447; --chapter-map-chip:#e5c3852b; background:#fff4dedb; border-radius:4px 20px 4px 4px; }
+.route-dialog.is-story-archive[data-chapter="2"] { --chapter-map-head:#e6f8ff80; --chapter-map-accent:#286577; --chapter-map-rule:#6096a447; --chapter-map-chip:#89c4d226; background:#edfaffd6; border-radius:3px 22px 3px 22px; }
+.route-dialog.is-story-archive[data-chapter="3"] { --chapter-map-head:#ffe9f080; --chapter-map-accent:#8a3e5b; --chapter-map-rule:#b4789247; --chapter-map-chip:#cf85a526; background:#fff0f4d6; border-radius:20px 4px 20px 4px; }
+.route-dialog.is-story-archive[data-chapter="4"] { --chapter-map-head:#ffedc980; --chapter-map-accent:#866022; --chapter-map-rule:#bda15c66; --chapter-map-chip:#d5b36726; background:#fff5ddd9; border:3px double #ccb479; border-radius:3px; }
+.route-dialog.is-story-archive:is([data-chapter="1"],[data-chapter="2"],[data-chapter="3"],[data-chapter="4"]) .dialog-head { background:var(--chapter-map-head); border-color:var(--chapter-map-rule); }
+.is-story-archive:is([data-chapter="1"],[data-chapter="2"],[data-chapter="3"],[data-chapter="4"]) :is(.map-archive-index,.map-archive-progress>strong,.ending-gallery h3) { color:var(--chapter-map-accent); }
+.is-story-archive:is([data-chapter="1"],[data-chapter="2"],[data-chapter="3"],[data-chapter="4"]) .small-btn:hover { background:var(--chapter-map-chip); border-color:var(--chapter-map-accent); }
+.is-story-archive:is([data-chapter="1"],[data-chapter="2"],[data-chapter="3"],[data-chapter="4"]) .map-intro { border-color:var(--chapter-map-rule); }
+
+@media(max-width:620px){
+  .game[data-dialogue-theme="origin"] .speaker { padding:3px 8px; }
+  .chapter-two[data-dialogue-theme="ice"] .ice-speaker { padding:3px 9px; }
+  .chapter-three[data-dialogue-theme="theatre"] .crimson-speaker { padding:3px 9px; }
+  .gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue { border-width:2px; }
+}
+@media(max-height:560px) and (orientation:landscape){
+  .game[data-dialogue-theme="origin"] .speaker { padding:2px 7px; }
+  .chapter-two[data-dialogue-theme="ice"] .ice-speaker { padding:2px 8px; }
+  .chapter-three[data-dialogue-theme="theatre"] .crimson-speaker { padding:2px 8px; }
+  .gilded-game[data-dialogue-theme="gilded"] .gilded-dialogue h1 { padding:3px 9px; }
+}

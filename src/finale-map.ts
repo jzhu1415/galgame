@@ -2,6 +2,7 @@ import type { Language } from './story'
 import { finaleEndingIds, finaleEndingNames, finaleStories, finaleTitles, type FinaleChapter, type FinaleSave } from './finale-story'
 import type { FinaleProgress } from './finale-progress'
 import { setupStoryMap, type StoryMapPoint } from './story-map'
+import { finaleDialogueTheme, renderFinaleMapDamage } from './finale-dialogue-ui'
 
 export const finaleMapWidth = 1260
 export const finaleMapHeights: Record<FinaleChapter, number> = { 5: 2920, 6: 4240 }
@@ -145,10 +146,12 @@ export function showFinaleStoryMap(root: HTMLElement, language: Language, save: 
   const returnFocus = document.activeElement as HTMLElement | null
   const host = document.getElementById('app') ?? root
   const dialog = document.createElement('dialog')
-  dialog.className = 'app-dialog route-dialog'
+  const theme = finaleDialogueTheme(save)
+  dialog.className = `app-dialog route-dialog finale-themed-map map-tone-${theme.tone}${theme.damaged ? ' is-battle-scarred' : ''}`
+  dialog.lang = language === 'zh' ? 'zh-CN' : 'en'
   dialog.dataset.kind = 'routes'
   dialog.setAttribute('aria-labelledby', 'finale-map-title')
-  dialog.innerHTML = '<div class="dialog-head"><h2 id="finale-map-title">' + esc(words.title + ' · ' + finaleTitlesafe(save, language)) + '</h2><button type="button" class="small-btn" data-map-close>' + words.close + ' ×</button></div>' + renderFinaleMindMap(save, progress, language)
+  dialog.innerHTML = renderFinaleMapDamage(save) + '<div class="dialog-head"><h2 id="finale-map-title">' + esc(words.title + ' · ' + finaleTitlesafe(save, language)) + '</h2><button type="button" class="small-btn" data-map-close>' + words.close + ' ×</button></div>' + renderFinaleMindMap(save, progress, language)
   host.append(dialog)
   dialog.querySelector('[data-map-close]')?.addEventListener('click', () => dialog.close())
   dialog.addEventListener('close', () => {
@@ -165,7 +168,7 @@ export function showFinaleStoryMap(root: HTMLElement, language: Language, save: 
   }))
   dialog.showModal()
   const current = finaleMapNodes[save.chapter][save.node] ?? finaleMapNodes[save.chapter][initialMapNode(save.chapter)]
-  setupStoryMap(dialog, { width: finaleMapWidth, height: finaleMapHeights[save.chapter], current })
+  setupStoryMap(dialog, { language, chapter: 5, width: finaleMapWidth, height: finaleMapHeights[save.chapter], current })
   return dialog
 }
 

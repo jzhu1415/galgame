@@ -44,13 +44,13 @@ const chapters: Record<Chapter, PromoChapter> = {
     scenes: [
       { place: 'THREE MIRRORS', title: b('入口有三个你。', 'Three reflections. Three ways in.'), body: b('一个追着紫色背影跑，一个蹲着捡镜片，还有一个贴在墙上听。镜中的路各不相同，你先跟哪一个走？', 'One reflection chases the purple figure. Another gathers broken glass. The third listens at a wall. Which one do you follow first?'), image: 'chapter-02-cg-three-mirrors', alt: b('三面镜子里，主角分别追踪、拾取镜片和倾听', 'Three mirrors showing the player chasing, collecting glass, and listening') },
       { place: 'THE FILM', title: b('把这一格再放一遍。', 'Play that frame again.'), body: b('胶片离开冰面，雨点在画格里倒着走。时间码往前跳了，人影却已经站在另一处。把它记下来，后面还有别的证词。', 'Lift the film from the ice and the rain runs backwards. The timestamp jumps; the figure has moved. Keep a note. There are other accounts to compare.'), image: 'chapter-02-cg-film-fragment', alt: b('主角在冰面上拿起一段残缺胶片', 'The player holding a damaged strip of film above the ice') },
-      { place: 'BEHIND THE GLASS', title: b('墙后有人在说话。', 'A voice behind the glass.'), body: b('他还记得车里的冷气，也记得有人喊过他的名字。先让他说完，再回头核对你找到的东西。', 'He remembers the cold inside the car, and someone calling his name. Let him finish. Then check his account against what you found.'), image: 'chapter-02-cg-cold-mirror', alt: b('奶鼠坐在冰镜前，镜中映出戴着手甲的奶霸', 'Naishu facing an icy mirror with Naiba and his gauntlet reflected in it') },
+      { place: 'BEHIND THE GLASS', title: b('墙后有人在说话。', 'A voice behind the glass.'), body: b('他还记得车里的冷气，也记得有人喊过他的名字。先让他说完，再回头核对你找到的东西。', 'He remembers the cold inside the car, and someone calling his name. Let him finish. Then check his account against what you found.'), image: 'chapter-02-cg-cold-mirror', alt: b('肥嘟嘟坐在冰镜前，镜中映出戴着手甲的奶霸', 'Fat Dudu facing an icy mirror with Naiba and his gauntlet reflected in it') },
     ],
     person: {
-      name: b('奶鼠与奶霸', 'Naishu & Naiba'), roman: 'NAISHU / NAIBA', image: 'chapter-02-cg-cold-mirror',
-      alt: b('冰镜隔开了奶鼠与奶霸', 'An icy mirror separating Naishu and Naiba'),
+      name: b('肥嘟嘟与奶霸', 'Fat Dudu & Naiba'), roman: 'FAT DUDU / NAIBA', image: 'chapter-02-cg-cold-mirror',
+      alt: b('冰镜隔开了肥嘟嘟与奶霸', 'An icy mirror separating Fat Dudu and Naiba'),
       quote: b('你已经带回来一个了，别再进去。', 'You\'ve brought back one fragment already. Don\'t go in again.'),
-      body: b('奶霸让你离开，奶鼠还有话没说完。两个人的说法对不上。镜馆里那些不起眼的物证，也许能补上他们略过的部分。', 'Naiba wants you to leave. Naishu hasn\'t finished talking. Their accounts don\'t agree. The evidence scattered around the hall may fill in what they leave out.'),
+      body: b('奶霸让你离开，肥嘟嘟还有话没说完。两个人的说法对不上。镜馆里那些不起眼的物证，也许能补上他们略过的部分。', 'Naiba wants you to leave. Fat Dudu hasn\'t finished talking. Their accounts don\'t agree. The evidence scattered around the hall may fill in what they leave out.'),
     },
     playBody: b('用键盘或摇杆在镜馆里走，靠近物证后调查。收集胶片和镜片，记录证词，再回到中央镜前核对。', 'Walk through the hall with the keyboard or joystick and examine the exhibits up close. Collect film and glass, note the testimony, then return to the central mirror.'),
     closing: b('电梯已经到了。', 'The elevator is here.'),

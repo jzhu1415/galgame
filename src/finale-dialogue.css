@@ -1,0 +1,111 @@
+/* Finale only: midnight glass and brass, then an ash-worn frame after the film. */
+.finale-game.finale-ui-v2 {
+  --finale-ink: #edf5ff;
+  --finale-muted: #b5c7dd;
+  --finale-accent: #9dc9f2;
+  --finale-accent-soft: #9dc9f233;
+  --finale-edge: #8aa8cd55;
+  --dialogue-gold: #ebc781;
+  --dialogue-base: #0a182b99;
+  --dialogue-border: #80a7ce8c;
+  background: #081320;
+}
+.finale-ui-v2 .finale-toolbar { background: #0c182bed; border-color: #9dc9f22e; }
+.finale-ui-v2 .finale-toolbar .small-btn { background: #16263c99; border: 1px solid #8eabc043; border-radius: 9px; color: #dae7f5; }
+.finale-ui-v2 .finale-toolbar .small-btn:hover { background: #263c58; border-color: var(--dialogue-gold); }
+.finale-ui-v2 .finale-status { background: #0e1b2bde; border-color: #91accb55; border-radius: 10px; box-shadow: 0 10px 28px #0004; }
+.finale-ui-v2 .finale-status strong { color: var(--dialogue-gold); }
+.finale-ui-v2 .finale-scene-scrim { background: linear-gradient(0deg,#08142180, #0814214d 30%, transparent 68%, #08142150); }
+.finale-ui-v2 .finale-dialogue-v2 {
+  isolation: isolate;
+  padding: 23px clamp(22px, 3.2vw, 42px) 24px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+  filter: drop-shadow(0 18px 34px #02081580);
+}
+.finale-dialogue-v2 > :not(.finale-frame-skin):not(.finale-frame-rail):not(.finale-frame-fractures) { position: relative; z-index: 2; }
+.finale-frame-skin { position: absolute; z-index: 0; inset: 0; pointer-events: none; border: 1px solid var(--dialogue-border); background: radial-gradient(ellipse at 0 0,#36668b28,transparent 48%),linear-gradient(105deg,#101f369e,var(--dialogue-base)); backdrop-filter: blur(7px); clip-path: polygon(18px 0,calc(100% - 30px) 0,100% 30px,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 18px); }
+.finale-frame-skin::before { content: ''; position: absolute; inset: 0; border-top: 2px solid #ebc781b8; border-bottom: 1px solid #9dc9f247; pointer-events: none; }
+.finale-frame-skin::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg,transparent 0 5px,#d5e6fa03 5px 6px); pointer-events: none; }
+.finale-frame-rail { position: absolute; top: -3px; left: 36px; display: flex; gap: 5px; z-index: 3; pointer-events: none; }
+.finale-frame-rail i { display: block; width: 24px; height: 5px; background: var(--dialogue-gold); transform: skew(-28deg); }
+.finale-frame-rail i:nth-child(2) { opacity: .5; }
+.finale-frame-rail i:nth-child(3) { opacity: .2; }
+.finale-dialogue-head { display: flex; align-items: center; gap: 16px; padding-bottom: 15px; margin-bottom: 19px; border-bottom: 1px solid var(--finale-edge); }
+.finale-dialogue-v2 .finale-speaker { display: inline-flex; align-items: center; gap: 10px; min-height: 35px; padding: 5px 14px 5px 10px; margin: 0 !important; border: 1px solid #a7cae45c; border-radius: 6px 14px 6px 6px; background: #a9d1ff14; color: #eef6ff; font-size: 1.05rem; white-space: nowrap; }
+.finale-speaker-mark { width: 6px; height: 6px; background: var(--dialogue-gold); transform: rotate(45deg); box-shadow: 0 0 10px #ebc78155; }
+.finale-dialogue-edition { font-size: .62rem; letter-spacing: .18em; color: var(--finale-muted); }
+.finale-dialogue-head .finale-line-counter { margin: 0 0 0 auto; color: var(--dialogue-gold); font-size: .74rem; white-space: nowrap; }
+.finale-line-counter i { color: #9eb4cf; font-style: normal; }
+.finale-dialogue-v2 .finale-line { max-width: 90ch; color: var(--finale-ink); font-size: clamp(1rem,1.3vw,1.19rem); line-height: 1.95; letter-spacing: .025em; text-shadow: 0 1px 4px #0008; }
+.finale-dialogue-v2 .finale-character-intro { margin-bottom: 18px; padding: 10px 14px; background: #a9c9e908; border: 1px solid #819dc635; border-left: 2px solid var(--dialogue-gold); border-radius: 0 8px 8px 0; }
+.finale-dialogue-v2 .finale-intro-label { color: var(--dialogue-gold); font-size: .63rem; }
+.finale-dialogue-v2 .finale-intro-identity strong { font-size: 1.16rem; }
+.finale-dialogue-v2 .finale-dialogue-actions { gap: 12px; margin-top: 23px; }
+.finale-dialogue-v2 .finale-dialogue-actions .small-btn { border: 1px solid #a3bdd34d; background: #293c572e; color: #d6e5f5; border-radius: 9px; padding: 9px 13px; }
+.finale-dialogue-v2 .finale-dialogue-actions .small-btn:hover { border-color: var(--dialogue-gold); background: #344b6980; }
+.finale-dialogue-v2 .finale-dialogue-actions .primary-btn { display: flex; align-items: center; justify-content: space-between; gap: 23px; margin-left: auto; padding: 8px 9px 8px 20px; border-radius: 9px; border: 1px solid #f4d894; background: linear-gradient(110deg,#edcd8d,#d9ae63); color: #253246; font-size: .86rem; font-weight: 600; box-shadow: 0 5px 17px #b88a282b; }
+.finale-next-icon { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #64523540; border-radius: 6px; font-size: 1.25rem; }
+.finale-dialogue-v2 .primary-btn:hover { background: #ffe2a3; box-shadow: 0 7px 22px #dab2603d; }
+.finale-dialogue-v2 .finale-choice { display: grid; grid-template-columns: 25px minmax(0,1fr) 16px; align-items: center; gap: 13px; padding: 15px 17px; border: 1px solid #a9c5df5e; border-radius: 9px; background: #172a43d9; color: #edf5ff; box-shadow: none; }
+.finale-choice-number { color: var(--dialogue-gold); font: 400 1.15rem/1 Georgia,serif; }
+.finale-choice-copy { display: grid; gap: 5px; text-align: left; }
+.finale-dialogue-v2 .finale-choice strong { color: inherit; font-size: .92rem; }
+.finale-dialogue-v2 .finale-choice small { color: var(--finale-muted); line-height: 1.6; }
+.finale-choice-arrow { color: var(--dialogue-gold); }
+.finale-dialogue-v2 .finale-choice:hover:not(:disabled) { background: #2b4360ee; border-color: #efd49a; }
+.finale-dialogue-v2 .finale-choice:disabled { opacity: .55; }
+.finale-dialogue-v2 button:focus-visible { outline: 3px solid #ffdc91; outline-offset: 4px; }
+.finale-ui-v2 .finale-save-footer { border-color: #819aba37; background: #0e1728e8; color: var(--finale-muted); }
+/* Damage belongs to the skin. Text, controls and focus rings are never clipped. */
+.finale-game.finale-ui-v2.is-battle-scarred { --finale-ink: #fff4e6; --finale-muted: #d4c3b0; --finale-accent: #e1b790; --finale-edge: #b4936a55; --dialogue-gold: #deb57b; --dialogue-base: #241f1b99; --dialogue-border: #ae8c6373; background: #1c1916; }
+.is-battle-scarred .finale-frame-skin { background: radial-gradient(ellipse at 0 0,#745f4424,transparent 45%),linear-gradient(105deg,#2c28239e,var(--dialogue-base)); clip-path: polygon(24px 0,63% 0,64% 7px,65% 0,calc(100% - 40px) 0,100% 40px,100% 73%,calc(100% - 6px) 75%,100% 77%,100% calc(100% - 20px),calc(100% - 20px) 100%,37% 100%,36% calc(100% - 8px),35% 100%,14px 100%,0 calc(100% - 14px),0 27%,7px 25%,0 23%,0 24px); }
+.is-battle-scarred .finale-frame-skin::before { border-top: 2px solid #b79763a3; border-bottom-color: #aa8c6357; }
+.is-battle-scarred .finale-frame-skin::after { background: linear-gradient(145deg,#17140e90,transparent 14%,transparent 84%,#0f0d0999),repeating-linear-gradient(171deg,transparent 0 19px,#d8bd8e05 19px 20px); }
+.is-battle-scarred .finale-frame-rail i { background: #b89360; }
+.is-battle-scarred .finale-frame-rail i:nth-child(2) { width: 11px; transform: translateY(2px) rotate(-13deg); }
+.is-battle-scarred .finale-frame-rail i:nth-child(3) { display: none; }
+.finale-frame-fractures { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; fill: none; stroke: #d1af7675; stroke-width: 1; }
+.finale-frame-fractures path { vector-effect: non-scaling-stroke; }
+.finale-frame-fractures .fracture-faint { stroke: #d1af7635; }
+.is-battle-scarred .finale-speaker { border-color: #a58c644f; background: #a88d5f14; border-radius: 3px 10px 4px 4px; }
+.is-battle-scarred .finale-dialogue-v2 .finale-choice { background: #352d24db; border-color: #ba9b6255; border-radius: 4px 9px 4px 9px; }
+.is-battle-scarred .finale-dialogue-v2 .finale-choice:hover:not(:disabled) { background: #4e4032ee; }
+.is-battle-scarred .finale-toolbar,.is-battle-scarred .finale-save-footer { background: #211d18ed; border-color: #ad8a5545; }
+.is-battle-scarred .finale-toolbar .small-btn,.is-battle-scarred .finale-status { background: #322b23dc; border-color: #b4915c42; }
+.is-battle-scarred .finale-scene-scrim { background: linear-gradient(0deg,#211a1580,#211a154d 30%,transparent 68%,#211a1540); }
+@media(max-width:620px){
+  .finale-ui-v2 .finale-dialogue-v2 { padding: 18px 18px 17px; }
+  .finale-dialogue-head { gap: 10px; padding-bottom: 12px; margin-bottom: 14px; }
+  .finale-dialogue-v2 .finale-speaker { font-size: .93rem; padding: 4px 10px 4px 8px; }
+  .finale-dialogue-edition { display: none; }
+  .finale-dialogue-v2 .finale-line { font-size: .97rem; line-height: 1.8; }
+  .finale-dialogue-v2 .finale-choice { padding: 12px 13px; gap: 10px; }
+  .finale-dialogue-v2 .finale-dialogue-actions { gap: 8px; margin-top: 17px; }
+  .finale-dialogue-v2 .finale-character-intro { padding: 8px 10px; }
+}
+@media(max-height:560px) and (orientation:landscape){
+  .finale-ui-v2 .finale-dialogue-v2 { padding: 12px 16px 13px; }
+  .finale-dialogue-head { padding-bottom: 7px; margin-bottom: 9px; }
+  .finale-dialogue-v2 .finale-speaker { min-height: 27px; font-size: .83rem; padding: 2px 9px; }
+  .finale-dialogue-edition { display: none; }
+  .finale-dialogue-v2 .finale-line { font-size: .85rem; line-height: 1.6; }
+  .finale-dialogue-v2 .finale-choice { padding: 8px 10px; grid-template-columns: 20px minmax(0,1fr); gap: 8px; }
+  .finale-choice-arrow { display: none; }
+  .finale-dialogue-v2 .finale-choice strong { font-size: .78rem; }
+  .finale-dialogue-v2 .finale-dialogue-actions { margin-top: 10px; }
+  .finale-dialogue-v2 .finale-dialogue-actions .primary-btn { min-height: 40px; padding: 4px 6px 4px 12px; }
+  .finale-dialogue-v2 .finale-character-intro { margin-bottom: 10px; padding: 7px 10px; }
+}
+@media(prefers-reduced-motion:reduce){.finale-ui-v2 .finale-dialogue-v2 *{transition:none!important}}
+.app-dialog.finale-local-panel { border: 1px solid #9bb8d06b; border-radius: 15px; background: #101e32f5; color: #e9f2fd; box-shadow: 0 25px 95px #020711b3; }
+.finale-local-panel .dialog-head { background: #172942; border-bottom-color: #a2c1dd3d; }
+.finale-local-panel .dialog-head h2 { color: #e5c68d; }
+.finale-local-panel .small-btn { border-radius: 8px; border: 1px solid #a0bed558; background: #243b549c; color: #edf5ff; }
+.finale-local-panel .small-btn:focus-visible { outline: 3px solid #f6d58d; outline-offset: 3px; }
+.finale-local-panel.is-battle-scarred { border-color: #baa07477; border-top-style: dashed; background: #28221cf5; color: #fff2e2; border-radius: 5px 15px 5px 13px; }
+.finale-local-panel.is-battle-scarred .dialog-head { background: #342b20; border-color: #b5966155; }
+.finale-local-panel.is-battle-scarred .small-btn { background: #4a3d2d; border-color: #d0ad7666; }

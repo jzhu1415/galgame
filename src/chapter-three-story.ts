@@ -19,12 +19,12 @@ export const theatreEndingNames: Record<TheatreEnding, Bilingual> = { saved: b('
 
 export const theatreStory: Record<string, TheatreNode> = {
   invitation: { title: b('虚假的援手', 'An offer of help'), act: 0, art: 'hospital', lines: [
-    n('电梯上的“三”亮了很久。回到病房时，一个陌生人已经坐在奶蛙床边，膝上放着银色箱子。', 'The elevator display had been stuck on 3 for a while. When I got back to the ward, a stranger was sitting by Naiwa\'s bed with a silver case on his lap.'),
+    n("电梯上的“三”亮了很久。回到病房，香蕉猫又刷开门；牛来在门口等我，把夹板翻到新的签名栏：“下一次转运先别自己安排。”奶豆仍蹲在床边，只是泵上多了一根细管。她把读数交给坐着的研究员，才抬眼问我：“第二层取回来的东西呢？”他们都记得我进去过。研究员膝上放着银色箱子，示意我坐近一点。", "The elevator display had been stuck on 3. Back at the ward, Banana Cat opened the door again. Niulai turned his clipboard to a fresh signature field. “Do not arrange the next transfer yourself.” Naidou was still beside the bed, but the pump now had another thin tube. She passed its readings to the seated researcher and looked up. “What did you bring back from Layer Two?” They all knew I had gone in. The researcher, a silver case on his lap, motioned me closer."),
     s('researcher', '我们研究过这样的昏迷。你带回来的碎片，让他有了反应。下一层，我们可以帮你。', 'We\'ve studied cases like this. Naiwa responded to the fragments you brought back. We can help you with the next layer.'),
     n('他递过一段录像。雨还没落下来，奶霸就站在路口，右手按着控制器。车辆随他的手指转弯。', 'He handed me a recording. Before the rain began, Naiba stood at the junction with a controller in his right hand. A car turned as he moved his finger.'),
     s('me', '这段录像从哪儿来的？为什么现在才给我？', 'Where did you get this? Why show me now?'),
     s('researcher', '先让奶蛙醒来。我们只需要下一层的碎片，其他问题可以等治疗结束。', 'Let\'s get Naiwa awake first. All we need is the next fragment. We can discuss the rest after treatment.'),
-    n('箱子里是一枚探针，和一张印着我名字的同意书。签名栏下面还有一行小字：血液样本，待采集。', 'The case held a probe and a consent form printed with my name. Below the signature line: blood sample, pending collection.'),
+    n("箱子里是一枚探针，和一张印着我名字的同意书。牛来把纸推到我面前，手指盖住“目的地”那一栏。奶豆给探针接上细管，扣环轻响，和奶蛙床边那台泵一模一样。香蕉猫在门口问：“这段要留档吗？”研究员点头，它才把镜头转向我。签名栏下面还有一行小字：血液样本，待采集。", "The case held a probe and a consent form printed with my name. Niulai slid the paper toward me, covering the destination field with a finger. Naidou connected a thin tube to the probe. Its catch clicked exactly like the pump beside Naiwa’s bed. From the doorway Banana Cat asked, “Keep this recording?” The researcher nodded; only then did it aim the camera at me. Below the signature line: blood sample, pending collection."),
     s('journal', '第三层，血肉剧场。掌声最大的时候，别忘了看台下。', 'Layer Three: the Flesh Theatre. When the applause gets loud, look at the seats.'),
   ], choices: [
     c('probe', '带上组织探针', 'Take the institute\'s probe', '进入更轻松，但探针让头痛加重。', 'An easier entry, though the probe makes the headache worse.', 'threshold', { spirit: 8, pollution: 14 }),
@@ -115,14 +115,14 @@ export const theatreStory: Record<string, TheatreNode> = {
     n('奶粉拽着我退回观众席。正门重新亮起来，里面仍用同样温和的语气说：治疗已经准备好。', 'Naifen pulled me back into the auditorium. The door lit up again, repeating in the same gentle voice: treatment is ready.'),
   ], next: 'explore' },
   confrontation: { title: b('车是哪来的', 'Who brought the car'), act: 2, art: 'backstage', lines: [
-    n('三幕记忆归位，舞台后露出一道医院走廊。奶霸站在走廊尽头，把发光容器递给组织的人。', 'The three memories settled into place. A hospital corridor appeared backstage. At its far end, Naiba handed a glowing vessel to an institute employee.'),
+    n("三幕记忆归位，舞台后露出一道医院走廊。奶霸把发光容器递给研究员。旁边还有那三个熟面孔：奶豆把容器接进银色箱子的接口，牛来核对封条，香蕉猫把镜头从他们的手上挪开。床边的接线、门口的签单、值班台的录像，在这里接成了同一件事。", "The three memories settled into place, revealing a hospital corridor backstage. Naiba passed the glowing vessel to the researcher. The same three attendants stood nearby: Naidou connected the vessel to the silver case, Niulai checked its seal, and Banana Cat moved the camera away from their hands. The bedside tubes, doorway forms and duty-desk recordings were parts of the same operation."),
     s('researcher', '东西给你。下一次，别让他自己选路。', 'Here are his things. Next time, don\'t let him choose his own route.'),
     n('奶霸接过我的旧手机。屏幕上还是奶蛙做早餐的照片。我不知道它什么时候被拿走了。', 'Naiba took my old phone. Its screen still showed Naiwa making breakfast. I hadn\'t known it was missing.'),
     s('me', '录像我看了。那辆车，是不是你控制的？', 'I saw the footage. Did you control that car?'),
     s('naiba', '车确实是我引来的。', 'I did bring the car.'),
     n('奶粉从我身后冲出去，扯断一排红线。空椅子同时向前翻，像一群看不见的人急着起身。', 'Naifen rushed past me and tore down a row of threads. Empty seats tipped forward as though an invisible crowd were rising.'),
     s('naiba', '恨就恨吧。先把奶粉带出去，别再让他们取你的血。', 'Hate me if you want. Get Naifen out first. Don\'t let them take any more of your blood.'),
-    n('组织的人转身离开。奶霸抬手砸碎了交易容器，里面没有碎片，只有一滩发亮的颜料。他仍不肯看我。', 'The employee left. Naiba smashed the vessel he\'d handed over. Glowing paint spilled out, with no fragment in it. He still wouldn\'t look at me.'),
+    n("研究员带着三人转身离开。香蕉猫先刷卡，牛来收走交接单，奶豆拔下容器上的细管。奶霸抬手砸碎留下的交易容器，里面没有碎片，只有一滩发亮的颜料。他仍不肯看我。", "The researcher left with the three attendants. Banana Cat swiped the door, Niulai collected the handover form, and Naidou disconnected the vessel’s thin tube. Naiba smashed the vessel left behind. Glowing paint spilled out, with no fragment in it. He still would not look at me."),
     s('me', '你引来的车，还叫我听你的？等奶蛙醒了，我们再算这笔账。', 'You brought that car, and you still expect me to listen? When Naiwa wakes up, we\'re settling this.'),
   ], next: 'bargain' },
   bargain: { title: b('治疗的价码', 'The price of treatment'), act: 2, art: 'backstage', character: true, lines: [

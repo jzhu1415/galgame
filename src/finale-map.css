@@ -1,0 +1,95 @@
+/* Finale only. The shared native canvas, geometry and replay controls remain intact. */
+.route-dialog.is-story-archive.finale-themed-map {
+  --map-shell: #0d1c30b8;
+  --map-head: #15294080;
+  --map-ink: #eaf3ff;
+  --map-muted: #b6c9df;
+  --map-gold: #eccb89;
+  --map-rule: #8caece42;
+  --map-field: #10233947;
+  --map-wash: #34557832;
+  --map-dot: #a6bfd326;
+  --map-node: #28405894;
+  --map-node-edge: #789ebf;
+  background: var(--map-shell);
+  color: var(--map-ink);
+  border-color: #8cabcb80;
+  border-radius: 8px 24px 8px 20px;
+  box-shadow: 0 30px 110px #020813b3, inset 0 1px #e9c47b80;
+  backdrop-filter: blur(8px);
+}
+.route-dialog.is-story-archive.finale-themed-map::backdrop { background: #06101b60; backdrop-filter: blur(4px); }
+.finale-themed-map.is-story-archive .dialog-head { background: var(--map-head); border-color: var(--map-rule); }
+.finale-themed-map.is-story-archive .dialog-head h2 { color: var(--map-ink); }
+.finale-themed-map.is-story-archive .map-archive-index { color: var(--map-gold); }
+.finale-themed-map.is-story-archive .map-archive-heading > strong { color: var(--map-ink); }
+.finale-themed-map.is-story-archive .map-archive-progress > strong { color: var(--map-gold); }
+.finale-themed-map.is-story-archive .map-archive-progress small,
+.finale-themed-map.is-story-archive .map-archive-progress > span,
+.finale-themed-map.is-story-archive .map-legend,
+.finale-themed-map.is-story-archive .routes-hint,
+.finale-themed-map.is-story-archive .map-zoom-tools > span { color: var(--map-muted); }
+.finale-themed-map.is-story-archive .map-intro { border-color: var(--map-rule); }
+.finale-themed-map.is-story-archive .small-btn { color: var(--map-ink); background: #29415b66; border-color: var(--map-rule); border-radius: 7px; }
+.finale-themed-map.is-story-archive .small-btn:hover { background: #36516da6; border-color: var(--map-gold); }
+.finale-themed-map.is-story-archive .small-btn:focus-visible { outline-color: var(--map-gold); }
+.finale-themed-map.is-story-archive .map-legend .legend-current { background: var(--map-gold); outline-color: var(--map-gold); }
+.finale-themed-map.is-story-archive .map-legend .legend-open { background: #8aafd2; }
+.finale-themed-map.is-story-archive .map-legend .legend-locked { background: #718595; }
+.finale-themed-map.is-story-archive .map-viewport { background-color: var(--map-field); background-image: radial-gradient(var(--map-dot) .8px,transparent .9px),radial-gradient(ellipse at 50% 20%,var(--map-wash),transparent 62%); background-size: 24px 24px,100% 100%; background-attachment: local; border-color: #7292ad82; border-radius: 8px 16px 8px 16px; box-shadow: inset 0 0 36px #020c1a35; scrollbar-color: #7190ac transparent; }
+/* The viewport owns the continuous field, including the space beyond a zoomed-out canvas. */
+.finale-themed-map.is-story-archive .mindmap { background: transparent; }
+.finale-themed-map.is-story-archive .map-grid { opacity: 0; }
+.finale-themed-map.is-story-archive .map-link { stroke: #688aaa; }
+.finale-themed-map.is-story-archive .map-link.is-open { stroke: var(--map-gold); }
+.finale-themed-map.is-story-archive .map-link.is-risk { stroke: #c1909b; }
+.finale-themed-map.is-story-archive .map-chapter { color: var(--map-gold); background: #172c4094; border-color: var(--map-gold); }
+.finale-themed-map.is-story-archive .mind-node { background: var(--map-node); border-color: var(--map-node-edge); border-left-color: var(--map-gold); border-radius: 6px 13px 6px 6px; }
+.finale-themed-map.is-story-archive .mind-node.is-unlocked:hover { background: #365670b3; border-color: var(--map-gold); }
+.finale-themed-map.is-story-archive .mind-node.is-locked { background: #1b2c3d66; color: #9fafbe; border-color: #536f85; opacity: .84; }
+.finale-themed-map.is-story-archive .mind-node.is-current { outline-color: var(--map-gold); box-shadow: 0 0 0 8px #edc88419; }
+.finale-themed-map.is-story-archive .mind-node:focus-visible { outline-color: #ffe2a5; }
+.finale-themed-map.is-story-archive .mind-code { color: var(--map-gold); }
+.finale-themed-map.is-story-archive .mind-node.is-locked .mind-code { color: #a8baca; }
+.finale-themed-map.is-story-archive .mind-node.is-ending.is-unlocked { background: #453b4b94; border-left-color: #d5a6b1; }
+.finale-themed-map.is-story-archive .ending-gallery h3 { color: var(--map-gold); }
+.finale-themed-map.is-story-archive .ending-gallery h3 small { color: var(--map-muted); }
+.finale-themed-map.is-story-archive .ending-badge { color: var(--map-ink); background: #1c314980; border-color: var(--map-rule); border-radius: 7px; }
+.finale-themed-map.is-story-archive .ending-badge span:first-child { color: var(--map-gold); }
+.finale-themed-map.is-story-archive .ending-badge.is-locked { background: #15273b52; color: #a6b8ca; }
+/* Scars stay at the exterior. Neither the canvas nor interactive nodes are clipped. */
+.route-dialog.is-story-archive.finale-themed-map.is-battle-scarred {
+  --map-shell: #26211cb3;
+  --map-head: #352c2380;
+  --map-ink: #fff1df;
+  --map-muted: #d4c2ad;
+  --map-gold: #dfb57c;
+  --map-rule: #b2956a47;
+  --map-field: #292a2c47;
+  --map-wash: #84745724;
+  --map-dot: #cfb98c24;
+  --map-node: #3b3e438a;
+  --map-node-edge: #9b927f;
+  border-color: #b3956d94;
+  border-top-style: dashed;
+  border-radius: 3px 21px 4px 14px;
+  box-shadow: 0 30px 110px #080602b3, inset 0 1px #c4a06e73;
+}
+.finale-themed-map.is-story-archive.is-battle-scarred .dialog-head { background: linear-gradient(135deg,#17140e35,transparent 40%),var(--map-head); }
+.finale-themed-map.is-story-archive.is-battle-scarred .small-btn { background: #57432b45; border-radius: 3px 8px 3px 8px; }
+.finale-themed-map.is-story-archive.is-battle-scarred .small-btn:hover { background: #574632a6; }
+.finale-themed-map.is-story-archive.is-battle-scarred .map-viewport { border-color: #b090625f; border-radius: 4px 14px 5px 9px; scrollbar-color: #ac946f transparent; }
+.finale-themed-map.is-story-archive.is-battle-scarred .mindmap { background: transparent; }
+.finale-themed-map.is-story-archive.is-battle-scarred .map-chapter { background: #342e2694; }
+.finale-themed-map.is-story-archive.is-battle-scarred .map-link { stroke: #928a79; }
+.finale-themed-map.is-story-archive.is-battle-scarred .map-link.is-open { stroke: var(--map-gold); }
+.finale-themed-map.is-story-archive.is-battle-scarred .mind-node { border-radius: 3px 10px 3px 8px; }
+.finale-themed-map.is-story-archive.is-battle-scarred .mind-node.is-unlocked:hover { background: #545047b3; }
+.finale-themed-map.is-story-archive.is-battle-scarred .mind-node.is-locked { background: #2d303366; border-color: #686b69; color: #b0b1aa; }
+.finale-themed-map.is-story-archive.is-battle-scarred .mind-node.is-ending.is-unlocked { background: #4b3c3994; }
+.finale-themed-map.is-story-archive.is-battle-scarred .ending-badge { background: #38302680; }
+.finale-themed-map.is-story-archive.is-battle-scarred .ending-badge.is-locked { background: #302b2552; color: #c6b8a7; }
+.finale-map-scars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; fill: none; stroke: #dab47a78; stroke-width: 1; }
+.finale-map-scars path { vector-effect: non-scaling-stroke; }
+@media(max-width:600px){.route-dialog.is-story-archive.finale-themed-map{border-radius:6px 15px 6px 12px}.route-dialog.is-story-archive.finale-themed-map.is-battle-scarred{border-radius:3px 14px 3px 10px}}
+@media(prefers-reduced-motion:reduce){.finale-themed-map .mind-node{transition:none}}

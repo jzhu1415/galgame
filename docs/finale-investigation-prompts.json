@@ -1,0 +1,357 @@
+{
+  "date": "2026-10-10",
+  "tool": "built-in image_gen",
+  "scope": "终章调查补图与 Fat Dudu 争论中的神态特写；没有新对战图",
+  "assets": [
+    {
+      "key": "archive-timeline",
+      "refs": [
+        "assets/images/finale-archive.png"
+      ],
+      "prompt": "Use case: illustration-story. Asset: a single WIDE 16:9 cinematic investigation CG for an existing 3D visual novel, ideally 1672x941. Input image 1 is the mandatory LOCATION AND STYLE reference: preserve its night skyline behind wet glass, polished black tiled surfaces, archive filing cabinets, warm amber task lamp and cool blue light, cinematic soft 3D game render. NEW SHOT: close three-quarter view of the existing archive desk, a bulky monitor in upper center has just lit up with a single horizontal sequence of three abstract records: a paper ledger pictogram, a corridor video still showing an EMPTY hospital corridor, and a roster grid, linked by small blue dotted marks. NO readable text, NO names, NO interface overlay; these are in-world objects on the monitor. Physical old folders and stacked papers below the monitor, the metal film reel beside it, warm lamplight at left and cold city lights in blurred background. Carefully composed meaningful investigation evidence, no people, no faces, no hands, no characters inside screens. Monitor and documents occupy upper two-thirds, quieter darker desk edge in lower quarter leaves room for subtitles added by the game. Not a collage, no panels or added borders. Keep the exact established interior material palette and original render style. No battle, weapons, injury, explosions, logos, captions or watermark.",
+      "roles": [
+        "档案室地点、桌面、设备与既定画风"
+      ],
+      "refRoles": [
+        {
+          "path": "assets/images/finale-archive.png",
+          "purpose": "档案室地点、桌面、设备与既定画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-1f0fa821-4854-4d6f-9bec-96d86f20c59a.png",
+      "png": "assets/images/finale-archive-timeline.png",
+      "webp": "public/images/finale-archive-timeline.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-trace",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-ledger-kept",
+          "line": 1,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-investigation",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-waveform",
+          "line": 1,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-accident-kept",
+          "line": 0,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "burned-cradle-photo",
+      "refs": [
+        "assets/images/finale-archive.png",
+        "assets/images/finale-cradle.png"
+      ],
+      "roles": [
+        "既定档案室地点与画风",
+        "照片内旧安抚室的地点、摇篮与铃铛"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1: mandatory archive LOCATION AND STYLE. Input 2: mandatory SUBJECT SCENE inside the photograph only, retain its wooden cradle with white bedding and hanging little brass bell in the warm nursery. Shot: close-up of a half-burned old physical photograph on the archive desk, tucked between old ledger pages. The surviving photograph clearly shows the EMPTY cradle with pale blanket, no baby or creature. Curled charred photo corners, ash dust and fine burned edges, a flat small pale metal bell beside it, cool monitor glow crossing the paper. Nursery must appear only printed INSIDE the old photograph, not as the room surrounding the desk. No people or hands.",
+      "refRoles": [
+        {
+          "path": "assets/images/finale-archive.png",
+          "purpose": "既定档案室地点与画风"
+        },
+        {
+          "path": "assets/images/finale-cradle.png",
+          "purpose": "照片内旧安抚室的地点、摇篮与铃铛"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-507754b6-03ae-4e10-a0b7-f3e195e8b2ef.png",
+      "png": "assets/images/finale-burned-cradle-photo.png",
+      "webp": "public/images/finale-burned-cradle-photo.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "originalSource": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-866b84b5-b8f9-4d65-9585-11769c27a2f7.png",
+      "corrections": [
+        {
+          "refs": [
+            "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-866b84b5-b8f9-4d65-9585-11769c27a2f7.png",
+            "/Users/claw/Documents/galgame-naiwa/assets/images/finale-archive.png",
+            "/Users/claw/Documents/galgame-naiwa/assets/images/finale-cradle.png"
+          ],
+          "refRoles": [
+            {
+              "path": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-866b84b5-b8f9-4d65-9585-11769c27a2f7.png",
+              "purpose": "待精确修正的初稿"
+            },
+            {
+              "path": "/Users/claw/Documents/galgame-naiwa/assets/images/finale-archive.png",
+              "purpose": "原始档案室地点与画风"
+            },
+            {
+              "path": "/Users/claw/Documents/galgame-naiwa/assets/images/finale-cradle.png",
+              "purpose": "原始安抚室地点与物件"
+            }
+          ],
+          "prompt": "Use case: precise-object-edit. Image 1 is the EDIT TARGET, the generated cinematic close-up of a half-burned cradle photo on the archive desk. Image 2 is original archive LOCATION/STYLE reference; image 3 is the original old nursery LOCATION/OBJECT reference for the photo content. Preserve the entire image 1 composition, framing, lighting, photograph, empty wooden cradle, blanket, charred edges, desk, papers, monitors and render style. Change ONLY the small loose brass bell on the desk at the LOWER RIGHT of the photograph: make it an old WHITE-PAINTED SMALL METAL BELL with a visibly compressed and flattened body, worn white enamel and a little silver metal showing through scratches. It is a flattened WHITE bell clue, not a round gold bell. Keep its small loop and location the same. No other changes. No people, hands, new objects, typography, watermark, combat or injury.",
+          "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-507754b6-03ae-4e10-a0b7-f3e195e8b2ef.png",
+          "status": "accepted: loose bell corrected to worn white enamel and compressed shape, scene preserved"
+        }
+      ],
+      "uses": [
+        {
+          "node": "f5-trace",
+          "line": 2,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-cradle",
+          "line": 0,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "corridor-recording",
+      "refs": [
+        "assets/images/finale-archive.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "roles": [
+        "档案室显示器及冷暖灯光",
+        "监控记录中的医疗设备、病床与既定设施"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1: mandatory archive LOCATION AND STYLE. Input 2: established facility architecture and EMPTY medical bed / extraction pump seen inside recorded footage. Shot: cinematic close angled view of an in-world surveillance monitor on the archive desk, one large static corridor view and a narrow strip of adjacent film frames below, showing an EMPTY hospital corridor with a glass doorway, unattended wheeled medical bed and attached blue-lit pump. Several tiny abstract clock ticks and the alignment of the missing film section suggest restored footage, no readable words or digits. Physical film reel, old keyboard and open journal below screen. No persons, silhouettes, animal characters or figures inside the monitor or reflection.",
+      "refRoles": [
+        {
+          "path": "assets/images/finale-archive.png",
+          "purpose": "档案室显示器及冷暖灯光"
+        },
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "监控记录中的医疗设备、病床与既定设施"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-2858879b-997e-4b53-ad79-40b187074dbd.png",
+      "png": "assets/images/finale-corridor-recording.png",
+      "webp": "public/images/finale-corridor-recording.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-film",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-encounter",
+          "line": 6,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "roster-signatures",
+      "refs": [
+        "assets/images/finale-archive.png"
+      ],
+      "roles": [
+        "既定档案室地点、桌面材质与画风"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1: mandatory LOCATION AND STYLE only. Shot: macro oblique close-up of the staff roster on a clipboard, exactly three distinct large handwritten signature-like ink scribbles in three neighboring columns, a red stamped mark near the final filled row and many faint horizontal grid lines. All marks must be abstract and illegible, no actual names or readable writing. Two pages with matching dates represented only by small abstract tick marks, a metal clip catches cold monitor light. Film reel and lit blue monitor softly blurred behind, amber lamp highlights paper fibers. No characters, hands or invented ID portraits.",
+      "refRoles": [
+        {
+          "path": "assets/images/finale-archive.png",
+          "purpose": "既定档案室地点、桌面材质与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-55cc44dd-9463-4064-8f3a-ca91aebfc8de.png",
+      "png": "assets/images/finale-roster-signatures.png",
+      "webp": "public/images/finale-roster-signatures.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-film",
+          "line": 2,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-roster",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-roster-kept",
+          "line": 0,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "laboratory-door",
+      "refs": [
+        "assets/images/finale-laboratory.png"
+      ],
+      "roles": [
+        "实验区入口、病床、冷暖灯光与既定地点"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1 is mandatory established laboratory LOCATION AND STYLE. Shot: first-person still view just outside a heavy partly-open lab door, the small grille of an overhead wall loudspeaker sharp near the upper-right door frame, warm doorway rim light, blue-lit tubes and the EMPTY tilted medical bed visible through the doorway. Tiny blue indicator glows beneath speaker, a route record sheet at lower edge is illegible and out of focus. Preserve reference interior exactly, no new setting, no people, body on bed or reflections of characters.",
+      "refRoles": [
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "实验区入口、病床、冷暖灯光与既定地点"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-98cba4f0-7d5c-4283-8e12-7b3a9f669bee.png",
+      "png": "assets/images/finale-laboratory-door.png",
+      "webp": "public/images/finale-laboratory-door.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-lab-entry",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-lab-entry",
+          "line": 2,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-feidudu-counter",
+          "line": 4,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "extraction-readings",
+      "refs": [
+        "assets/images/finale-laboratory.png",
+        "assets/images/finale-core.png"
+      ],
+      "roles": [
+        "医疗监护屏、抽取管线与冷蓝实验区",
+        "核心室的抽取装置连接方式与画风"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1: mandatory laboratory LOCATION AND STYLE, medical monitor, tubes and pump. Input 2: established core extraction machinery only. Shot: intimate still close-up of the bedside extraction pump and a medical monitor displaying two simple blue heartbeat traces and a descending sequence of small unlabeled measurement bars. A transparent tube and blue-lit connector lead away toward the EMPTY bed in soft focus, an original paper chart lies alongside with faint unreadable rows. The repeated decline is visible graphically, with a short steadier segment between dips; no readable numbers or diagnostic labels. No characters, hands or bodies.",
+      "refRoles": [
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "医疗监护屏、抽取管线与冷蓝实验区"
+        },
+        {
+          "path": "assets/images/finale-core.png",
+          "purpose": "核心室的抽取装置连接方式与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-37498b36-00e7-4118-b299-08bdf7460a2f.png",
+      "png": "assets/images/finale-extraction-readings.png",
+      "webp": "public/images/finale-extraction-readings.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-ledger",
+          "line": 1,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-film-kept",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-naidou",
+          "line": 2,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-encounter",
+          "line": 3,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-feidudu-counter",
+          "line": 3,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-investigation",
+          "line": 1,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-medical",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-medical-kept",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-waveform",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f6-waveform-kept",
+          "line": 0,
+          "position": "50% 35%"
+        }
+      ]
+    },
+    {
+      "key": "feidudu-hardening-close",
+      "refs": [
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "roles": [
+        "Fat Dudu 原始身份硬约束",
+        "实验区地点、冷蓝灯光与画风"
+      ],
+      "prompt": "Use case: illustration-story. Asset: ONE wide 16:9 cinematic investigation CG for the established 3D visual novel, matching the attached actual location references. Preserve the night city outside wet floor-to-ceiling glass, polished black tiled floor, warm amber task lamps and cool blue light, polished soft 3D game render. No collage, panels, logos, watermark, captions, readable document text or overlaid game UI. No combat, explosions, weapons or injuries. Compose main evidence in upper two-thirds and leave the lower quarter quieter and darker for game subtitles. Input 1 is ORIGINAL HARD CHARACTER IDENTITY of Fat Dudu, not a lighting or composition example: golden yellow stout body, EXACTLY TWO thick long upright rounded ears, connected BLACK eye band, bright BLUE irises in white eyes, huge BROWN oval nose, small visible PINK tongue, pale cream belly, grey hands. Input 2 is only LOCATION AND STYLE. A single medium close-up head-and-upper-belly portrait of Fat Dudu during a VERBAL argument. He has just swallowed hesitation and sets his jaw, eyes looking sideways at an offscreen record he refuses to accept, eyebrows low but not grotesque, mouth mostly closed with just the tongue tip. Faint violet light reflected along the edge of the EXISTING black eye band; skin remains golden yellow, never black or red, eyes never red. Both full ears and rounded tips must fit with 10% headroom, face large and readable in upper two-thirds, no other characters, hands out of frame, no fist or fighting pose. Polished soft 3D render, same original proportions and facial feature placements, no new scars, horns, teeth or clothing.",
+      "refRoles": [
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "Fat Dudu 原始身份硬约束"
+        },
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "实验区地点、冷蓝灯光与画风"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-3815d4b6-1da4-424c-a88e-c4d3863e441d.png",
+      "png": "assets/images/finale-feidudu-hardening-close.png",
+      "webp": "public/images/finale-feidudu-hardening-close.webp",
+      "status": "accepted: noncombat investigation shot, compared against supplied scene and original identity references",
+      "uses": [
+        {
+          "node": "f5-encounter",
+          "line": 7,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-feidudu-clash",
+          "line": 6,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-feidudu-counter",
+          "line": 0,
+          "position": "50% 35%"
+        },
+        {
+          "node": "f5-break-lines",
+          "line": 3,
+          "position": "50% 35%"
+        }
+      ]
+    }
+  ]
+}

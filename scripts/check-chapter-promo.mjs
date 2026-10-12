@@ -35,6 +35,10 @@ for (const language of ['zh', 'en']) for (const started of [false, true]) {
 }
 for (const chapter of [1, 2, 3]) for (const language of ['zh', 'en']) for (const started of [false, true]) {
   const html = renderChapterPromo({ chapter, language, started, saveNote: '<Session only>', dlc: { unlocked: false, views: 2, completed: 1 } })
+  if (chapter === 2) {
+    assert(html.includes(language === 'zh' ? '肥嘟嘟与奶霸' : 'Fat Dudu &amp; Naiba'), 'chapter two uses the current character names')
+    assert(!/奶鼠|Naishu|NAISHU/.test(html), 'retired names must not remain in visible copy or image alternatives')
+  }
   const ids = [...html.matchAll(/ id="([^"]+)"/g)].map(match => match[1])
   assert.equal(ids.length, new Set(ids).size, 'controls and anchor targets must have unique IDs')
   assert.equal((html.match(/<h1 /g) ?? []).length, 1)

@@ -54,6 +54,15 @@ for (const expression of Object.values(naifenExpressions)) assert(existsSync(`pu
 for (const image of chapterThreeNewScenes) assert(usedScenes.has(image), `Generated scene is not wired into the story: ${image}`)
 for (const expression of ['angry', 'scared', 'sad', 'guarded', 'relieved', 'happy']) assert(usedExpressions.has(expression), `Unused expression: ${expression}`)
 assert.equal(chapterThreeVisual('explore', 0).background, 'chapter-03-theatre', 'Stage markers must retain the original overview')
+assert.equal(chapterThreeVisual('invitation', 0).background, 'chapter-02-cg-ward-handover', 'All three returning attendants appear in the ward CG')
+assert.equal(chapterThreeVisual('invitation', 0).showStaff, false, 'CG characters must not be duplicated as sprites')
+assert.equal(chapterThreeVisual('invitation', 1).showStaff, false, 'The staff portrait clears when the researcher takes over')
+assert.equal(chapterThreeVisual('threshold', 0).showStaff, false, 'Hospital staff do not leak into the theatre')
+assert.equal(chapterThreeVisual('confrontation', 0).background, 'chapter-03-cg-organization-handoff', 'The backstage reveal shows the same staff carrying out the handoff')
+for (const name of ['牛来', '奶豆', '香蕉猫']) {
+  assert(story.invitation.lines[0].text.zh.includes(name), 'The ward return recognizes ' + name)
+  assert(story.confrontation.lines[0].text.zh.includes(name), 'The handoff connects ' + name + ' to the earlier ward')
+}
 
 // Every visited line must survive a save/reload, including the last line before a choice.
 function settle(save) {

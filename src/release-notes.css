@@ -1,20 +1,31 @@
-.release-dialog{width:min(680px,calc(100vw - 28px));max-height:88dvh;overflow:auto}
-.release-dialog .dialog-head{z-index:1;padding:18px 24px}
-.release-body{padding:26px 28px 8px}
-.release-intro{padding-bottom:24px;border-bottom:1px solid #586365}
-.release-date,.release-tag{font-size:.65rem;letter-spacing:.15em;color:#e9c686}
-.release-date{margin:0 0 14px}
-.release-intro h3{font-family:'Noto Serif SC',serif;font-size:clamp(1.2rem,4vw,1.65rem);font-weight:500;margin:0 0 12px;text-wrap:balance}
-.release-intro p:last-child,.release-list p{font-size:.88rem;line-height:1.85;color:#c3cdca;margin:0}
+/* Yellow and white update notes, shared by the home and every chapter. */
+.app-dialog.release-dialog{width:min(820px,calc(100vw - 24px));max-height:90dvh;border:1px solid #e3d1aa;border-radius:20px;background:#faf8f1;color:#293740;overflow:hidden;box-shadow:0 30px 110px #05101aa6;padding:0}
+.release-dialog[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:min(88dvh,900px)}
+.release-dialog::backdrop{background:#08131eb3;backdrop-filter:blur(8px)}
+.release-dialog .dialog-head{position:relative;z-index:1;padding:22px 30px;background:#fffdf8;border-bottom:1px solid #e3dac8;gap:18px;align-items:center}
+.release-heading{display:grid;gap:6px}
+.release-eyebrow{font:700 .61rem/1.4 'DM Sans',sans-serif;letter-spacing:.17em;color:#91632b;margin:0}
+.release-dialog .dialog-head h2{font-size:clamp(1.25rem,3vw,1.65rem);color:#263640;margin:0}
+.release-dialog .small-btn{border:1px solid #dbceb7;border-radius:10px;min-height:42px;padding:8px 13px;background:#fffdf8;color:#43525b;white-space:nowrap}
+.release-dialog .small-btn:hover{background:#fff0c8;border-color:#bd914a}
+.release-body{padding:30px 34px 20px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bcaa88 #faf8f1;min-height:0}
+.release-intro{padding:0 0 28px;border-bottom:1px solid #e1d8c6}
+.release-date{display:inline-flex;align-items:center;gap:10px;font-size:.65rem;letter-spacing:.13em;color:#795221;background:#fff0cb;border:1px solid #ecd9aa;border-radius:30px;padding:8px 12px;margin:0 0 18px}
+.release-intro h3{font-family:'Noto Serif SC',serif;font-size:clamp(1.3rem,3vw,1.85rem);font-weight:600;line-height:1.5;letter-spacing:-.02em;margin:0 0 14px;text-wrap:pretty}
+.release-intro p:last-child,.release-list p{font-size:.88rem;line-height:1.9;color:#53636d;margin:0}
 .release-list{list-style:none;padding:0;margin:0}
-.release-list li{padding:22px 0;border-bottom:1px solid #35464c}
+.release-list li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:18px;padding:26px 0;border-bottom:1px solid #e7dfce}
 .release-list li:last-child{border-bottom:0}
-.release-list h4{font-size:1rem;font-weight:500;margin:8px 0 9px;color:#f5efe5}
-.release-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px 26px;border-top:1px solid #586365}
-.release-footer p{font-size:.75rem;color:#adb8b7;line-height:1.6;margin:0}
-.release-footer .primary-btn{white-space:nowrap;padding:12px 18px;font-size:.86rem;min-height:44px}
-.release-dialog [data-release-close]:focus-visible{outline:2px solid #e9c686;outline-offset:3px}
+.release-item-number{font:400 1.4rem/1.3 Georgia,serif;color:#a27840;padding-top:3px}
+.release-tag{display:inline-block;padding:4px 8px;border-radius:5px;background:#eee9da;color:#795b33;font-size:.57rem;letter-spacing:.1em;line-height:1.5}
+.release-list h4{font-size:1.05rem;font-weight:600;margin:10px 0 8px;color:#2d414c;line-height:1.5}
+.release-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 30px;background:#fffdf8;border-top:1px solid #e1d7c3}
+.release-footer p{font-size:.72rem;color:#65717a;line-height:1.7;margin:0;max-width:34em}
+.release-footer .primary-btn{background:#f4cc65;color:#3d331f;border:1px solid #d5aa48;border-radius:12px;white-space:nowrap;padding:12px 22px;font-size:.86rem;min-height:44px;box-shadow:0 5px 15px #b88b2420}
+.release-footer .primary-btn:hover{background:#ffdb7c;box-shadow:0 7px 20px #b88b2430}
+.release-dialog [data-release-close]:focus-visible{outline:3px solid #a87826;outline-offset:3px}
 .release-entry{cursor:pointer;background:none;border:0;color:inherit;font:inherit;padding:8px 0;text-decoration:underline;text-underline-offset:5px}
-.release-entry:hover{color:#e9c686}
-.release-entry:focus-visible{outline:2px solid #e9c686;outline-offset:4px}
-@media(max-width:480px){.release-dialog{max-height:90dvh}.release-dialog .dialog-head{padding:16px 18px}.release-body{padding:22px 18px 8px}.release-footer{padding:18px;align-items:flex-start}.release-footer p{max-width:13em}.release-list li{padding:20px 0}.release-dialog .dialog-head h2{font-size:1.2rem}}
+.release-entry:hover{color:#b68938}
+.release-entry:focus-visible{outline:2px solid #b68938;outline-offset:4px}
+@media(max-width:600px){.app-dialog.release-dialog{width:calc(100vw - 12px);border-radius:14px}.release-dialog[open]{height:90dvh}.release-dialog .dialog-head{padding:16px 18px}.release-body{padding:23px 20px 12px}.release-footer{padding:16px 18px;gap:12px}.release-footer p{font-size:.67rem}.release-footer .primary-btn{padding:11px 16px}.release-list li{grid-template-columns:28px minmax(0,1fr);gap:12px;padding:22px 0}.release-item-number{font-size:1.15rem}.release-intro h3{font-size:1.3rem}}
+@media(prefers-reduced-motion:reduce){.release-dialog *{transition:none!important}}

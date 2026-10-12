@@ -116,7 +116,7 @@ export function mountRomanceDlc(root: HTMLElement, initialLanguage: Language, on
       const node = romanceStory[save.node]
       const episode = romanceEpisodes.find(ep => ep.id === node.episode)!
       const line = node.lines[save.line]
-      if (!root.querySelector('.romance-stage')) root.innerHTML = `<div class="romance-dlc romance-play">${head}<main class="romance-stage"><div class="romance-image-layer"></div><div class="romance-stage-shade"></div><div class="romance-dialogue-zone"></div></main></div>`
+      if (!root.querySelector('.romance-stage')) root.innerHTML = `<div class="romance-dlc romance-play" data-dialogue-theme="coastal">${head}<main class="romance-stage"><div class="romance-image-layer"></div><div class="romance-stage-shade"></div><div class="romance-dialogue-zone"></div></main></div>`
       else root.querySelector('.romance-top')!.outerHTML = head
       root.querySelector<HTMLElement>('.romance-stage')!.onclick = event => { if (!(event.target as HTMLElement).closest('button')) advance() }
       image(save.node, save.line)

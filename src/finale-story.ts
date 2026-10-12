@@ -14,7 +14,7 @@ const c = (id: string, zh: string, en: string, detailZh: string, detailEn: strin
 export const finaleSpeakers: Record<FinaleSpeaker, FinaleBilingual> = {
   narrator: b('旁白', 'Narration'), me: b('我', 'Me'), naiwa: b('奶蛙', 'Naiwa'), naiba: b('奶霸', 'Naiba'),
   niulai: b('牛来', 'Niulai'), 'banana-cat': b('香蕉猫', 'Banana Cat'), naidou: b('奶豆', 'Naidou'),
-  feidudu: b('肥嘟嘟', 'Feidudu'), journal: b('奶蛙观察日记', "Naiwa's journal"),
+  feidudu: b('肥嘟嘟', 'Fat Dudu'), journal: b('奶蛙观察日记', "Naiwa's journal"),
 }
 
 export const finaleEndingIds: Record<FinaleChapter, string[]> = {
@@ -64,18 +64,18 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
     'f5-voice': { title: b('远处有人叫名字', 'A Voice in the Dark'), art: 'abyss', lines: [
       n('黑暗里有人叫了一声“奶蛙”。走廊尽头的屏幕跟着亮了：先是一段剪过的车祸画面，接着是我自己——镜馆、剧场、金笼，一路走过来的画面。', 'Someone in the dark called Naiwa’s name. A screen lit at the end of the corridor: first the edited crash footage, then me — the mirror gallery, the theatre, the gilded room, everything I had left behind on the way in.'),
       s('feidudu', '你每捡回一块，他就疼一次。别往里走了。', 'Every piece you pick up, he hurts for it. Stop walking in.'),
-      s('me', '这声音是肥嘟嘟。它怎么会在这儿。', 'That is Feidudu. What is it doing here.'),
+      s('me', '这声音是肥嘟嘟。它怎么会在这儿。', 'That is Fat Dudu. What is it doing here.'),
       n('屏幕下面还有一行小字：医院的实时监护。画面里牛来正把镜头往前推，推到床边那本日记看不见了。他们留在病房的线，也能把外面的声音送进这层记忆。', 'Under the screen ran a line of small text: the hospital monitor, live. On it Niulai zoomed in until the journal by the bed slipped out of frame. The lines they had left in the ward carried outside voices into this layer too.'),
     ], next: 'f5-chase' },
     'f5-chase': { title: b('追上那道影子', 'Chasing the Shadow'), art: 'pursuit', lines: [
       n('金色的影子沿着黑色栈道跑远了。它回头看过一次。面罩底下那对蓝眼睛，和我记忆里的还是同一双。', 'The golden shape ran off down the black walkway. It looked back once. Under the mask, those blue eyes were the same ones I remembered.'),
-      s('me', '肥嘟嘟，等一下——我不是来害奶蛙的。', 'Feidudu, wait — I am not here to hurt Naiwa.'),
+      s('me', '肥嘟嘟，等一下——我不是来害奶蛙的。', 'Fat Dudu, wait — I am not here to hurt Naiwa.'),
     ], choices: [
       c('f5-run-after', '追上去，不让它再消失', 'Run after it before it disappears', '路面断裂，强追会消耗精神力。', 'The path breaks apart. A hard sprint costs spirit.', 'f5-pursuit', { spirit: -16, clue: 'f5-signal' }),
       c('f5-call-gently', '停下来，叫它熟悉的名字', 'Stop and call it by its name', '留出距离，让它自己决定是否回应。', 'Give it room to decide whether to answer.', 'f5-call', { sets: ['f5-called'], clue: 'f5-signal' }),
     ] },
     'f5-pursuit': { title: b('追逐留下的痕迹', 'Marks Left by the Chase'), art: 'pursuit', lines: [
-      n('我攥住扶手，才没掉下去。肥嘟嘟没回头，跑的时候撞翻了一枚银色信标。信标在地上打转，一遍遍放牛来的声音：目标正在靠近，按原计划把病患转走。', 'I grabbed the rail and did not fall. Feidudu did not stop; it knocked a silver beacon over as it ran. The beacon spun on the ground, repeating Niulai’s voice: the target is approaching, transfer the patient as planned.'),
+      n('我攥住扶手，才没掉下去。肥嘟嘟没回头，跑的时候撞翻了一枚银色信标。信标在地上打转，一遍遍放牛来的声音：目标正在靠近，按原计划把病患转走。', 'I grabbed the rail and did not fall. Fat Dudu did not stop; it knocked a silver beacon over as it ran. The beacon spun on the ground, repeating Niulai’s voice: the target is approaching, transfer the patient as planned.'),
       s('me', '在他们那张名单上，奶蛙是个“目标”。先找到他们把奶蛙送去哪儿，别的以后再说。', 'On their list, Naiwa is a “target.” First find where they are taking him. Everything else can wait.'),
     ], next: 'f5-cat-ambush' },
     'f5-call': { title: b('名字没有让它停下', 'The Name Does Not Stop It'), art: 'pursuit', lines: [
@@ -144,9 +144,9 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
     'f5-lab-entry': { title: b('实验区门禁', 'The Laboratory Gate'), art: 'laboratory', lines: [
       n('账本编号和原始录像的时间戳拼出门禁码。门开后，墙面屏幕仍在播同一段车祸画面。旁边的管线图把医院病床、记忆储存槽和一个写着“核心”的位置连在一起。', 'The ledger serial and the original footage timestamp formed the access code. Beyond the door, a wall screen still replayed the crash clip. A pipe diagram linked the hospital bed, memory storage, and a location labeled “Core.”'),
       s('me', '这不是治疗室。这里在准备把奶蛙的记忆抽出来，再用我的血打开核心。', 'This is not a treatment room. They are preparing to drain Naiwa’s memories and use my blood to open the Core.'),
-      n('实验区另一侧响起重物撞门声。肥嘟嘟守在通道中央，身上接着数根蓝光管线。', 'A heavy impact shook the far door. Feidudu stood in the passage, connected to several blue-lit lines.'),
+      n('实验区另一侧响起重物撞门声。肥嘟嘟守在通道中央，身上接着数根蓝光管线。', 'A heavy impact shook the far door. Fat Dudu stood in the passage, connected to several blue-lit lines.'),
     ], next: 'f5-encounter' },
-    'f5-encounter': { title: b('管线另一端的肥嘟嘟', 'Feidudu at the End of the Lines'), art: 'laboratory', lines: [
+    'f5-encounter': { title: b('管线另一端的肥嘟嘟', 'Fat Dudu at the End of the Lines'), art: 'laboratory', lines: [
       s('feidudu', '他们说你要把奶蛙的记忆全带走。我不准你过去。', 'They said you would take all of Naiwa’s memories. I will not let you through.'),
       s('me', '我看到了他们的记录。现在把管线拔掉，和我一起离开。', 'I saw their records. Disconnect these lines and leave with me.'),
       n('它攥紧拳头。管线跟着收缩，墙里的装置开始抽取能量。屏幕右侧的数字往下掉，像是在倒计时。', 'It clenched its fists. The lines tightened, and the device in the wall began drawing energy. A number on the screen fell like a countdown.'),
@@ -155,7 +155,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
       c('f5-push-feidudu', '趁管线松动，从侧边冲过去', 'Rush past while the lines loosen', '强闯会消耗精神力，也会让抽取装置加速。', 'Forcing a way through costs spirit and speeds up the extractor.', 'f5-feidudu-clash', { spirit: -24 }),
     ] },
     'f5-break-lines': { title: b('先断开外接管线', 'Disconnect the External Lines First'), art: 'laboratory', lines: [
-      n('我没有打它。趁它迟疑，我拔下墙侧的外接线。肥嘟嘟被光刺得退开几步，蓝色能量仍在它身上流动，但不再被机器拉走。', 'I did not strike it. While it hesitated, I pulled the wall-side cable free. Feidudu recoiled from the flash. Blue energy still moved through its body, but the machine was no longer drawing it away.'),
+      n('我没有打它。趁它迟疑，我拔下墙侧的外接线。肥嘟嘟被光刺得退开几步，蓝色能量仍在它身上流动，但不再被机器拉走。', 'I did not strike it. While it hesitated, I pulled the wall-side cable free. Fat Dudu recoiled from the flash. Blue energy still moved through its body, but the machine was no longer drawing it away.'),
       s('feidudu', '我看到的画面里，你一直在让他受伤。', 'In the footage I saw, you kept making him suffer.'),
       s('me', '我会把原片留给你看。现在先离开这个会抽走你的装置。', 'I will keep the original for you. First, let us leave the machine that is draining you.'),
       n('它没有答应，却没有再堵住路。实验区另一道门打开，奶豆抱着一叠记录站在门口。', 'It did not agree, but it stopped blocking the passage. Another laboratory door opened. Naidou stood there holding a stack of records.'),
@@ -318,7 +318,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
       c('f6-refuse-contact', '现在不与奶霸和解，先救奶蛙', 'Do not reconcile with Naiba now; save Naiwa first', '保留愤怒和边界，继续处理核心。', 'Keep your anger and boundaries while dealing with the Core.', 'f6-rooftop', { sets: ['f6-responsibility-faced', 'f6-no-forgiveness'] }),
     ] },
     'f6-rooftop': { title: b('城市屋顶的抽取线路', 'Extraction Lines on the City Roof'), art: 'city', lines: [
-      n('我走到天台。蓝色线路从设备盘延伸到屋檐，指示灯还在跳。城市楼顶之间传来脚步声，黑化的肥嘟嘟就在前方。', 'I stepped onto the roof. Blue lines ran from the control panel to the edge, and their indicators still pulsed. Footsteps crossed the city rooftops. Dark Feidudu stood ahead.'),
+      n('我走到天台。蓝色线路从设备盘延伸到屋檐，指示灯还在跳。城市楼顶之间传来脚步声，黑化的肥嘟嘟就在前方。', 'I stepped onto the roof. Blue lines ran from the control panel to the edge, and their indicators still pulsed. Footsteps crossed the city rooftops. Dark Fat Dudu stood ahead.'),
       s('feidudu', '你知道奶蛙是谁了。那你也该知道，停下抽取就等于放弃他。', 'Now you know who Naiwa is. You should also know that stopping extraction means giving it up.'),
       s('naiwa', '我想醒来，但不是靠机器把我抽空。把选择留给我。', 'I want to wake, but not through a machine draining me. Leave the choice to me.'),
       n('楼下还是晚归的车流。香蕉猫把天台门锁上，奶豆却趁它转身，将继电器图纸塞进我手里。只要停下抽取，奶蛙的意识就有机会回到楼内的身体。', 'Evening traffic still moved below. Banana Cat locked the rooftop door, but Naidou slipped the relay diagram into my hand when it turned away. Stopping extraction could let Naiwa’s awareness return to its body inside the tower.'),
@@ -329,7 +329,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
       c('f6-play-cradle', '按这里摇篮记录先安抚核心', 'Use this facility’s cradle record to settle the Core first', '需要在终章自己取得摇篮曲和安抚步骤。', 'Requires finding the lullaby and settling steps in this facility.', 'f6-cradle-prepare', { requires: ['clue:f6-cradle-memory'], sets: ['f6-cradle-ready', 'extraction-cut'] }),
     ] },
     'f6-cut-ready': { title: b('抽取停止，屋顶仍有人', 'Extraction Stops, but the Rooftop Remains'), art: 'city', lines: [
-      n('我先断开了抽取继电器。蓝色线路的灯逐段熄下去，床边的计数停止。肥嘟嘟仍站在屋顶另一端，战斗还没有开始。', 'I disconnected the extraction relay first. Blue indicators went dark one by one, and the counter by the bed stopped. Feidudu remained across the roof. The battle had not begun.'),
+      n('我先断开了抽取继电器。蓝色线路的灯逐段熄下去，床边的计数停止。肥嘟嘟仍站在屋顶另一端，战斗还没有开始。', 'I disconnected the extraction relay first. Blue indicators went dark one by one, and the counter by the bed stopped. Fat Dudu remained across the roof. The battle had not begun.'),
       s('me', '如果要保护奶蛙，就别让机器继续把它当成能源。', 'If we are protecting Naiwa, we cannot let the machine keep treating it as a power source.'),
       s('naiwa', '我听见你了。我会自己决定怎么回应。', 'I hear you. I will decide how to respond.'),
     ], next: 'f6-body-awake' },
@@ -341,7 +341,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
     'f6-body-awake': { title: b('奶蛙本体醒来', 'Naiwa Wakes in Its Own Body'), art: 'awakening', lines: [
       n('耳机里的呼吸忽然断了一拍。病房门被从里面推开，奶蛙扶着门框，脚边拖着脱落的监护线。它的眼睛终于对上我的目光——这次站在面前的是现实里的本体。', 'The breathing in my headset skipped a beat. The ward door opened from inside. Naiwa held the frame, loose monitor leads trailing at its feet. Its eyes finally met mine. This was its physical body, here in the real world.'),
       s('naiwa', '等了这么久，这次该我走过来了。', 'You waited so long. This time I will walk to you.'),
-      n('肥嘟嘟跃上对面的楼顶。仍是镜馆里那张熟悉的脸，眼周的黑印却已连成一片，紫光从它身后的城市中升起。奶蛙把我推向楼梯间，独自走到天台边缘。', 'Feidudu leapt onto the opposite roof. The face was the one I remembered from the mirror hall, but dark marks now joined around its eyes. Violet light rose from the city behind it. Naiwa guided me toward the stairwell and stepped to the rooftop edge.'),
+      n('肥嘟嘟跃上对面的楼顶。仍是镜馆里那张熟悉的脸，眼周的黑印却已连成一片，紫光从它身后的城市中升起。奶蛙把我推向楼梯间，独自走到天台边缘。', 'Fat Dudu leapt onto the opposite roof. The face was the one I remembered from the mirror hall, but dark marks now joined around its eyes. Violet light rose from the city behind it. Naiwa guided me toward the stairwell and stepped to the rooftop edge.'),
       s('feidudu', '你醒了也没用。这里已经没有回去的路。', 'Waking changes nothing. There is no way back from here.'),
       s('naiwa', '那就先把路打出来。', 'Then I will make a way.'),
     ], next: 'f6-battle-film' },
@@ -356,14 +356,14 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
       n('城市的方向全变了。研究楼大门只剩一段门框，奶豆的应急灯从断墙后晃过来，另一边传来香蕉猫的哭声。警报仍在废墟深处鸣叫。', 'Every landmark was gone. Only a fragment of the institute entrance remained. Naidou’s emergency light flickered behind a broken wall, and Banana Cat cried out from the other side. An alarm still sounded deep beneath the rubble.'),
       s('me', '先找到活着的人，再去关掉那台东西。', 'Find the survivors first. Then shut that thing down.'),
     ], choices: [
-      c('f6-search-survivors', '跟着应急灯搜救', 'Follow the emergency light to the survivors', '找到奶豆、香蕉猫和倒下的肥嘟嘟。', 'Find Naidou, Banana Cat, and the fallen Feidudu.', 'f6-ruin-rescue'),
+      c('f6-search-survivors', '跟着应急灯搜救', 'Follow the emergency light to the survivors', '找到奶豆、香蕉猫和倒下的肥嘟嘟。', 'Find Naidou, Banana Cat, and the fallen Fat Dudu.', 'f6-ruin-rescue'),
       c('f6-record-destruction', '保留现场与装置的记录', 'Record the ruins and the device', '保存城市被毁与组织装置的证据。', 'Preserve evidence of the destruction and the institute’s device.', 'f6-ruin-record', { clue: 'f6-ruin-record' }),
       c('f6-stop-beacon', '带幸存者离开，寻找警报源', 'Lead the survivors out and trace the alarm', '先确认被困者已经脱险。', 'Make sure the trapped survivors are safe first.', 'f6-ruin-relay', { requires: ['clue:f6-survivors'] }),
     ] },
     'f6-ruin-rescue': { title: b('把敌人也拉出来', 'Pulling an Enemy Free'), art: 'aftermath', lines: [
-      n('奶豆用外套压住伤口，仍在给香蕉猫指路。肥嘟嘟躺在它们身后的凹坑里，紫光已经散去，呼吸很轻。压住它的钢梁还在冒烟。', 'Naidou pressed a coat against a wound while guiding Banana Cat. Feidudu lay in a crater behind them. The violet light was gone and its breathing was faint. The beam pinning it still smoked.'),
+      n('奶豆用外套压住伤口，仍在给香蕉猫指路。肥嘟嘟躺在它们身后的凹坑里，紫光已经散去，呼吸很轻。压住它的钢梁还在冒烟。', 'Naidou pressed a coat against a wound while guiding Banana Cat. Fat Dudu lay in a crater behind them. The violet light was gone and its breathing was faint. The beam pinning it still smoked.'),
       s('banana-cat', '我打不开……我以前只会把门锁上。', 'I cannot open it… I only ever locked doors before.'),
-      n('奶蛙没有再挥拳。它握住钢梁，慢慢抬起。我和香蕉猫把肥嘟嘟拖出来，奶豆立刻摸到它的脉搏。直到我们全部退开，奶蛙才松手。', 'Naiwa did not raise a fist again. It gripped the beam and slowly lifted it. Banana Cat and I pulled Feidudu free; Naidou immediately checked its pulse. Only when everyone was clear did Naiwa let go.'),
+      n('奶蛙没有再挥拳。它握住钢梁，慢慢抬起。我和香蕉猫把肥嘟嘟拖出来，奶豆立刻摸到它的脉搏。直到我们全部退开，奶蛙才松手。', 'Naiwa did not raise a fist again. It gripped the beam and slowly lifted it. Banana Cat and I pulled Fat Dudu free; Naidou immediately checked its pulse. Only when everyone was clear did Naiwa let go.'),
       s('naiwa', '别让它死在这里。', 'Do not let it die here.'),
       s('naidou', '还有呼吸。南边的广场能落救援飞机，我带它们过去。', 'It is breathing. A rescue helicopter can land in the square to the south. I will take them there.'),
     ], choices: [
@@ -391,7 +391,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
     'f6-ending-reconcile': { title: finaleEndingNames['f6-reconcile'], art: 'dawn', lines: [
       s('naiwa', '我愿意听奶霸把剩下的话说完。之后我们要一起面对我倒下的那天，也要面对他做的决定。', 'I am willing to hear the rest of what Naiba has to say. Then we will face the day I fell and the choice he made.'),
       s('naiba', '我不会要求你们替我减轻责任。该留下的证据都留下。', 'I will not ask either of you to lessen my responsibility. Keep every piece of evidence that matters.'),
-      n('奶蛙握住我的手，胸口的两道光不再互相撕扯。牛来的遥控器被踩碎，备用装置彻底熄灭。我们在临时医疗帐篷里等到天亮，伤员不断被送来，肥嘟嘟也在其中。', 'Naiwa held my hand. The two lights in its chest stopped tearing at each other. Niulai’s remote was crushed, and the backup device went dark for good. We waited for sunrise in a relief tent as the injured kept arriving. Feidudu was among them.'),
+      n('奶蛙握住我的手，胸口的两道光不再互相撕扯。牛来的遥控器被踩碎，备用装置彻底熄灭。我们在临时医疗帐篷里等到天亮，伤员不断被送来，肥嘟嘟也在其中。', 'Naiwa held my hand. The two lights in its chest stopped tearing at each other. Niulai’s remote was crushed, and the backup device went dark for good. We waited for sunrise in a relief tent as the injured kept arriving. Fat Dudu was among them.'),
       n('窗外没有恢复原样的城市。重建需要很久，事故的追问也还没有结束。奶蛙把日记放回我手里，在最后一页画了一个歪歪扭扭的太阳。', 'Beyond the tent, the city had not returned to normal. Rebuilding would take a long time, and questions about the crash remained. Naiwa returned the journal to me. On its last page, it had drawn a crooked sun.'),
       s('me', '那我们就从今天开始。', 'Then we start today.'),
     ], ending: 'f6-reconcile' },
@@ -409,7 +409,7 @@ export const finaleStories: Record<FinaleChapter, Record<string, FinaleNode>> = 
       n('奶蛙把那段短短的摇篮曲轻轻哼完。胸口的标记一寸寸褪去，备用电池上的红灯跟着熄灭。它保住了两份记忆，也终于不再被装置追踪。', 'Naiwa softly hummed the short lullaby. The mark faded from its chest, and the red backup light went out with it. Both sets of memories remained, but the device could no longer track them.'),
       s('naiba', '我会留下来回答。你们不必现在原谅我。', 'I will stay and answer for what I did. You do not have to forgive me now.'),
       s('naiwa', '这回是真的可以回去了。等伤好了，我想去帮他们把房子搭起来。', 'This time we can really go home. When I am healed, I want to help them rebuild.'),
-      n('天亮时，救援队在瓦砾间铺好第一条通路。香蕉猫抱着急救包跟上奶豆，肥嘟嘟被送进医疗帐篷，牛来也被救援人员带走。没有人能把城市一夜复原，但已经有人开始搬第一块砖。', 'At dawn, rescuers laid the first path through the rubble. Banana Cat followed Naidou with a medical kit. Feidudu was taken to the relief tent, and rescue personnel escorted Niulai away. No one could restore the city overnight, but someone was already moving the first brick.'),
+      n('天亮时，救援队在瓦砾间铺好第一条通路。香蕉猫抱着急救包跟上奶豆，肥嘟嘟被送进医疗帐篷，牛来也被救援人员带走。没有人能把城市一夜复原，但已经有人开始搬第一块砖。', 'At dawn, rescuers laid the first path through the rubble. Banana Cat followed Naidou with a medical kit. Fat Dudu was taken to the relief tent, and rescue personnel escorted Niulai away. No one could restore the city overnight, but someone was already moving the first brick.'),
       n('我合上日记。封面被灰尘磨花了，奶蛙的小手却仍搭在上面。它问我，回去以后能不能一起吃早饭。', 'I closed the journal. Dust had worn its cover, yet Naiwa’s small hand still rested on it. It asked whether we could have breakfast together when we got home.'),
     ], ending: 'f6-cradle' },
     'f6-exhausted': { title: finaleEndingNames['f6-exhausted'], art: 'core', lines: [
@@ -439,7 +439,7 @@ const confrontationScenes: Record<string, FinaleNode> = {
     c('f5-cat-break-light', '砸掉灯，硬拉备用门', 'Break the lamp and wrench open the backup door', '强行脱身，消耗 12 精神力。', 'Force an escape. Costs 12 spirit.', 'f5-trace', { spirit: -12, sets: ['f5-camera-evaded'] }),
   ] },
   'f5-feidudu-clash': { title: b('第一拳砸穿实验台', 'The First Punch Breaks the Bench'), art: 'laboratory', lines: [
-    n('肥嘟嘟忽然扑过来。第一拳擦着我的肩膀砸碎实验台，玻璃飞过耳边。它身后的管线越绷越紧，下一拳已经亮起蓝光。', 'Feidudu lunged. Its first punch grazed my shoulder and shattered the bench, glass flying past my ear. The lines behind it tightened as its next fist lit blue.'),
+    n('肥嘟嘟忽然扑过来。第一拳擦着我的肩膀砸碎实验台，玻璃飞过耳边。它身后的管线越绷越紧，下一拳已经亮起蓝光。', 'Fat Dudu lunged. Its first punch grazed my shoulder and shattered the bench, glass flying past my ear. The lines behind it tightened as its next fist lit blue.'),
     s('feidudu', '他们说你只会骗我！', 'They said all you do is lie!'),
     n('它每次蓄力，墙上的抽取灯都会先亮。柜子后面只有半个人宽的空隙。', 'Before each strike, the extraction light on the wall flashed. Behind the cabinet was a gap barely wide enough for me.'),
   ], choices: [
@@ -448,7 +448,7 @@ const confrontationScenes: Record<string, FinaleNode> = {
     c('f5-clash-attack', '迎着蓝光冲上去，正面反击', 'Charge straight into the blue strike', '力量差距太大，这一拳可能耗尽精神力。', 'The force is overwhelming; the blow may drain all spirit.', 'f5-feidudu-counter', { spirit: -100 }),
   ] },
   'f5-feidudu-counter': { title: b('切断它的后手', 'Cutting Off the Next Strike'), art: 'laboratory', lines: [
-    n('肥嘟嘟踩上碎玻璃，管线卡住了它的肩。墙侧插头暴露出来，牛来的声音却催它继续蓄力。再拖下去，装置会连它一起抽空。', 'Feidudu stepped onto broken glass and a line caught its shoulder. The wall plug was exposed, but Niulai’s voice urged it to charge again. If this continued, the device would drain it too.'),
+    n('肥嘟嘟踩上碎玻璃，管线卡住了它的肩。墙侧插头暴露出来，牛来的声音却催它继续蓄力。再拖下去，装置会连它一起抽空。', 'Fat Dudu stepped onto broken glass and a line caught its shoulder. The wall plug was exposed, but Niulai’s voice urged it to charge again. If this continued, the device would drain it too.'),
     s('me', '看清楚，拉住你的是谁！', 'Look at who is holding you back!'),
   ], choices: [
     c('f5-counter-unplug', '从侧面滑过去，拔掉墙侧插头', 'Slide past its flank and pull the wall plug', '解除外接抽取，让它失去下一拳的增幅。', 'Stop external extraction and weaken its next strike.', 'f5-break-lines'),
@@ -521,15 +521,24 @@ revise('f5-lab-entry', '实验区的广播', 'The Laboratory Broadcast', [
   s('niulai', '看完了，就该明白了。奶蛙活着，项目才能做下去。我们不会让它死。', 'You have read it. So you understand. The project needs Naiwa alive. We will not let him die.'),
   s('me', '活着，和给你们当材料，是两回事。你们要的是后面那个。', 'Alive, and kept as material, are two different things. You want the second one.'),
 ])
-revise('f5-encounter', '肥嘟嘟坚持的说法', 'Feidudu’s Conviction', [
+revise('f5-encounter', '肥嘟嘟坚持的说法', 'Fat Dudu’s Conviction', [
   s('feidudu', '他们至少一直在照顾他。你呢，把记忆一块块拿走，还说自己来救人。', 'At least they have been looking after him. You take his memories away piece by piece, and call it rescue.'),
   s('me', '照顾能越照顾越虚吗？原片在这儿。你自己看一眼，行不行。', 'Does care leave him weaker every time? The original is right here. Look at it yourself.'),
-  n('肥嘟嘟没动手。它盯着屏幕看了一会儿，怎么也不肯承认，那上面的东西和它信的不一样。', 'Feidudu did not strike. It stared at the screen a while. It would not admit that what was on it differed from what it believed.'),
+  n('肥嘟嘟没动手。它盯着屏幕看了一会儿，怎么也不肯承认，那上面的东西和它信的不一样。', 'Fat Dudu did not strike. It stared at the screen a while. It would not admit that what was on it differed from what it believed.'),
 ])
-revise('f5-cat-ambush', '香蕉猫的“保护”', 'Banana Cat’s “Protection”', [
-  n('香蕉猫出现在栈道上方的屏幕里。出口的标记被它换成了一个回医院的箭头。旁边那扇门还锁着。', 'Banana Cat appeared on the screen above the walkway. It had swapped the exit marker for an arrow back to the hospital. The door beside it was still locked.'),
-  s('banana-cat', '回去陪着奶蛙吧。知道那么多，对你们没好处。', 'Go back and sit with Naiwa. Knowing this much does you no good.'),
+revise('f5-cat-ambush', '被改掉的路标', 'The Altered Sign', [
+  n('我沿着信标走到栈道的岔口。前方是一扇铁门，门边的屏幕亮着蓝色出口箭头。桥上没人，只有信标在我手里一闪一闪。', 'I followed the beacon to a fork in the walkway. An iron door stood ahead, a blue exit arrow glowing on the screen beside it. The bridge was empty. Only the beacon blinked in my hand.'),
+  n('刚靠近，箭头忽然翻了个方向，变成“返回病房”。我翻开日记，原来的出口还记在同一处。门锁却已经亮红了。', 'As I approached, the arrow suddenly reversed: return to the ward. I opened the journal. The original exit was still marked in the same place. The door lock had turned red.'),
+  s('me', '不是我走错了。有人在改这条路。', 'I did not take a wrong turn. Someone is changing this route.'),
+  n('门上那枚红点跟着我动。我停，它也停——是镜头。屏幕只显示“外接监护已连接”，和刚才医院画面的标记一样。有人正从病房的线路看着这里。', 'A red dot above the door moved with me. When I stopped, it stopped. A camera. The screen showed external monitoring connected, the same mark as the hospital feed. Someone was watching this place through the ward connection.'),
+  n('我按下屏幕边的通话键。杂音里传来抽泣，画面接通：黄色香蕉壳、橘色猫脸，是病房值班台的香蕉猫。它曾替我调录像、刷开病房门，此刻却坐在深渊的操作室里，爪子搭着路线开关。它抬头，正对着镜头看我。', 'I pressed the call key. A sob came through the static, then the feed opened: yellow peel, orange face. Banana Cat from the hospital duty desk. It had shown me footage and opened the ward door. Now it sat at a console in the Deep, its paw on the route switch. It looked straight at me through the camera.'),
+  s('banana-cat', '我是香蕉猫。牛来让我看着这条路……你别再往里走了，回去陪着奶蛙吧。', 'I am Banana Cat. Niulai told me to watch this route… Stop going deeper. Go back and stay with Naiwa.'),
+  s('me', '那支出口箭头，是你改的？', 'You changed the exit arrow?'),
+  s('banana-cat', '我是在保护你们。知道那么多，对你们没好处。', 'I am protecting you. Knowing this much does you no good.'),
+  n('它一边抽泣，一边按住开关。屏幕里的路标又闪了一次，铁门咔哒一声，扣得更紧了。', 'It sobbed while holding the switch down. The sign on the screen flickered again. The iron door clicked firmly shut.'),
   s('me', '先把路藏了，再说这是为我们好。你是怕我看见什么？', 'You hide the way first, then say it is for our good. What are you afraid I will see?'),
+  n('我往门边挪了一步，它的哭声就停了。镜头转过来追着我，门锁仍亮着红灯。', 'I moved a step toward the door. Its sobbing stopped. The camera turned to follow me; the lock stayed red.'),
+  s('banana-cat', '路是我管的。你走到哪儿，我都看得见。', 'The routes are mine. Wherever you go, I can see you.'),
 ])
 live['f5-cat-ambush'].choices = [
   c('f5-cat-question', '追问它为什么篡改路线', 'Ask why it changed the route', '把话题留在它实际做过的事上。', 'Keep the argument on what it actually did.', 'f5-cat-counter'),
@@ -558,7 +567,7 @@ revise('f5-feidudu-counter', '它拒绝听完的话', 'What He Refuses to Hear',
 ])
 linear('f5-feidudu-counter', 'f5-break-lines')
 revise('f5-break-lines', '停下外接抽取', 'Stopping the External Extraction', [
-  n('我按下墙上的停机键。外接的灯一段一段灭了。肥嘟嘟看着黑下去的屏幕，没回头。', 'I pressed the wall shutdown key. The external lights went out, one run after another. Feidudu watched the screen go dark and did not turn around.'),
+  n('我按下墙上的停机键。外接的灯一段一段灭了。肥嘟嘟看着黑下去的屏幕，没回头。', 'I pressed the wall shutdown key. The external lights went out, one run after another. Fat Dudu watched the screen go dark and did not turn around.'),
   s('feidudu', '你自己选的。出了事别赖别人。', 'You chose this. When it goes wrong, do not blame anyone else.'),
   s('me', '我选的，我认。你也记着，奶蛙从来没答应过你们那套安排。', 'I chose it. I will own it. And remember: Naiwa never agreed to your arrangements.'),
   n('另一道门开了。奶豆站在里面，手里一份临床摘要，干净得不像话。', 'Another door opened. Naidou stood inside, a clinical summary in her hand, clean in a way that did not sit right.'),
@@ -631,7 +640,7 @@ revise('f6-accountability', '先救人，再面对过去', 'Save Him, Then Face 
 ])
 linear('f6-accountability', 'f6-rooftop', { flags: ['f6-responsibility-faced'] })
 revise('f6-rooftop', '最后一场争论', 'The Last Argument', [
-  n('屋顶底下还是晚归的车流。肥嘟嘟站在对面楼顶，城市的灯映着它眼周那圈黑印。奶豆守抽取盘，香蕉猫把天台门关上了。', 'Late traffic still moved below. Feidudu stood on the roof opposite, the city lights caught in the dark ring around its eyes. Naidou stood over the extraction panel. Banana Cat shut the rooftop door.'),
+  n('屋顶底下还是晚归的车流。肥嘟嘟站在对面楼顶，城市的灯映着它眼周那圈黑印。奶豆守抽取盘，香蕉猫把天台门关上了。', 'Late traffic still moved below. Fat Dudu stood on the roof opposite, the city lights caught in the dark ring around its eyes. Naidou stood over the extraction panel. Banana Cat shut the rooftop door.'),
   s('feidudu', '奶蛙，你要是跟他们走，我做的这一切就都不算了。', 'Naiwa. Walk out with them, and everything I did counts for nothing.'),
   s('naiwa', '我会记得你。但我不能为了证明你没错，一直躺回去挨。', 'I will remember you. But I cannot keep going back under just to prove you were right.'),
   s('naidou', '身体快醒了。现在加大抽取，还赶得上下一轮。', 'The body is close to waking. Push the extraction now, and there is still time for another cycle.'),
@@ -656,7 +665,7 @@ revise('f6-cradle-prepare', '旧歌声里的停机', 'Shutdown Within the Old So
 revise('f6-body-awake', '走上屋顶的是奶蛙本体', 'Naiwa’s Own Body Walks Onto the Roof', [
   n('病房门从里面被推开了。奶蛙扶着门框，掉下来的监护线拖在脚边。绿眼睛终于对上我。站在我面前的，是现实里的奶蛙本体。', 'The ward door opened from the inside. Naiwa stood against the frame, loose monitor leads trailing at his feet. The green eyes finally found mine. This was Naiwa’s body, here in the real world.'),
   s('naiwa', '你等了那么久。这一次，换我走过来。', 'You waited so long. This time, I walk to you.'),
-  n('奶蛙走到天台边。肥嘟嘟在对面的楼上站着。中间隔着一座还亮着灯的城市。奶霸留在奶蛙意识的最深处，没有出来替它打这一场。', 'Naiwa walked to the rooftop edge. Feidudu stood on the tower across from it. Between them, a city still lit. Naiba stayed deep inside Naiwa. He did not come out to fight this one for him.'),
+  n('奶蛙走到天台边。肥嘟嘟在对面的楼上站着。中间隔着一座还亮着灯的城市。奶霸留在奶蛙意识的最深处，没有出来替它打这一场。', 'Naiwa walked to the rooftop edge. Fat Dudu stood on the tower across from it. Between them, a city still lit. Naiba stayed deep inside Naiwa. He did not come out to fight this one for him.'),
   s('feidudu', '为了他们，你真要跟我走到这一步？', 'For them. You would really take it this far with me?'),
   s('naiwa', '为了我自己。要说的，我说完了。', 'For myself. What I had to say, I have said.'),
 ])
@@ -731,7 +740,7 @@ live['f6-revival'] = { title: b('奶蛙回来了', 'Naiwa Returns'), art: 'after
 linear('f6-ruin-record', 'f6-ruin-relay', { clues: ['f6-survivors', 'f6-ruin-record'] })
 revise('f6-ruin-record', '救援灯终于到了', 'The Rescue Lights Arrive', [
   n('救援队的灯照进了废墟。我把奶蛙交给赶来的医护，把日记里存好的完整记录发了出去。不用再回头翻一份又一份物证了。', 'Rescue lights came into the ruins. I handed Naiwa to the medics and sent out the complete records already saved in the journal. There was no need to go back for another piece of evidence.'),
-  n('伤员往南边的广场转移。肥嘟嘟也被从塌楼底下挖出来，一直没再看奶蛙一眼。三个组织成员还想把这一夜说成意外，那些记录比他们先到了救援终端。', 'The injured were carried toward the square in the south. Feidudu was pulled from the fallen tower too, and never looked at Naiwa again. The three of them were still calling it an accident. The records had reached the rescue terminal before they did.'),
+  n('伤员往南边的广场转移。肥嘟嘟也被从塌楼底下挖出来，一直没再看奶蛙一眼。三个组织成员还想把这一夜说成意外，那些记录比他们先到了救援终端。', 'The injured were carried toward the square in the south. Fat Dudu was pulled from the fallen tower too, and never looked at Naiwa again. The three of them were still calling it an accident. The records had reached the rescue terminal before they did.'),
 ])
 revise('f6-ruin-relay', '他们仍不肯放手', 'They Still Refuse to Let Go', [
   n('奶蛙被救回来了，可组织留下的备用标记还亮着。牛来拿着遥控器追到救援车边上，奶豆跟在他身后，香蕉猫悄悄把摄像头又接上了。', 'Naiwa had been brought back, but the institute’s backup mark was still lit. Niulai reached the ambulance with a remote in his hand. Naidou stood behind him. Banana Cat quietly reconnected its camera.'),
@@ -772,6 +781,132 @@ revise('f6-ending-cradle', '摇篮之外的清晨', 'Morning Beyond the Cradle',
   n('奶蛙把空护腕和日记放在一起，跟着我走第一条清出来的路。它问我，回去以后，能不能一起吃早饭。', 'Naiwa set the empty gauntlet beside the journal and followed me along the first path cleared through the rubble. It asked whether we could have breakfast together when we got home.'),
   s('me', '能啊。慢慢走。', 'We can. Let us take our time.'),
 ])
+
+// Keep node IDs and first-arrival checkpoints for existing saves and replay.
+// The darkening develops through his decisions, before the supplied battle film.
+live['f5-voice'].lines[3] = n('屏幕下方写着“医院实时监护”。镜头里，一个黄色牛身、紫色弯角的身影拿着转运单，把日记挡在床沿外。胸牌随着它俯身晃了一下：转运许可，牛来。病房留下的线，正把这些声音和画面送进深渊。', 'The screen read hospital monitor, live. A yellow bovine figure with curved purple horns held a transfer form, blocking the journal at the edge of the bed. Its badge swung as it leaned down: transfer permits, Niulai. The lines left in the ward were carrying these sounds and images into the Deep.')
+live['f5-voice'].lines.push(s('niulai', '别改转运计划。床边那本日记，先别让镜头拍进去。', 'Keep the transfer plan. Keep the journal by the bed out of frame.'))
+// Both approaches reach the same monitored junction before its operator is revealed.
+live['f5-pursuit'].lines.push(n('信标里的位置指向栈道尽头。那里一块出口屏幕刚亮起来，顶端的红点随我的脚步慢慢转动。', 'The beacon pointed to the end of the walkway. An exit screen had just lit there. A red dot above it turned slowly with my footsteps.'))
+live['f5-call'].lines.push(n('我低头看信标，沿它指的方向走向岔口。铁门旁有块出口屏幕，刚才还暗着的红点，随着我靠近亮了。', 'I checked the beacon and followed its direction toward the fork. An exit screen stood beside an iron door. A red dot that had been dark lit as I approached.'))
+live['f5-film-kept'].lines.push(
+  n('原片里终于看清操作泵的人：齐耳黑发，黄色身体，白色腹部，戴着深色手套。她用指尖压住报警灯，才在维护栏签下“奶豆”。前面那段广播里的下一轮，原来是从她手里开始的。', 'The original finally showed the pump operator clearly: a dark bob, yellow body, white belly, dark gloves. She held a fingertip over the warning lamp, then signed Naidou in the maintenance field. The next cycle mentioned in the broadcast had begun at her hands.'),
+  s('naidou', '目标量到了。别把报警那一栏放进公开摘要。', 'Target volume reached. Keep the warning column out of the public summary.'),
+)
+live['f5-bargain'].lines.unshift(
+  n('广播里那道声音从门边接了下去。牛来已经等在那里，紫色弯角从灯下探出来，手里还是那张转运单。它先看日记，再看我，把签字的位置摆到离我最近的一边。', 'The voice from the broadcast continued at the doorway. Niulai was already waiting there, curved purple horns under the light, the transfer form still in its hand. It looked at the journal, then at me, and turned the signature field toward my side of the table.'),
+)
+live['f5-voice'].lines.push(
+  n('冷光扫过它的脸。还是那双蓝眼睛，眼周却压着一圈黑印。广播一响，它刚刚露出来的慌张就收了回去。', 'Cold light swept across its face. The same blue eyes, with a dark band around them. When the broadcast sounded, it buried the fear that had just shown through.'),
+  s('feidudu', '他们说，只要照他们的办法做，奶蛙就不会离开。我不能再看着他消失一次。', 'They said Naiwa would not leave if I followed their method. I cannot watch him disappear again.'),
+  n('它说到“他们”的时候，目光偏向了墙上的扬声器，像在等那边再替它肯定一遍。', 'At the word they, its gaze shifted toward the speaker on the wall, as though waiting for another word of assurance.'),
+)
+live['f5-call'].lines.push(
+  s('feidudu', '你想带他走，他们才不得不把他留住。至少我留下了，没把他一个人扔在那里。', 'They had to keep him because you wanted to take him away. At least I stayed. I did not leave him there alone.'),
+  s('me', '留下陪他，和替他们守着出口，不是一回事。', 'Staying beside him and guarding their exit are not the same thing.'),
+)
+live['f5-encounter'].lines.push(
+  n('它肩后留着外接装置的压痕。屏幕上的抽取曲线往上爬，它的眼神却一直避开下面那条越来越低的生命读数。', 'The external device had left an indentation behind its shoulder. The extraction curve climbed on the screen. Its gaze kept avoiding the falling vital readings below.'),
+  s('feidudu', '接上去是我自己答应的。牛来说我也能帮上忙。我总得为奶蛙做点什么。', 'I agreed to the connection myself. Niulai said I could help too. I had to do something for Naiwa.'),
+  s('me', '他们让你帮忙守住机器，没让你看机器拿走了什么。', 'They asked you to guard the machine. They did not let you see what it took away.'),
+  s('feidudu', '香蕉猫给我看过。他痛的那一段，后面紧接着就是数值变好。现在你说，那两段根本不是同一次……', 'Banana Cat showed me. The part where he hurt was followed by better readings. And now you say those two parts were not even from the same session…'),
+  n('原片的日期停在它面前。它看清了，却把那一页推开。那圈黑印没能遮住它眼里的迟疑，接着，迟疑又被压成了固执。', 'The original date stood before it. It read it, then pushed the page away. The dark band could not hide the hesitation in its eyes. A moment later, that hesitation hardened into stubbornness.'),
+)
+live['f5-feidudu-clash'].lines.push(
+  s('feidudu', '要真像你说的，我每天站在那儿，看着他们接管子……我到底是在陪他，还是在帮他们？', 'If you are right, I stood there every day while they connected the tubes… Was I keeping him company, or helping them?'),
+  s('me', '你现在可以不再帮他们。承认前面做错了，不用再拿奶蛙来证明。', 'You can stop helping them now. You do not need to use Naiwa to prove that what you did was right.'),
+  s('feidudu', '够了。我没想害他。你不能拿最后的结果，把我想救他的那些天全抹掉。', 'Enough. I did not mean to hurt him. You cannot use the outcome to erase all the days I wanted to save him.'),
+)
+live['f5-feidudu-counter'].lines.splice(-1, 0,
+  s('me', '我没说你没想救。可你看到他在受伤了，还要让他继续。', 'I did not say you never wanted to save him. But you have seen that he is being hurt, and you still want it to continue.'),
+  n('它伸手挡住生命读数，没再替那些数字解释。那只手停了一会儿，才收回去。', 'It put a hand over the vital readings, offering no explanation for the numbers. It held it there a while before drawing it back.'),
+)
+live['f5-break-lines'].lines.splice(-1, 0,
+  n('停机后，外接装置的光灭了，眼周的黑印却还在。牛来的广播也停了。肥嘟嘟的拒绝没有跟着任何一个开关停下来。', 'The external device went dark at shutdown. The band around its eyes remained. Niulai’s broadcast fell silent too. Fat Dudu’s refusal did not stop with either switch.'),
+  s('feidudu', '不用他们替我说。等他醒了，我会让他知道谁一直守着他。', 'They do not have to speak for me. When he wakes, I will make sure he knows who stayed with him.'),
+)
+live['f5-break-lines'].lines[live['f5-break-lines'].lines.length - 1] = n('另一道门开了。录像里那个齐耳黑发的身影站在里面，深色手套按着备用开关。奶豆先检查灭掉的抽取灯，才把一份干净的临床摘要转向我——她已经准备好另一套说法。', 'Another door opened. The dark-haired figure from the recording stood inside, a gloved hand on the backup switch. Naidou checked the dark extraction lights before turning a spotless clinical summary toward me. She had another account ready.')
+live['f6-rooftop'].lines.splice(3, 0,
+  s('feidudu', '你以前怕的时候，都会来找我。现在你能自己走了，就说我的办法全是错的？', 'You used to come to me when you were afraid. Now you can walk on your own, and everything I did is wrong?'),
+  s('naiwa', '陪着我的那些天，我没忘。可我说疼的时候，你让我忍；我说想走，你没让。', 'I remember the days you stayed with me. But when I said it hurt, you told me to endure it. When I wanted to leave, you would not let me.'),
+  n('肥嘟嘟的嘴角动了一下，像要叫它过去。最后说出口的，却是一句命令。', 'The corner of Fat Dudu’s mouth moved, as if about to call Naiwa over. What came out was an order.'),
+  s('feidudu', '那你现在就听我一次。留下。', 'Then listen to me this once. Stay.'),
+)
+
+// First encounters explain the relationship and authority before the argument.
+live['f5-voice'].lines[2] = s('me', '肥嘟嘟？我在镜馆里见过你，记得你的声音。你怎么也在这层记忆里？', 'Fat Dudu? I met you in the mirror hall. I remember your voice. How did you end up in this layer of memory?')
+live['f5-voice'].lines[4] = s('niulai', "病房转运由牛来确认。车、人和目的地都照签单走，日记先别拍进去。", "Niulai confirming the ward transfer. Use the vehicle, staff and destination on my form. Keep the journal out of frame.")
+live['f5-voice'].lines[5] = n('肥嘟嘟站在屏幕的冷光里。还是那双蓝眼睛，眼周却压着一圈黑印。牛来的广播一响，它刚刚露出来的慌张就收了回去。', 'Fat Dudu stood in the screen’s cold light. The same blue eyes, with a dark band around them. When Niulai’s broadcast sounded, it buried the fear that had just shown through.')
+live['f5-voice'].lines.splice(5, 0,
+  s('me', "牛来？病房门口拿夹板的那个。我问冷藏电梯运了什么，你让我先去看奶蛙。原来那张签单一直在你手里。", "Niulai? The one with the clipboard at the ward door. When I asked what the cold-storage lift carried, you sent me back to Naiwa. You had that transfer form all along."),
+  s('niulai', '车、人、去哪里，都由我确认。你想把奶蛙带走，就得先经过我。', 'I approve the vehicle, the staff and the destination. If you want to take Naiwa away, you come through me first.'),
+)
+// Move the departure beat after the exchange instead of between its replies.
+const callDeparture = live['f5-call'].lines.splice(3, 1)[0]
+live['f5-call'].lines.push(callDeparture)
+live['f5-cat-ambush'].lines[5] = s('banana-cat', '是我，香蕉猫。医院那边只是我的一个值班点，组织里的监控和通路都归我管。牛来让我盯住这条路……你别往里走了，回去陪着奶蛙吧。', 'Yes, Banana Cat. The hospital is only one of my posts. I run surveillance and access routes for the institute. Niulai told me to watch this passage… Stop going deeper. Go back and stay with Naiwa.')
+live['f5-cat-ambush'].lines.splice(8, 0,
+  s('me', '你坐在操作室里，就能替我们决定往哪儿走？', 'You sit in a control room and decide where we are allowed to go?'),
+  s('banana-cat', '门、路标、录像都接在我这儿。你走错一步，是我替你改回来。', 'The doors, signs and recordings all come through me. Take a wrong step, and I correct it for you.'),
+)
+live['f5-film'].lines[0] = n("录像里，香蕉猫先动了镜头，牛来接着签下转运单。奶豆把抽取泵接回病床——正是那晚，她让我别拔的那根线。剪掉的那四分钟，自己补了回来。", "In the footage Banana Cat moved the camera, then Niulai signed the transfer form. Naidou reconnected the extraction pump — the very line she had told me not to unplug that night. The four missing minutes restored themselves.")
+live['f5-film-kept'].lines[1] = n("短发、黄色身体、浅色腹部，深灰色的手按住报警灯。是奶豆。她曾在床边给我看过设备记录，说只是切换电源；如今这份原始读数里，报警那一栏却没有空白。她看了一眼数值，照样签下名字。", "The dark bob, yellow body, pale belly and charcoal hand over the warning lamp: Naidou. Beside the bed she had shown me the equipment record and called it a power changeover. Here, the original readings had no gap in the warning column. She checked the value and signed anyway.")
+live['f5-film-kept'].lines[2] = s('naidou', '设备和临床记录我负责。目标量到了，报警那一栏别放进公开摘要。', 'Equipment and clinical records are my responsibility. Target volume reached. Keep the warning column out of the public summary.')
+live['f5-naidou'].lines.unshift(
+  n("我走进门里，奶豆挡在控制台前。她转过头，和上次在病床边问我要碎片时一样，先看我的手。备用开关仍被她的深灰色手指按着。", "I stepped inside. Naidou blocked the console. As when she had asked for the fragment beside the ward bed, she looked first at my hands. Her charcoal fingers held the backup switch."),
+  s('naidou', "你认得我，就该记得我说过别拔线。病房里的泵、研究员的探针，还有这里的设备和记录，都是我管。", "You know me. You should remember: do not unplug the lines. The ward pump, the researcher’s probe, and the equipment and records here are all mine."),
+  s('me', "那晚你说只是切换电源。你接回去的不是监护线，是抽取管。你知道奶蛙在痛。", "You called it a power changeover that night. What you reconnected was an extraction tube, not a monitor lead. You knew Naiwa was hurting."),
+)
+live['f5-bargain'].lines.splice(1, 0,
+  s('niulai', "病房门口我就说过，转运先找我。那张同意书你在病房也见过了。现在补上签名，还来得及。", "I told you at the ward door to come to me for transfers. You saw this consent form in the ward too. There is still time to sign."),
+  s('me', "在病房你用手盖住目的地，现在又要我签字。你从来没准备告诉我，奶蛙会被送去哪儿。", "In the ward you covered the destination field. Now you want my signature again. You never intended to tell me where you were taking Naiwa."),
+  s('niulai', '组织的人。医院收治是医院的事，奶蛙送去哪儿，由我们定。', 'The institute. Admission is the hospital’s affair. We decide where Naiwa goes afterward.'),
+)
+
+// Fat Dudu: fear, conditional reassurance, recognition, then a voluntary refusal.
+// Preserve dialogue indices for saved checkpoints and existing storyboard cuts.
+live['f5-voice'].lines[1] = s('feidudu', "你上次说还会回来。我等到的，却是他一次比一次更疼。先别往前走，听我说完。", "You said you would come back. All I saw while I waited was him hurting more each time. Stop a moment. Hear me out.")
+live['f5-voice'].lines[7] = s('narrator', "肥嘟嘟站在屏幕的冷光里。它看见我，先往前挪了半步，手却又缩回胸前。牛来的广播响起，它立刻看向扬声器；眼周那圈黑印，把这一下迟疑衬得格外清楚。", "Fat Dudu took half a step toward me in the screen’s cold light, then drew its hand back to its chest. Niulai’s broadcast made it turn toward the speaker. The dark band around its eyes made that hesitation plain.")
+live['f5-voice'].lines[8] = s('feidudu', "镜馆里我只能等。牛来说，我也能帮他醒过来，只要守住这里。我答应的时候……真以为终于能做点有用的事。", "In the mirror hall all I could do was wait. Niulai said I could help him wake if I guarded this place. When I agreed… I thought I could finally do something useful.")
+live['f5-voice'].lines[9] = s('narrator', "屏幕里，奶蛙的手缩了一下。肥嘟嘟跟着伸手，又停住。扬声器传来“反应正常”，它把那只手慢慢放下，像是这四个字已经替它看完了整段画面。", "On the screen Naiwa’s hand recoiled. Fat Dudu reached toward it, then stopped. The speaker said normal response. It slowly lowered its hand, as though those two words had watched the rest of the footage for it.")
+live['f5-call'].lines[0] = s('feidudu', "你知道我为什么守在这儿吗？他们说，门一开，治疗就得重来。你可以往下一层走，我得留着听他喊疼。", "Do you know why I guard this place? They told me opening the door would reset his treatment. You get to go to the next layer. I stay and hear him cry out.")
+live['f5-call'].lines[2] = s('narrator', "它低头摸了摸肩后接口，把信标踢到我面前：“记录就在那边。你看完，就知道我没白等。”那枚蓝光信标存着实验区的位置；它给我这条路，是想让我替它确认治疗有效。", "It touched the socket behind its shoulder and kicked the beacon toward me. “The records are there. Once you read them, you will know I did not wait for nothing.” It held the laboratory’s location. This was a route to proof it hoped I would bring back.")
+live['f5-call'].lines[3] = s('feidudu', "牛来说停下来才会失去他。要是我守住门，他就还有机会。我不能连这件事都做错。", "Niulai said stopping was how we would lose him. If I kept the door shut, he still had a chance. I cannot get this wrong too.")
+live['f5-call'].lines[4] = s('me', "那就一起看完整记录。陪他的人，更该知道他到底在承受什么。", "Then look at the complete record with me. If you stay beside him, you need to know what he is enduring.")
+live['f5-encounter'].lines[0] = s('feidudu', "奶豆每次都说数值在恢复。我站在旁边看着的。你不能把那些天一句话全说成假的。", "Naidou said his readings were recovering, every time. I stood there watching. You cannot call all those days a lie with one sentence.")
+live['f5-encounter'].lines[1] = s('me', "我没否认你陪过他。看这两个日期：喊疼是昨晚，恢复读数是更早的一次。他们把它们接到了一起。", "I am not denying you stayed with him. Look at these dates. The pain is from last night. The improved readings are from an earlier session. They joined the two together.")
+live['f5-encounter'].lines[2] = s('narrator', "它把录像倒回去，停在奶蛙缩手的那一帧，又拖到下一段。时间戳对不上。它重新做了一遍，第二次比第一次慢。", "It rewound to the frame where Naiwa pulled his hand away, then dragged forward to the next clip. The timestamps did not match. It did it again, more slowly.")
+live['f5-encounter'].lines[3] = s('narrator', "它肩后的接口还亮着。每次抽取灯闪过，那里便跟着亮一下；下方的生命读数却在往下掉。它伸手去摸接口，手指停在扣环上。", "The socket behind its shoulder was still lit. Every extraction pulse lit it again, while the vital readings below fell. It reached back, fingers resting on the clasp.")
+live['f5-encounter'].lines[4] = s('feidudu', "是我自己让他们接的。他们说，有我在，奶蛙就不用一个人撑。我还替奶豆按住过他的手……", "I asked them to connect me. They said with me there, Naiwa would not have to endure it alone. I even held his hand still for Naidou…")
+live['f5-encounter'].lines[5] = s('me', "现在松开就行。先停下这一轮，再看奶蛙。你不用继续替他们按住谁。", "You can let go now. Stop this cycle first, then check on Naiwa. You do not have to hold anyone down for them again.")
+live['f5-encounter'].lines[6] = s('feidudu', "奶豆，先停一次。让我看看停了以后他怎么样……你们不是说，只要数值稳着就能停吗？", "Naidou, pause it once. Let me see how he is without it… You said we could stop once the readings held steady, didn’t you?")
+live['f5-encounter'].lines[7] = s('narrator', "广播没有回答它的问题，只报出下一轮的开始时间。肥嘟嘟的手已经扣住接口，却迟迟没有拔下。它看了一眼出口，又把原片推回我面前：“那停出事了，谁负责？”", "The speaker gave no answer, only the start time of the next cycle. Fat Dudu gripped the clasp without disconnecting it. It glanced at the exit, then pushed the original back toward me. “And if stopping goes wrong, who answers for it?”")
+live['f5-feidudu-clash'].lines[0] = s('feidudu', "他们骗了我，不等于你就能救他。你拿这些过来，要我马上承认我一直在害他？", "Their lying does not mean you can save him. You bring me this and expect me to admit I have been hurting him all along?")
+live['f5-feidudu-clash'].lines[1] = s('me', "不用先给那些天定一个说法。先松开扣环，让这次伤害停下来。", "You do not have to find words for all those days first. Release the clasp. Stop what is hurting him now.")
+live['f5-feidudu-clash'].lines[2] = s('feidudu', "要是停下来，他就再也醒不过来呢？我已经信错过一次了。我怎么知道这次不是又把他交错了人？", "What if he never wakes after we stop? I already trusted the wrong people once. How do I know I am not handing him to the wrong person again?")
+live['f5-feidudu-clash'].lines[3] = s('narrator', "它把手从扣环上收回来，站到了停机键前。屏幕里的奶蛙又缩了一下手。这一次，肥嘟嘟没有回头看。", "It withdrew its hand from the clasp and moved in front of the shutdown key. On the screen Naiwa recoiled again. This time Fat Dudu did not turn to look.")
+live['f5-feidudu-clash'].lines[4] = s('feidudu', "他醒了会怎么问我？为什么他喊疼的时候，我还站在那儿？为什么我连门都没让你开？", "What will he ask when he wakes? Why was I still standing there when he said it hurt? Why did I not even let you open the door?")
+live['f5-feidudu-clash'].lines[5] = s('me', "这些得由你回答。现在停下来，他才有机会亲口问你。", "Those are yours to answer. Stop now, so he has the chance to ask you himself.")
+live['f5-feidudu-clash'].lines[6] = s('feidudu', "我是在救他。你听清楚，我是在救他。他还没醒，你们谁也不能替他把这句话改掉。", "I was saving him. Hear me: I was saving him. He has not woken up. None of you gets to change that for him.")
+live['f5-feidudu-counter'].lines[0] = s('me', "一句“会醒”不能替奶蛙答应下一次抽取。他已经在受伤。先停下，我们再面对结果。", "Saying he will wake does not give consent for another extraction. He is already being hurt. Stop first. Then we face what follows.")
+live['f5-feidudu-counter'].lines[1] = s('feidudu', "那就等他亲口说。我去里面守着他。你别以为关掉这台机器，就能把他带走。", "Then let him tell me himself. I will wait for him inside. Do not think switching off this machine means you can take him away.")
+live['f5-feidudu-counter'].lines[2] = s('me', "他要是说想走，你会开门吗？", "If he says he wants to leave, will you open the door?")
+live['f5-feidudu-counter'].lines[3] = s('narrator', "它握紧肩后的扣环，直到指节发抖。刚才问出的那句话，它没有答。", "It gripped the clasp behind its shoulder until its fingers trembled. It gave no answer to my question.")
+live['f5-feidudu-counter'].lines[4] = s('narrator', "它拔掉了自己的外接线，退进通往核心的门里。墙上的停机键终于露出来，内侧门却在它身后合上。它放开了机器，仍把自己留在了出口前。", "It unplugged its own external line and backed through the core door. The shutdown key was exposed at last, but the inner door closed behind it. It had let go of the machine and kept its place at the exit.")
+live['f5-break-lines'].lines[0] = s('narrator', "我按下停机键。外接灯逐段灭掉，奶蛙蜷起的手慢慢松开。监护声仍在，没有变成肥嘟嘟担心的那一条直线。门内的它看着这段画面，半晌没有出声。", "I pressed shutdown. The external lights went out, and Naiwa’s curled hand slowly relaxed. The monitor kept beating; it did not become the flat line Fat Dudu had feared. Beyond the door it watched in silence.")
+live['f5-break-lines'].lines[1] = s('feidudu', "这次没出事，不代表你往后也能护住他。", "Nothing went wrong this time. That does not mean you can keep him safe afterward.")
+live['f5-break-lines'].lines[3] = s('narrator', "屏幕上，心率一点点稳下来。肥嘟嘟抬手去碰扬声器，又放下。装置已经停了，眼周的黑印没有消退；它终于不用等牛来开口，却仍站在那扇门前。", "The heart rate settled on the screen. Fat Dudu reached toward the speaker, then lowered its hand. The device had stopped; the dark band remained. It no longer waited for Niulai to speak, but it still stood before the door.")
+live['f5-break-lines'].lines[4] = s('feidudu', "不用他们了。我自己守着。等他醒了……他会知道我为什么不让他走。", "I do not need them. I will keep watch myself. When he wakes… he will understand why I would not let him leave.")
+live['f6-rooftop'].lines[0] = s('narrator', "屋顶底下还是晚归的车流。肥嘟嘟站在对面楼顶，奶豆守着抽取盘，香蕉猫关上天台门。我手中的日记亮起，奶蛙的声音从页间传出来；它的身体还在楼里的病床上。肥嘟嘟一听见那声音，立刻向前走了一步。", "Late traffic moved below. Fat Dudu stood on the opposite roof. Naidou guarded the extraction panel; Banana Cat shut the rooftop door. The journal lit in my hands and Naiwa’s voice came through its pages. His body was still in the ward below. Fat Dudu took a step forward as soon as it heard him.")
+live['f6-rooftop'].lines[1] = s('feidudu', "奶蛙，你先听我说。我没想让你疼。我怕你一醒过来，就跟他们走了，连问我一句都不肯。", "Naiwa, hear me first. I did not want you to hurt. I was afraid you would wake, leave with them, and never even ask me why.")
+live['f6-rooftop'].lines[2] = s('naiwa', "我现在就在问你。你知道我疼，为什么还不让他们停？", "I am asking you now. You knew it hurt. Why did you not make them stop?")
+live['f6-rooftop'].lines[3] = s('feidudu', "我不知道还能怎么办！你以前怕的时候都来找我。那会儿我留在你身边就够了，现在……你们都说我做错了。", "I did not know what else to do! You used to come to me when you were scared. Back then staying with you was enough. Now… everyone says I got it wrong.")
+live['f6-rooftop'].lines[4] = s('naiwa', "你陪过我，我记得。可我说疼的时候，你让我忍；我说想走，你没让。我想要你听我说，不是替我答。", "I remember you staying with me. But when I said it hurt, you told me to bear it. When I wanted to leave, you would not let me. I need you to hear my answer, not give it for me.")
+live['f6-rooftop'].lines[5] = s('narrator', "日记里的声音停了一会儿：“把门打开吧。”肥嘟嘟原本伸向那道光的手慢慢落下，转而压住身旁的门锁。扬声器没有给它任何命令。", "The voice in the journal paused. “Open the door.” Fat Dudu lowered the hand it had reached toward the light and pressed it against the door lock instead. No command came from the speaker.")
+live['f6-rooftop'].lines[6] = s('feidudu', "别的都能谈。只有离开我这件事，不行。", "We can talk about anything else. Leaving me is the one thing you cannot do.")
+live['f6-body-awake'].lines[3] = s('feidudu', "门我不会开。你要过去，就先把我推开。", "I am not opening the door. If you want to leave, you will have to force your way past me.")
+live['f6-body-awake'].lines[4] = s('naiwa', "我不想伤你。但我已经说了，我要走。你不能把关住我叫作陪我。", "I do not want to hurt you. But I have told you I am leaving. Keeping me locked in is not staying beside me.")
+live['f6-ruin-record'].lines[1] = s('narrator', "伤员往南边的广场转移。肥嘟嘟被抬出塌楼，听见担架旁的人问起抽取，嘴唇动了动，最终没说出“为了救他”。我把它主动接线、守门与拒绝停机的原始记录一并送出。三个组织成员还想把这一夜说成意外，那些记录已经到了救援终端。", "The injured were taken south to the square. Carried out of the fallen tower, Fat Dudu heard someone ask about the extraction. Its lips moved, but it did not say to save him. I sent the original record of its voluntary connection, the guarded doors and its refusal to stop. The three institute members were still calling the night an accident. The records had already reached the rescue terminal.")
 
 const initialNode = (chapter: FinaleChapter): string => chapter === 5 ? 'f5-descent' : 'f6-entry'
 const carryableFiveClues = ['f5-signal', 'f5-ledger-proof', 'f5-film-proof', 'f5-members-proof', 'f5-maintenance-log', 'f5-cradle-map']

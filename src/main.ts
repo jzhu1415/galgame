@@ -1,6 +1,9 @@
 import { browserStorage } from './browser-storage'
 import { loadOptionalFonts } from './fonts'
 import './style.css'
+import './story-map.css'
+import './finale-map.css'
+import './chapter-dialogue-themes.css'
 import './release-notes.css'
 import './chapter-promo.css'
 import { renderChapterPromo, mountChapterPromo } from './chapter-promo'
@@ -418,6 +421,8 @@ function confirmRestart(action: () => void, message: string = ui[preferredLangua
 }
 
 function openModal(kind: NonNullable<typeof modal>) {
+  // The project home has no active chapter; chapter-specific archives live inside chapter pages.
+  if (!active && selectedChapter === 0 && ['routes', 'gallery', 'log'].includes(kind)) return
   if (!appDialog?.isConnected) modalFocus = document.activeElement as HTMLElement | null
   clearPlaybackTimer()
   modal = kind
@@ -465,11 +470,8 @@ function renderChapterSelect() {
   }))
   root.querySelector('#language')?.addEventListener('click', toggleLanguage)
   root.querySelector('#fullscreen')?.addEventListener('click', toggleFullscreen)
-  root.querySelector('#routes-select')?.addEventListener('click', () => openModal('routes'))
   root.querySelector('#settings-entry')?.addEventListener('click', () => openModal('settings'))
-  root.querySelector('#gallery-entry')?.addEventListener('click', () => openModal('gallery'))
   root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
-  root.querySelector('#replay-select')?.addEventListener('click', () => confirmRestart(() => { selectedChapter = 1; start() }))
   updateFullscreenButton()
 }
 
@@ -661,7 +663,7 @@ function renderGame() {
   let game = root.querySelector<HTMLElement>(':scope > .game')
   if (!game) {
     root.innerHTML = `
-      <div class="game">
+      <div class="game" data-dialogue-theme="origin">
         <header class="game-top">
           <button class="wordmark wordmark-btn" id="title">NAIWA <span>·</span> ORIGIN</button>
           <div class="game-tools">
@@ -833,7 +835,7 @@ function renderMindMap(lang: Language) {
 }
 
 function setupMindMap(dialog: HTMLDialogElement) {
-  setupStoryMap(dialog, { width: MAP_WIDTH, height: MAP_HEIGHT, current: mapNodes[state?.sceneId ?? 'p01'] ?? { x: 550, y: 80 } })
+  setupStoryMap(dialog, { language: active ? state?.language ?? preferredLanguage : preferredLanguage, chapter: 1, width: MAP_WIDTH, height: MAP_HEIGHT, current: mapNodes[state?.sceneId ?? 'p01'] ?? { x: 550, y: 80 } })
 }
 
 function renderModal() {
@@ -842,7 +844,7 @@ function renderModal() {
   appDialog = null
   if (previous?.open) previous.close()
   previous?.remove()
-  const lang = state?.language ?? preferredLanguage
+  const lang = active ? state?.language ?? preferredLanguage : preferredLanguage
   const t = ui[lang]
   const dialog = document.createElement('dialog')
   appDialog = dialog

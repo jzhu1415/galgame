@@ -26,9 +26,9 @@ for (const language of ['zh', 'en']) {
     assert.equal((html.match(/data-home-tab="/g) ?? []).length, 5)
     assert.equal((html.match(/data-home-person="/g) ?? []).length, homePeople.length)
     const cast = html.slice(html.indexOf('<section class="home-section home-people"'), html.indexOf('<section class="home-section home-chapters"'))
-    for (const name of ['奶粉', '香蕉猫', '牛来', '奶豆', '肥嘟嘟', 'Naifen', 'Banana Cat', 'Niulai', 'Naidou', 'Feidudu']) assert(!cast.includes(name), `cast introduction leaks ${name}`)
+    for (const name of ['奶粉', '香蕉猫', '牛来', '奶豆', '肥嘟嘟', 'Naifen', 'Banana Cat', 'Niulai', 'Naidou', 'Fat Dudu']) assert(!cast.includes(name), `cast introduction leaks ${name}`)
     assert.equal((html.match(/data-home-milestone="/g) ?? []).length, 7)
-    assert.equal(html.includes('id="replay-select"'), started, 'restart is only offered for an existing first-chapter save')
+    for (const id of ['routes-select', 'gallery-entry', 'replay-select']) assert(!html.includes(`id="${id}"`), 'The project home never exposes first-chapter archive or restart actions')
     assert(html.includes('aria-selected="true" tabindex="0"'), 'the selected chapter and character are keyboard reachable')
     assert(html.includes('data-home-making-notes><span>') && html.includes('home-workbench-images" hidden'))
     for (const match of html.matchAll(/<img ([^>]+)>/g)) {

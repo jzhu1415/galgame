@@ -2,6 +2,7 @@ import './chapter-promo.css'
 import './finale-promo.css'
 import type { Language } from './story'
 import { finaleTitles } from './finale-story'
+import { gameStatistics } from './game-statistics'
 
 type FinaleChapter = 5 | 6
 type Bilingual = { zh: string; en: string }
@@ -31,8 +32,8 @@ const copy = {
   descentLabel: b('序章 · 深处的路', 'THE DESCENT'),
   descentTitle: b('从深渊，\n一路走到天亮。', 'From the depths,\nall the way to dawn.'),
   descentBody: b(
-    '组织封锁了出口。躲开香蕉猫的追捕，迎上肥嘟嘟的攻击，再突破实验区的控制装置。线索与精神力会伴你走完这段连续的旅程。',
-    'The institute has sealed the exits. Evade Banana Cat, face Feidudu’s attacks and break through the laboratory controls. Your evidence and spirit stay with you throughout this continuous journey.'),
+    '组织封锁了出口。沿着监控留下的痕迹往下走，听完肥嘟嘟坚持的说法，再面对实验区里不肯停下的人。线索与精神力会伴你走完这段连续的旅程。',
+    'The institute has sealed the exits. Follow the traces left by surveillance, hear Fat Dudu’s conviction, and face those in the laboratory who refuse to stop. Your evidence and spirit stay with you throughout this continuous journey.'),
   descentHint: b('新线索会写进日记，已经抵达的地方也会留在地图上。', 'New clues are written into the journal, and each reached place stays on the map.'),
   photosLabel: b('旅途记录 · 照片', 'CONTACT SHEET'),
   photosTitle: b('这一路，被一张张照片记住了。', 'The journey, kept as frames.'),
@@ -61,9 +62,10 @@ const copy = {
   whatsNew: b('更新内容', 'What’s new'),
   nav: [b('序章', 'Descent'), b('照片', 'Photos'), b('五章', 'Route'), b('开始', 'Play')],
   stats: [
-    { value: 23, label: b('张终章 CG', 'finale CG shots') },
-    { value: 10, label: b('处地点', 'locations') },
-    { value: 6, label: b('名角色', 'character sprites') },
+    { value: gameStatistics.chineseCharacters, label: b('字中文剧情', 'Chinese story characters') },
+    { value: gameStatistics.storyNodes, label: b('个剧情节点', 'story nodes') },
+    { value: gameStatistics.visualAssets, label: b('张剧情画面与立绘', 'story images & portraits') },
+    { value: gameStatistics.dialogueLines, label: b('段对白与旁白', 'dialogue & narration entries') },
   ],
 }
 
@@ -221,13 +223,17 @@ export function renderFinalePromo(chapter: FinaleChapter, language: Language, st
             <h2 id="fl-descent-title" data-promo-reveal>${esc(text(copy.descentTitle, language)).replaceAll('\n', '<br>')}</h2>
             <p data-promo-reveal>${esc(text(copy.descentBody, language))}</p>
             <p data-promo-reveal>${esc(text(copy.descentHint, language))}</p>
-            <ul class="fl-stats">${copy.stats.map(item => `<li data-promo-reveal><strong data-fl-count="${item.value}">0</strong><span>${esc(text(item.label, language))}</span></li>`).join('')}</ul>
           </div>
           <div class="fl-descent-plate" data-fl-stack>
             ${[plate('finale-abyss', 1536, 1024), plate('finale-abyss-descent', 1536, 1024), plate('finale-abyss-depth', 1536, 1024)]
               .map((art, index) => `<figure class="fl-plate${index === 0 ? ' is-active' : ''}" data-fl-plate="${index}">${img(art, zh ? '深渊中的记忆空间' : 'A memory space in the depths')}<figcaption><span>0${index + 1}</span>${['水面', '台阶', '深处'][index]}</figcaption></figure>`).join('')}
             <div class="fl-plate-rule" aria-hidden="true"></div>
           </div>
+        </div>
+        <div class="fl-records" aria-label="${zh ? '全游戏制作记录' : 'Whole-game production records'}">
+          <div class="fl-records-heading" data-promo-reveal><span>${zh ? '全游戏 · 制作记录' : 'THE WHOLE GAME / IN NUMBERS'}</span><span>${zh ? '五章主线 ＋ 海岸 DLC' : 'Five main chapters + coastal DLC'}</span></div>
+          <ul class="fl-stats">${copy.stats.map(item => `<li data-promo-reveal><strong data-fl-count="${item.value}" aria-label="${item.value.toLocaleString(language)}">${item.value.toLocaleString(language)}</strong><span>${esc(text(item.label, language))}</span></li>`).join('')}</ul>
+          <p class="fl-records-note">${zh ? '中文正文含条件对白；共用画面只计一次。' : 'Chinese text includes conditional dialogue; shared images count once.'}</p>
         </div>
       </section>
       <section class="fl-section fl-photos" id="fl-photos" tabindex="-1" aria-labelledby="fl-photos-title">
@@ -523,12 +529,13 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
 
   function count(element: HTMLElement) {
     const target = Number(element.dataset.flCount ?? 0)
-    if (!target || reduced.matches) { element.textContent = String(target); return }
+    const format = (value: number) => value.toLocaleString(page.lang || 'zh-CN')
+    if (!target || reduced.matches) { element.textContent = format(target); return }
     const start = performance.now()
     const step = (now: number) => {
       if (disposed) return
-      const t = Math.min(1, (now - start) / 900)
-      element.textContent = String(Math.round(target * (1 - (1 - t) ** 3)))
+      const t = reduced.matches ? 1 : Math.min(1, (now - start) / 1300)
+      element.textContent = format(Math.round(target * (1 - (1 - t) ** 3)))
       if (t < 1) window.requestAnimationFrame(step)
     }
     window.requestAnimationFrame(step)

@@ -2,7 +2,7 @@ import { theatreStory } from './chapter-three-story'
 import type { Bilingual } from './story'
 
 export type NaifenExpression = 'neutral' | 'angry' | 'scared' | 'sad' | 'guarded' | 'relieved' | 'happy'
-export type TheatreVisual = { background: string; expression: NaifenExpression; showCharacter: boolean; position: 'center' | 'left' | 'right' }
+export type TheatreVisual = { background: string; expression: NaifenExpression; showCharacter: boolean; showStaff: boolean; position: 'center' | 'left' | 'right' }
 type VisualCue = Partial<TheatreVisual> & { at: number }
 export const naifenExpressions: Record<NaifenExpression, { image: string; description: Bilingual }> = {
   neutral: { image: 'chapter-03-naifen', description: { zh: '奶粉向你伸出手', en: 'Naifen reaches toward you' } },
@@ -21,10 +21,11 @@ const baseArt = { hospital: 'chapter-02-hospital', theatre: 'chapter-03-theatre'
 // the same shot and expression without altering any story state.
 export const chapterThreeVisualCues: Record<string, VisualCue[]> = {
   invitation: [
-    { at: 0, background: 'chapter-02-hospital', showCharacter: false },
-    { at: 1, background: scene('offer') },
+    { at: 0, background: 'chapter-02-cg-ward-handover', showCharacter: false, showStaff: false },
+    { at: 1, background: scene('offer'), showStaff: false },
     { at: 2, background: scene('film') },
     { at: 3, background: scene('offer') },
+    { at: 5, background: 'chapter-02-cg-ward-handover', showCharacter: false },
     { at: 6, background: 'chapter-02-journal' },
   ],
   threshold: [
@@ -91,11 +92,11 @@ export const chapterThreeVisualCues: Record<string, VisualCue[]> = {
     { at: 2, background: 'chapter-03-theatre' },
   ],
   confrontation: [
-    { at: 0, background: scene('bargain'), showCharacter: false },
+    { at: 0, background: 'chapter-03-cg-organization-handoff', showCharacter: false },
     { at: 3, background: 'chapter-02-gauntlet' },
     { at: 5, background: scene('collapse'), expression: 'angry', showCharacter: true },
     { at: 6, background: scene('bargain'), showCharacter: false },
-    { at: 7, background: scene('backstage') },
+    { at: 7, background: 'chapter-03-cg-organization-handoff' },
   ],
   bargain: [
     { at: 0, background: scene('bargain'), showCharacter: false },
@@ -146,7 +147,7 @@ export function chapterThreeVisual(nodeId: string, lineIndex: number): TheatreVi
   const id = Object.hasOwn(theatreStory, nodeId) ? nodeId : 'explore'
   const node = theatreStory[id]
   const line = Number.isFinite(lineIndex) ? Math.max(0, Math.min(node.lines.length - 1, Math.floor(lineIndex))) : 0
-  const visual: TheatreVisual = { background: baseArt[node.art], expression: 'neutral', showCharacter: !!node.character || node.lines[line]?.speaker === 'naifen', position: 'center' }
+  const visual: TheatreVisual = { showStaff: false, background: baseArt[node.art], expression: 'neutral', showCharacter: !!node.character || node.lines[line]?.speaker === 'naifen', position: 'center' }
   for (const cue of chapterThreeVisualCues[id] ?? []) {
     if (cue.at > line) break
     const { at: _, ...changes } = cue

@@ -69,7 +69,8 @@ export function showTheatreStoryMap(root: HTMLElement, language: Language, save:
   dialog.dataset.kind = 'routes'
   dialog.setAttribute('aria-labelledby', 'theatre-map-title')
   dialog.innerHTML = `<div class="dialog-head"><h2 id="theatre-map-title">${copy.title}</h2><button type="button" class="small-btn" data-map-close>${copy.close} ×</button></div>${renderTheatreMindMap(save, progress, language)}`
-  root.append(dialog)
+  const host = document.getElementById('app') ?? root
+  host.append(dialog)
   dialog.querySelector('[data-map-close]')?.addEventListener('click', () => dialog.close())
   dialog.addEventListener('close', () => { dialog.remove(); if (focus?.isConnected) focus.focus() }, { once: true })
   dialog.addEventListener('click', event => {
@@ -79,6 +80,6 @@ export function showTheatreStoryMap(root: HTMLElement, language: Language, save:
   })
   dialog.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button => button.addEventListener('click', () => { if (!button.disabled) onSelect(button.dataset.route!) }))
   dialog.showModal()
-  setupStoryMap(dialog, { width: theatreMapWidth, height: theatreMapHeight, current: theatreMapNodes[save.node] })
+  setupStoryMap(dialog, { language, chapter: 3, width: theatreMapWidth, height: theatreMapHeight, current: theatreMapNodes[save.node] })
   return dialog
 }

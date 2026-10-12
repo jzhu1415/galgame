@@ -1,4 +1,5 @@
 import './finale.css'
+import './finale-dialogue.css'
 import type { Language } from './story'
 import { browserStorage } from './browser-storage'
 import { confirmInApp } from './ui-confirm'
@@ -8,7 +9,9 @@ import { gildedAudioEnabledKey, gildedAudioSettingsKey } from './chapter-four-au
 import { createGildedFilm } from './chapter-four-film'
 import { transitionSceneImage } from './scene-image'
 import { showFinaleStoryMap } from './finale-map'
-import { finaleArtwork } from './finale-artwork'
+import { finaleArtwork, finalePortraitSpeaker } from './finale-artwork'
+import { renderFinaleIntroduction } from './finale-introductions'
+import { finaleDialogueTheme, renderFinaleDialogueFrame } from './finale-dialogue-ui'
 import { createFinaleBgm } from './finale-bgm'
 import { mergeFinaleProgress, normalizeFinaleProgress, recordFinaleCheckpoint, restartFinaleFrom } from './finale-progress'
 import {
@@ -333,7 +336,8 @@ export function mountFinale(
     pauseMedia()
     const before = document.activeElement as HTMLElement | null
     const dialog = document.createElement('dialog')
-    dialog.className = `app-dialog ${className}`
+    dialog.className = `app-dialog ${className} finale-local-panel${finaleDialogueTheme(save).damaged ? ' is-battle-scarred' : ''}`
+    dialog.lang = language === 'zh' ? 'zh-CN' : 'en'
     dialog.setAttribute('aria-labelledby', titleId)
     dialog.innerHTML = `<div class="dialog-head"><h2 id="${titleId}">${title}</h2><button class="small-btn" type="button" data-close autofocus>${tr('关闭', 'Close')} ×</button></div>${content}`
     dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close())
@@ -410,10 +414,10 @@ export function mountFinale(
   function choicesMarkup(node: (typeof finaleStories)[FinaleChapter][string]) {
     const choices = node.choices ?? []
     if (!choices.length) return ''
-    return `<div class="finale-choices" role="group" aria-label="${tr('选择回应', 'Choose a response')}">${choices.map((choice: FinaleChoice) => {
+    return `<div class="finale-choices" role="group" aria-label="${tr('选择回应', 'Choose a response')}">${choices.map((choice: FinaleChoice, index: number) => {
       const available = finaleChoiceAvailable(save, choice)
       const condition = available ? '' : `<small>${tr('尚未满足条件', 'Requirements not met')}</small>`
-      return `<button type="button" class="finale-choice" data-choice="${esc(choice.id)}" ${available ? '' : 'disabled'}><strong>${esc(choice.text[language])}</strong><small>${esc(choice.detail[language])}</small>${condition}</button>`
+      return `<button type="button" class="finale-choice" data-choice="${esc(choice.id)}" ${available ? '' : 'disabled'}><span class="finale-choice-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="finale-choice-copy"><strong>${esc(choice.text[language])}</strong><small>${esc(choice.detail[language])}</small>${condition}</span><span class="finale-choice-arrow" aria-hidden="true">↗</span></button>`
     }).join('')}</div>`
   }
 
@@ -429,11 +433,11 @@ export function mountFinale(
     const ending = node.ending
       ? `<p class="finale-ending-note">${tr(chapter === 5 ? '第五章 · 结局' : '终章 · 结局', chapter === 5 ? 'Chapter five · Ending' : 'Final chapter · Ending')} / ${esc(finaleEndingNames[node.ending]?.[language] ?? node.ending)}<br>${tr('已解锁结局', 'Unlocked endings')} ${progress.endings.length}/${finaleEndingIds[chapter].length}</p>`
       : ''
-    return `<section class="finale-dialogue" aria-label="${tr('当前对白', 'Current dialogue')}"><p class="finale-speaker">${esc(finaleSpeakers[line.speaker][language])}</p><p class="finale-line">${esc(line.text[language])}</p>${isChoice ? choicesMarkup(node) : `<div class="finale-dialogue-actions"><span class="finale-line-counter">${save.line + 1}/${node.lines.length}</span>${line ? `<button class="small-btn" type="button" id="finale-voice" ${sound.enabled ? '' : 'disabled'}>${tr('播放语音', 'Play voice')}</button>` : ''}<span class="finale-audio-status" id="finale-audio-status" role="status" aria-live="polite"></span><button class="primary-btn" type="button" id="finale-next">${nextLabel} →</button></div>`}${ending}</section>`
+    return `<section class="finale-dialogue finale-dialogue-v2" data-speaker="${line.speaker}" aria-label="${tr('当前对白', 'Current dialogue')}">${renderFinaleDialogueFrame(save)}<div class="finale-dialogue-head"><p class="finale-speaker"><span class="finale-speaker-mark" aria-hidden="true"></span>${esc(finaleSpeakers[line.speaker][language])}</p><span class="finale-dialogue-edition" aria-hidden="true">${tr('最后一页', 'THE LAST PAGE')}</span><span class="finale-line-counter" aria-label="${tr('当前对白进度', 'Dialogue progress')}">${String(save.line + 1).padStart(2, '0')}<i aria-hidden="true"> / </i>${String(node.lines.length).padStart(2, '0')}</span></div>${renderFinaleIntroduction(save, language)}<p class="finale-line">${esc(line.text[language])}</p>${isChoice ? choicesMarkup(node) : `<div class="finale-dialogue-actions">${line ? `<button class="small-btn" type="button" id="finale-voice" ${sound.enabled ? '' : 'disabled'}>${tr('播放语音', 'Play voice')}</button>` : ''}<span class="finale-audio-status" id="finale-audio-status" role="status" aria-live="polite"></span><button class="primary-btn" type="button" id="finale-next"><span>${nextLabel}</span><span class="finale-next-icon" aria-hidden="true">↗</span></button></div>`}${ending}</section>`
   }
 
   function filmMarkup() {
-    return `<section class="finale-film-screen" aria-labelledby="finale-stage-title"><header class="finale-film-heading"><p class="finale-kicker">${tr('终章 · 城市决战', 'FINAL CHAPTER · CITY BATTLE')}</p><h1 id="finale-stage-title" tabindex="-1">${esc(currentNode().title[language])}</h1></header><video id="finale-film-video" src="${finaleFilmSrc}" controls playsinline preload="metadata" aria-label="${tr('奶蛙与黑化肥嘟嘟的城市决战', 'Naiwa and dark Feidudu battle in the city')}"></video><div class="finale-film-actions"><button type="button" class="secondary-btn" id="finale-film-play" hidden>${tr('播放视频', 'Play video')}</button><button type="button" class="secondary-btn" id="finale-film-fullscreen">${tr('全屏播放', 'Play fullscreen')} ↗</button><button type="button" class="primary-btn" id="finale-film-skip">${tr('跳过视频，继续剧情', 'Skip video and continue story')} →</button></div><p class="finale-film-status" id="finale-film-status" role="status" aria-live="polite"></p></section>`
+    return `<section class="finale-film-screen" aria-labelledby="finale-stage-title"><header class="finale-film-heading"><p class="finale-kicker">${tr('终章 · 城市决战', 'FINAL CHAPTER · CITY BATTLE')}</p><h1 id="finale-stage-title" tabindex="-1">${esc(currentNode().title[language])}</h1></header><video id="finale-film-video" src="${finaleFilmSrc}" controls playsinline preload="metadata" aria-label="${tr('奶蛙与黑化肥嘟嘟的城市决战', 'Naiwa and dark Fat Dudu battle in the city')}"></video><div class="finale-film-actions"><button type="button" class="secondary-btn" id="finale-film-play" hidden>${tr('播放视频', 'Play video')}</button><button type="button" class="secondary-btn" id="finale-film-fullscreen">${tr('全屏播放', 'Play fullscreen')} ↗</button><button type="button" class="primary-btn" id="finale-film-skip">${tr('跳过视频，继续剧情', 'Skip video and continue story')} →</button></div><p class="finale-film-status" id="finale-film-status" role="status" aria-live="polite"></p></section>`
   }
 
   function updateFilmUI() {
@@ -461,11 +465,8 @@ export function mountFinale(
     if (disposed) return
     mediaSuspended = false
     const node = currentNode()
-    const line = node.lines[save.line]
     const title = finaleTitles[chapter][language]
-    const portraitSpeaker = line && portraitFor(line.speaker) ? line.speaker
-      : node.lines.slice(0, save.line + 1).reverse().find(item => portraitFor(item.speaker))?.speaker
-        ?? node.lines.find(item => portraitFor(item.speaker))?.speaker
+    const portraitSpeaker = finalePortraitSpeaker(save, finalePortraits)
     const shot = finaleArtwork(save)
     const memoryLabel = shot.memory ? `${tr('回忆', 'MEMORY')} · ${shot.memory[language]}` : ''
     const artworkTitle = memoryLabel || node.title[language]
@@ -474,7 +475,8 @@ export function mountFinale(
     const portrait = portraitSrc && portraitSpeaker
       ? `<figure class="finale-portrait"><img src="${portraitSrc}" alt="${esc(finaleSpeakers[portraitSpeaker][language])}" decoding="async"></figure>`
       : ''
-    const gameMarkup = `<div class="finale-game finale-chapter-${save.node.startsWith('f5-') ? 5 : 6}${shot.cg ? ' finale-has-cg' : ''}" data-chapter="${chapter}" lang="${language === 'zh' ? 'zh-CN' : 'en'}"><div class="finale-art-layer" aria-hidden="true"></div><div class="finale-scene-scrim" aria-hidden="true"></div>${portrait}<header class="finale-toolbar"><button class="small-btn finale-back" type="button" id="finale-back">← ${tr('章节详情', 'Chapter details')}</button><span class="finale-wordmark">${chapter === 5 ? 'V' : 'VI'} / ${esc(title)}</span><nav class="finale-toolset" aria-label="${tr('章节工具', 'Chapter tools')}"><button class="small-btn" type="button" id="finale-journal">${tr('日记', 'Journal')}</button><button class="small-btn" type="button" id="finale-image" aria-haspopup="dialog">${tr('看图', 'View art')}</button><button class="small-btn" type="button" id="finale-log">${tr('回顾', 'History')}</button><button class="small-btn" type="button" id="finale-routes">${tr('剧情树', 'Story map')}</button><button class="small-btn" type="button" id="finale-audio" aria-pressed="${sound.enabled}">${sound.enabled ? tr('声音：开', 'Audio on') : tr('声音：关', 'Audio off')}</button><button class="small-btn" type="button" id="finale-audio-settings" aria-haspopup="dialog">${tr('声音设置', 'Sound settings')}</button><button class="small-btn" type="button" id="finale-fullscreen" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? tr('退出全屏', 'Exit fullscreen') : tr('全屏', 'Fullscreen')}</button><button class="small-btn" type="button" id="finale-language" aria-label="${tr('切换至英文', 'Switch to Chinese')}">${language === 'zh' ? 'EN' : '中文'}</button></nav></header><div class="finale-status" aria-label="${tr('当前状态', 'Current status')}"><span>${tr('精神力', 'Spirit')} <strong>${save.spirit}</strong>/100</span><span class="finale-clue-count">${tr('线索', 'Clues')} <strong>${save.clues.length}</strong></span></div><main class="finale-main" id="finale-main" tabindex="-1">${node.kind === 'film' ? filmMarkup() : `<div class="finale-node-heading">${memoryLabel ? `<p class="finale-memory-label" role="status">${esc(memoryLabel)}</p>` : ''}<p class="finale-kicker">${save.node.startsWith('f5-') ? tr('第五层 · 无光深渊', 'LAYER FIVE · THE LIGHTLESS DEEP') : tr('最后一层 · 同一颗心', 'THE FINAL LAYER · ONE HEART')}</p><h1 id="finale-stage-title" tabindex="-1">${esc(node.title[language])}</h1></div>${narrativeMarkup()}`}<p class="finale-notice" role="status">${esc(notice)}</p></main><footer class="finale-save-footer"><span role="status">${storageAvailable ? tr('本章进度自动保存', 'Chapter progress saved automatically') : tr('无法保存到浏览器 · 请保持本页开启', 'Session only · Keep this page open')}</span><span>${tr('空格 / Enter 继续 · Tab 选择操作', 'Space / Enter to continue · Tab to choose an action')}</span></footer></div>`
+    const dialogueTheme = finaleDialogueTheme(save)
+    const gameMarkup = `<div class="finale-game finale-ui-v2${dialogueTheme.damaged ? ' is-battle-scarred' : ''} finale-chapter-${save.node.startsWith('f5-') ? 5 : 6}${shot.cg ? ' finale-has-cg' : ''}" data-chapter="${chapter}" lang="${language === 'zh' ? 'zh-CN' : 'en'}"><div class="finale-art-layer" aria-hidden="true"></div><div class="finale-scene-scrim" aria-hidden="true"></div>${portrait}<header class="finale-toolbar"><button class="small-btn finale-back" type="button" id="finale-back">← ${tr('章节详情', 'Chapter details')}</button><span class="finale-wordmark">${chapter === 5 ? 'V' : 'VI'} / ${esc(title)}</span><nav class="finale-toolset" aria-label="${tr('章节工具', 'Chapter tools')}"><button class="small-btn" type="button" id="finale-journal">${tr('日记', 'Journal')}</button><button class="small-btn" type="button" id="finale-image" aria-haspopup="dialog">${tr('看图', 'View art')}</button><button class="small-btn" type="button" id="finale-log">${tr('回顾', 'History')}</button><button class="small-btn" type="button" id="finale-routes">${tr('剧情树', 'Story map')}</button><button class="small-btn" type="button" id="finale-audio" aria-pressed="${sound.enabled}">${sound.enabled ? tr('声音：开', 'Audio on') : tr('声音：关', 'Audio off')}</button><button class="small-btn" type="button" id="finale-audio-settings" aria-haspopup="dialog">${tr('声音设置', 'Sound settings')}</button><button class="small-btn" type="button" id="finale-fullscreen" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? tr('退出全屏', 'Exit fullscreen') : tr('全屏', 'Fullscreen')}</button><button class="small-btn" type="button" id="finale-language" aria-label="${tr('切换至英文', 'Switch to Chinese')}">${language === 'zh' ? 'EN' : '中文'}</button></nav></header><div class="finale-status" aria-label="${tr('当前状态', 'Current status')}"><span>${tr('精神力', 'Spirit')} <strong>${save.spirit}</strong>/100</span><span class="finale-clue-count">${tr('线索', 'Clues')} <strong>${save.clues.length}</strong></span></div><main class="finale-main" id="finale-main" tabindex="-1">${node.kind === 'film' ? filmMarkup() : `<div class="finale-node-heading">${memoryLabel ? `<p class="finale-memory-label" role="status">${esc(memoryLabel)}</p>` : ''}<p class="finale-kicker">${save.node.startsWith('f5-') ? tr('第五层 · 无光深渊', 'LAYER FIVE · THE LIGHTLESS DEEP') : tr('最后一层 · 同一颗心', 'THE FINAL LAYER · ONE HEART')}</p><h1 id="finale-stage-title" tabindex="-1">${esc(node.title[language])}</h1></div>${narrativeMarkup()}`}<p class="finale-notice" role="status">${esc(notice)}</p></main><footer class="finale-save-footer"><span role="status">${storageAvailable ? tr('本章进度自动保存', 'Chapter progress saved automatically') : tr('无法保存到浏览器 · 请保持本页开启', 'Session only · Keep this page open')}</span><span>${tr('空格 / Enter 继续 · Tab 选择操作', 'Space / Enter to continue · Tab to choose an action')}</span></footer></div>`
     root.innerHTML = gameMarkup
     const placeholder = root.querySelector<HTMLElement>('.finale-art-layer')!
     const layer = oldLayer ?? placeholder

@@ -136,6 +136,16 @@
   backdrop-filter: blur(10px);
 }
 .finale-speaker { margin-bottom: 10px !important; color: var(--finale-accent); font: 500 1.04rem/1.5 'Noto Serif SC', Georgia, serif; }
+.finale-character-intro { display: grid; gap: 5px; margin-bottom: 18px; padding: 0 0 14px 15px; border-left: 2px solid var(--finale-accent); border-bottom: 1px solid var(--finale-edge); }
+.finale-intro-label { color: var(--finale-accent); font-size: .75rem; letter-spacing: .12em; }
+.finale-intro-identity { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 15px; }
+.finale-intro-identity strong { color: var(--finale-ink); font: 500 1.35rem/1.45 'Noto Serif SC', Georgia, serif; white-space: nowrap; }
+.finale-intro-identity span { color: var(--finale-accent); font-size: .88rem; line-height: 1.6; overflow-wrap: anywhere; }
+.finale-intro-detail { max-width: 68ch; color: var(--finale-muted); font-size: .88rem; line-height: 1.65; }
+@media (max-width: 620px), (max-height: 560px) and (orientation: landscape) {
+  .finale-character-intro { margin-bottom: 12px; padding-left: 10px; padding-bottom: 10px; }
+  .finale-intro-identity strong { font-size: 1.13rem; }
+}
 .finale-line { max-width: 68ch; min-height: 1.6em; color: var(--finale-ink); font: 1.03rem/1.9 'Noto Serif SC', Georgia, serif; }
 .finale-line-counter { margin-right: auto; color: var(--finale-muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
 .finale-dialogue-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }

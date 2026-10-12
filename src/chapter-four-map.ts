@@ -75,6 +75,6 @@ export function showGildedStoryMap(root: HTMLElement, language: Language, save: 
   })
   dialog.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button => button.addEventListener('click', () => { if (!button.disabled) onSelect(button.dataset.route!) }))
   dialog.showModal()
-  setupStoryMap(dialog, { width: gildedMapWidth, height: gildedMapHeight, current: gildedMapNodes[save.node] })
+  setupStoryMap(dialog, { language, chapter: 4, width: gildedMapWidth, height: gildedMapHeight, current: gildedMapNodes[save.node] })
   return dialog
 }
