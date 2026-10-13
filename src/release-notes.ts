@@ -17,14 +17,19 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  id: '2026-10-11-all-chapter-dialogue-themes',
-  date: '2026-10-11',
-  title: { zh: '每一章，都有自己的颜色', en: 'A different color for every chapter' },
+  id: '2026-10-13-chapter-two-reading-tools',
+  date: '2026-10-13',
+  title: { zh: '第二章阅读工具与设置补齐', en: 'Chapter two reading tools and settings' },
   intro: {
-    zh: '五章主线与海岸番外都有不同的对白外框。底色和画面遮罩更通透，角色与场景更清楚；章节剧情树同步配色，终章仍保留影片后的破损变化。',
-    en: 'All five main chapters and the coastal story have distinct dialogue frames. Lighter panel fills and scene shading bring characters and backgrounds into view. Chapter maps follow their palettes, and the finale retains its post-film damage.',
+    zh: '补齐第二章的阅读工具和独立手动存档。第一、第二章可调节文字速度与对白音量。',
+    en: 'Chapter two gains reading tools and independent manual saves. Chapters one and two share text-speed and dialogue-volume controls.',
   },
   items: [
+    { tag: 'CHAPTER TWO TOOLS', title: { zh: '长章节可以按自己的节奏读', en: 'Read a long chapter at your pace' }, body: { zh: '第二章加入存档／读档、自动、快进、设置与图鉴入口，菜单内也能找到。自动和快进支持碎片回忆，在选项、探索和结尾处停下，不替你作出选择。', en: 'Chapter two now offers Save / Load, Auto, Skip, Settings and Gallery in the toolbar and menu. Auto and Skip also support fragment memories and stop at choices, exploration and endings.' } },
+    { tag: 'MANUAL SAVES', title: { zh: '三个独立手动存档', en: 'Three independent manual slots' }, body: { zh: '自动保存持续生效，手动存档可以保留指定对白或碎片进度。覆盖和读档需要确认，读档保留累计解锁的剧情树与图鉴。', en: 'Autosave remains active while manual slots retain a chosen dialogue or fragment position. Overwriting and loading require confirmation; loading keeps cumulative story-map and gallery unlocks.' } },
+    { tag: 'READING SETTINGS', title: { zh: '文字速度和对白音量', en: 'Text speed and dialogue volume' }, body: { zh: '第一、第二章设置加入实际生效的文字显示速度和对白音量。默认立即显示全文；逐字显示时，第一次点继续显示整句，再点进入下一句。设置单独保存。', en: 'Chapters one and two now share working text-speed and dialogue-volume controls. Instant text is the default; when typing is enabled, Continue first reveals the line, then advances. Settings are saved separately.' } },
+    { tag: 'CHAPTER INTRODUCTIONS', title: { zh: '进入第二章前，回想上一段旅程', en: 'Recall the journey before chapter two' }, body: { zh: '第二章介绍页补上前情提要，衔接雨夜相遇、事故和第一层探索。第四章导航状态改为清楚的“已开放”。', en: 'The chapter-two introduction now recaps the rainy meeting, accident and first-layer investigation. Chapter-four navigation uses the clearer Available label.' } },
+
     { tag: 'CHAPTER COLORS', title: { zh: '日记、冰镜、剧场与金色画框', en: 'A journal, ice, theatre and a gilded frame' }, body: { zh: '第一章用暖黄日记纸页，第二章用冰蓝晶面，第三章用酒红票券，第四章用金色油画框。最终章保留深蓝金色与战后破损，海岸番外用青绿色旅行卡；姓名牌与回应按钮也随章节变化。降低背景填充和画面遮罩的不透明度，文字、焦点和操作保持清晰。', en: 'Chapter one uses warm journal paper, two icy facets, three wine-red tickets and four a golden painting frame. The finale keeps midnight blue, gold and post-battle scars; the coastal story has a teal travel card. Nameplates and response buttons follow each chapter. More translucent fills and lighter shading preserve clear text, focus and controls.' } },
     { tag: 'FAT DUDU', title: { zh: '把黑化过程接成一段经历', en: 'A clearer progression for Fat Dudu' }, body: { zh: '第二章增加离别时的担忧与组织接触；终章通过查看原片、请求暂停、面对读数和亲口回应，补足情绪与行为递进。停机、苏醒和影片前的对白衔接更清楚，中英文与相关朗读同步。', en: 'Chapter Two adds anxiety at parting and contact with the institute. Finale scenes develop through checking the original footage, requesting a pause, facing the readings and answering directly. Shutdown, awakening and pre-film dialogue connect more clearly, with bilingual text and corresponding readings updated.' } },
     { tag: 'FINALE STORY MAP', title: { zh: '剧情树也留下同一场雨后的痕迹', en: 'A story map that shares the same scars' }, body: { zh: '最终章剧情树的标题、图例、缩放工具、节点和结局图鉴跟随对白配色。影片后外框出现裂痕与磨损，分支画布保持完整可读；回放战前节点恢复深蓝外框。介绍页预览与游戏内使用同一套主题判断，不改动解锁和存档。', en: 'The finale map’s heading, legend, zoom controls, nodes and ending gallery follow the dialogue palette. After the film, the exterior gains cracks and wear while the canvas stays fully readable. Pre-battle replay restores the blue frame. Previews and gameplay use the same theme rules without changing unlocks or saves.' } },

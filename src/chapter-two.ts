@@ -1,5 +1,8 @@
 import { browserStorage } from './browser-storage'
 import './chapter-two.css'
+import './reading-settings.css'
+import { bindReadingControls, createDialogueReader, getReadingSettings, onReadingSettingsChange, readingDelay, renderReadingControls } from './reading-settings'
+import { loadIceManualSaves, writeIceManualSave } from './chapter-two-saves'
 import { resolveIceDialogue } from './chapter-two-dialogue'
 import { mountPoolIceWorld, type IceClueId } from './pool-ice-world'
 import type { Language } from './story'
@@ -179,6 +182,77 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
   let characterVoice: HTMLAudioElement | null = null
   let panelOpen = false
   let storageAvailable = true
+  let playbackMode: 'off' | 'auto' | 'skip' = 'off'
+  let playbackTimer: number | null = null
+  let readingNotice = ''
+  let resumeMouse = false, resumeCharacter = false
+  const reader = createDialogueReader()
+  const tr = (zh: string, en: string) => language === 'zh' ? zh : en
+  const clearPlaybackTimer = () => { if (playbackTimer !== null) window.clearTimeout(playbackTimer); playbackTimer = null }
+  const readingKey = () => `${save.phase}/${save.line}/${save.pendingFragment?.id ?? ''}/${save.pendingFragment?.line ?? ''}/${language}`
+  const toolsMarkup = () => `<nav class="ice-reading-tools" aria-label="${tr('阅读工具', 'Reading tools')}"><button type="button" id="ice-save">${tr('存档／读档', 'Save / Load')}</button><button type="button" id="ice-auto" aria-pressed="${playbackMode === 'auto'}">${tr('自动', 'Auto')}</button><button type="button" id="ice-skip" aria-pressed="${playbackMode === 'skip'}">${tr('快进', 'Skip')}</button><button type="button" id="ice-settings">${tr('设置', 'Settings')}</button><button type="button" id="ice-gallery">${tr('图鉴', 'Gallery')}</button><span class="ice-reading-status" role="status">${readingNotice}</span></nav>`
+  function updateReadingTools() {
+    for (const [id, label] of [['save', tr('存档／读档', 'Save / Load')], ['auto', tr('自动', 'Auto')], ['skip', tr('快进', 'Skip')], ['settings', tr('设置', 'Settings')], ['gallery', tr('图鉴', 'Gallery')]]) {
+      const button = root.querySelector<HTMLButtonElement>(`#ice-${id}`)
+      if (button) { button.textContent = label; if (id === 'auto' || id === 'skip') button.setAttribute('aria-pressed', String(playbackMode === id)) }
+    }
+    const notice = root.querySelector('.ice-reading-status')
+    if (notice) notice.textContent = readingNotice
+  }
+  function canAutoAdvance() {
+    if (save.pendingFragment) return true
+    if (save.phase === 'map') return false
+    const lines = copy[language][save.phase]
+    return !((save.phase === 'threshold' || save.phase === 'core' || save.phase === 'ending') && save.line === lines.length - 1)
+  }
+  function refreshPlayback() {
+    clearPlaybackTimer()
+    if (disposed || playbackMode === 'off' || panelOpen || root.querySelector('dialog[open]') || document.hidden) return
+    if (!canAutoAdvance()) { playbackMode = 'off'; updateReadingTools(); return }
+    const expected = readingKey()
+    const text = save.pendingFragment ? fragmentStories[language][save.pendingFragment.id].lines[save.pendingFragment.line][1] : resolveIceDialogue(copy[language], { ...save, phase: save.phase as Exclude<Phase, 'map'> }).text
+    const check = () => {
+      playbackTimer = null
+      if (disposed || expected !== readingKey() || playbackMode === 'off' || panelOpen || root.querySelector('dialog[open]') || document.hidden) return
+      if (playbackMode === 'auto' && (!reader.complete || (mouseVoice && !mouseVoice.paused) || (characterVoice && !characterVoice.paused))) {
+        playbackTimer = window.setTimeout(check, 150); return
+      }
+      root.querySelector<HTMLButtonElement>('#ice-fragment-next, #ice-next')?.click()
+    }
+    if (playbackMode === 'skip') reader.finish()
+    const speed = getReadingSettings().textSpeed
+    playbackTimer = window.setTimeout(check, playbackMode === 'skip' ? 220 : readingDelay(text) + (speed ? Array.from(text).length / speed * 1000 : 0))
+  }
+  function setPlayback(mode: 'auto' | 'skip') {
+    playbackMode = playbackMode === mode ? 'off' : mode
+    readingNotice = save.phase === 'map' && !save.pendingFragment ? tr('探索由你操作；自动和快进用于剧情与碎片回忆。', 'Explore manually; Auto and Skip apply to dialogue and fragment memories.') : ''
+    if (playbackMode === 'skip') { stopVoice(); stopCharacterVoice(); reader.finish() }
+    updateReadingTools(); refreshPlayback()
+  }
+  function stopPlayback() { playbackMode = 'off'; clearPlaybackTimer(); reader.clear(); updateReadingTools() }
+  const unsubscribeSettings = onReadingSettingsChange(() => {
+    reader.finish()
+    const volume = getReadingSettings().voiceVolume
+    if (mouseVoice) mouseVoice.volume = volume
+    if (characterVoice) characterVoice.volume = volume
+    refreshPlayback()
+  })
+  let visibilityMouse = false, visibilityCharacter = false
+  const visibilityChanged = () => {
+    if (document.hidden) {
+      visibilityMouse = !!mouseVoice && !mouseVoice.paused; visibilityCharacter = !!characterVoice && !characterVoice.paused
+      clearPlaybackTimer(); reader.pause(); mouseVoice?.pause(); characterVoice?.pause()
+    } else if (!panelOpen && !root.querySelector('dialog[open]')) {
+      if (browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' && playbackMode !== 'skip') {
+        if (visibilityMouse) void mouseVoice?.play().catch(() => {})
+        if (visibilityCharacter) void characterVoice?.play().catch(() => {})
+      }
+      visibilityMouse = false; visibilityCharacter = false
+      reader.resume(); refreshPlayback()
+    }
+  }
+  root.ownerDocument.addEventListener('visibilitychange', visibilityChanged)
+  root.addEventListener('close', refreshPlayback, true)
   const persist = (arrival = false) => {
     recordIceCheckpoint(progress, save, undefined, arrival)
     const saved = browserStorage.setItem(KEY, JSON.stringify(save))
@@ -210,6 +284,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     root.querySelectorAll<HTMLButtonElement>('[data-replay-fragment]').forEach(button => { button.textContent = t.clueNames[button.dataset.replayFragment as FragmentId] })
     updateFullscreenLabel()
     updateStorageStatus()
+    updateReadingTools()
   }
   const clearMap = () => { mapController?.dispose(); mapController = null }
   const stopVoice = () => { if (mouseVoice) { mouseVoice.pause(); mouseVoice.onended = null; mouseVoice.currentTime = 0; mouseVoice = null } }
@@ -231,25 +306,30 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
   function renderFragment() {
     root.querySelector('#ice-fragment-layer')?.remove()
     const pending = save.pendingFragment
-    if (!pending) { mapController?.setStoryPaused(false); return }
+    if (!pending) { reader.clear(); mapController?.setStoryPaused(panelOpen); refreshPlayback(); return }
     const story = fragmentStories[language][pending.id]
     const index = Math.min(pending.line, story.lines.length - 1)
     const [speaker, text] = story.lines[index]
     const isLast = index === story.lines.length - 1
     const label = language === 'zh' ? '碎片记忆' : 'FRAGMENT MEMORY'
     root.querySelector('.ice-layout')?.insertAdjacentHTML('beforeend', `<section class="ice-fragment-layer" id="ice-fragment-layer" role="dialog" aria-modal="true" aria-label="${label}：${story.title}" style="--fragment-art:url('/images/${story.art[index]}.webp')"><div class="ice-fragment-art" aria-hidden="true"></div><div class="ice-fragment-top"><span>${label} / ${String(fragmentIds.indexOf(pending.id) + 1).padStart(2, '0')}</span><strong>${story.title}</strong><em>${String(index + 1).padStart(2, '0')} / ${String(story.lines.length).padStart(2, '0')}</em></div><div class="ice-fragment-dialogue"><span class="ice-fragment-speaker">${speaker}</span><p>${text}</p><button id="ice-fragment-next" type="button">${isLast ? language === 'zh' ? '收起记忆 · 返回镜馆' : 'Keep memory · Return to hall' : language === 'zh' ? '继续回忆' : 'Continue memory'} <span>↗</span></button></div></section>`)
+    reader.bind(root.querySelector('.ice-fragment-dialogue > p'), readingKey(), text)
+    if (panelOpen) reader.pause()
     root.querySelector<HTMLButtonElement>('#ice-fragment-next')?.addEventListener('click', () => {
-      if (!save.pendingFragment) return
+      if (!save.pendingFragment || panelOpen || root.querySelector('dialog[open]')) return
+      if (playbackMode !== 'skip' && reader.finish()) { refreshPlayback(); return }
       if (index < story.lines.length - 1) save.pendingFragment.line = index + 1
       else save.pendingFragment = null
       persist()
       renderFragment()
     })
     mapController?.setStoryPaused(true)
-    root.querySelector<HTMLButtonElement>('#ice-fragment-next')?.focus()
+    if (!panelOpen) root.querySelector<HTMLButtonElement>('#ice-fragment-next')?.focus()
+    refreshPlayback()
   }
   function render() {
     if (disposed) return
+    clearPlaybackTimer()
     if (panelDialog?.open) panelDialog.close()
     panelDialog?.remove(); panelDialog = null
     panelOpen = false
@@ -257,6 +337,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       mapController.setLanguage(language)
       updateMapCopy()
       if (save.pendingFragment) renderFragment()
+      else { reader.clear(); refreshPlayback() }
       return
     }
     clearMap()
@@ -274,7 +355,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     }
     const dialogue = isMap ? null : resolveIceDialogue(t, { phase: save.phase as Exclude<Phase, 'map'>, line: save.line, approach: save.approach, response: save.response })
     const lineText = dialogue?.text ?? ''
-    const audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
+    const audioEnabled = playbackMode !== 'skip' && browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
     const showVoice = audioEnabled && save.phase === 'core' && (save.line === 0 || save.line === 8)
     const showCharacterVoice = line?.[0] === '奶霸' || line?.[0] === 'Naiba'
     const showNarrationVoice = line?.[0] === '旁白' || line?.[0] === 'Narration'
@@ -288,7 +369,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     }
     const showStaff = false // The new hospital CGs contain the staff; do not duplicate their portraits.
     const art = isMap ? 'chapter-02-ice-hall' : artByPhase[save.phase][Math.min(save.line, artByPhase[save.phase].length - 1)]
-    root.innerHTML = `<div data-dialogue-theme="ice" class="chapter-two ${isMap ? 'is-map' : ''}"><header class="ice-top"><button class="ice-back" id="ice-back" type="button">← ${t.back}</button><span>NAIWA <i>✦</i> ${t.chapter}</span><div class="ice-top-tools"><button class="ice-restart" id="ice-restart" type="button">${t.restart}</button><button class="ice-top-action" id="ice-log" type="button">${t.log}</button><button class="ice-top-action" id="ice-routes" type="button">⌘ ${t.routes}</button><button class="ice-top-action" id="ice-menu" type="button">${t.menu}</button><button class="ice-top-action ice-fullscreen" id="ice-fullscreen" type="button" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen}</button><button class="ice-language" id="ice-language" type="button">${language === 'zh' ? 'EN' : 'ZH'}</button></div><span id="ice-save-status" class="ice-save-status" role="status" ${storageAvailable ? 'hidden' : ''}>${language === 'zh' ? '仅本次会话保存 · 请保持页面打开' : 'Session only · Keep this page open'}</span></header><main class="ice-layout"><div class="ice-heading"><span>${t.chapter.toUpperCase()} / 02</span><h1>${t.title}</h1><p>${t.subtitle}</p></div>${isMap ? `<div class="ice-world" id="ice-world"></div><div class="ice-map-foot"><span>${t.mapHint}</span><strong>${t.clues} ${save.clues.length}/6</strong></div>` : `<section class="ice-narrative" style="--ice-art:url('/images/${art}.webp')"><div class="ice-atmosphere" aria-hidden="true"></div>${showStaff ? `<img class="ice-staff" src="/images/finale-banana-cat.webp" width="1024" height="1536" alt="${language === 'zh' ? '值班工作人员香蕉猫' : 'Banana Cat, the duty desk attendant'}" draggable="false">` : ''}<div class="ice-copy"><div class="ice-index">${String(save.line + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</div><div class="ice-speaker">${line?.[0] ?? ''}</div><p>${lineText}</p>${showVoice ? `<button class="ice-voice" id="ice-voice" type="button">♪ ${t.voicePlay}</button>` : ''}${showSpokenVoice ? `<button class="ice-voice" id="ice-character-voice" type="button">♪ ${t.characterVoiceStop}</button>` : ''}${save.phase === 'threshold' && save.line === lines.length - 1 ? `<div class="ice-approaches" role="group" aria-label="${t.choose}">${t.approaches.map(([name, description], i) => `<button data-approach="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'core' && save.line === lines.length - 1 ? `<div class="ice-approaches ice-response-options" role="group" aria-label="${t.choose}">${t.responses.map(([name, description], i) => `<button data-response="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'ending' && save.line === lines.length - 1 ? `<div class="ice-end"><strong>${t.complete}</strong><span>${t.completeNote}</span><button id="ice-finish" type="button">${t.back} →</button></div>` : `<button class="ice-next" id="ice-next" type="button">${save.phase === 'threshold' ? t.enter : t.next} <span>↗</span></button>`}</div></section>`}</main></div>`
+    root.innerHTML = `<div data-dialogue-theme="ice" class="chapter-two ${isMap ? 'is-map' : ''}"><div class="ice-toolbar-wrapper"><header class="ice-top"><button class="ice-back" id="ice-back" type="button">← ${t.back}</button><span>NAIWA <i>✦</i> ${t.chapter}</span><div class="ice-top-tools"><button class="ice-restart" id="ice-restart" type="button">${t.restart}</button><button class="ice-top-action" id="ice-log" type="button">${t.log}</button><button class="ice-top-action" id="ice-routes" type="button">⌘ ${t.routes}</button><button class="ice-top-action" id="ice-menu" type="button">${t.menu}</button><button class="ice-top-action ice-fullscreen" id="ice-fullscreen" type="button" aria-pressed="${isAppFullscreen(root)}">${isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen}</button><button class="ice-language" id="ice-language" type="button">${language === 'zh' ? 'EN' : 'ZH'}</button></div><span id="ice-save-status" class="ice-save-status" role="status" ${storageAvailable ? 'hidden' : ''}>${language === 'zh' ? '仅本次会话保存 · 请保持页面打开' : 'Session only · Keep this page open'}</span></header>${toolsMarkup()}</div><main class="ice-layout"><div class="ice-heading"><span>${t.chapter.toUpperCase()} / 02</span><h1>${t.title}</h1><p>${t.subtitle}</p></div>${isMap ? `<div class="ice-world" id="ice-world"></div><div class="ice-map-foot"><span>${t.mapHint}</span><strong>${t.clues} ${save.clues.length}/6</strong></div>` : `<section class="ice-narrative" style="--ice-art:url('/images/${art}.webp')"><div class="ice-atmosphere" aria-hidden="true"></div>${showStaff ? `<img class="ice-staff" src="/images/finale-banana-cat.webp" width="1024" height="1536" alt="${language === 'zh' ? '值班工作人员香蕉猫' : 'Banana Cat, the duty desk attendant'}" draggable="false">` : ''}<div class="ice-copy"><div class="ice-index">${String(save.line + 1).padStart(2, '0')} / ${String(lines.length).padStart(2, '0')}</div><div class="ice-speaker">${line?.[0] ?? ''}</div><p>${lineText}</p>${showVoice ? `<button class="ice-voice" id="ice-voice" type="button">♪ ${t.voicePlay}</button>` : ''}${showSpokenVoice ? `<button class="ice-voice" id="ice-character-voice" type="button">♪ ${t.characterVoiceStop}</button>` : ''}${save.phase === 'threshold' && save.line === lines.length - 1 ? `<div class="ice-approaches" role="group" aria-label="${t.choose}">${t.approaches.map(([name, description], i) => `<button data-approach="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'core' && save.line === lines.length - 1 ? `<div class="ice-approaches ice-response-options" role="group" aria-label="${t.choose}">${t.responses.map(([name, description], i) => `<button data-response="${i}" type="button"><strong>${String(i + 1).padStart(2, '0')} · ${name}</strong><small>${description}</small></button>`).join('')}</div>` : save.phase === 'ending' && save.line === lines.length - 1 ? `<div class="ice-end"><strong>${t.complete}</strong><span>${t.completeNote}</span><button id="ice-finish" type="button">${t.back} →</button></div>` : `<button class="ice-next" id="ice-next" type="button">${save.phase === 'threshold' ? t.enter : t.next} <span>↗</span></button>`}</div></section>`}</main></div>`
+    if (!isMap) reader.bind(root.querySelector('.ice-copy > p'), readingKey(), lineText)
     if (isMap) {
       root.querySelector('.ice-map-foot strong')?.insertAdjacentHTML('beforebegin', `<details class="ice-memory-replays"><summary>${language === 'zh' ? '回看碎片记忆' : 'Replay memories'}</summary><div>${fragmentIds.map(id => `<button type="button" data-replay-fragment="${id}" ${save.clues.includes(id) ? '' : 'disabled'}>${t.clueNames[id]}</button>`).join('')}</div></details>`)
       root.querySelectorAll<HTMLButtonElement>('[data-replay-fragment]').forEach(button => button.addEventListener('click', () => {
@@ -307,6 +389,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       const clips = showNarrationVoice ? [narrationUrl] : characterVoiceSequence(longLine)
       const playLabel = showNarrationVoice ? t.narratorVoicePlay : t.characterVoicePlay
       const audio = new Audio(clips[0])
+      audio.volume = getReadingSettings().voiceVolume
       const button = root.querySelector<HTMLButtonElement>('#ice-character-voice')!
       let clipIndex = 0
       characterVoice = audio
@@ -332,7 +415,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       })
       play()
     }
-    const restartChapter = () => { stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() }
+    const restartChapter = () => { stopPlayback(); stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() }
     const askRestart = () => confirmInApp(root, copy[language].restartConfirm, language, restartChapter)
     const closePanel = () => {
       const dialog = panelDialog
@@ -340,12 +423,23 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       if (dialog?.open) dialog.close()
       dialog?.remove()
       mapController?.setStoryPaused(!!save.pendingFragment)
+      resumePanelAudio(); reader.resume(); refreshPlayback()
     }
-    const openPanel = (kind: 'routes' | 'log' | 'menu') => {
+    const resumePanelAudio = () => {
+      if (disposed) return
+      if (browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' && playbackMode !== 'skip') {
+        if (resumeMouse) void mouseVoice?.play().catch(() => {})
+        if (resumeCharacter) void characterVoice?.play().catch(() => {})
+      }
+      resumeMouse = false; resumeCharacter = false
+    }
+    const openPanel = (kind: 'routes' | 'log' | 'menu' | 'saves' | 'settings' | 'gallery') => {
       const t = copy[language]
       if (panelOpen) closePanel()
       panelOpen = true
-      stopVoice(); stopCharacterVoice()
+      clearPlaybackTimer(); reader.pause()
+      resumeMouse = !!mouseVoice && !mouseVoice.paused; resumeCharacter = !!characterVoice && !characterVoice.paused
+      mouseVoice?.pause(); characterVoice?.pause()
       mapController?.setStoryPaused(true)
       if (kind === 'routes') {
         const dialog = showIceStoryMap(root, language, save, progress, id => {
@@ -357,13 +451,16 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
           })
         })
         panelDialog = dialog
-        dialog.addEventListener('close', () => { if (panelDialog === dialog) { panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment) } }, { once: true })
+        dialog.addEventListener('close', () => { if (panelDialog === dialog) { panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback() } }, { once: true })
         return
       }
-      const title = kind === 'log' ? t.log : t.menu
-      const content = kind === 'log'
+      const title = kind === 'log' ? t.log : kind === 'saves' ? tr('存档／读档', 'Save / Load') : kind === 'settings' ? tr('设置', 'Settings') : kind === 'gallery' ? tr('图鉴', 'Gallery') : t.menu
+      let content = kind === 'log'
         ? `<div class="ice-history-list">${save.history.length ? save.history.map(entry => { const item = resolveIceDialogue(t, entry); return item.text ? `<article><small>${t.chapter} · ${entry.phase}</small><strong>${item.speaker}</strong><p>${item.text}</p></article>` : '' }).join('') : `<p>${language === 'zh' ? '还没有可回顾的对话。' : 'No dialogue to review yet.'}</p>`}</div>`
-        : `<div class="ice-panel-menu"><button type="button" data-panel-action="continue">${t.next}</button><button type="button" data-panel-action="log">${t.log}</button><button type="button" data-panel-action="routes">${t.routes}</button><button type="button" data-panel-action="restart">${t.restart}</button><button type="button" data-panel-action="chapters">${t.back}</button></div>`
+        : `<div class="ice-panel-menu"><button type="button" data-panel-action="continue">${t.next}</button><button type="button" data-panel-action="log">${t.log}</button><button type="button" data-panel-action="routes">${t.routes}</button><button type="button" data-panel-action="saves">${tr('存档／读档', 'Save / Load')}</button><button type="button" data-panel-action="auto">${tr('自动', 'Auto')}</button><button type="button" data-panel-action="skip">${tr('快进', 'Skip')}</button><button type="button" data-panel-action="settings">${tr('设置', 'Settings')}</button><button type="button" data-panel-action="gallery">${tr('图鉴', 'Gallery')}</button><button type="button" data-panel-action="restart">${t.restart}</button><button type="button" data-panel-action="chapters">${t.back}</button></div>`
+      if (kind === 'settings') content = `<label class="ice-settings-audio"><input id="ice-audio-enabled" type="checkbox" ${browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' ? 'checked' : ''}>${tr('开启对白声音', 'Enable dialogue audio')}</label>${renderReadingControls(language, 'ice')}`
+      if (kind === 'saves') content = `<div class="ice-save-slots"><p>${tr('自动保存持续生效。手动存档独立保留，读档不会清除已解锁的图鉴与剧情树。', 'Autosave remains active. Manual slots are kept separately; loading preserves unlocked gallery and story-map entries.')}</p>${loadIceManualSaves().map((slot, index) => `<article class="ice-save-slot"><strong>${tr('存档', 'Slot')} ${index + 1}</strong><p>${slot ? `${copy[language].chapter} · ${({ hospital: tr('医院病房', 'Hospital ward'), threshold: tr('镜馆入口', 'Hall entrance'), map: tr('镜馆探索', 'Hall exploration'), core: tr('镜心对质', 'At the central mirror'), ending: tr('第二章结尾', 'Chapter ending') })[slot.state.phase]} · ${slot.state.pendingFragment ? `${t.clueNames[slot.state.pendingFragment.id]} ${slot.state.pendingFragment.line + 1}/4` : slot.state.line + 1} · ${slot.state.clues.length}/6<br>${new Date(slot.savedAt).toLocaleString(language === 'zh' ? 'zh-CN' : 'en-US')}` : tr('空存档', 'Empty slot')}</p><div><button type="button" data-save-slot="${index}">${tr('保存到此处', 'Save here')}</button><button type="button" data-load-slot="${index}" ${slot ? '' : 'disabled'}>${tr('读取', 'Load')}</button></div></article>`).join('')}<p class="ice-slot-status" role="status">${readingNotice}</p></div>`
+      if (kind === 'gallery') content = `<div class="ice-gallery-grid">${fragmentIds.map(id => { const unlocked = progress.visited.includes(id); return `<figure>${unlocked ? `<img src="/images/${fragmentStories[language][id].art[0]}.webp" alt="${fragmentStories[language][id].title}" loading="lazy">` : `<div class="ice-gallery-locked">???</div>`}<figcaption>${unlocked ? fragmentStories[language][id].title : tr('未解锁的碎片', 'Locked fragment')}</figcaption></figure>` }).join('')}${['ending-trust', 'ending-question'].map(id => { const unlocked = progress.endings.includes(id); return `<figure>${unlocked ? `<img src="/images/chapter-02-cg-naishu-emerges.webp" alt="${tr('镜后走来的人', 'Emerging from the mirror')}" loading="lazy">` : `<div class="ice-gallery-locked">???</div>`}<figcaption>${unlocked ? id === 'ending-trust' ? tr('先听他把话说完', 'Let him finish') : tr('追问制动指令', 'Ask about the braking command') : tr('未解锁的结局', 'Locked ending')}</figcaption></figure>` }).join('')}</div>`
       const focus = document.activeElement as HTMLElement | null
       const dialog = document.createElement('dialog')
       dialog.id = 'ice-routes-scrim'; dialog.className = 'app-dialog ice-routes-dialog'
@@ -371,17 +468,46 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       dialog.innerHTML = `<header><div><span>NAIWA / 02</span><h2 id="ice-routes-title">${title}</h2></div><button id="ice-routes-close" type="button" aria-label="${t.close}">×</button></header>${content}`
       root.append(dialog); panelDialog = dialog
       dialog.querySelector('#ice-routes-close')?.addEventListener('click', closePanel)
-      dialog.addEventListener('close', () => { dialog.remove(); if (panelDialog !== dialog) return; panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); if (focus?.isConnected) focus.focus() }, { once: true })
+      dialog.addEventListener('close', () => { dialog.remove(); if (panelDialog !== dialog) return; panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback(); if (focus?.isConnected) focus.focus() }, { once: true })
       dialog.addEventListener('click', event => { if (event.target !== dialog) return; const b = dialog.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close() })
       dialog.showModal()
+      bindPanelTools()
       root.querySelectorAll<HTMLButtonElement>('[data-panel-action]').forEach(button => button.addEventListener('click', () => {
         const action = button.dataset.panelAction
         if (action === 'continue') closePanel()
         else if (action === 'restart') { closePanel(); askRestart() }
         else if (action === 'chapters') { closePanel(); onBack(language) }
-        else if (action === 'routes' || action === 'log') openPanel(action)
+        else if (action === 'auto' || action === 'skip') { setPlayback(action); closePanel() }
+        else if (action === 'routes' || action === 'log' || action === 'saves' || action === 'settings' || action === 'gallery') openPanel(action)
       }))
     }
+    const bindPanelTools = () => {
+      if (!panelDialog) return
+      bindReadingControls(panelDialog, language, 'ice')
+      panelDialog.querySelector<HTMLInputElement>('#ice-audio-enabled')?.addEventListener('change', event => {
+        browserStorage.setItem('naiwa-audio-enabled-v1', String((event.target as HTMLInputElement).checked))
+        if (!(event.target as HTMLInputElement).checked) { resumeMouse = false; resumeCharacter = false; stopVoice(); stopCharacterVoice() }
+      })
+      panelDialog.querySelectorAll<HTMLButtonElement>('[data-save-slot]').forEach(button => button.addEventListener('click', () => {
+        const slot = Number(button.dataset.saveSlot)
+        const write = () => { if (disposed) return; persist(); const saved = writeIceManualSave(slot, save); readingNotice = saved ? tr('存档已保存', 'Slot saved') : tr('仅本次会话保存 · 请保持页面打开', 'Session only · Keep this page open'); openPanel('saves') }
+        if (loadIceManualSaves()[slot]) confirmInApp(root, tr('覆盖这个手动存档？', 'Overwrite this manual save?'), language, write)
+        else write()
+      }))
+      panelDialog.querySelectorAll<HTMLButtonElement>('[data-load-slot]').forEach(button => button.addEventListener('click', () => {
+        const slot = loadIceManualSaves()[Number(button.dataset.loadSlot)]
+        if (!slot) return
+        confirmInApp(root, tr('读取这个存档？当前进度会被替换，已解锁内容会保留。', 'Load this save? Replace current progress and keep unlocked entries.'), language, () => {
+          if (disposed) return
+          stopPlayback(); closePanel(); clearMap(); save = slot.state; progress = normalizeIceProgress(progress, save); persist(); readingNotice = tr('存档已读取', 'Save loaded'); render()
+        })
+      }))
+    }
+    root.querySelector('#ice-save')?.addEventListener('click', () => openPanel('saves'))
+    root.querySelector('#ice-settings')?.addEventListener('click', () => openPanel('settings'))
+    root.querySelector('#ice-gallery')?.addEventListener('click', () => openPanel('gallery'))
+    root.querySelector('#ice-auto')?.addEventListener('click', () => setPlayback('auto'))
+    root.querySelector('#ice-skip')?.addEventListener('click', () => setPlayback('skip'))
     root.querySelector('#ice-back')?.addEventListener('click', () => { stopVoice(); stopCharacterVoice(); clearMap(); onBack(language) })
     root.querySelector('#ice-restart')?.addEventListener('click', askRestart)
     root.querySelector('#ice-routes')?.addEventListener('click', () => openPanel('routes'))
@@ -395,6 +521,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     const mouseButton = root.querySelector<HTMLButtonElement>('#ice-voice')
     if (mouseButton) {
       const audio = new Audio('/audio/second-plane-mouse-line.m4a')
+      audio.volume = getReadingSettings().voiceVolume
       audio.preload = 'auto'
       mouseVoice = audio
       audio.onended = () => { if (mouseVoice === audio) mouseButton.textContent = `♪ ${t.voicePlay}` }
@@ -414,6 +541,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     }
     root.querySelector('#ice-language')?.addEventListener('click', () => { language = language === 'zh' ? 'en' : 'zh'; document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'; onLanguageChange?.(language); render() })
     root.querySelector('#ice-next')?.addEventListener('click', () => {
+      if (panelOpen || root.querySelector('dialog[open]')) return
+      if (playbackMode !== 'skip' && reader.finish()) { refreshPlayback(); return }
       if (save.phase === 'map' || save.phase === 'threshold' && save.line === t.threshold.length - 1) return
       const previousPhase = save.phase
       if (save.line < lines.length - 1) save.line++
@@ -422,10 +551,12 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       persist(save.phase !== previousPhase); render()
     })
     root.querySelectorAll<HTMLButtonElement>('[data-approach]').forEach(button => button.addEventListener('click', () => {
+      stopPlayback()
       save.approach = (['chase', 'restore', 'comfort'] as const)[Number(button.dataset.approach)]
       save.phase = 'map'; save.line = 0; recordIceCheckpoint(progress, save, save.approach!); persist(true); render()
     }))
     root.querySelectorAll<HTMLButtonElement>('[data-response]').forEach(button => button.addEventListener('click', () => {
+      stopPlayback()
       save.response = (['trust', 'question'] as const)[Number(button.dataset.response)]
       save.phase = 'ending'; save.line = 0; save.completed = true; persist(true); render()
     }))
@@ -450,10 +581,11 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       })
     }
     if (save.pendingFragment) renderFragment()
+    refreshPlayback()
   }
   persist()
   render()
-  return { dispose() { disposed = true; if (panelDialog?.open) panelDialog.close(); panelDialog?.remove(); panelDialog = null; stopVoice(); stopCharacterVoice(); clearMap(); root.ownerDocument.removeEventListener('keydown', keydown); root.ownerDocument.removeEventListener('fullscreenchange', updateFullscreenLabel); window.removeEventListener('appimmersivechange', updateFullscreenLabel) }, setLanguage(next: Language) { if (next !== language) { language = next; render() } }, restart() { stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() } }
+  return { dispose() { disposed = true; stopPlayback(); unsubscribeSettings(); root.ownerDocument.removeEventListener('visibilitychange', visibilityChanged); root.removeEventListener('close', refreshPlayback, true); if (panelDialog?.open) panelDialog.close(); panelDialog?.remove(); panelDialog = null; stopVoice(); stopCharacterVoice(); clearMap(); root.ownerDocument.removeEventListener('keydown', keydown); root.ownerDocument.removeEventListener('fullscreenchange', updateFullscreenLabel); window.removeEventListener('appimmersivechange', updateFullscreenLabel) }, setLanguage(next: Language) { if (next !== language) { language = next; render() } }, restart() { stopPlayback(); stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() } }
 }
 
 export function chapterTwoStatus() { const save = load(); return { started: save.phase !== 'hospital' || save.line > 0, completed: save.completed, clues: save.clues.length } }

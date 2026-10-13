@@ -58,7 +58,7 @@ export function renderHomePage(language: Language, statuses: HomeStatus[], selec
     <a class="home-skip" href="#home-chapters" data-home-anchor>${t('跳到章节选择', 'Skip to chapters')}</a>
     <header class="home-header"><a href="#home-top" class="home-brand" data-home-anchor>naiwa<span>${t('奶之救赎', 'THE REDEMPTION')}</span></a>
       <nav class="home-nav" aria-label="${t('本页导航', 'On this page')}"><a href="#home-about" data-home-anchor>${t('故事', 'Story')}</a><a href="#home-people" data-home-anchor>${t('角色', 'Cast')}</a><a href="#home-chapters" data-home-anchor>${t('章节', 'Chapters')}</a><a href="#home-making" data-home-anchor>${t('制作过程', 'Making of')}</a></nav>
-      <div class="home-tools"><button id="language" type="button" aria-label="${t('切换至英文', 'Switch to Chinese')}">${t('EN', '中文')}</button><details class="home-utility"><summary aria-label="${t('更多选项', 'More options')}"><span aria-hidden="true">＋</span></summary><div class="home-utility-menu"><button id="settings-entry" type="button">${t('声音设置', 'Sound settings')}</button><button id="fullscreen" type="button">${t('全屏', 'Fullscreen')}</button></div></details></div>
+      <div class="home-tools"><button id="language" type="button" aria-label="${t('切换至英文', 'Switch to Chinese')}">${t('EN', '中文')}</button><details class="home-utility"><summary aria-label="${t('更多选项', 'More options')}"><span aria-hidden="true">＋</span></summary><div class="home-utility-menu"><button id="settings-entry" type="button">${t('设置', 'Settings')}</button><button id="fullscreen" type="button">${t('全屏', 'Fullscreen')}</button></div></details></div>
       <div class="home-reading" aria-hidden="true"><span></span></div>
     </header>
     <main>

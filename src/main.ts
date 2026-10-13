@@ -1,6 +1,8 @@
 import { browserStorage } from './browser-storage'
 import { loadOptionalFonts } from './fonts'
 import './style.css'
+import './reading-settings.css'
+import { bindReadingControls, createDialogueReader, getReadingSettings, onReadingSettingsChange, readingDelay, renderReadingControls } from './reading-settings'
 import './story-map.css'
 import './finale-map.css'
 import './chapter-dialogue-themes.css'
@@ -77,6 +79,12 @@ let chapterThreeController: ReturnType<typeof import('./chapter-three').mountCha
 let chapterFourController: ReturnType<typeof import('./chapter-four').mountChapterFour> | null = null
 let finaleController: ReturnType<typeof import('./finale').mountFinale> | null = null
 let finaleControllerChapter: 5 | 6 | null = null
+const dialogueReader = createDialogueReader()
+onReadingSettingsChange(() => {
+  dialogueReader.finish()
+  if (soundPlayback) soundPlayback.audio.volume = getReadingSettings().voiceVolume
+  if (ambientLaugh) ambientLaugh.volume = .16 * getReadingSettings().voiceVolume
+})
 let playbackMode: 'off' | 'auto' | 'skip' = 'off'
 let playbackTimer: number | null = null
 let audioEnabled = browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false'
@@ -89,6 +97,7 @@ function clearPlaybackTimer() {
 }
 
 function stopPlayback() {
+  dialogueReader.clear()
   clearPlaybackTimer()
   playbackMode = 'off'
 }
@@ -237,7 +246,7 @@ function syncAmbientLaugh() {
   }
   if (ambientLaugh) return
   const audio = new Audio('/audio/naiwa-laugh.m4a')
-  audio.volume = 0.16
+  audio.volume = 0.16 * getReadingSettings().voiceVolume
   audio.loop = true
   ambientLaugh = audio
   ambientError = false
@@ -288,6 +297,7 @@ function syncSound() {
   stopSound()
   const clips = soundClips(state.sceneId, line, state.language)
   const audio = new Audio(clips[0])
+  audio.volume = getReadingSettings().voiceVolume
   const playback: SoundPlayback = { key, audio, clips, clipIndex: 0, status: 'playing' }
   soundPlayback = playback
   audio.addEventListener('ended', () => {
@@ -364,6 +374,7 @@ function restartFrom(sceneId: string) {
 
 function advance() {
   if (!active || !state || modal || root.querySelector('dialog[open]')) return
+  if (playbackMode !== 'skip' && dialogueReader.finish()) return
   const scene = current()
   const lines = sceneLines(scene)
   if (state.lineIndex < lines.length - 1) {
@@ -425,6 +436,7 @@ function openModal(kind: NonNullable<typeof modal>) {
   if (!active && selectedChapter === 0 && ['routes', 'gallery', 'log'].includes(kind)) return
   if (!appDialog?.isConnected) modalFocus = document.activeElement as HTMLElement | null
   clearPlaybackTimer()
+  dialogueReader.pause()
   modal = kind
   renderModal()
 }
@@ -768,6 +780,8 @@ function renderGame() {
     </div>
     ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : objectChoiceScene ? '' : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
+  dialogueReader.bind(game.querySelector('.dialogue-box > p'), `${state.sceneId}/${state.lineIndex}/${lang}`, line.speaker?.en === 'Naiwa\'s journal' ? quoteJournalSpeech(line.text[lang], lang) : line.text[lang])
+  if (playbackMode === 'skip') dialogueReader.finish()
   stage.querySelector('#object-hotspots')?.remove()
   if (objectChoiceScene) {
     const labels = objectScenes[state.sceneId].labels[lang]
@@ -782,7 +796,7 @@ function renderGame() {
     playbackTimer = window.setTimeout(() => {
       playbackTimer = null
       if (active && state?.sceneId === expectedScene && state.lineIndex === expectedLine && !modal && !root.querySelector('dialog[open]')) advance()
-    }, playbackMode === 'skip' ? 220 : Math.max(2600, Math.min(7000, line.text[lang].length * 100)))
+    }, playbackMode === 'skip' ? 220 : readingDelay(line.text[lang]) + (getReadingSettings().textSpeed ? Array.from(line.text[lang]).length / getReadingSettings().textSpeed * 1000 : 0))
   }
 }
 
@@ -870,7 +884,7 @@ function renderModal() {
     const endingIds = ['n01', 'be01', 'be02', 'exhausted', 'e02']
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.gallery)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="gallery-content"><p>${esc(t.endingGallery)} · ${progress.endings.length}/5</p><div class="ending-grid">${endingIds.map(id => `<div class="ending-badge ${progress.endings.includes(id) ? 'is-unlocked' : 'is-locked'}"><span>${progress.endings.includes(id) ? '✦' : '◇'}</span><span>${esc(progress.endings.includes(id) ? story[id].chapter[lang] : '???')}</span></div>`).join('')}</div></div>`
   } else if (modal === 'settings') {
-    dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.settings)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="settings-language" class="secondary-btn" type="button">${esc(t.languageLabel)}</button><button id="settings-audio" class="secondary-btn" type="button" aria-pressed="${audioEnabled}">${esc(t.audio)} · ${esc(audioEnabled ? t.on : t.off)}</button><button id="settings-fullscreen" class="secondary-btn" type="button">${esc(isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen)}</button></div>`
+    dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.settings)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="settings-language" class="secondary-btn" type="button">${esc(t.languageLabel)}</button><button id="settings-audio" class="secondary-btn" type="button" aria-pressed="${audioEnabled}">${esc(t.audio)} · ${esc(audioEnabled ? t.on : t.off)}</button><button id="settings-fullscreen" class="secondary-btn" type="button">${esc(isAppFullscreen(root) ? t.exitFullscreen : t.fullscreen)}</button></div>${renderReadingControls(lang, 'origin')}`
   } else {
     dialog.innerHTML = `<div class="dialog-head"><h2>${esc(t.menu)}</h2><button id="close-dialog" class="small-btn">${esc(t.close)} ×</button></div><div class="menu-actions"><button id="menu-continue" class="primary-btn">${esc(t.continue)} ↗</button><button id="menu-save" class="secondary-btn">${esc(t.save)}</button><button id="menu-settings" class="secondary-btn">${esc(t.settings)}</button><button id="menu-gallery" class="secondary-btn">${esc(t.gallery)}</button><button id="menu-routes" class="secondary-btn">${esc(t.routes)}</button><button id="menu-restart" class="secondary-btn">${esc(t.restart)}</button><button id="menu-title" class="secondary-btn">${esc(t.returnTitle)}</button></div><p class="modal-note">${esc(t.saveNote)}</p>`
   }
@@ -882,6 +896,7 @@ function renderModal() {
     if (!currentDialog) return
     appDialog = null
     modal = null
+    dialogueReader.resume()
     if (modalFocus?.isConnected) modalFocus.focus()
     else if (modalFocus?.id) root.querySelector<HTMLElement>(`#${modalFocus.id}`)?.focus()
     if (active && playbackMode !== 'off' && !modal && root.querySelector(':scope > .game')) renderGame()
@@ -899,6 +914,7 @@ function renderModal() {
   dialog.querySelector('#menu-routes')?.addEventListener('click', () => openModal('routes'))
   dialog.querySelector('#menu-title')?.addEventListener('click', () => { modal = null; dialog.close(); stopPlayback(); active = false; render() })
   dialog.querySelector('#menu-restart')?.addEventListener('click', () => confirmRestart(start, t.confirmRestart))
+  bindReadingControls(dialog, lang, 'origin')
   dialog.querySelector('#settings-language')?.addEventListener('click', () => { modal = null; dialog.close(); toggleLanguage(); openModal('settings') })
   dialog.querySelector('#settings-audio')?.addEventListener('click', () => { audioEnabled = !audioEnabled; browserStorage.setItem('naiwa-audio-enabled-v1', String(audioEnabled)); if (!audioEnabled) { stopSound(); stopAmbientLaugh() }; openModal('settings') })
   dialog.querySelector('#settings-fullscreen')?.addEventListener('click', async () => { await toggleFullscreen(); if (appDialog === dialog && dialog.open) openModal('settings') })
