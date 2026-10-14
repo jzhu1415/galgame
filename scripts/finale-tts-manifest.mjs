@@ -18,9 +18,10 @@ for (const [chapter, story] of [['5', finaleStories[5]]]) {
   for (const [node, scene] of Object.entries(story)) scene.lines.forEach((line, index) => {
     if (['naiwa', 'naiba', 'feidudu'].includes(line.speaker)) return
     for (const language of ['zh', 'en']) {
-      const text = line.text[language], voice = voices[line.speaker][language]
-      const rate = line.speaker === 'narrator' || line.speaker === 'journal' ? '-5%' : '+0%'
+      const text = line.text[language]
       const path = `tts/finale-${chapter}-${node}-${index}-${language}.mp3`
+      const voice = voices[line.speaker][language]
+      const rate = line.speaker === 'narrator' || line.speaker === 'journal' ? '-5%' : '+0%'
       const hash = createHash('sha256').update(`${voice}\0${rate}\0${text}`).digest('hex')
       entries.push({ path, text, voice, rate, hash })
     }

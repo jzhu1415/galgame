@@ -518,6 +518,7 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
 
   /* --- reveal + counters ------------------------------------------------- */
   const revealObserver = typeof IntersectionObserver === 'undefined' ? null : new IntersectionObserver(entries => {
+    if (disposed) return
     for (const entry of entries) {
       if (!entry.isIntersecting) continue
       entry.target.classList.add('is-revealed')
@@ -527,7 +528,16 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
     }
   }, { root: page, threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
 
+  const counterFrames = new Set<number>()
+  function counterFrame(callback: FrameRequestCallback) {
+    const id = window.requestAnimationFrame(now => {
+      counterFrames.delete(id)
+      if (!disposed) callback(now)
+    })
+    counterFrames.add(id)
+  }
   function count(element: HTMLElement) {
+    if (disposed) return
     const target = Number(element.dataset.flCount ?? 0)
     const format = (value: number) => value.toLocaleString(page.lang || 'zh-CN')
     if (!target || reduced.matches) { element.textContent = format(target); return }
@@ -536,14 +546,14 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
       if (disposed) return
       const t = reduced.matches ? 1 : Math.min(1, (now - start) / 1300)
       element.textContent = format(Math.round(target * (1 - (1 - t) ** 3)))
-      if (t < 1) window.requestAnimationFrame(step)
+      if (t < 1) counterFrame(step)
     }
-    window.requestAnimationFrame(step)
+    counterFrame(step)
   }
 
-  const motionAllowed = typeof IntersectionObserver !== 'undefined' && !reduced.matches
-  page.classList.toggle('has-motion', motionAllowed)
-  if (!motionAllowed) reveals.forEach(element => element.classList.add('is-revealed'))
+  const motionSupported = !!revealObserver
+  page.classList.toggle('has-motion', motionSupported && !reduced.matches)
+  if (!motionSupported || reduced.matches) reveals.forEach(element => element.classList.add('is-revealed'))
   reveals.forEach(element => revealObserver?.observe(element))
   shots.forEach(element => revealObserver?.observe(element))
 
@@ -557,6 +567,7 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
   let bgmFadingOut = false
   let bgmStopTimer = 0
   let bgmGesturesArmed = false
+  let bgmAttempt = 0
 
   function rampBgm(target: number, duration: number) {
     const element = bgm
@@ -565,6 +576,7 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
     const from = bgmVolume
     const start = performance.now()
     const step = (now: number) => {
+      if (disposed) return
       const t = duration > 0 ? Math.min(1, Math.max(0, (now - start) / duration)) : 1
       bgmVolume = from + (target - from) * t
       element.volume = Math.max(0, Math.min(1, bgmVolume))
@@ -593,20 +605,30 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
   }
   function playBgm() {
     const element = bgm
-    if (!element || !bgmWanted || !element.paused) return
+    if (disposed || !element || !bgmWanted) return
+    window.clearTimeout(bgmStopTimer)
+    bgmStopTimer = 0
     bgmFadingOut = false
     element.volume = bgmVolume
     rampBgm(BGM_VOLUME, BGM_FADE_IN)
+    if (!element.paused) { releaseGestures(); return }
+    const ticket = ++bgmAttempt
     let attempt: Promise<void> | undefined
-    try { attempt = element.play() } catch { attempt = undefined }
+    try { attempt = element.play() } catch { silenceBgm(); armGestures(); return }
     if (!attempt || typeof attempt.then !== 'function') return
-    attempt.then(() => releaseGestures()).catch(() => {
+    attempt.then(() => {
+      if (disposed || !bgmWanted) { element.pause(); return }
+      if (ticket === bgmAttempt) releaseGestures()
+    }).catch(() => {
+      if (disposed || !bgmWanted || ticket !== bgmAttempt) return
       // Autoplay was refused: stay silent and wait for the first real gesture.
       silenceBgm()
       armGestures()
     })
   }
   function stopBgm() {
+    bgmAttempt++
+    releaseGestures()
     const element = bgm
     if (!element) return
     bgmFadingOut = false
@@ -775,14 +797,21 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
   page.addEventListener('scroll', schedule, { passive: true })
   page.addEventListener('load', onResize, true)
   window.addEventListener('resize', onResize, { passive: true })
-  const motionListener = () => { page.classList.toggle('has-motion', motionAllowed && !reduced.matches); schedule() }
+  const motionListener = () => {
+    if (disposed) return
+    page.classList.toggle('has-motion', motionSupported && !reduced.matches)
+    if (reduced.matches) reveals.forEach(element => element.classList.add('is-revealed'))
+    schedule()
+  }
   reduced.addEventListener('change', motionListener)
   setUnlocked(unlocked)
-  window.requestAnimationFrame(() => {
+  let startupFrame = window.requestAnimationFrame(() => {
+    startupFrame = 0
+    if (disposed) return
     // Fonts and images settle after layout, so the loop is measured once more.
     measureStrip()
     update()
-    page.querySelectorAll('img').forEach(image => image.addEventListener('load', onResize, { once: true }))
+    // The capture-phase page load listener already covers every image.
   })
 
   return {
@@ -790,9 +819,13 @@ export function mountFinalePromo(root: HTMLElement, restoredScroll = 0): FinaleP
     dispose() {
       disposed = true
       if (frame) window.cancelAnimationFrame(frame)
+      if (startupFrame) window.cancelAnimationFrame(startupFrame)
+      counterFrames.forEach(id => window.cancelAnimationFrame(id))
+      counterFrames.clear()
       window.clearTimeout(toastTimer)
       window.clearTimeout(bgmStopTimer)
       bgmWanted = false
+      bgmAttempt++
       releaseGestures()
       if (bgmFrame) window.cancelAnimationFrame(bgmFrame)
       bgmToggle?.removeEventListener('click', onBgmToggle)

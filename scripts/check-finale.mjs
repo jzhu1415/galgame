@@ -474,7 +474,7 @@ for (const [id, cuts] of Object.entries(artworkApi.finaleCuts)) {
     cgKeys.add(cut.key)
   }
 }
-assert.equal(cgKeys.size, 46)
+assert.equal(cgKeys.size, 48)
 assert.equal(memoryKeys.size, 10)
 assert.equal(memoryLog.length, 10)
 // A finale flashback follows the live fourth-chapter gallery, rather than a stale path.
@@ -507,7 +507,7 @@ assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-cat-ambus
 assert.equal(artworkApi.finalePortraitSpeaker({ ...newFinaleSave(5), node: 'f5-cat-ambush', line: firstBananaLine }, { 'banana-cat': '/images/finale-banana-cat.webp' }), 'banana-cat')
 assert.equal(finaleStories[5]['f5-film'].next, 'f5-film-kept')
 assert(finaleStories[5]['f5-film-kept'].lines.some(line => line.speaker === 'naidou'))
-assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-encounter', line: 7 }).id, 'feidudu-hardening-close')
+assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: 'f5-encounter', line: 7 }).id, 'feidudu-eyes-spreading')
 for (const id of ['f6-revival', 'f6-resolution', 'f6-ending-reconcile', 'f6-ending-sever', 'f6-ending-cradle']) {
   for (let line = 0; line < finaleStories[5][id].lines.length; line++) {
     const shot = artworkApi.finaleArtwork({ ...newFinaleSave(5), node: id, line })
@@ -524,7 +524,7 @@ const sacrificeFrames = finaleStories[5]['f6-naiba-sacrifice'].lines.map((_, lin
 assert(sacrificeFrames.every(shot => shot.cg))
 assert(sacrificeFrames.every((shot, index) => index === 0 || shot.id !== sacrificeFrames[index - 1].id))
 assert.equal(sacrificeFrames.at(-1).id, 'sacrifice-final-mote', 'Last transfer must show Naiba already absent')
-for (const id of ['f5-cat-ambush', 'f5-feidudu-clash', 'f6-core-blockade', 'f6-battle-film']) {
+for (const id of ['f5-cat-ambush', 'f6-core-blockade', 'f6-battle-film']) {
   assert.equal(artworkApi.finaleArtwork({ ...newFinaleSave(5), node: id }).cg, false)
 }
 const sacrificeLog = JSON.parse(readFileSync('docs/finale-sacrifice-closeup-prompts.json')).assets
@@ -547,8 +547,16 @@ for (const entry of investigationLog) {
     correction.refs.forEach(ref => assert(existsSync(ref), ref))
   }
 }
-const cgLog = [...JSON.parse(readFileSync('docs/finale-closeup-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-sacrifice-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-memory-closeup-prompts.json')).assets, ...sacrificeLog, ...investigationLog]
-assert.equal(cgLog.length, 46)
+const eyeLog = JSON.parse(readFileSync('docs/finale-blackening-closeups.json')).assets
+assert.equal(eyeLog.length, 4)
+for (const entry of eyeLog) {
+  assert(entry.status.startsWith('accepted') && existsSync(entry.png) && existsSync(entry.webp))
+  assert(entry.refs.includes('references/second-layer-form-source.png'))
+  assert(entry.refs.includes('references/feidudu-dark-character-turnaround.png'))
+  assert(entry.refRoles.length === entry.refs.length && entry.refRoles.every(role => role.purpose))
+}
+const cgLog = [...JSON.parse(readFileSync('docs/finale-closeup-prompts.json')).assets.filter(entry => !entry.status?.startsWith('superseded')),  ...JSON.parse(readFileSync('docs/finale-sacrifice-prompts.json')).assets, ...JSON.parse(readFileSync('docs/finale-memory-closeup-prompts.json')).assets, ...sacrificeLog, ...investigationLog, ...eyeLog]
+assert.equal(cgLog.length, 48)
 const aftermathOnlyKeys = new Set(cgLog.filter(entry => entry.refs.some(ref => /finale-(aftermath|dawn)\.png$/.test(ref))).map(entry => entry.key))
 for (const [id, arrival] of fifth.firstArrival) {
   if (arrival.flags.includes('film-completed')) continue
@@ -560,6 +568,25 @@ for (const entry of cgLog) {
   assert(cgKeys.has(entry.key), entry.key + ': accepted art should be connected')
   assert(entry.refs.length && entry.prompt)
   for (const ref of entry.refs) assert(existsSync(ref), ref)
+}
+// Progressive appearance follows story chronology and checkpoint replay, not session order.
+for (const [node, line, expected] of [
+  ['f5-voice', 1, 'normal'], ['f5-voice', 7, 'faint'], ['f5-call', 0, 'faint'],
+  ['f5-encounter', 0, 'spreading'], ['f5-encounter', 7, 'spreading'],
+  ['f5-feidudu-clash', 0, 'spreading'], ['f5-feidudu-clash', 6, 'complete'],
+]) {
+  const save = { ...newFinaleSave(5), node, line }
+  assert.equal(artworkApi.finaleArtwork(save).id, 'feidudu-eyes-' + expected)
+  assert.deepEqual(artworkApi.finaleArtwork(JSON.parse(JSON.stringify(save))), artworkApi.finaleArtwork(save))
+}
+const prematurelyDark = new Set(['abyss-feidudu-whisper', 'abyss-feidudu-close', 'feidudu-dark', 'feidudu-doubt-close', 'feidudu-hardening-close', 'feidudu-eyes-complete'])
+for (const node of ['f5-voice', 'f5-chase', 'f5-call', 'f5-encounter', 'f5-feidudu-clash']) {
+  const count = node === 'f5-feidudu-clash' ? 6 : finaleStories[5][node].lines.length
+  for (let line = 0; line < count; line++) {
+    const shot = artworkApi.finaleArtwork({ ...newFinaleSave(5), node, line })
+    assert(shot.cg, 'Early close-ups suppress the fully dark fallback portrait')
+    assert(!prematurelyDark.has(shot.id), 'No completed black eye surrounds before the refusal')
+  }
 }
 const speech = JSON.parse(execFileSync('node', ['scripts/finale-tts-manifest.mjs']))
 const hashes = JSON.parse(readFileSync('public/audio/tts/finale-manifest.json'))

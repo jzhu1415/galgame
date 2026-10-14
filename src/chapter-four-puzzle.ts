@@ -86,7 +86,13 @@ export function bindGildedJigsaw(host: HTMLElement, puzzle: GildedPuzzle, langua
   }, opts)
   doc.addEventListener('pointercancel', clearDrag, opts)
   doc.defaultView?.addEventListener('blur', clearDrag, opts)
-  host.addEventListener('keydown', event => { if (event.key === 'Escape') { clearDrag(); select(null); feedback('已取消选中。', 'Selection cleared.') } }, opts)
+  doc.addEventListener('keydown', event => {
+    if (disposed || event.defaultPrevented || event.key !== 'Escape' || (!drag && selected === null)) return
+    if ((event.target as Element | null)?.closest?.('dialog[open]')) return
+    event.preventDefault()
+    swallowClick = !!drag
+    clearDrag(); select(null); feedback('已取消选中。', 'Selection cleared.')
+  }, opts)
   host.querySelector('[data-puzzle-reference]')?.addEventListener('click', () => { clearDrag(); onReference() }, opts)
   host.querySelector<HTMLInputElement>('[data-puzzle-guide]')?.addEventListener('change', event => {
     const img = host.querySelector<HTMLImageElement>('.gilded-jigsaw-guide')

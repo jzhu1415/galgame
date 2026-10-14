@@ -454,8 +454,15 @@ function manualSave() {
 }
 
 function toggleLanguage() {
+  const focusId = (document.activeElement as HTMLElement | null)?.id
   setPreferredLanguage(preferredLanguage === 'zh' ? 'en' : 'zh')
   render()
+  if (focusId) {
+    const control = root.querySelector<HTMLElement>(`#${focusId}`)
+    const menu = control?.closest('details:not([open])')
+    const focus = menu?.querySelector<HTMLElement>('summary') ?? control
+    focus?.focus({ preventScroll: true })
+  }
 }
 
 function imageUrl(id: string) { return `/images/${id}.webp` }
@@ -546,7 +553,9 @@ function bindPromoNavigation(chapter: ChapterNumber) {
     if (event instanceof MouseEvent && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return
     event.preventDefault()
     stopPlayback(); active = false; chapterPlaying = false; selectedChapter = 0; render()
-    root.querySelector<HTMLElement>(chapter === 5 ? '#chapter-five' : chapter === 4 ? '#chapter-four' : chapter === 3 ? '#chapter-three' : chapter === 2 ? '#chapter-two' : '#chapter-one')?.focus({ preventScroll: true })
+    const entry = root.querySelector<HTMLElement>(chapter === 5 ? '#chapter-five' : chapter === 4 ? '#chapter-four' : chapter === 3 ? '#chapter-three' : chapter === 2 ? '#chapter-two' : '#chapter-one')
+    const focus = entry && !entry.closest('[hidden]') ? entry : root.querySelector<HTMLElement>('[data-home-tab][aria-selected="true"]')
+    focus?.focus({ preventScroll: true })
   })
   root.querySelector('#chapter-return')?.addEventListener('click', () => root.querySelector<HTMLElement>('#chapter-home')?.click())
   root.querySelector('#release-entry')?.addEventListener('click', () => showReleaseNotes(root, preferredLanguage))
@@ -1035,7 +1044,7 @@ function render() {
 
 // Escape closes the current overlay first, then returns one navigation level.
 window.addEventListener('keydown', event => {
-  if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
+  if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return
   if (event.key === 'F11') {
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -1043,6 +1052,8 @@ window.addEventListener('keydown', event => {
     return
   }
   if (event.key !== 'Escape') return
+  // Escape exits the browser's video player without leaving the story.
+  if (document.fullscreenElement?.tagName === 'VIDEO') return
   if (root.querySelector('dialog[open]')) {
     event.stopImmediatePropagation()
     return // Keep the native dialog cancellation behavior.
@@ -1060,7 +1071,7 @@ window.addEventListener('keydown', event => {
   event.preventDefault()
   event.stopImmediatePropagation()
   back.click()
-}, { capture: true })
+}) // Local controls can consume Escape before global chapter navigation.
 
 document.addEventListener('keydown', event => {
   if (!active || modal || root.querySelector('dialog[open]') || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return

@@ -8,9 +8,9 @@
   },
   "totals": {
     "storyNodes": 190,
-    "dialogueLines": 642,
-    "chineseCharacters": 19055,
-    "visualAssets": 160
+    "dialogueLines": 643,
+    "chineseCharacters": 19206,
+    "visualAssets": 162
   },
   "sections": [
     {
@@ -41,13 +41,13 @@
       "id": "chapter-5",
       "storyNodes": 69,
       "dialogueLines": 266,
-      "chineseCharacters": 8555
+      "chineseCharacters": 8667
     },
     {
       "id": "coastal-dlc",
       "storyNodes": 19,
-      "dialogueLines": 62,
-      "chineseCharacters": 1509
+      "dialogueLines": 63,
+      "chineseCharacters": 1548
     }
   ],
   "images": [
@@ -154,8 +154,6 @@
     "images/finale-abyss-beacon.webp",
     "images/finale-abyss-depth.webp",
     "images/finale-abyss-descent.webp",
-    "images/finale-abyss-feidudu-close.webp",
-    "images/finale-abyss-feidudu-whisper.webp",
     "images/finale-abyss-journal.webp",
     "images/finale-abyss-screen.webp",
     "images/finale-abyss.webp",
@@ -176,6 +174,10 @@
     "images/finale-extraction-readings.webp",
     "images/finale-feidudu-dark.webp",
     "images/finale-feidudu-doubt-close.webp",
+    "images/finale-feidudu-eyes-complete.webp",
+    "images/finale-feidudu-eyes-faint.webp",
+    "images/finale-feidudu-eyes-normal.webp",
+    "images/finale-feidudu-eyes-spreading.webp",
     "images/finale-feidudu-hardening-close.webp",
     "images/finale-laboratory-door.webp",
     "images/finale-laboratory.webp",

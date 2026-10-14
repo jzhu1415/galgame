@@ -36,7 +36,7 @@ class Element extends EventTarget {
   setAttribute(k,v){this.attrs[k]=v}
   remove(){this.removed=true}
   getBoundingClientRect(){return rect}
-  fire(type,fields={}) { const e=new Event(type,{cancelable:true}); Object.assign(e,fields); this.dispatchEvent(e) }
+  fire(type,fields={}) { const e=new Event(type,{cancelable:true}); Object.assign(e,fields); this.dispatchEvent(e); return e }
 }
 const doc=new Element(), win=new Element(), root=new Element(), host=new Element()
 doc.defaultView=win; doc.createElement=()=>new Element()
@@ -52,7 +52,11 @@ slots[0].fire('click'); assert.equal(placements.length,0)
 pieces[2].fire('click',{detail:0}); assert.equal(pieces[2].attrs['aria-pressed'],'true')
 slots[0].fire('click'); assert.equal(placements.length,0); assert(feedback.textContent.includes('对不上'))
 slots[2].fire('click'); assert.deepEqual(placements,[[2,2]])
-pieces[1].fire('click',{detail:0}); host.fire('keydown',{key:'Escape'}); slots[1].fire('click'); assert.equal(placements.length,1)
+pieces[1].fire('click',{detail:0})
+assert(doc.fire('keydown',{key:'Escape'}).defaultPrevented, 'canceling a selection consumes Escape before the chapter back shortcut')
+assert.equal(pieces[1].attrs['aria-pressed'], 'false')
+slots[1].fire('click'); assert.equal(placements.length,1)
+assert(!doc.fire('keydown',{key:'Escape'}).defaultPrevented, 'an idle puzzle leaves chapter navigation available')
 const drag=(id,x,y)=>{pieces[id].fire('pointerdown',{button:0,pointerId:4,clientX:20,clientY:20}); doc.fire('pointermove',{pointerId:4,clientX:x,clientY:y}); doc.fire('pointerup',{pointerId:4,clientX:x,clientY:y})}
 drag(5,250,250); assert.deepEqual(placements.at(-1),[5,5]); assert(ghosts.at(-1).removed)
 assert.equal(slots.filter(s=>s.classes.has('is-drop-target')).length,0)
@@ -63,6 +67,13 @@ drag(0,350,350); assert.equal(placements.length,count,'wrong drag does not place
 drag(0,10,10); assert.equal(placements.length,count,'outside drop does not place')
 pieces[0].fire('pointerdown',{button:0,pointerId:4,clientX:20,clientY:20})
 doc.fire('pointermove',{pointerId:4,clientX:150,clientY:150}); doc.fire('pointercancel'); assert(ghosts.at(-1).removed)
+pieces[0].fire('pointerdown',{button:0,pointerId:4,clientX:20,clientY:20})
+doc.fire('pointermove',{pointerId:4,clientX:150,clientY:150})
+assert(doc.fire('keydown',{key:'Escape'}).defaultPrevented, 'Escape cancels a drag even when focus is elsewhere')
+assert(ghosts.at(-1).removed)
+doc.fire('pointerup',{pointerId:4,clientX:150,clientY:150})
+pieces[0].fire('click',{detail:1})
+assert.equal(pieces[0].attrs['aria-pressed'],'false', 'a compatibility click cannot undo the canceled drag')
 reference.fire('click'); assert.equal(views,1); assert.equal(placements.length,count)
 guide.fire('change')
 assert(guideImage.hidden); guide.checked=true; guide.fire('change'); assert(!guideImage.hidden)

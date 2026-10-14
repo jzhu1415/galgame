@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-12",
+  "tool": "Built-in image_gen",
+  "note": "四张独立 PNG/WebP 特写。每次实际传入正常原图、正常三视图、原始黑化三视图以及场景参考。先验收原貌，再依次改图。第一阶段保留棕色虹膜，末阶段蓝色虹膜与深灰色手部按黑化原始身份图呈现。暗色是眼周外观，不是戴上的面具。",
+  "assets": [
+    {
+      "key": "feidudu-eyes-normal",
+      "stage": 0,
+      "refs": [
+        "references/second-layer-form-source.png",
+        "references/second-layer-form-turnaround.png",
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-abyss.png"
+      ],
+      "refRoles": [
+        {
+          "path": "references/second-layer-form-source.png",
+          "purpose": "正常形态原始身份主参考：原貌脸型、鼻子、眼睛与颜色"
+        },
+        {
+          "path": "references/second-layer-form-turnaround.png",
+          "purpose": "正常形态三视图：轮廓与耳朵"
+        },
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "原始黑化身份终点：黑色眼眶轮廓、蓝色虹膜与灰色手部"
+        },
+        {
+          "path": "assets/images/finale-abyss.png",
+          "purpose": "既定无光深渊地点与画风"
+        }
+      ],
+      "prompt": "Use case illustration-story. Generate ONE cinematic 16:9 visual-novel HEAD AND SHOULDERS CLOSE-UP of Fat Dudu at the START of a gradual transformation. Input 1 original normal character is the primary hard identity reference; input 2 normal turnaround gives silhouette; input 3 ORIGINAL dark turnaround is ONLY the future endpoint, NOT current black coloration; input 4 is the existing abyss setting/style. Stage 0 NORMAL: smooth golden yellow round body, pale belly glimpsed, two thick rounded asymmetric long ears, giant brown oval nose, small white eye surrounds and BROWN irises exactly like normal original. Entire eye-region skin is yellow: ZERO black mask, ZERO dark rings or black eyelids. No blue eyes at this stage. Subject looks worried toward a monitor just offscreen, mouth gently closed, ears retained in frame. Camera almost frontal with slight three-quarter angle, eye-level, single character centered upper middle, both eyes clearly visible, head/shoulders fill 65% of image. Background existing dark abyss chamber with cool blue monitor light and warm practical light as in input4, softly out of focus; no additional characters. Quiet tension, gentle face volume, smooth 3D rendered identity, NOT furry, no whiskers, no pink inner ears, no thin tail, no human eyebrows. Eye-level soft neutral frontal light allows yellow skin and brown irises to read honestly. Lower 22% chest/quiet background for dialogue. No panels, labels, UI, text, watermark, combat.",
+      "png": "assets/images/finale-feidudu-eyes-normal.png",
+      "webp": "public/images/finale-feidudu-eyes-normal.webp",
+      "status": "accepted noncombat gradual transformation close-up; inspected against both original identities and preceding stage",
+      "uses": [
+        {
+          "node": "f5-voice",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "feidudu-eyes-faint",
+      "stage": 1,
+      "refs": [
+        "assets/images/finale-feidudu-eyes-normal.png",
+        "references/second-layer-form-source.png",
+        "references/second-layer-form-turnaround.png",
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-abyss.png"
+      ],
+      "refRoles": [
+        {
+          "path": "assets/images/finale-feidudu-eyes-normal.png",
+          "purpose": "已验收上一阶段改图目标和连续镜头构图；不替代原始身份"
+        },
+        {
+          "path": "references/second-layer-form-source.png",
+          "purpose": "正常形态原始身份主参考：原貌脸型、鼻子、眼睛与颜色"
+        },
+        {
+          "path": "references/second-layer-form-turnaround.png",
+          "purpose": "正常形态三视图：轮廓与耳朵"
+        },
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "原始黑化身份终点：黑色眼眶轮廓、蓝色虹膜与灰色手部"
+        },
+        {
+          "path": "assets/images/finale-abyss.png",
+          "purpose": "既定无光深渊地点与画风"
+        }
+      ],
+      "prompt": "Edit image 1 into STAGE 1 of the SAME continuous Fat Dudu close-up. Image1 is edit target and exact shot continuity; images2&3 are ORIGINAL normal identity hard constraints; image4 ORIGINAL dark endpoint ONLY defines eventual black-mask footprint, not current full mask; image5 original abyss scene and style. Preserve exact character silhouette, smooth yellow skin, asymmetric round ears, huge brown oval nose, white eyeballs, BROWN irises, cream belly, short yellow hands, framing and location. Only alter the eye-surround skin: add VERY FAINT light gray translucent discoloration under each eye and just around outer corners, about 15 percent toward the eventual dark mask. Two separate pale shadows, yellow skin clearly visible through them; nose bridge between eyes stays fully yellow. Must NOT become black, dark gray, panda rings, connected band, or goggles. It should look like first subtle tiredness spreading on actual smooth skin, discernible against Stage0. Eyes remain alert and uncertain, a tiny bit more tense. Maintain same frontal light so the gray is NOT a lighting change. Keep background/camera/nose/body unchanged. Single 16:9 cinematic rendered CG, no text, no panels, no combat.",
+      "png": "assets/images/finale-feidudu-eyes-faint.png",
+      "webp": "public/images/finale-feidudu-eyes-faint.webp",
+      "status": "accepted noncombat gradual transformation close-up; inspected against both original identities and preceding stage",
+      "uses": [
+        {
+          "node": "f5-voice",
+          "line": 7
+        },
+        {
+          "node": "f5-chase",
+          "line": 0
+        },
+        {
+          "node": "f5-call",
+          "line": 0
+        },
+        {
+          "node": "f5-call",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "key": "feidudu-eyes-spreading",
+      "stage": 2,
+      "refs": [
+        "assets/images/finale-feidudu-eyes-faint.png",
+        "references/second-layer-form-source.png",
+        "references/second-layer-form-turnaround.png",
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "refRoles": [
+        {
+          "path": "assets/images/finale-feidudu-eyes-faint.png",
+          "purpose": "已验收上一阶段改图目标和连续镜头构图；不替代原始身份"
+        },
+        {
+          "path": "references/second-layer-form-source.png",
+          "purpose": "正常形态原始身份主参考：原貌脸型、鼻子、眼睛与颜色"
+        },
+        {
+          "path": "references/second-layer-form-turnaround.png",
+          "purpose": "正常形态三视图：轮廓与耳朵"
+        },
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "原始黑化身份终点：黑色眼眶轮廓、蓝色虹膜与灰色手部"
+        },
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "既定实验区地点与画风"
+        }
+      ],
+      "prompt": "Edit image1 into STAGE2 Fat Dudu BLACKENING CLOSE-UP. Image1 fixes the SAME original character's face geometry, camera angle and composition. Images2 and3 ORIGINAL normal identity are mandatory hard constraints; image4 ORIGINAL dark identity defines future mask outline only, not a full mask at this stage. Image5 is the actual LABORATORY location, replace blurry abyss backdrop with softly out-of-focus blue-lit laboratory monitors/glass wall from image5. Preserve smooth yellow head/body, asymmetrical thick rounded ears, huge oval BROWN nose, white eyeballs, mouth, cream belly and SHORT hands exactly. Change eye-surrounds visibly: two separate CHARCOAL GRAY partial crescents spread around the outer eye corners and along lower edges, darker and much wider than stage1, curling partway above each eye. Nose bridge keeps a clear golden-yellow gap 1/3 of the eye-to-eye distance. The patches are incomplete and separated, NOT a single connected black band and NOT a physical mask. They are skin pigmentation without straps or raised edges. Brown irises with subtle cool blue reflected monitor catchlight, not red. Uncertain expression, pupils looking slightly downward toward the offscreen record, no smile. Face bright enough to objectively compare pigmentation. Frame eyes upper center, nose central, shoulders lower quarter. Same near-frontal medium closeup 16:9, one subject, no text, no panels, no blood, no battle.",
+      "png": "assets/images/finale-feidudu-eyes-spreading.png",
+      "webp": "public/images/finale-feidudu-eyes-spreading.webp",
+      "status": "accepted noncombat gradual transformation close-up; inspected against both original identities and preceding stage",
+      "uses": [
+        {
+          "node": "f5-encounter",
+          "line": 0
+        },
+        {
+          "node": "f5-encounter",
+          "line": 4
+        },
+        {
+          "node": "f5-encounter",
+          "line": 7
+        },
+        {
+          "node": "f5-feidudu-clash",
+          "line": 0
+        },
+        {
+          "node": "f5-feidudu-clash",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "key": "feidudu-eyes-complete",
+      "stage": 3,
+      "refs": [
+        "assets/images/finale-feidudu-eyes-spreading.png",
+        "references/second-layer-form-source.png",
+        "references/second-layer-form-turnaround.png",
+        "references/feidudu-dark-character-turnaround.png",
+        "assets/images/finale-laboratory.png"
+      ],
+      "refRoles": [
+        {
+          "path": "assets/images/finale-feidudu-eyes-spreading.png",
+          "purpose": "已验收上一阶段改图目标和连续镜头构图；不替代原始身份"
+        },
+        {
+          "path": "references/second-layer-form-source.png",
+          "purpose": "正常形态原始身份主参考：原貌脸型、鼻子、眼睛与颜色"
+        },
+        {
+          "path": "references/second-layer-form-turnaround.png",
+          "purpose": "正常形态三视图：轮廓与耳朵"
+        },
+        {
+          "path": "references/feidudu-dark-character-turnaround.png",
+          "purpose": "原始黑化身份终点：黑色眼眶轮廓、蓝色虹膜与灰色手部"
+        },
+        {
+          "path": "assets/images/finale-laboratory.png",
+          "purpose": "既定实验区地点与画风"
+        }
+      ],
+      "prompt": "Edit image1 into STAGE3 COMPLETE black eye surrounds, final close-up of the SAME Fat Dudu. Image1 is edit target/shot continuity, images2&3 ORIGINAL normal identity guarantee continuous face and ear geometry, image4 ORIGINAL DARK turnaround is the HARD final-color identity reference, image5 actual laboratory scene/style. Match exact face size, huge oval brown nose, smooth golden-yellow head and cream belly, asymmetric thick round ears, eye placement and camera framing from image1. The separate gray patches now become DEEP SOLID BLACK, smoothly join across the narrow nose bridge gap into the continuous rounded two-lobed black eye-region SHAPE of image4. Actual pigmented skin, NO wearable mask, no straps, no hard material edges. Keep white eyeballs bright, shift visible irises to vivid BLUE matching original dark reference, NOT red or fully black eyes. Short hands visible at bottom now charcoal-gray at distal ends as the final dark reference, body remains yellow. Face looks quietly rigid and resolute, eyes looking directly toward the observer, not screaming; no angry human eyebrows. Mouth slightly parted, a small glimpse of original pink tongue acceptable, no teeth/fangs. Preserve lab backdrop and lighting of image1 so eye change is obvious and comparable, identity recognition strongest. Full one-frame 16:9 head-and-shoulders CGI, no panels, no text, no battle, no new characters.",
+      "png": "assets/images/finale-feidudu-eyes-complete.png",
+      "webp": "public/images/finale-feidudu-eyes-complete.webp",
+      "status": "accepted noncombat gradual transformation close-up; inspected against both original identities and preceding stage",
+      "uses": [
+        {
+          "node": "f5-feidudu-clash",
+          "line": 6
+        },
+        {
+          "node": "f5-feidudu-counter",
+          "line": 0
+        }
+      ]
+    }
+  ]
+}

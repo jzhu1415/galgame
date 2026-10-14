@@ -95,6 +95,7 @@ export function mountHomePage(root: HTMLElement, language: Language, restored: H
   const panels = [...page.querySelectorAll<HTMLElement>('.home-chapter-panel')]
   const stage = page.querySelector<HTMLElement>('[data-home-stage]')!
   const hero = page.querySelector<HTMLElement>('.home-hero')!
+  const header = page.querySelector<HTMLElement>('.home-header')!
   const bar = page.querySelector<HTMLElement>('.home-reading span')!
   const reveals = [...page.querySelectorAll<HTMLElement>('[data-home-reveal]')]
   const milestones = [...page.querySelectorAll<HTMLElement>('[data-home-milestone]')]
@@ -125,7 +126,7 @@ export function mountHomePage(root: HTMLElement, language: Language, restored: H
   page.querySelectorAll<HTMLButtonElement>('[data-home-person-chapter]').forEach(button => listen(button, 'click', () => {
     select(Number(button.dataset.homePersonChapter))
     const target = page.querySelector<HTMLElement>('#home-chapters')!
-    page.scrollTo({ top: page.scrollTop + target.getBoundingClientRect().top - page.getBoundingClientRect().top - 88, behavior: motion.matches ? 'auto' : 'smooth' })
+    page.scrollTo({ top: Math.max(0, page.scrollTop + target.getBoundingClientRect().top - page.getBoundingClientRect().top - header.offsetHeight - 10), behavior: motion.matches ? 'auto' : 'smooth' })
     tabs[chapter - 1].focus({ preventScroll: true })
   }))
   const greetings = [b('你好呀，欢迎翻开这个故事。', 'Hello! Welcome to the story.'), b('先看看我们的照片吧。', 'Take a look at our photographs.'), b('下面的角色卡，也可以翻一翻。', 'Try the character cards below.'), b('制作时间线里，藏着这个故事的脚印。', 'The timeline keeps the footsteps of this story.')]
@@ -201,7 +202,7 @@ export function mountHomePage(root: HTMLElement, language: Language, restored: H
     const target = page.querySelector<HTMLElement>(anchor.hash)
     if (!target) return
     e.preventDefault()
-    page.scrollTo({ top: page.scrollTop + target.getBoundingClientRect().top - page.getBoundingClientRect().top - 88, behavior: motion.matches ? 'auto' : 'smooth' })
+    page.scrollTo({ top: Math.max(0, page.scrollTop + target.getBoundingClientRect().top - page.getBoundingClientRect().top - header.offsetHeight - 10), behavior: motion.matches ? 'auto' : 'smooth' })
     target.focus({ preventScroll: true })
   }))
   let imageDialog: HTMLDialogElement | null = null

@@ -5,8 +5,13 @@ import os
 from pathlib import Path
 import subprocess
 import edge_tts
+from importlib.util import module_from_spec, spec_from_file_location
 
 ROOT = Path(__file__).resolve().parent.parent
+compat_spec = spec_from_file_location('edge_speech_compat', ROOT / 'scripts' / 'edge-speech-compat.py')
+compat = module_from_spec(compat_spec)
+compat_spec.loader.exec_module(compat)
+compat.configure_edge_speech()
 OUTPUT = ROOT / 'public' / 'audio'
 ENTRIES = json.loads(subprocess.check_output(['node', 'scripts/finale-tts-manifest.mjs'], cwd=ROOT))
 META = OUTPUT / 'tts' / 'finale-manifest.json'

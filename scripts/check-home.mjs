@@ -93,6 +93,7 @@ root.querySelector = selector => selector === 'dialog[open]' ? root.child?.open 
 const add = selector => { const node = new Surface(); page.one.set(selector, node); return node }
 const list = (selector, nodes) => { page.many.set(selector, nodes); return nodes }
 const hero = add('.home-hero'), stage = add('[data-home-stage]'), bar = add('.home-reading span'), header = add('.home-header')
+header.offsetHeight = 122 // A notched device adds a safe-area inset to the sticky bar.
 add('[data-home-counter]'); add('[data-home-making-date]'); add('[data-home-making-title]'); add('[data-home-making-detail]')
 const greeting = add('[data-home-greeting]'), hello = add('[data-home-hello]'), slider = add('[data-home-time-slider]')
 const art = add('.home-workbench-images'), notes = add('[data-home-making-notes]'), workbenchOpen = add('[data-home-workbench-open]')
@@ -132,6 +133,7 @@ people[1].fire('keydown', { key: 'End' }); assert.equal(controller.snapshot().pe
 people.at(-1).fire('keydown', { key: 'ArrowRight' }); assert.equal(controller.snapshot().person, 0)
 personChapters[1].fire('click'); assert.equal(controller.snapshot().chapter, homePeople[1].chapter)
 assert.equal(page.lastScroll.behavior, 'smooth'); assert(tabs[homePeople[1].chapter - 1].focuses > 0)
+assert.equal(page.lastScroll.top, 120 + chapterTarget.top - 122 - 10, 'character links keep the chapter heading below the actual header')
 hello.fire('click'); const text = greeting.textContent; hello.fire('click'); assert.notEqual(greeting.textContent, text)
 
 // Native vertical scroll, pinch gestures and taps on the chapter link are not hijacked.
@@ -172,6 +174,7 @@ hero.fire('pointermove', { pointerType: 'mouse', clientX: 1010, clientY: 500 });
 assert.equal(hero.style['--home-shift'], '0px')
 assert(!anchor.fire('click', { ctrlKey: true }).prevented, 'modified links retain native navigation')
 assert(anchor.fire('click').prevented); assert.equal(page.lastScroll.behavior, 'auto')
+assert.equal(page.lastScroll.top, 600 + chapterTarget.top - 122 - 10, 'page links account for safe areas and header wrapping')
 const snapshot = controller.snapshot(); photo.fire('click'); const closing = root.child
 page.fire('scroll'); controller.dispose(); assert(closing.removed && !closing.open); assert.equal(frames.size, 0)
 const after = controller.snapshot(); tabs[0].fire('click'); people[1].fire('click'); hello.fire('click')

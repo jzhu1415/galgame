@@ -468,7 +468,11 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       dialog.innerHTML = `<header><div><span>NAIWA / 02</span><h2 id="ice-routes-title">${title}</h2></div><button id="ice-routes-close" type="button" aria-label="${t.close}">×</button></header>${content}`
       root.append(dialog); panelDialog = dialog
       dialog.querySelector('#ice-routes-close')?.addEventListener('click', closePanel)
-      dialog.addEventListener('close', () => { dialog.remove(); if (panelDialog !== dialog) return; panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback(); if (focus?.isConnected) focus.focus() }, { once: true })
+      dialog.addEventListener('close', () => {
+        dialog.remove()
+        if (panelDialog === dialog) { panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback() }
+        if (!disposed && focus?.isConnected) focus.focus({ preventScroll: true })
+      }, { once: true })
       dialog.addEventListener('click', event => { if (event.target !== dialog) return; const b = dialog.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close() })
       dialog.showModal()
       bindPanelTools()

@@ -1,5 +1,6 @@
 import './finale.css'
 import './finale-dialogue.css'
+import './finale-curtain.css'
 import type { Language } from './story'
 import { browserStorage } from './browser-storage'
 import { confirmInApp } from './ui-confirm'
@@ -13,6 +14,7 @@ import { finaleArtwork, finalePortraitSpeaker } from './finale-artwork'
 import { renderFinaleIntroduction } from './finale-introductions'
 import { finaleDialogueTheme, renderFinaleDialogueFrame } from './finale-dialogue-ui'
 import { createFinaleBgm } from './finale-bgm'
+import { showFinaleCurtain } from './finale-curtain'
 import { mergeFinaleProgress, normalizeFinaleProgress, recordFinaleCheckpoint, restartFinaleFrom } from './finale-progress'
 import {
   advanceFinale,
@@ -64,7 +66,7 @@ function loadFinaleSession(chapter: FinaleChapter) {
   if (chapter === 5) {
     const existing = rawSave as { node?: string; mergedFinale?: boolean } | null
     const legacy = readJSON(finaleSaveKey(6)) as { chapter?: number; node?: string } | null
-    if (!existing?.mergedFinale && (!existing || !existing.node?.startsWith('f6-')) && legacy?.chapter === 6 && typeof legacy.node === 'string') {
+    if (!existing?.mergedFinale && (!existing || typeof existing.node !== 'string' || !existing.node.startsWith('f6-')) && legacy?.chapter === 6 && typeof legacy.node === 'string') {
       const old = normalizeFinaleSave(6, legacy)
       rawSave = { ...old, chapter: 5, node: old.node === 'f6-exhausted' ? 'f5-exhausted' : old.node,
         endings: old.endings.map(id => id === 'f6-exhausted' ? 'f5-exhausted' : id) }
@@ -75,7 +77,7 @@ function loadFinaleSession(chapter: FinaleChapter) {
   if (chapter === 5 && rawSave && typeof rawSave === 'object') {
     const old = rawSave as { node?: string; flags?: string[] }
     const lateNodes = ['f6-ruin-record', 'f6-ruin-relay', 'f6-resolution', 'f6-ending-reconcile', 'f6-ending-sever', 'f6-ending-captured', 'f6-ending-cradle']
-    if (lateNodes.includes(old.node ?? '') && old.flags?.includes('film-completed') && (!old.flags.includes('f6-naiba-sacrificed') || !old.flags.includes('f6-revived'))) {
+    if (lateNodes.includes(old.node ?? '') && Array.isArray(old.flags) && old.flags.includes('film-completed') && (!old.flags.includes('f6-naiba-sacrificed') || !old.flags.includes('f6-revived'))) {
       rawSave = { ...old, node: 'f6-post-film', line: 0 }
     }
   }
@@ -264,6 +266,7 @@ export function mountFinale(
   let storageAvailable = true
   let notice = ''
   let panel: HTMLDialogElement | null = null
+  let curtain: ReturnType<typeof showFinaleCurtain> | null = null
   let film: ReturnType<typeof createGildedFilm> | null = null
   let filmElement: HTMLVideoElement | null = null
   let filmCompleted = false
@@ -284,7 +287,7 @@ export function mountFinale(
       dialoguePlaying: sound.status === 'playing', suspended: mediaSuspended || document.hidden || Boolean(root.querySelector('dialog[open]')) })
   }
   function resumeBgm() {
-    if (disposed) return
+    if (disposed || curtain) return
     mediaSuspended = false
     syncBgm()
   }
@@ -428,7 +431,7 @@ export function mountFinale(
     if (!line) return `<section class="finale-dialogue"><p>${tr('这一幕暂时没有对白。', 'There is no dialogue in this scene.')}</p></section>`
     const isChoice = last && Boolean(node.choices?.length)
     const nextLabel = node.ending && last
-      ? tr('返回章节详情', 'Back to chapter details')
+      ? tr('谢幕', 'Finish')
       : tr('继续', 'Continue')
     const ending = node.ending
       ? `<p class="finale-ending-note">${tr(chapter === 5 ? '第五章 · 结局' : '终章 · 结局', chapter === 5 ? 'Chapter five · Ending' : 'Final chapter · Ending')} / ${esc(finaleEndingNames[node.ending]?.[language] ?? node.ending)}<br>${tr('已解锁结局', 'Unlocked endings')} ${progress.endings.length}/${finaleEndingIds[chapter].length}</p>`
@@ -555,13 +558,13 @@ export function mountFinale(
   }
 
   function advance() {
-    if (disposed || root.querySelector('dialog[open]')) return
+    if (disposed || curtain || root.querySelector('dialog[open]')) return
     const node = currentNode()
     if (node.kind === 'film') return
     const last = save.line >= node.lines.length - 1
     if (node.ending && last) {
       pauseMedia()
-      onBack(language)
+      curtain = showFinaleCurtain(root, language, () => onBack(language))
       return
     }
     if (last && node.choices?.length) return
@@ -604,6 +607,7 @@ export function mountFinale(
     if (disposed || language === next) return
     language = next
     document.documentElement.lang = next === 'zh' ? 'zh-CN' : 'en'
+    if (curtain) { curtain.setLanguage(next); return }
     closePanel()
     render('finale-stage-title')
   }
@@ -613,6 +617,8 @@ export function mountFinale(
     dispose() {
       if (disposed) return
       disposed = true
+      curtain?.dispose()
+      curtain = null
       closePanel()
       film?.dispose()
       film = null; filmElement = null

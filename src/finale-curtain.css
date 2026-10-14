@@ -1,0 +1,84 @@
+/* The city falls silent; leave only the title on the last black frame. */
+dialog.finale-curtain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  overflow: hidden;
+  background: #000;
+  color: #f1e9dc;
+  animation: finale-curtain-black 2.4s ease-in-out both;
+}
+dialog.finale-curtain::backdrop { background: transparent; backdrop-filter: none; }
+.finale-curtain-copy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 6vh, 64px);
+  padding: 24px;
+  pointer-events: none;
+}
+.finale-curtain-copy h1, .finale-curtain-copy p {
+  margin: 0;
+  opacity: 0;
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
+  font-weight: 400;
+  text-align: center;
+  transition: opacity 1.6s ease;
+}
+.finale-curtain-copy h1 {
+  font-size: clamp(22px, 4.8vw, 54px);
+  letter-spacing: .13em;
+  white-space: nowrap;
+}
+.finale-curtain-copy p { font-size: clamp(20px, 3vw, 30px); letter-spacing: .24em; }
+.finale-curtain[data-phase='title'] h1,
+.finale-curtain[data-phase='end'] h1,
+.finale-curtain[data-phase='ready'] h1,
+.finale-curtain[data-phase='end'] .finale-curtain-copy p,
+.finale-curtain[data-phase='ready'] .finale-curtain-copy p { opacity: 1; }
+.finale-curtain-return {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border: 1px solid #b9aa8759;
+  border-radius: 2px;
+  background: transparent;
+  color: #b9b0a1;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, color .2s, border-color .2s;
+}
+.finale-curtain[data-phase='ready'] .finale-curtain-return { opacity: 1; visibility: visible; cursor: pointer; }
+.finale-curtain-return:hover { color: #fff5e5; border-color: #dfc698; }
+.finale-curtain-return:focus-visible { outline: 2px solid #dfc698; outline-offset: 5px; }
+.finale-curtain:lang(en) h1 { font-size: clamp(18px, 4.4vw, 48px); letter-spacing: .06em; }
+@keyframes finale-curtain-black { from { opacity: 0; } to { opacity: 1; } }
+.finale-curtain.is-reduced-motion { animation-duration: .25s; }
+.finale-curtain.is-reduced-motion h1,
+.finale-curtain.is-reduced-motion p,
+.finale-curtain.is-reduced-motion button { transition-duration: .15s; }
+@media (prefers-reduced-motion: reduce) {
+  dialog.finale-curtain { animation-duration: .25s; }
+  .finale-curtain-copy h1, .finale-curtain-copy p, .finale-curtain-return { transition-duration: .15s; }
+}
+@media (max-height: 420px) {
+  .finale-curtain-copy { gap: 22px; padding-bottom: 64px; }
+  .finale-curtain-return { bottom: max(14px, env(safe-area-inset-bottom)); }
+}

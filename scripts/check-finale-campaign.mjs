@@ -298,6 +298,11 @@ flush(2500)
 assert(Math.abs(bgm.volume - 0.45) < 0.01, 'the theme fades in rather than starting at full volume')
 assert.equal(queue.size, 0, 'finishing the fade releases its animation frame')
 dispatch([page, bgmToggle], 'click')
+dispatch([page, bgmToggle], 'click')
+flush(2500); runTimers()
+assert(Math.abs(bgm.volume - .45) < .01 && !bgm.paused, 'switching back on during fade-out restores audible playback')
+assert.equal(bgm.pauseCalls, 0, 'an interrupted fade-out must not pause the enabled theme')
+dispatch([page, bgmToggle], 'click')
 assert.equal(bgmToggle.attributes.get('aria-pressed'), 'false', 'the theme switch turns off')
 runTimers()
 assert.equal(bgm.pauseCalls, 1, 'switching off fades out and then pauses')
@@ -441,6 +446,44 @@ const second = mountFinalePromo(root, 0)
 assert(page.classes.has('is-unlocked'), 'the unlock survives a language rerender')
 assert.equal(gateTitle.textContent, '已解锁，可以开始了。')
 second.dispose()
+assert.equal(queue.size, 0, 'leaving before the first paint cancels startup work')
+runTimers()
+
+// A page opened in quiet mode must follow a later change of system preference.
+motion.matches = true
+const quiet = mountFinalePromo(root, 0)
+flush(0)
+assert(!page.classes.has('has-motion'))
+motion.matches = false; motion.fire('change')
+assert(page.classes.has('has-motion'), 'turning reduced motion off restores the campaign effects')
+quiet.dispose(); runTimers()
+
+// An earlier denied autoplay request can reject after the user switched the
+// theme off and on. It must not silence the newer successful request.
+let rejectEarlier, resolveLatest, requests = 0
+bgm.paused = true
+bgm.play = function () {
+  this.playCalls++; requests++
+  if (requests === 1) { this.paused = true; return new Promise((_resolve, reject) => { rejectEarlier = reject }) }
+  this.paused = false
+  return new Promise(resolve => { resolveLatest = resolve })
+}
+const rapid = mountFinalePromo(root, 0)
+dispatch([page, bgmToggle], 'click')
+dispatch([page, bgmToggle], 'click')
+assert.equal(requests, 2)
+rejectEarlier(new Error('Earlier autoplay denied'))
+resolveLatest()
+await Promise.resolve(); await Promise.resolve(); await Promise.resolve()
+flush(2500)
+assert(Math.abs(bgm.volume - .45) < .01, 'a stale autoplay error cannot cancel the latest fade-in')
+assert.equal(window.listeners.get('b:wheel')?.size ?? 0, 0, 'a stale rejection cannot rearm gesture listeners')
+intersection.callback([{ isIntersecting: true, target: revealSurfaces[0] }])
+assert(queue.size > 0)
+rapid.dispose()
+assert.equal(queue.size, 0, 'leaving also cancels animated counter frames')
+intersection.callback([{ isIntersecting: true, target: revealSurfaces[0] }])
+assert.equal(queue.size, 0, 'a queued observer notification cannot revive a disposed page')
 runTimers()
 
 assert.equal(writes, 0, 'the campaign never writes a save')

@@ -20,7 +20,7 @@ globalThis.window = {
 }
 const emit = data => { for (const callback of events.get('message') ?? []) callback(data) }
 class Element {
-  constructor(tag = 'div') { this.tag = tag; this.nodes = new Map(); this.events = new Map(); this.children = []; this.classList = { contains: () => false }; this.hidden = false }
+  constructor(tag = 'div') { this.tag = tag; this.nodes = new Map(); this.events = new Map(); this.children = []; this.classList = { contains: () => false }; this.hidden = false; this.isConnected = true }
   set innerHTML(value) { this.html = value; this.nodes.clear() }
   get innerHTML() { return this.html ?? '' }
   insertAdjacentHTML(_position, value) { this.html = this.innerHTML + value }
@@ -29,7 +29,7 @@ class Element {
   setAttribute() {}
   focus() { document.activeElement = this }
   append(...children) { for (const child of children) { child.parent = this; this.children.push(child) } }
-  remove() { this.removed = true; if (this.parent) this.parent.children = this.parent.children.filter(child => child !== this) }
+  remove() { this.removed = true; this.isConnected = false; if (this.parent) this.parent.children = this.parent.children.filter(child => child !== this) }
   click() { this.events.get('click')?.() }
   showModal() { this.open = true }
   close() { this.open = false; this.events.get('close')?.() }
@@ -119,6 +119,15 @@ root.querySelector('#ice-log').click()
 const log = root.children.find(child => child.tag === 'dialog' && child.open)
 assert(log.innerHTML.includes(copy.en.approachLines.chase))
 assert(log.innerHTML.includes(copy.en.approachLines.comfort), 'actual history renders each recorded branch')
+log.querySelector('#ice-routes-close').click()
+for (const id of ['ice-log', 'ice-menu']) {
+  const entry = root.querySelector('#' + id)
+  entry.focus(); entry.click()
+  const panel = root.children.find(child => child.tag === 'dialog' && child.open)
+  panel.querySelector('#ice-routes-close').focus()
+  panel.querySelector('#ice-routes-close').click()
+  assert.equal(document.activeElement, entry, 'the explicit panel close restores its entrance focus')
+}
 controller.dispose()
 
 for (const language of ['zh', 'en']) {

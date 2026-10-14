@@ -11,7 +11,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   dialog.id = 'dlc-unlock-dialog'
   dialog.className = 'app-dialog dlc-unlock-dialog'
   dialog.setAttribute('aria-labelledby', 'dlc-unlock-title')
-  dialog.innerHTML = `<div class="dialog-head"><h2 id="dlc-unlock-title">${text('解锁恋爱 DLC', 'Unlock the romance DLC')}</h2><button class="small-btn" data-close>${text('返回', 'Back')} ×</button></div><p>${text('完整观看这段视频 3 遍，即可解锁《潮汐写给你的信》。已完成的次数会保存。', 'Watch this video in full three times to unlock A Letter from the Tide. Completed views are saved.')}</p><video class="dlc-unlock-video" src="/video/romance-dlc-unlock.mp4" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video><div class="dlc-unlock-progress" role="status" aria-live="polite"></div><div class="dlc-unlock-actions"><button class="primary-btn" data-play></button><button class="primary-btn" data-enter hidden>${text('进入 DLC', 'Enter DLC')} ↗</button></div><p class="dlc-unlock-hint">${text('跳到片尾不会计数。可以暂停，完整看完后再播放下一遍。', 'Skipping to the end does not count. You can pause, then finish the video and start the next viewing.')}</p>`
+  dialog.innerHTML = `<div class="dialog-head"><h2 id="dlc-unlock-title">${text('解锁恋爱 DLC', 'Unlock the romance DLC')}</h2><button class="small-btn" data-close>${text('返回', 'Back')} ×</button></div><p>${text('完整观看这段视频 3 遍，即可解锁《潮汐写给你的信》。已完成的次数会保存。', 'Watch this video in full three times to unlock A Letter from the Tide. Completed views are saved.')}</p><video class="dlc-unlock-video" src="/video/romance-dlc-unlock.mp4" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video><div class="dlc-unlock-progress" role="status" aria-live="polite"></div><div class="dlc-unlock-actions"><button class="primary-btn" data-play></button><button class="primary-btn" data-enter hidden>${text('进入 DLC', 'Enter DLC')} ↗</button></div><p class="dlc-unlock-hint">${text('跳到片尾不会计数。切到后台时视频会暂停，回来后可以接着看，完整看完后再播放下一遍。', 'Skipping to the end does not count. The video pauses in the background; return to finish watching before starting the next viewing.')}</p>`
   root.append(dialog)
   dialog.insertAdjacentHTML('beforeend', `<form class="dlc-key-form"><label for="dlc-key-input">${text('输入密钥', 'Enter unlock key')}</label><div><input id="dlc-key-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required aria-describedby="dlc-key-message"><button class="small-btn" type="submit">${text('解锁', 'Unlock')}</button></div><p id="dlc-key-message" role="status" aria-live="polite"></p></form>`)
   const content = document.createElement('div')
@@ -26,6 +26,8 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   let session = new DlcWatchSession()
   let completed = false
   let persistent = true
+  let closed = false
+  let visible = document.visibilityState === 'visible'
   const draw = () => {
     const unlocked = isRomanceDlcUnlocked()
     status.textContent = (unlocked ? text('DLC 已解锁', 'DLC unlocked') : `${text('完整观看', 'Completed views')} ${views} / ${DLC_REQUIRED_VIEWS}`) + (persistent ? '' : text(' · 仅保留在本次页面会话', ' · Kept for this page session only'))
@@ -33,7 +35,17 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
     enter.hidden = !unlocked
     play.textContent = text(`播放第 ${views + 1} 遍`, `Play viewing ${views + 1}`)
   }
-  const sample = () => session.sample(video.currentTime, performance.now(), document.visibilityState === 'visible', video.playbackRate)
+  const sample = () => session.sample(video.currentTime, performance.now(), visible, video.playbackRate)
+  const visibilityChanged = () => {
+    if (closed) return
+    // Credit the interval before the transition according to its previous
+    // visibility, then reset the clock so throttled background time cannot count.
+    sample()
+    visible = document.visibilityState === 'visible'
+    session.start(video.currentTime, performance.now())
+    if (!visible) video.pause()
+  }
+  document.addEventListener('visibilitychange', visibilityChanged)
   video.addEventListener('playing', () => {
     if (completed) { session = new DlcWatchSession(); completed = false }
     session.start(video.currentTime, performance.now())
@@ -42,7 +54,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   video.addEventListener('seeked', () => session.start(video.currentTime, performance.now()))
   video.addEventListener('ratechange', () => { if (video.playbackRate !== 1) video.playbackRate = 1 })
   video.addEventListener('ended', () => {
-    if (completed) return
+    if (closed || completed) return
     sample()
     if (views < DLC_REQUIRED_VIEWS && session.finish(video.duration)) {
       views++
@@ -56,7 +68,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   play.addEventListener('click', () => {
     video.pause(); video.currentTime = 0; session = new DlcWatchSession(); completed = false
     session.start(0, performance.now())
-    void video.play().catch(() => { status.textContent = text('播放失败，请点击视频的播放按钮重试。', 'Playback failed. Try the video\'s play button.') })
+    void video.play().catch(() => { if (!closed) status.textContent = text('播放失败，请点击视频的播放按钮重试。', 'Playback failed. Try the video\'s play button.') })
   })
   enter.addEventListener('click', () => { if (!isRomanceDlcUnlocked()) return; dialog.close(); onUnlocked() })
   dialog.querySelector<HTMLFormElement>('.dlc-key-form')!.addEventListener('submit', event => {
@@ -74,7 +86,7 @@ export function showDlcUnlock(root: HTMLElement, language: Language, onUnlocked:
   })
   dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close())
   dialog.addEventListener('click', event => { if (event.target !== dialog) return; const bounds = dialog.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close() })
-  dialog.addEventListener('close', () => { video.pause(); video.removeAttribute('src'); video.load(); dialog.remove(); if (focus?.isConnected) focus.focus() }, { once: true })
+  dialog.addEventListener('close', () => { closed = true; document.removeEventListener('visibilitychange', visibilityChanged); video.pause(); video.removeAttribute('src'); video.load(); dialog.remove(); if (focus?.isConnected) focus.focus({ preventScroll: true }) }, { once: true })
   draw()
   dialog.showModal()
   return dialog

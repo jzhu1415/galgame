@@ -60,6 +60,14 @@ npm run preview
 
 The production output is written to `dist/` and can be hosted on a static website platform.
 
+The finale campaign’s numbers cover all five main chapters and the coastal DLC. They are calculated from story data and active artwork, rather than edited by hand. Development startup and changes to TypeScript story data or WebP artwork automatically refresh the counts; production builds refresh them before compilation. Generated output is kept in `src/game-statistics.ts`, with definitions and a per-chapter breakdown in `docs/game-statistics.json`.
+
+```bash
+npm run generate:game-statistics  # Recalculate now
+npm run check:game-statistics     # Verify saved totals without changing files
+```
+
+
 ## Development
 
 Built with **TypeScript, Vite, and Three.js**.
@@ -74,5 +82,15 @@ Built with **TypeScript, Vite, and Three.js**.
 | `scripts/` | Story checks and voice generation tools |
 
 Run `npm run check:story`, `npm run check:chapter-three`, and `npm run check:romance-dlc` to validate story routes and assets. Run `npm run check:home` to verify homepage interactions without opening a browser. Additional checks cover route previews, DLC unlocking, release notes, and the mirror hall; see `package.json` for the full list.
+
+Frontend regression checks also cover global keyboard navigation, focus restoration, hidden-tab video viewing, interrupted music fades, motion preference changes and animation cleanup:
+
+```bash
+npm run check:frontend-audit
+npm run check:ice-input
+npm run check:ice-quality-picker
+```
+
+See [the 2026-10-12 frontend review](docs/frontend-audit-2026-10-12.md) for reproduced issues, fixes and verification scope.
 
 Contributor conventions are in [AGENTS.md](AGENTS.md). Major game updates should include a new version ID and bilingual player notes in `src/release-notes.ts`. Story and production documents in `docs/` contain spoilers.

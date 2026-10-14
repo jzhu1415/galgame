@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-12",
+  "reason": "Edge TTS 7.2.8 websocket returned HTTP 403 after standard retry, update check and single-request tests; changed narration uses explicit temporary local male voices. Character original recordings remain unchanged. Entries apply only to matching text hashes, so future revised text returns to the configured online voice.",
+  "entries": {
+    "tts/finale-5-f5-voice-7-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "7543067b57a4046ca975da6b51931d831ec61a405157ee800f30442fb0218203",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-voice-7-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "30f5e721273255b213c9f05802b085daacc067ef19c422e3945642475c6f8980",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-chase-0-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "96d85f22f1841a33969cd3169a8dd7747dde1e8da73237112a8f46682e10ec44",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-chase-0-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "6891def2ef8ded38049bc12e2b392f3be4fddeed5a8c85d9cdecd5fab028f003",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-encounter-3-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "d18a145dc1df785cb51775afbaabad03c661f7b184c62ac76429afdbcf2c6862",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-encounter-3-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "07c8557df39c0ece03773733f2aede686787057c013c64d4666ea23590643b69",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-encounter-7-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "3e2c1c5ba3e0faa0a8baf81fcc831b3a03581772bb46f9a3d8fdb84d3d22f591",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-encounter-7-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "5e6bfe4e2c2a7a2792657c6bfee77850b41e855b5f2ffaf91e5037e8d1492aaa",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-break-lines-3-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "9eb742095617e57910a041b8f15e51b99c0685dc2234756a96e20ba1d0cdc904",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-break-lines-3-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "5209764721430c0ea72a067d63de3b292578342eb9609c1a020cfb7f10288340",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-feidudu-clash-3-zh.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (Chinese (China mainland))",
+      "rate": "150wpm",
+      "textSha256": "aa31f0e0fa9f33849add37ee4b335bbac8d2d2c148f5b394c8ea0e4f5903a813",
+      "requestedVoice": "zh-CN-YunyangNeural",
+      "requestedRate": "-5%"
+    },
+    "tts/finale-5-f5-feidudu-clash-3-en.mp3": {
+      "provider": "macos-say",
+      "voice": "local:Eddy (English (US))",
+      "rate": "160wpm",
+      "textSha256": "f31602c1d4572754bc510c5b31ad7d6341c43285dc6910642a098f9d999330eb",
+      "requestedVoice": "en-US-BrianNeural",
+      "requestedRate": "-5%"
+    }
+  },
+  "status": "resolved-2026-10-12; archived provenance only, no active local voice overrides",
+  "resolution": "Corrected synthesis endpoint and Ocp-Apim-Subscription-Key parameter. Original zh-CN-YunyangNeural and en-US-BrianNeural successfully synthesized; twelve temporary clips replaced. The manifest no longer reads these historical entries."
+}

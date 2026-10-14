@@ -205,7 +205,8 @@
       ],
       "prompt": "The FIRST image is the ORIGINAL HARD CHARACTER IDENTITY of Feidudu: golden-yellow stout creature, exactly two thick long rounded ears, broad black mask around two bright BLUE eyes, huge brown oval nose, pink tongue, pale cream oval belly, dark grey hands and feet, short yellow tail. Match exact facial proportions and body color. The SECOND image is LOCATION/STYLE only. Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: medium shot of Feidudu standing STILL partly hidden behind a wet tiled pillar, shoulders lowered, looking tentatively toward camera, worried blue eyes, tongue remains visible, ears and brown nose intact. Vulnerable quiet whisper in fog, cold pale side light, no battle pose, no running or attack.",
       "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-39e761e3-4f48-4bbe-966d-fe8b64b2661c.png",
-      "status": "accepted noncombat opening CG, inspected against identity/location references"
+      "status": "superseded-2026-10-12-progressive-eye-closeups",
+      "note": "保留原始素材与提示词，但不在当前前段接入。使用原貌、淡灰与扩散阶段替代，避免提前出现完整黑眼眶。"
     },
     {
       "key": "abyss-feidudu-close",
@@ -215,7 +216,8 @@
       ],
       "prompt": "The FIRST image is the ORIGINAL HARD CHARACTER IDENTITY of Feidudu: golden-yellow stout creature, exactly two thick long rounded ears, broad black mask around two bright BLUE eyes, huge brown oval nose, pink tongue, pale cream oval belly, dark grey hands and feet, short yellow tail. Match exact facial proportions and body color. The SECOND image is LOCATION/STYLE only. Use case: stylized-concept. Asset: 1536x1024 landscape cinematic CG for a visual novel opening. Reuse the actual supplied environment reference for architecture, cold teal/blue light, wet black tiles, immense square tiled pillars, rusty narrow catwalk and dark misty water. Polished soft 3D game rendering. This is a NONCOMBAT memory/investigation scene: no attacks, weapons, clashes, energy battle or new characters. Leave lower quarter quiet for subtitles. No typography, logos, watermarks, UI or readable writing. Primary scene: very expressive CLOSE-UP of Feidudu's face and upper cream belly, wary BLUE eyes in original black mask glancing backwards sadly, big brown nose and pink tongue clearly visible, two rounded ears fit within frame. Soft teal reflected water light, rusty walkway blurred behind. A hesitant old friend, no threat, fists or battle.",
       "source": "/Users/claw/.codex/generated_images/01a12380-4fed-7501-8af2-9cbe8a086592/exec-012aa632-7104-466e-8f15-33f0848e1a9c.png",
-      "status": "accepted noncombat opening CG, inspected against identity/location references"
+      "status": "superseded-2026-10-12-progressive-eye-closeups",
+      "note": "保留原始素材与提示词，但不在当前前段接入。使用原貌、淡灰与扩散阶段替代，避免提前出现完整黑眼眶。"
     },
     {
       "key": "abyss-journal",

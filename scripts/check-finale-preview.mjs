@@ -97,4 +97,19 @@ assert(!current.save.flags.includes('f6-naiba-sacrificed') && !current.save.flag
 assert(current.progress.visited.includes('f6-resolution'))
 assert(!current.progress.checkpoints['f6-resolution'] && !current.progress.checkpoints['f6-post-film'])
 assert.equal(writes, 0)
+// Migration inspects untrusted JSON before normalization; damaged fields must
+// not throw or fabricate a historical replay checkpoint.
+for (const damaged of [
+  { node: 42 }, { node: {} }, { node: [] },
+  { node: 'f6-resolution', flags: 42 },
+  { node: 'f6-resolution', flags: {} },
+  { node: 'f6-resolution', flags: { includes: true } },
+]) {
+  storage.clear()
+  storage.set(story.finaleSaveKey(5), JSON.stringify({ ...story.newFinaleSave(5), ...damaged }))
+  writes = 0
+  assert.doesNotThrow(() => module.previewFinaleRoutes({}, 5, 'zh', () => entered++), 'damaged migration data must remain viewable')
+  assert.equal(writes, 0, 'repairing the preview in memory cannot overwrite the stored run')
+  assert.equal(Object.keys(current.progress.checkpoints).length, 0, 'a damaged saved run cannot create an arrival snapshot')
+}
 console.log('Finale previews OK: bilingual, no audio or writes before confirmation; true checkpoints persist; legacy migration is read-only; restart keeps unlocks without reviving old runs.')

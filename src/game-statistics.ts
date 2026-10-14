@@ -2,7 +2,7 @@
 // Five main chapters + coastal DLC; Chinese dialogue includes conditional variants.
 export const gameStatistics = {
   "storyNodes": 190,
-  "dialogueLines": 642,
-  "chineseCharacters": 19055,
-  "visualAssets": 160
+  "dialogueLines": 643,
+  "chineseCharacters": 19206,
+  "visualAssets": 162
 } as const

@@ -60,7 +60,7 @@ const iceTexts = [
   ...Object.values(fragments.zh).flatMap(fragment => fragment.lines.map(line => line[1])),
   ...Object.values(iceCopy.zh.approachLines), ...Object.values(iceCopy.zh.responseLines),
 ]
-const sections = [['chapter-1', story], ['chapter-3', theatreStory], ['chapter-4', gildedStory], ['chapter-5', finaleStories[5]], ['coastal-dlc', romanceStory]].map(([id, data]) => section(id, Object.keys(data).length, Object.values(data).flatMap(node => node.lines.map(line => line.text.zh))))
+const sections = [['chapter-1', story], ['chapter-3', theatreStory], ['chapter-4', gildedStory], ['chapter-5', finaleStories[5]], ['coastal-dlc', romanceStory]].map(([id, data]) => section(id, Object.keys(data).length, Object.values(data).flatMap(node => node.lines.flatMap(line => [line.text.zh, ...(line.blanketText ? [line.blanketText.zh] : [])]))))
 sections.splice(1, 0, section('chapter-2', iceNodeIds.length, iceTexts))
 const totals = sections.reduce((sum, item) => ({ storyNodes: sum.storyNodes + item.storyNodes, dialogueLines: sum.dialogueLines + item.dialogueLines, chineseCharacters: sum.chineseCharacters + item.chineseCharacters }), { storyNodes: 0, dialogueLines: 0, chineseCharacters: 0 })
 totals.visualAssets = images.size
