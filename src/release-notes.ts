@@ -17,14 +17,18 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  id: '2026-10-13-chapter-two-reading-tools',
-  date: '2026-10-13',
-  title: { zh: '第二章阅读工具与设置补齐', en: 'Chapter two reading tools and settings' },
+  id: "2026-10-14-reading-and-replay-lifecycle",
+  date: "2026-10-14",
+  title: {"zh":"回放与阅读，接得更稳","en":"Steadier reading and replay"},
   intro: {
-    zh: '补齐第二章的阅读工具和独立手动存档。第一、第二章可调节文字速度与对白音量；本版同时保留此前的交互修复、终章分镜与谢幕更新。',
-    en: 'Chapter two gains reading tools and independent manual saves. Chapters one and two share text-speed and dialogue-volume controls. Earlier interface fixes, finale artwork and closing titles are retained.',
+    zh: "修复第一章后台阅读、第二章剧情树回放与分支对白显示，让暂停、返回和重玩接回正确的位置。主页的奶霸介绍也增加了紫色点缀。",
+    en: "Background reading in chapter one, chapter-two checkpoint replay and branch dialogue now return to the correct position. Naiba’s home card also has stronger violet accents.",
   },
   items: [
+    {"tag":"READING PAUSE","title":{"zh":"切到后台，故事等你回来","en":"The story waits when you leave"},"body":{"zh":"第一章自动和快进在后台暂停，返回前台后从原位置继续。逐字对白在菜单打开时保持暂停，语音结束后的界面刷新不会让文字偷偷继续。","en":"Chapter-one Auto and Skip pause in the background and resume from the same position. Typed dialogue stays paused in menus, including when a finished voice clip refreshes the screen."}},
+    { tag: 'CHECKPOINT REPLAY', title: { zh: '回到那一幕，也回到当时的镜馆', en: 'Return to the scene and its mirror hall' }, body: { zh: '第二章确认剧情树回放后，镜馆按首次抵达时的线索重新加载，不同结局显示对应分支的对白。取消回放保留现场，语言切换不重置探索；关闭面板或切换语言后，对白按当前前后台状态继续，累计解锁保留。', en: 'Confirmed chapter-two replay reloads the hall with its first-arrival clues, and endings show their own dialogue. Canceling replay keeps the scene; switching language keeps exploration. After panel closure or a language change, reading follows foreground and background state. Cumulative unlocks are preserved.' } },
+    {"tag":"MIRROR HALL RETURN","title":{"zh":"返回网页时保留镜馆交互","en":"Keep hall interactions when returning"},"body":{"zh":"调整浏览器缓存导航时的镜馆处理，保留物证、画质设置和触控操作，清除离开前的按住状态；永久离开页面时仍清理资源。","en":"Cached browser navigation preserves hall evidence, quality settings and touch controls, while clearing held input. Resources are still released when the page is permanently left."}},
+    {"tag":"VIOLET DETAILS","title":{"zh":"奶霸的淡紫档案","en":"Naiba’s lavender dossier"},"body":{"zh":"主页奶霸介绍加强淡紫底色、边框、姓名与选中状态。照片上的紫色胶带已移除，黄白主页与原有章节入口保持一致。","en":"Naiba’s home card has stronger lavender fills, borders, name accents and selection states. Violet tape has been removed from the photographs; the yellow-and-white home and chapter entrances remain consistent."}},
     { tag: 'CHAPTER TWO TOOLS', title: { zh: '长章节可以按自己的节奏读', en: 'Read a long chapter at your pace' }, body: { zh: '第二章加入存档／读档、自动、快进、设置与图鉴入口，菜单内也能找到。自动和快进支持碎片回忆，在选项、探索和结尾处停下，不替你作出选择。', en: 'Chapter two now offers Save / Load, Auto, Skip, Settings and Gallery in the toolbar and menu. Auto and Skip also support fragment memories and stop at choices, exploration and endings.' } },
     { tag: 'MANUAL SAVES', title: { zh: '三个独立手动存档', en: 'Three independent manual slots' }, body: { zh: '自动保存持续生效，手动存档可以保留指定对白或碎片进度。覆盖和读档需要确认，读档保留累计解锁的剧情树与图鉴。', en: 'Autosave remains active while manual slots retain a chosen dialogue or fragment position. Overwriting and loading require confirmation; loading keeps cumulative story-map and gallery unlocks.' } },
     { tag: 'READING SETTINGS', title: { zh: '文字速度和对白音量', en: 'Text speed and dialogue volume' }, body: { zh: '第一、第二章设置加入实际生效的文字显示速度和对白音量。默认立即显示全文；逐字显示时，第一次点继续显示整句，再点进入下一句。设置单独保存。', en: 'Chapters one and two now share working text-speed and dialogue-volume controls. Instant text is the default; when typing is enabled, Continue first reveals the line, then advances. Settings are saved separately.' } },

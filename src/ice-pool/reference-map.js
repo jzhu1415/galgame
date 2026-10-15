@@ -2476,7 +2476,12 @@ function bindTouchHoldButton(button, setHeld, queueJump = false) {
     onPress: () => { if (queueJump) jumpQueued = true; },
   });
   touchHoldResets.push(binding.reset);
-  window.addEventListener('pagehide', binding.dispose, { once: true });
+  const disposeOnPageHide = event => {
+    if (event.persisted) return;
+    binding.dispose();
+    window.removeEventListener('pagehide', disposeOnPageHide);
+  };
+  window.addEventListener('pagehide', disposeOnPageHide);
 }
 bindTouchHoldButton(touchRiseButton, (held) => { touchRiseHeld = held; }, true);
 bindTouchHoldButton(touchDiveButton, (held) => { touchDiveHeld = held; });
@@ -2809,7 +2814,16 @@ if (firstQualityPending) {
   settingsTrigger.hidden = false;
 }
 window.__naiwaShowFirstQualityDialog = showFirstQualityDialog;
-window.addEventListener('pagehide', () => { firstQualityPicker.dispose(); iceChapterLayer.dispose(); }, { once: true });
+const disposeWorldOnPageHide = event => {
+  keys.clear();
+  resetTouchInputs();
+  // A cached document resumes this same scene and its current menu/story state.
+  if (event.persisted) return;
+  firstQualityPicker.dispose();
+  iceChapterLayer.dispose();
+  window.removeEventListener('pagehide', disposeWorldOnPageHide);
+};
+window.addEventListener('pagehide', disposeWorldOnPageHide);
 
 function render(frameTime = performance.now()) {
   requestAnimationFrame(render);

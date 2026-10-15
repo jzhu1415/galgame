@@ -43,17 +43,19 @@ export function bindReadingControls(container: HTMLElement, language: Language, 
 // Rebinding the same line (e.g. an audio-status update) keeps its typing position.
 export function createDialogueReader() {
   let timer: ReturnType<typeof setTimeout> | null = null
+  let paused = false
   let element: HTMLElement | null = null, key = '', characters: string[] = [], count = 0
   const clearTimer = () => { if (timer !== null) clearTimeout(timer); timer = null }
   const draw = () => { if (element) element.textContent = characters.slice(0, count).join('') }
   const tick = () => {
     timer = null
-    if (!element || count >= characters.length) return
+    if (paused || !element || count >= characters.length) return
     count++; draw()
     schedule()
   }
   const schedule = () => {
     clearTimer()
+    if (paused) return
     const speed = getReadingSettings().textSpeed
     if (!speed) { count = characters.length; draw() }
     else if (count < characters.length) timer = setTimeout(tick, 1000 / speed)
@@ -65,8 +67,8 @@ export function createDialogueReader() {
     },
     finish() { const incomplete = count < characters.length; clearTimer(); count = characters.length; draw(); return incomplete },
     get complete() { return count >= characters.length },
-    pause() { clearTimer() },
-    resume() { schedule() },
-    clear() { clearTimer(); element = null; key = ''; characters = []; count = 0 },
+    pause() { paused = true; clearTimer() },
+    resume() { paused = false; schedule() },
+    clear() { clearTimer(); paused = false; element = null; key = ''; characters = []; count = 0 },
   }
 }

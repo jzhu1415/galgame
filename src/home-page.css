@@ -224,18 +224,28 @@
   content: ''; position: absolute; right: 0; bottom: -1px; width: 76px; height: 3px;
   background: var(--home-lilac); border-radius: 2px; pointer-events: none;
 }
-.home-photo { position: relative; }
-.home-photo::before {
-  content: ''; position: absolute; z-index: 1; top: -10px; left: calc(50% - 35px);
-  width: 70px; height: 23px; border: 1px solid #b196cf80;
-  background: repeating-linear-gradient(120deg,#c8b4e8b3 0 5px,#e0d2f3bd 5px 10px);
-  transform: rotate(-5deg); pointer-events: none;
-}
-.home-photo:nth-child(2)::before { transform: rotate(4deg); }
-.home-photo:nth-child(3)::before { transform: rotate(-3deg); }
 .home-photo:hover { box-shadow: 0 12px 28px #8b70b624; }
 .home-person-stage { box-shadow: 7px 7px 0 #c8b4e824; }
 .home-person-tabs button:hover { border-color: var(--home-violet); }
+/* Naiba's lavender dossier sits alongside Naiwa's warm yellow card. */
+.home-person-tabs #home-person-tab-1 { border-color: #c5addc; background: #faf6ff; }
+.home-person-tabs #home-person-tab-1[aria-selected='true'] { background: #dfcdf3; border-color: #9c7bbf; color: #513765; }
+.home-person-stage:has(#home-person-panel-1:not([hidden])) { border-color: #c0a5d9; box-shadow: 7px 7px 0 #c8b4e84d; }
+#home-person-panel-1 { background: #f0e8fa; }
+#home-person-panel-1 .home-person-portrait::before {
+  content: ''; position: absolute; inset: 6% 0 4%; background: #ddccef;
+  border: 1px solid #c2a7dd; border-radius: 48% 52% 44% 56%; transform: rotate(-6deg);
+  pointer-events: none;
+}
+#home-person-panel-1 .home-person-portrait > span { color: #bfa0dd; }
+#home-person-panel-1 .home-person-portrait img { filter: drop-shadow(0 12px 10px #7d519e30); }
+#home-person-panel-1 .home-person-copy h3 { padding-left: 14px; border-left: 3px solid #a47ac7; color: #61417c; }
+#home-person-panel-1 :is(.home-eyebrow,.home-person-traits) { color: #73558f; }
+#home-person-panel-1 .home-person-notes { border-color: #cbb4df; }
+#home-person-panel-1 .home-person-notes summary { color: #65457d; }
+#home-person-panel-1 .home-text-link { color: #65457d; border-bottom-color: #a581c2; }
+#home-person-panel-1 .home-text-link:hover { border-bottom-color: #65457d; }
+#home-person-panel-1 :is(button,summary):focus-visible { outline-color: #775297; }
 .home-chapter-tabs button[aria-selected='true'] { border-bottom-color: var(--home-violet); }
 .home-chapter-tabs button:hover:not([aria-selected='true']) { background: var(--home-violet-paper); }
 .home-workbench { border-top: 3px solid var(--home-lilac); }
@@ -253,7 +263,6 @@
   .home-hero::after { left: 14%; top: 23%; width: 27px; height: 27px; }
   .home-hero-paper::before { inset: 17% 18% 10% -3%; border-width: 2px; }
   .home-section-label::after { width: 46px; }
-  .home-photo-strip { padding-top: 12px; }
 }
 @keyframes home-letter { from { opacity: 0; transform: translateY(24px) rotate(3deg); } to { opacity: 1; transform: none; } }
 @keyframes home-frame { from { opacity: .5; transform: translateY(8px) scale(1.015); } to { opacity: 1; transform: none; } }

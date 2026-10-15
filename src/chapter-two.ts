@@ -189,7 +189,13 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
   const reader = createDialogueReader()
   const tr = (zh: string, en: string) => language === 'zh' ? zh : en
   const clearPlaybackTimer = () => { if (playbackTimer !== null) window.clearTimeout(playbackTimer); playbackTimer = null }
-  const readingKey = () => `${save.phase}/${save.line}/${save.pendingFragment?.id ?? ''}/${save.pendingFragment?.line ?? ''}/${language}`
+  const readingKey = () => `${save.phase}/${save.line}/${save.approach ?? ''}/${save.response ?? ''}/${save.pendingFragment?.id ?? ''}/${save.pendingFragment?.line ?? ''}/${language}`
+  const syncPauseState = () => {
+    const blocked = document.hidden || panelOpen || !!root.querySelector('dialog[open]')
+    if (blocked) reader.pause()
+    else reader.resume()
+    mapController?.setStoryPaused(blocked || !!save.pendingFragment)
+  }
   const toolsMarkup = () => `<nav class="ice-reading-tools" aria-label="${tr('阅读工具', 'Reading tools')}"><button type="button" id="ice-save">${tr('存档／读档', 'Save / Load')}</button><button type="button" id="ice-auto" aria-pressed="${playbackMode === 'auto'}">${tr('自动', 'Auto')}</button><button type="button" id="ice-skip" aria-pressed="${playbackMode === 'skip'}">${tr('快进', 'Skip')}</button><button type="button" id="ice-settings">${tr('设置', 'Settings')}</button><button type="button" id="ice-gallery">${tr('图鉴', 'Gallery')}</button><span class="ice-reading-status" role="status">${readingNotice}</span></nav>`
   function updateReadingTools() {
     for (const [id, label] of [['save', tr('存档／读档', 'Save / Load')], ['auto', tr('自动', 'Auto')], ['skip', tr('快进', 'Skip')], ['settings', tr('设置', 'Settings')], ['gallery', tr('图鉴', 'Gallery')]]) {
@@ -238,9 +244,23 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     refreshPlayback()
   })
   let visibilityMouse = false, visibilityCharacter = false
+  function resumePanelAudio() {
+    if (disposed) return
+    if (document.hidden) {
+      visibilityMouse = visibilityMouse || resumeMouse; visibilityCharacter = visibilityCharacter || resumeCharacter
+      resumeMouse = false; resumeCharacter = false
+      return
+    }
+    if (panelOpen || root.querySelector('dialog[open]')) return
+    if (browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' && playbackMode !== 'skip') {
+      if (resumeMouse) void mouseVoice?.play().catch(() => {})
+      if (resumeCharacter) void characterVoice?.play().catch(() => {})
+    }
+    resumeMouse = false; resumeCharacter = false
+  }
   const visibilityChanged = () => {
     if (document.hidden) {
-      visibilityMouse = !!mouseVoice && !mouseVoice.paused; visibilityCharacter = !!characterVoice && !characterVoice.paused
+      visibilityMouse = visibilityMouse || (!!mouseVoice && !mouseVoice.paused); visibilityCharacter = visibilityCharacter || (!!characterVoice && !characterVoice.paused)
       clearPlaybackTimer(); reader.pause(); mouseVoice?.pause(); characterVoice?.pause()
     } else if (!panelOpen && !root.querySelector('dialog[open]')) {
       if (browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' && playbackMode !== 'skip') {
@@ -248,11 +268,13 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
         if (visibilityCharacter) void characterVoice?.play().catch(() => {})
       }
       visibilityMouse = false; visibilityCharacter = false
-      reader.resume(); refreshPlayback()
+      resumePanelAudio(); refreshPlayback()
     }
+    syncPauseState()
   }
+  const dialogClosed = () => { if (!disposed) { resumePanelAudio(); syncPauseState(); refreshPlayback() } }
   root.ownerDocument.addEventListener('visibilitychange', visibilityChanged)
-  root.addEventListener('close', refreshPlayback, true)
+  root.addEventListener('close', dialogClosed, true)
   const persist = (arrival = false) => {
     recordIceCheckpoint(progress, save, undefined, arrival)
     const saved = browserStorage.setItem(KEY, JSON.stringify(save))
@@ -287,8 +309,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     updateReadingTools()
   }
   const clearMap = () => { mapController?.dispose(); mapController = null }
-  const stopVoice = () => { if (mouseVoice) { mouseVoice.pause(); mouseVoice.onended = null; mouseVoice.currentTime = 0; mouseVoice = null } }
-  const stopCharacterVoice = () => { characterVoice?.pause(); if (characterVoice) { characterVoice.removeAttribute('src'); characterVoice.load() }; characterVoice = null }
+  const stopVoice = () => { resumeMouse = false; visibilityMouse = false; if (mouseVoice) { mouseVoice.pause(); mouseVoice.onended = null; mouseVoice.currentTime = 0; mouseVoice = null } }
+  const stopCharacterVoice = () => { resumeCharacter = false; visibilityCharacter = false; characterVoice?.pause(); if (characterVoice) { characterVoice.removeAttribute('src'); characterVoice.load() }; characterVoice = null }
   const updateFullscreenLabel = () => {
     const button = root.querySelector<HTMLButtonElement>('#ice-fullscreen')
     if (button) { button.textContent = isAppFullscreen(root) ? copy[language].exitFullscreen : copy[language].fullscreen; button.setAttribute('aria-pressed', String(isAppFullscreen(root))) }
@@ -306,15 +328,15 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
   function renderFragment() {
     root.querySelector('#ice-fragment-layer')?.remove()
     const pending = save.pendingFragment
-    if (!pending) { reader.clear(); mapController?.setStoryPaused(panelOpen); refreshPlayback(); return }
+    if (!pending) { reader.clear(); syncPauseState(); refreshPlayback(); return }
     const story = fragmentStories[language][pending.id]
     const index = Math.min(pending.line, story.lines.length - 1)
     const [speaker, text] = story.lines[index]
     const isLast = index === story.lines.length - 1
     const label = language === 'zh' ? '碎片记忆' : 'FRAGMENT MEMORY'
     root.querySelector('.ice-layout')?.insertAdjacentHTML('beforeend', `<section class="ice-fragment-layer" id="ice-fragment-layer" role="dialog" aria-modal="true" aria-label="${label}：${story.title}" style="--fragment-art:url('/images/${story.art[index]}.webp')"><div class="ice-fragment-art" aria-hidden="true"></div><div class="ice-fragment-top"><span>${label} / ${String(fragmentIds.indexOf(pending.id) + 1).padStart(2, '0')}</span><strong>${story.title}</strong><em>${String(index + 1).padStart(2, '0')} / ${String(story.lines.length).padStart(2, '0')}</em></div><div class="ice-fragment-dialogue"><span class="ice-fragment-speaker">${speaker}</span><p>${text}</p><button id="ice-fragment-next" type="button">${isLast ? language === 'zh' ? '收起记忆 · 返回镜馆' : 'Keep memory · Return to hall' : language === 'zh' ? '继续回忆' : 'Continue memory'} <span>↗</span></button></div></section>`)
+    syncPauseState()
     reader.bind(root.querySelector('.ice-fragment-dialogue > p'), readingKey(), text)
-    if (panelOpen) reader.pause()
     root.querySelector<HTMLButtonElement>('#ice-fragment-next')?.addEventListener('click', () => {
       if (!save.pendingFragment || panelOpen || root.querySelector('dialog[open]')) return
       if (playbackMode !== 'skip' && reader.finish()) { refreshPlayback(); return }
@@ -333,11 +355,12 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     if (panelDialog?.open) panelDialog.close()
     panelDialog?.remove(); panelDialog = null
     panelOpen = false
+    syncPauseState()
     if (save.phase === 'map' && mapController && root.querySelector('#ice-world')) {
       mapController.setLanguage(language)
       updateMapCopy()
       if (save.pendingFragment) renderFragment()
-      else { reader.clear(); refreshPlayback() }
+      else { reader.clear(); syncPauseState(); refreshPlayback() }
       return
     }
     clearMap()
@@ -394,6 +417,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       let clipIndex = 0
       characterVoice = audio
       const play = () => {
+        if (document.hidden) { visibilityCharacter = true; return }
+        if (panelOpen || root.querySelector('dialog[open]')) { resumeCharacter = true; return }
         button.textContent = `♪ ${t.characterVoiceStop}`
         void audio.play().catch(() => { if (characterVoice === audio) button.textContent = t.voiceError })
       }
@@ -422,16 +447,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       panelDialog = null; panelOpen = false
       if (dialog?.open) dialog.close()
       dialog?.remove()
-      mapController?.setStoryPaused(!!save.pendingFragment)
-      resumePanelAudio(); reader.resume(); refreshPlayback()
-    }
-    const resumePanelAudio = () => {
-      if (disposed) return
-      if (browserStorage.getItem('naiwa-audio-enabled-v1') !== 'false' && playbackMode !== 'skip') {
-        if (resumeMouse) void mouseVoice?.play().catch(() => {})
-        if (resumeCharacter) void characterVoice?.play().catch(() => {})
-      }
-      resumeMouse = false; resumeCharacter = false
+      resumePanelAudio(); syncPauseState(); refreshPlayback()
     }
     const openPanel = (kind: 'routes' | 'log' | 'menu' | 'saves' | 'settings' | 'gallery') => {
       const t = copy[language]
@@ -447,11 +463,13 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
           confirmInApp(root, routeConfirmation(language), language, () => {
             const restored = restartIceFrom(progress, id)
             if (!restored || disposed) return
-            closePanel(); save = restored; persist(); render()
+            stopPlayback(); stopVoice(); stopCharacterVoice()
+            resumeMouse = false; resumeCharacter = false; visibilityMouse = false; visibilityCharacter = false
+            clearMap(); closePanel(); save = restored; persist(); render()
           })
         })
         panelDialog = dialog
-        dialog.addEventListener('close', () => { if (panelDialog === dialog) { panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback() } }, { once: true })
+        dialog.addEventListener('close', () => { if (panelDialog === dialog) { panelDialog = null; panelOpen = false; resumePanelAudio(); syncPauseState(); refreshPlayback() } }, { once: true })
         return
       }
       const title = kind === 'log' ? t.log : kind === 'saves' ? tr('存档／读档', 'Save / Load') : kind === 'settings' ? tr('设置', 'Settings') : kind === 'gallery' ? tr('图鉴', 'Gallery') : t.menu
@@ -470,7 +488,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       dialog.querySelector('#ice-routes-close')?.addEventListener('click', closePanel)
       dialog.addEventListener('close', () => {
         dialog.remove()
-        if (panelDialog === dialog) { panelDialog = null; panelOpen = false; mapController?.setStoryPaused(!!save.pendingFragment); resumePanelAudio(); reader.resume(); refreshPlayback() }
+        if (panelDialog === dialog) { panelDialog = null; panelOpen = false; resumePanelAudio(); syncPauseState(); refreshPlayback() }
         if (!disposed && focus?.isConnected) focus.focus({ preventScroll: true })
       }, { once: true })
       dialog.addEventListener('click', event => { if (event.target !== dialog) return; const b = dialog.getBoundingClientRect(); if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close() })
@@ -530,6 +548,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       mouseVoice = audio
       audio.onended = () => { if (mouseVoice === audio) mouseButton.textContent = `♪ ${t.voicePlay}` }
       const play = async () => {
+        if (document.hidden) { visibilityMouse = true; return }
+        if (panelOpen || root.querySelector('dialog[open]')) { resumeMouse = true; return }
         try {
           await audio.play()
           if (mouseVoice === audio) mouseButton.textContent = `■ ${t.voiceStop}`
@@ -567,7 +587,7 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     root.querySelector('#ice-finish')?.addEventListener('click', () => { stopVoice(); onBack(language) })
     if (isMap) {
       mapController = mountPoolIceWorld(root.querySelector<HTMLElement>('#ice-world')!, {
-        language, found: save.clues, storyPaused: !!save.pendingFragment,
+        language, found: save.clues, storyPaused: document.hidden || !!save.pendingFragment,
         onClue: id => {
           if (save.clues.includes(id)) return
           save.clues.push(id)
@@ -585,11 +605,12 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
       })
     }
     if (save.pendingFragment) renderFragment()
+    syncPauseState()
     refreshPlayback()
   }
   persist()
   render()
-  return { dispose() { disposed = true; stopPlayback(); unsubscribeSettings(); root.ownerDocument.removeEventListener('visibilitychange', visibilityChanged); root.removeEventListener('close', refreshPlayback, true); if (panelDialog?.open) panelDialog.close(); panelDialog?.remove(); panelDialog = null; stopVoice(); stopCharacterVoice(); clearMap(); root.ownerDocument.removeEventListener('keydown', keydown); root.ownerDocument.removeEventListener('fullscreenchange', updateFullscreenLabel); window.removeEventListener('appimmersivechange', updateFullscreenLabel) }, setLanguage(next: Language) { if (next !== language) { language = next; render() } }, restart() { stopPlayback(); stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() } }
+  return { dispose() { disposed = true; stopPlayback(); unsubscribeSettings(); root.ownerDocument.removeEventListener('visibilitychange', visibilityChanged); root.removeEventListener('close', dialogClosed, true); if (panelDialog?.open) panelDialog.close(); panelDialog?.remove(); panelDialog = null; stopVoice(); stopCharacterVoice(); clearMap(); root.ownerDocument.removeEventListener('keydown', keydown); root.ownerDocument.removeEventListener('fullscreenchange', updateFullscreenLabel); window.removeEventListener('appimmersivechange', updateFullscreenLabel) }, setLanguage(next: Language) { if (next !== language) { language = next; render() } }, restart() { stopPlayback(); stopVoice(); stopCharacterVoice(); clearMap(); save = blank(); persist(true); render() } }
 }
 
 export function chapterTwoStatus() { const save = load(); return { started: save.phase !== 'hospital' || save.line > 0, completed: save.completed, clues: save.clues.length } }

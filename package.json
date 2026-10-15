@@ -41,7 +41,11 @@
     "generate:game-statistics": "node scripts/generate-game-statistics.mjs",
     "check:statistics-refresh": "node scripts/check-statistics-refresh.mjs",
     "check:finale-curtain": "node scripts/check-finale-curtain.mjs",
-    "check:speech-compat": "python3 scripts/check-edge-speech-compat.py"
+    "check:speech-compat": "python3 scripts/check-edge-speech-compat.py",
+    "check:reading-tools": "node scripts/check-reading-tools.mjs",
+    "check:origin-reading-lifecycle": "node scripts/check-origin-reading-lifecycle.mjs",
+    "check:ice-replay-lifecycle": "node scripts/check-ice-replay-lifecycle.mjs",
+    "check:ice-page-lifecycle": "node scripts/check-ice-page-lifecycle.mjs"
   },
   "dependencies": {
     "three": "^0.185.1"
