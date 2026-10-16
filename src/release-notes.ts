@@ -17,14 +17,16 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  id: "2026-10-15-ice-models-ultra-low",
-  date: "2026-10-15",
-  title: {"zh":"冰馆细节与极低画质","en":"Mirror hall details and very low graphics"},
+  id: "2026-10-16-ice-context7-performance",
+  date: "2026-10-16",
+  title: { zh: '冰馆 · 渲染与运行优化', en: 'Mirror hall rendering and performance' },
   intro: {
-    zh: "细化水晶切面与物证模型，新增比低画质更轻的极低档，可在首次进入和镜馆设置中选择。",
-    en: "Finer crystal facets and evidence models, plus a lighter Very low preset available on first entry and in the hall settings.",
+    zh: '减少重复镜面采样与静态地图计算，修正极低档帧调度，并补齐退出时的实例资源释放。',
+    en: 'Fewer duplicate mirror captures and static-map calculations, corrected Very low frame scheduling, and complete instance cleanup on exit.',
   },
   items: [
+    {"tag": "MIRROR HALL PERFORMANCE", "title": {"zh": "镜面少算一次，画面照常跟随", "en": "Fewer repeat captures, mirrors that keep up"}, "body": {"zh": "同一帧、同一视角的折射背景与最终画面复用物证镜面采样，下一帧继续刷新。静态地图块不再随每个反射视角重复计算变换，保留水晶细节、灯光和探索路线。", "en": "The transmission background and final view share evidence-mirror captures within a frame, with a fresh capture on the next frame. Static map chunks no longer recompute transforms for every reflection view. Crystal detail, lighting and the exploration route are retained."}},
+    {"tag": "FRAME PACING & CLEANUP", "title": {"zh": "极低档调度与重玩资源释放", "en": "Very low frame pacing and replay cleanup"}, "body": {"zh": "修正极低画质在不同刷新率下的帧调度漂移；菜单继续降低渲染频率，后台继续跳过画面。退出镜馆时补齐浮空水晶与物证实例缓冲释放，减少重复进入时的资源残留。", "en": "Fixed frame-scheduling drift in Very low graphics across display refresh rates. Menus retain a smaller rendering budget, and hidden pages skip drawing. Leaving the hall now releases floating-crystal and evidence instance buffers, reducing leftover resources on repeated visits."}},
     { tag: 'ICE & EVIDENCE', title: { zh: '靠近后看得见的细节', en: 'Details to see up close' }, body: { zh: '平衡与高画质增加水晶端面、托盘卷边与固定螺钉，胶片有真实齿孔，镜片有厚度和倒角，录音盘补上分层边缘。物证位置与探索路线保持原样。', en: 'Balanced and High add crystal tip facets, rolled tray rims and small screws, physical film perforations, beveled glass thickness and stepped recording-disc edges. Evidence stays in place along the same exploration route.' } },
     { tag: 'VERY LOW GRAPHICS', title: { zh: '给较弱手机再留一档', en: 'A lighter option for less powerful phones' }, body: { zh: '新增“极低画质 · 省电”：进一步减少水晶与模型细节，关闭折射、实时镜面和雾粒子，保留简化的房间反光与路线照明，画面最高 30 帧。浮空水晶暂停运动；随时切回其他档位可恢复细节，不影响线索进度。', en: 'Very low · Battery saver further reduces crystals and model detail, disables refraction, live mirrors and mist particles, and keeps simpler room reflections and route lighting. Rendering is capped at 30 fps and floating crystals stop moving. Switch back to restore detail without changing clue progress.' } },
     {"tag":"READING PAUSE","title":{"zh":"切到后台，故事等你回来","en":"The story waits when you leave"},"body":{"zh":"第一章自动和快进在后台暂停，返回前台后从原位置继续。逐字对白在菜单打开时保持暂停，语音结束后的界面刷新不会让文字偷偷继续。","en":"Chapter-one Auto and Skip pause in the background and resume from the same position. Typed dialogue stays paused in menus, including when a finished voice clip refreshes the screen."}},

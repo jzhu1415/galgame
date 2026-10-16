@@ -76,12 +76,24 @@ export function makeMirrorFragment(spec) {
   darkInset.position.set(0, .14, 0); darkInset.scale.set(1, .65, 1); group.add(darkInset);
 
   const mirrors = [], reflectionFallbacks = [];
+  let reflectionFrame = 0;
+  group.userData.beginReflectionFrame = () => { reflectionFrame++; };
   const fallbackMaterial = silverMaterial({ color: 0xd3e9ed, roughness: .12 });
   for (const side of [1, -1]) {
     // Two small reflective witness tabs flank the physical evidence. This keeps
     // the camera-side mirror behavior without laying a reflective sheet over it.
     const tab = new THREE.Shape(); tab.moveTo(-.09,-.09); tab.lineTo(.09,-.09); tab.lineTo(.09,.09); tab.lineTo(-.09,.09); tab.closePath();
     const mirror = new Reflector(new THREE.ShapeGeometry(spec.id === 'shard' ? mirrorOutline('shard') : tab), { clipBias: .003, textureWidth: 256, textureHeight: 256, color: 0xe6f5f7 });
+    const capture = mirror.onBeforeRender;
+    let capturedFrame = -1, capturedCamera = null;
+    // r185 draws opaque mirrors in both the transmission background and the
+    // final pass. Share the capture only while the frame AND view stay equal.
+    // A water-reflection camera must still get its own correctly projected view.
+    mirror.onBeforeRender = function (renderer, scene, camera) {
+      if (capturedFrame === reflectionFrame && capturedCamera === camera) return;
+      capture.call(this, renderer, scene, camera);
+      capturedFrame = reflectionFrame; capturedCamera = camera;
+    };
     if (spec.id === 'shard') {
       mirror.scale.set(.62, .62, 1);
       mirror.position.set(0, side > 0 ? .397 : .39, 0);
@@ -176,6 +188,7 @@ export function makeMirrorFragment(spec) {
   });
   let simple = false;
   group.userData.setQuality = preset => {
+    reflectionFrame++;
     const settings = iceQualitySettings(preset);
     if (simple !== settings.simpleGeometry) {
       simple = settings.simpleGeometry;

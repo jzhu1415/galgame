@@ -8,7 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { SpatialCellCache, ScrollingDepthField } from './reference-performance.js';
+import { SpatialCellCache, ScrollingDepthField, freezeStaticWorld, FrameCadence } from './reference-performance.js';
 import { referenceRoomColumn, isReferenceCorridor } from './environment/RoomArchetypes.js';
 import { addChunkLights, applyFixturePreset, PoolLighting, PoolLightPlanCache } from './environment/PoolLighting.js';
 import { addChunkPoolAccess, PoolAccessPlanCache } from './environment/PoolAccessFixtures.js';
@@ -891,6 +891,7 @@ function buildChunk(chunkX, chunkZ, poolAccessPlanCache = null, poolLightPlanCac
     });
   }
   scene.add(group);
+  freezeStaticWorld(group);
   return group;
 }
 
@@ -2811,7 +2812,7 @@ canvas.addEventListener('click', () => {
   if (!firstQualityPending && qualityChosen && hasEntered && settingsMenu.hidden && !controls.isLocked && lastPointerType !== 'touch' && lastPointerType !== 'pen') controls.lock();
 });
 
-let lastRenderedAt = -Infinity;
+const frameCadence = new FrameCadence();
 let lastWaterReflectionAt = -Infinity;
 const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
 window.__naiwaIceLayer = iceChapterLayer;
@@ -2841,8 +2842,7 @@ function render(frameTime = performance.now()) {
   if (document.hidden) return;
   const isPlaying = !iceChapterLayer.isStoryPaused() && (controls.isLocked || touchPlaying);
   const renderInterval = isPlaying ? (qualitySettings.maxFps ? 1000 / qualitySettings.maxFps : 0) : 1000 / PAUSED_RENDER_FPS;
-  if (frameTime - lastRenderedAt < renderInterval) return;
-  lastRenderedAt = frameTime;
+  if (!frameCadence.shouldRender(frameTime, renderInterval)) return;
   const delta = Math.min(clock.getDelta(), 0.05);
   elapsed += delta;
   iceChapterLayer.update(delta, elapsed);

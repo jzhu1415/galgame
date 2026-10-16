@@ -695,6 +695,7 @@ export function createIceLandmarks({ scene }) {
       disposed = true;
       scene.remove(root);
       root.traverse((object) => {
+        if (object.isInstancedMesh) object.dispose();
         if (object.isMesh) {
           // Resources are owned by this module and intentionally shared within it.
           object.geometry = null;

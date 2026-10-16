@@ -97,6 +97,7 @@ function post(type, id) {
 function disposeObject(root) {
   const resources = new Set();
   root.traverse(object => {
+    if (object.isInstancedMesh) resources.add(object);
     const target = object.getRenderTarget?.();
     if (target) resources.add(target);
     if (object.geometry) resources.add(object.geometry);
@@ -656,6 +657,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     if (time * 1000 - lastNavAt > 100) { lastNavAt = time * 1000; updateNavigation(); }
     for (const group of exhibits.values()) {
+      group.userData.beginReflectionFrame();
       const [front, back] = group.userData.mirrorFaces;
       const [staticFront, staticBack] = group.userData.reflectionFallbacks;
       const nearby = group.visible && camera.position.distanceToSquared(group.position) < 18 * 18;
