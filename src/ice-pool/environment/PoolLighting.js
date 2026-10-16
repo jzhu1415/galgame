@@ -16,6 +16,7 @@ const MAX_LIGHT_COUNT = 16;
 const POOL_EMITTER_OFFSET = 0.07;
 
 const QUALITY_BUDGETS = Object.freeze({
+  ultra: 4,
   performance: MAX_LIGHT_COUNT,
   balanced: MAX_LIGHT_COUNT,
   high: MAX_LIGHT_COUNT,
@@ -741,9 +742,9 @@ export class PoolLighting {
 
   setQuality(name = 'balanced') {
     this.quality = QUALITY_BUDGETS[name] ? name : 'balanced';
-    this.activeCount = MAX_LIGHT_COUNT;
-    this.lights.forEach((light) => {
-      light.visible = true;
+    this.activeCount = QUALITY_BUDGETS[this.quality];
+    this.lights.forEach((light, index) => {
+      light.visible = index < this.activeCount;
     });
     this._forceEvaluate = true;
     return this;

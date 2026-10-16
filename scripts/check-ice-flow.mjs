@@ -71,6 +71,15 @@ for (const [index, [x, z]] of ROUTE_POINTS[0].entries()) {
     layer.setLanguage('en');
     layer.setQuality('performance');
     scene.traverse(object => { if (object.isReflector) assert.equal(object.getRenderTarget().width, 128, 'Low quality reduces actual mirror buffers'); });
+    const messageCount = messages.length;
+    layer.setQuality('ultra');
+    tick();
+    scene.traverseVisible(object => {
+      assert(!object.isReflector, 'Ultra renders no live planar mirrors');
+      if (object.material?.isMeshPhysicalMaterial) assert.equal(object.material.transmission, 0, 'Ultra disables refraction for exhibits and the core too');
+    });
+    scene.traverse(object => { if (object.isReflector) assert.equal(object.getRenderTarget().width, 32); });
+    assert.equal(messages.length, messageCount, 'Quality changes do not collect clues or advance progress');
     layer.setQuality('balanced');
     scene.traverse(object => { if (object.isReflector) assert.equal(object.getRenderTarget().width, 256, 'Balanced quality restores mirror detail'); });
     layer.setBrightness(.5);

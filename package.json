@@ -22,6 +22,7 @@
     "check:ice-quality-picker": "node scripts/check-ice-quality-picker.mjs",
     "check:ice-flow": "node scripts/check-ice-flow.mjs",
     "check:ice-rendering": "node scripts/check-ice-rendering.mjs",
+    "check:ice-ultra": "node scripts/check-ice-ultra.mjs",
     "generate:tts": "python3 scripts/generate-neural-tts.py",
     "check:romance-dlc": "node scripts/check-romance-dlc.mjs",
     "check:route-preview": "node scripts/check-route-preview.mjs",

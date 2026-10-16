@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { iceQualitySettings } from './ice-quality.js';
 
 /** Three readable landmarks along the northbound route. All geometry stays outside x=6.5..8.5. */
 export function createIceLandmarks({ scene }) {
@@ -118,6 +119,13 @@ export function createIceLandmarks({ scene }) {
     const shoulder = Array.from({ length: sides }, (_, i) => ring(variant.shoulder, 1, i));
     const shoulderTop = Array.from({ length: sides }, (_, i) => ring(variant.shoulder + .08, .97, i));
     const apex = new THREE.Vector3(variant.tip[0], .5, variant.tip[1]);
+    // Small offset termination facets give the tips cut faces rather than a
+    // repeated needle point. Low presets retain the simpler four-sided crown.
+    const termination = Array.from({ length: sides }, (_, i) => {
+      const angle = i * Math.PI * 2 / sides;
+      return new THREE.Vector3(apex.x + Math.cos(angle) * .09,
+        .455 + .015 * Math.sin(i * 1.7), apex.z + Math.sin(angle) * .09);
+    });
     const center = new THREE.Vector3(0, -.5, 0);
     for (let i = 0; i < sides; i++) {
       const next = (i + 1) % sides;
@@ -128,12 +136,21 @@ export function createIceLandmarks({ scene }) {
       addTriangle(shoulder[i], shoulderTop[next], shoulderTop[i], radial);
       const crownRadial = new THREE.Vector3().addVectors(shoulderTop[i], shoulderTop[next]);
       crownRadial.add(apex).multiplyScalar(1 / 3); crownRadial.y = 0;
-      addTriangle(shoulderTop[i], shoulderTop[next], apex, crownRadial);
+      if (reduced) addTriangle(shoulderTop[i], shoulderTop[next], apex, crownRadial);
+      else {
+        // The new crown can tilt away from a purely radial direction. Its
+        // centre includes height, keeping the clipped facets facing outside.
+        addTriangle(shoulderTop[i], shoulderTop[next], termination[next],
+          new THREE.Vector3().addVectors(shoulderTop[i], shoulderTop[next]).add(termination[next]));
+        addTriangle(shoulderTop[i], termination[next], termination[i],
+          new THREE.Vector3().addVectors(shoulderTop[i], termination[next]).add(termination[i]));
+        addTriangle(termination[i], termination[next], apex, new THREE.Vector3(0, 1, 0));
+      }
       addTriangle(center, lower[next], lower[i], new THREE.Vector3(0, -1, 0));
     }
     return { positions, facetOrigins };
   };
-  function makeCrystalCluster(specs, reduced = quality === 'performance') {
+  function makeCrystalCluster(specs, reduced = iceQualitySettings(quality).simpleGeometry) {
     const positions = [];
     const facetOrigins = [];
     const growthDirections = [];
@@ -213,7 +230,7 @@ export function createIceLandmarks({ scene }) {
     registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
       () => makeCrystalCluster(members, reduced)));
   }
-  function makeFloatingCrystal(variantIndex, reduced = quality === 'performance') {
+  function makeFloatingCrystal(variantIndex, reduced = iceQualitySettings(quality).simpleGeometry) {
     const profile = crystalVariantFor(variantIndex);
     const positions = [];
     const facetOrigins = [];
@@ -383,7 +400,7 @@ export function createIceLandmarks({ scene }) {
         .addScaledVector(growthDirection, object.geometry.userData.growthHeights[lightBranch] * .36)
         .toArray();
       registerQualityRebuilder((reduced) => {
-        const retainedIndexes = reduced ? [0, 2, 3, 5, 6, 9] : specs.map((_, index) => index);
+        const retainedIndexes = quality === 'ultra' ? [0, 3, 6, 9] : reduced ? [0, 2, 3, 5, 6, 9] : specs.map((_, index) => index);
         const selected = retainedIndexes.map(index => specs[index]);
         replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
         object.userData.crystalCount = selected.length;
@@ -470,7 +487,7 @@ export function createIceLandmarks({ scene }) {
       object.userData.growthSurface = 'floor';
       if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
       registerQualityRebuilder((reduced) => {
-        const selected = reduced ? sampleCrystalSpecs(specs, Math.max(1, Math.ceil(specs.length * .35))) : specs;
+        const selected = reduced ? sampleCrystalSpecs(specs, Math.max(1, Math.ceil(specs.length * iceQualitySettings(quality).crystalRatio))) : specs;
         replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
         object.userData.crystalCount = selected.length;
       });
@@ -520,7 +537,7 @@ export function createIceLandmarks({ scene }) {
       updateInstancedFloatBatch(object, instances, 0);
       setFloatBounds(object, instances);
       registerQualityRebuilder((reduced) => {
-        const count = reduced ? Math.max(1, Math.ceil(perSide * .35)) : perSide;
+        const count = reduced ? Math.max(1, Math.ceil(perSide * iceQualitySettings(quality).crystalRatio)) : perSide;
         entry.instances = entry.allInstances.slice(0, count);
         object.count = count;
         object.userData.crystalCount = count;
@@ -627,10 +644,15 @@ export function createIceLandmarks({ scene }) {
   return {
     setQuality(preset) {
       if (disposed) return;
-      const nextQuality = preset === 'performance' ? 'performance' : 'balanced';
+      const nextQuality = preset === 'ultra' || preset === 'performance' ? preset : 'balanced';
       if (nextQuality === quality) return;
       quality = nextQuality;
-      for (const rebuild of qualityRebuilders) rebuild(quality === 'performance');
+      const settings = iceQualitySettings(quality);
+      for (const rebuild of qualityRebuilders) rebuild(settings.simpleGeometry);
+      for (const [material, transmission] of [[ice, .92], [glass, .94]]) {
+        const next = settings.refraction ? transmission : 0;
+        if (material.transmission !== next) { material.transmission = next; material.needsUpdate = true; }
+      }
       positionLights(activeLightRoom);
     },
     setBrightness(scale) {
@@ -643,6 +665,7 @@ export function createIceLandmarks({ scene }) {
       void found;
       void delta;
       for (const entry of floating) {
+        if (!iceQualitySettings(quality).animateCrystals) break;
         // Geometry remains visible to the main and reflection cameras. Distant
         // motion alone sleeps; absolute time resumes the same phase on approach.
         if (camera && (entry.object.isInstancedMesh

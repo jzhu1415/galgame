@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { iceQualitySettings } from './ice-quality.js';
 
 // Capture real rooms for chapter props only. Pool tiles keep their own lighting.
 export function createIceReflections({ renderer, scene, roots }) {
@@ -45,7 +46,7 @@ export function createIceReflections({ renderer, scene, roots }) {
     invalidate,
     setQuality(preset) {
       if (disposed) return;
-      const size = preset === 'performance' ? 64 : 128;
+      const size = iceQualitySettings(preset).cubeSize;
       if (size === captureSize) return;
       captureSize = size;
       // Recreate all six face images too: generic RenderTarget.setSize updates
@@ -55,6 +56,11 @@ export function createIceReflections({ renderer, scene, roots }) {
       cubeCamera.renderTarget = captureTarget;
       previous.dispose();
       invalidate();
+      // Only the active map is bound to materials. Release inactive room maps
+      // immediately when reducing quality instead of retaining larger buffers.
+      for (const probe of probes) if (probe !== activeProbe && probe.target) {
+        probe.target.dispose(); probe.target = null;
+      }
     },
     refresh(camera) {
       if (disposed) return;

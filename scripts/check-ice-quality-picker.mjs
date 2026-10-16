@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { bindIceQualityPicker } from '../src/ice-pool/ice-quality-picker.js';
 
 const listeners = new Map();
-const inputs = ['high', 'balanced', 'performance'].map(value => {
+const inputs = ['high', 'balanced', 'performance', 'ultra'].map(value => {
   const classes = new Set();
   const input = { value, checked: false, disabled: false };
   const card = {
@@ -65,9 +65,16 @@ inputs[0].disabled = true;
 touch('pointerdown', inputs[0]);
 touch('pointerup', inputs[0]);
 assertChoice('performance');
+touch('pointerdown', inputs[3]);
+touch('pointerup', inputs[3]);
+assertChoice('ultra');
+const ultraChoices = choices.length;
+emit('click', inputs[3].text);
+emit('change', inputs[3]);
+assert.equal(choices.length, ultraChoices, 'Ultra card keeps mobile event deduplication');
 pending = false;
 emit('click', inputs[1].text);
-assertChoice('performance');
+assertChoice('ultra');
 const count = choices.length;
 picker.dispose();
 emit('click', inputs[1].text);

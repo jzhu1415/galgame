@@ -162,6 +162,16 @@ const QUALITY_PRESETS = {
     bloom: false,
     mistRatio: 0.5,
   },
+  ultra: {
+    pixelRatio: .65,
+    waterReflectionFps: 0,
+    waterReflectionScale: .2,
+    waterReflectionStrength: 0,
+    activeLights: 3,
+    bloom: false,
+    mistRatio: 0,
+    maxFps: 30,
+  },
 };
 
 function storedQualityPreset() {
@@ -202,7 +212,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.82;
 // Low quality samples refraction at half resolution; crystal silhouettes and
 // physical materials remain unchanged, with a quarter of the sampled pixels.
-renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
+renderer.transmissionResolutionScale = qualityPresetName === 'ultra' ? .25 : qualityPresetName === 'performance' ? .5 : 1;
 // Sixteen shadowed spotlights can exceed mobile GPU shader limits. Pool-light
 // reflection visibility is handled by the tile materials instead.
 renderer.shadowMap.enabled = false;
@@ -228,7 +238,8 @@ controls.pointerSpeed = 0.72;
 applyLookSettings();
 
 const audioSystem = new AudioSystem({
-  camera, scene, mobile: isMobilePlatform, quality: qualityPresetName,
+  camera, scene, mobile: isMobilePlatform,
+  quality: qualityPresetName === 'ultra' ? 'performance' : qualityPresetName,
   environmentProvider: createReferenceAudioEnvironment({
     columnAt, moduleSize: MODULE_SIZE, waterLevel: WATER_LEVEL,
   }),
@@ -1842,7 +1853,7 @@ mistGeometry.setDrawRange(0, Math.round(mistCount * qualitySettings.mistRatio));
 function applyQualityPreset(presetName, persist = true) {
   qualityPresetName = QUALITY_PRESETS[presetName] ? presetName : 'balanced';
   qualitySettings = QUALITY_PRESETS[qualityPresetName];
-  renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
+  renderer.transmissionResolutionScale = qualityPresetName === 'ultra' ? .25 : qualityPresetName === 'performance' ? .5 : 1;
   qualityPresetInput.value = qualityPresetName;
   const viewport = getViewportSize();
   const pixelRatio = Math.min(window.devicePixelRatio, qualitySettings.pixelRatio);
@@ -1856,7 +1867,7 @@ function applyQualityPreset(presetName, persist = true) {
   waterReflector.getRenderTarget().setSize(reflectionSize.width, reflectionSize.height);
   waterUniforms.reflectionStrength.value = qualitySettings.waterReflectionStrength;
   poolLighting.setQuality(qualityPresetName);
-  audioSystem.setQuality(qualityPresetName);
+  audioSystem.setQuality(qualityPresetName === 'ultra' ? 'performance' : qualityPresetName);
   updateSkylightLights(true);
   window.__naiwaIceLayer?.setQuality?.(qualityPresetName);
   lastWaterReflectionAt = -Infinity;
@@ -2829,7 +2840,7 @@ function render(frameTime = performance.now()) {
   requestAnimationFrame(render);
   if (document.hidden) return;
   const isPlaying = !iceChapterLayer.isStoryPaused() && (controls.isLocked || touchPlaying);
-  const renderInterval = isPlaying ? 0 : 1000 / PAUSED_RENDER_FPS;
+  const renderInterval = isPlaying ? (qualitySettings.maxFps ? 1000 / qualitySettings.maxFps : 0) : 1000 / PAUSED_RENDER_FPS;
   if (frameTime - lastRenderedAt < renderInterval) return;
   lastRenderedAt = frameTime;
   const delta = Math.min(clock.getDelta(), 0.05);

@@ -17,14 +17,16 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  id: "2026-10-14-reading-and-replay-lifecycle",
-  date: "2026-10-14",
-  title: {"zh":"回放与阅读，接得更稳","en":"Steadier reading and replay"},
+  id: "2026-10-15-ice-models-ultra-low",
+  date: "2026-10-15",
+  title: {"zh":"冰馆细节与极低画质","en":"Mirror hall details and very low graphics"},
   intro: {
-    zh: "修复第一章后台阅读、第二章剧情树回放与分支对白显示，让暂停、返回和重玩接回正确的位置。主页的奶霸介绍也增加了紫色点缀。",
-    en: "Background reading in chapter one, chapter-two checkpoint replay and branch dialogue now return to the correct position. Naiba’s home card also has stronger violet accents.",
+    zh: "细化水晶切面与物证模型，新增比低画质更轻的极低档，可在首次进入和镜馆设置中选择。",
+    en: "Finer crystal facets and evidence models, plus a lighter Very low preset available on first entry and in the hall settings.",
   },
   items: [
+    { tag: 'ICE & EVIDENCE', title: { zh: '靠近后看得见的细节', en: 'Details to see up close' }, body: { zh: '平衡与高画质增加水晶端面、托盘卷边与固定螺钉，胶片有真实齿孔，镜片有厚度和倒角，录音盘补上分层边缘。物证位置与探索路线保持原样。', en: 'Balanced and High add crystal tip facets, rolled tray rims and small screws, physical film perforations, beveled glass thickness and stepped recording-disc edges. Evidence stays in place along the same exploration route.' } },
+    { tag: 'VERY LOW GRAPHICS', title: { zh: '给较弱手机再留一档', en: 'A lighter option for less powerful phones' }, body: { zh: '新增“极低画质 · 省电”：进一步减少水晶与模型细节，关闭折射、实时镜面和雾粒子，保留简化的房间反光与路线照明，画面最高 30 帧。浮空水晶暂停运动；随时切回其他档位可恢复细节，不影响线索进度。', en: 'Very low · Battery saver further reduces crystals and model detail, disables refraction, live mirrors and mist particles, and keeps simpler room reflections and route lighting. Rendering is capped at 30 fps and floating crystals stop moving. Switch back to restore detail without changing clue progress.' } },
     {"tag":"READING PAUSE","title":{"zh":"切到后台，故事等你回来","en":"The story waits when you leave"},"body":{"zh":"第一章自动和快进在后台暂停，返回前台后从原位置继续。逐字对白在菜单打开时保持暂停，语音结束后的界面刷新不会让文字偷偷继续。","en":"Chapter-one Auto and Skip pause in the background and resume from the same position. Typed dialogue stays paused in menus, including when a finished voice clip refreshes the screen."}},
     { tag: 'CHECKPOINT REPLAY', title: { zh: '回到那一幕，也回到当时的镜馆', en: 'Return to the scene and its mirror hall' }, body: { zh: '第二章确认剧情树回放后，镜馆按首次抵达时的线索重新加载，不同结局显示对应分支的对白。取消回放保留现场，语言切换不重置探索；关闭面板或切换语言后，对白按当前前后台状态继续，累计解锁保留。', en: 'Confirmed chapter-two replay reloads the hall with its first-arrival clues, and endings show their own dialogue. Canceling replay keeps the scene; switching language keeps exploration. After panel closure or a language change, reading follows foreground and background state. Cumulative unlocks are preserved.' } },
     {"tag":"MIRROR HALL RETURN","title":{"zh":"返回网页时保留镜馆交互","en":"Keep hall interactions when returning"},"body":{"zh":"调整浏览器缓存导航时的镜馆处理，保留物证、画质设置和触控操作，清除离开前的按住状态；永久离开页面时仍清理资源。","en":"Cached browser navigation preserves hall evidence, quality settings and touch controls, while clearing held input. Resources are still released when the page is permanently left."}},
