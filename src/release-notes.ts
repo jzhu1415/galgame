@@ -17,16 +17,20 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  id: "2026-10-16-ice-context7-performance",
-  date: "2026-10-16",
-  title: { zh: '冰馆 · 渲染与运行优化', en: 'Mirror hall rendering and performance' },
+  id: '2026-10-18-home-cast-refinement',
+  date: '2026-10-18',
+  title: { zh: '角色介绍 · 先见一面', en: 'Meet the cast' },
   intro: {
-    zh: '减少重复镜面采样与静态地图计算，修正极低档帧调度，并补齐退出时的实例资源释放。',
-    en: 'Fewer duplicate mirror captures and static-map calculations, corrected Very low frame scheduling, and complete instance cleanup on exit.',
+    zh: '保留主页新版角色介绍：大幅立绘、姓名与淡紫色的奶霸档案。章节预览、制作时间线和页尾恢复原来的布局与动效，此前的镜馆优化继续保留。',
+    en: 'The home keeps its new character portraits, names and lavender Naiba spread. Chapter previews, the production timeline and closing section return to their earlier layouts and motion. Earlier mirror hall improvements are retained.',
   },
   items: [
+    { tag: 'CHARACTER PORTRAITS', title: { zh: '保留这两张新的角色页', en: 'Keep the new character spreads' }, body: { zh: '奶蛙与奶霸使用大幅立绘、姓名和英文底字，切换入口收进标题旁。角色文字直接可读，立绘采用简短入场；支持键盘切换、查看小档案和定位章节预览。', en: 'Naiwa and Naiba have large portraits, names and English lettering, with their switches beside the heading. Character copy is immediately readable and portraits use a brief entrance. Keyboard switching, notes and links to chapter previews remain available.' } },
+    { tag: 'FAMILIAR HOME', title: { zh: '其余部分回到熟悉的样子', en: 'The familiar page returns' }, body: { zh: '章节恢复横向标签与图文分栏，制作区恢复原来的时间线与工作台，页尾恢复原有排版和入场。封面、故事介绍及各章节独立介绍页保持原样。', en: 'Chapters return to horizontal tabs and a split image-and-copy view. The production timeline, workbench and closing section recover their earlier layout and motion. The cover, story introduction and separate chapter pages are retained.' } },
     {"tag": "MIRROR HALL PERFORMANCE", "title": {"zh": "镜面少算一次，画面照常跟随", "en": "Fewer repeat captures, mirrors that keep up"}, "body": {"zh": "同一帧、同一视角的折射背景与最终画面复用物证镜面采样，下一帧继续刷新。静态地图块不再随每个反射视角重复计算变换，保留水晶细节、灯光和探索路线。", "en": "The transmission background and final view share evidence-mirror captures within a frame, with a fresh capture on the next frame. Static map chunks no longer recompute transforms for every reflection view. Crystal detail, lighting and the exploration route are retained."}},
     {"tag": "FRAME PACING & CLEANUP", "title": {"zh": "极低档调度与重玩资源释放", "en": "Very low frame pacing and replay cleanup"}, "body": {"zh": "修正极低画质在不同刷新率下的帧调度漂移；菜单继续降低渲染频率，后台继续跳过画面。退出镜馆时补齐浮空水晶与物证实例缓冲释放，减少重复进入时的资源残留。", "en": "Fixed frame-scheduling drift in Very low graphics across display refresh rates. Menus retain a smaller rendering budget, and hidden pages skip drawing. Leaving the hall now releases floating-crystal and evidence instance buffers, reducing leftover resources on repeated visits."}},
+    { tag: 'STORY JOURNAL', title: { zh: '每一页，有不同的读法', en: 'Each page has its own rhythm' }, body: { zh: '主页标题采用实心与描边排字，故事介绍加入首字放大、引言与页边批注。角色名字、章节编号和制作日期采用不同的层次，让长页更容易浏览。', en: 'Solid and outlined cover lettering leads into drop caps, introductions and margin notes. Character names, chapter numbers and production dates have distinct hierarchies, making the long page easier to browse.' } },
+    { tag: 'PRINT & INK', title: { zh: '故事开场的字句与墨迹', en: 'Print and ink for the opening pages' }, body: { zh: '封面与故事介绍保留标题落位和重点词划线；角色区使用单次立绘过渡，其余区域延续原有动效。系统开启减少动态效果时静态展示。', en: 'The cover and story introduction retain their title and ink-stroke entrances. The cast uses a single portrait transition; other sections retain their earlier motion. Reduced-motion settings show the content statically.' } },
     { tag: 'ICE & EVIDENCE', title: { zh: '靠近后看得见的细节', en: 'Details to see up close' }, body: { zh: '平衡与高画质增加水晶端面、托盘卷边与固定螺钉，胶片有真实齿孔，镜片有厚度和倒角，录音盘补上分层边缘。物证位置与探索路线保持原样。', en: 'Balanced and High add crystal tip facets, rolled tray rims and small screws, physical film perforations, beveled glass thickness and stepped recording-disc edges. Evidence stays in place along the same exploration route.' } },
     { tag: 'VERY LOW GRAPHICS', title: { zh: '给较弱手机再留一档', en: 'A lighter option for less powerful phones' }, body: { zh: '新增“极低画质 · 省电”：进一步减少水晶与模型细节，关闭折射、实时镜面和雾粒子，保留简化的房间反光与路线照明，画面最高 30 帧。浮空水晶暂停运动；随时切回其他档位可恢复细节，不影响线索进度。', en: 'Very low · Battery saver further reduces crystals and model detail, disables refraction, live mirrors and mist particles, and keeps simpler room reflections and route lighting. Rendering is capped at 30 fps and floating crystals stop moving. Switch back to restore detail without changing clue progress.' } },
     {"tag":"READING PAUSE","title":{"zh":"切到后台，故事等你回来","en":"The story waits when you leave"},"body":{"zh":"第一章自动和快进在后台暂停，返回前台后从原位置继续。逐字对白在菜单打开时保持暂停，语音结束后的界面刷新不会让文字偷偷继续。","en":"Chapter-one Auto and Skip pause in the background and resume from the same position. Typed dialogue stays paused in menus, including when a finished voice clip refreshes the screen."}},

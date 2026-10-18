@@ -1,0 +1,63 @@
+/* The approved cast spread is isolated from chapter previews and the production timeline. */
+.home-cast-gallery { --spread-ink: #332e26; --spread-purple: #715287; --spread-line: #d9d2c4; }
+.home-cast-gallery .home-section { position: relative; }
+.home-cast-gallery .home-section-label { padding-bottom: 18px; }
+.home-cast-gallery .home-section-label::after { width: 32px; }
+.home-cast-gallery .home-overline { font-size: .7rem; letter-spacing: .13em; }
+.home-cast-gallery :is(h2,h3) { letter-spacing: -.045em; }
+.home-cast-gallery .home-cast-masthead { margin: 44px 0 36px; }
+.home-cast-gallery .home-cast-masthead { display: grid; grid-template-columns: minmax(0,1fr) minmax(260px,340px); gap: 40px; align-items: end; }
+.home-cast-gallery .home-cast-masthead h2 { font-size: clamp(3rem,6.8vw,6.2rem); line-height: 1.2; font-weight: 500; }
+.home-cast-gallery .home-person-tabs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0; border-block: 1px solid var(--spread-line); }
+.home-cast-gallery .home-person-tabs button { min-height: 66px; padding: 10px 14px; gap: 10px; border: 0; border-radius: 0; background: transparent; font-size: 1rem; }
+.home-cast-gallery .home-person-tabs button + button { border-left: 1px solid var(--spread-line); }
+.home-cast-gallery .home-person-tabs button > span { display: block; margin: 0; }
+.home-cast-gallery .home-person-tabs .home-person-tab-number { color: var(--home-muted); font: .7rem/1.4 Georgia,serif; }
+.home-cast-gallery .home-person-tabs .home-tab-arrow { margin-left: auto; transition: transform .2s; }
+.home-cast-gallery .home-person-tabs button:hover .home-tab-arrow { transform: translate(2px,-2px); }
+.home-cast-gallery .home-person-tabs button[aria-selected='true'] { background: #ffe78c; color: var(--spread-ink); }
+.home-cast-gallery .home-person-tabs #home-person-tab-1[aria-selected='true'] { background: #ded0ee; color: #56366f; }
+.home-cast-gallery .home-person-stage,.home-cast-gallery .home-person-stage:has(#home-person-panel-1:not([hidden])) { margin-top: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
+.home-cast-gallery .home-person-panel { grid-template-columns: minmax(0,1.12fr) minmax(0,1fr); gap: 7%; min-height: 580px; padding: 30px 0 0; background: transparent; align-items: center; }
+.home-cast-gallery #home-person-panel-1 { background: transparent; }
+.home-cast-gallery .home-person-portrait { height: clamp(400px,42vw,600px); isolation: isolate; }
+.home-cast-gallery .home-person-portrait::before,.home-cast-gallery #home-person-panel-1 .home-person-portrait::before { content: ''; position: absolute; z-index: -1; inset: 18% 9% 7% 3%; border: 0; border-radius: 1px 46% 1px 1px; background: #f8da72; transform: rotate(-4deg); }
+.home-cast-gallery #home-person-panel-1 .home-person-portrait::before { background: #d7c3e9; border-radius: 44% 1px 1px 1px; transform: rotate(4deg); }
+.home-cast-gallery .home-person-portrait .home-person-wordmark { position: absolute; z-index: -1; top: 0; left: 0; color: transparent; -webkit-text-stroke: 1px #aa8b50; font: 500 clamp(4rem,8.7vw,8.5rem)/1 Georgia,serif; letter-spacing: -.07em; }
+.home-cast-gallery #home-person-panel-1 .home-person-wordmark { color: transparent; -webkit-text-stroke-color: #9a7cb3; }
+.home-cast-gallery .home-person-portrait .home-person-folio { position: absolute; left: 0; top: auto; bottom: 0; color: var(--home-muted); font: .65rem/1.5 'DM Sans',sans-serif; letter-spacing: .16em; }
+.home-cast-gallery .home-person-portrait img { display: block; width: 100%; height: 100%; padding: 22px 9% 20px; object-fit: contain; object-position: center bottom; }
+.home-cast-gallery .home-person-copy { min-width: 0; padding: 28px 0; }
+.home-cast-gallery .home-person-copy h3,.home-cast-gallery #home-person-panel-1 .home-person-copy h3 { display: block; margin: 14px 0 24px; padding: 0; border: 0; }
+.home-cast-gallery .home-person-name { font-size: clamp(3.5rem,6.2vw,6.1rem); line-height: 1.2; letter-spacing: -.04em; font-weight: 500; }
+.home-cast-gallery #home-person-panel-1 .home-person-name { color: var(--spread-purple); }
+.home-cast-gallery .home-person-copy h3 small { display: block; max-width: none; margin-top: 14px; font-size: .82rem; letter-spacing: .02em; }
+.home-cast-gallery .home-person-copy > p.home-person-intro { max-width: 35ch; font: 400 1.04rem/1.95 'Noto Serif SC',Georgia,serif; }
+.home-cast-gallery .home-person-traits { margin: 26px 0 0 !important; padding-top: 18px; border-top: 1px solid var(--spread-line); font-size: .7rem; }
+.home-cast-gallery .home-person-notes { margin: 14px 0 12px; border-top: 0; }
+
+.home-cast-gallery .home-person-panel[hidden] { display: none; }
+/* The portrait enters once; its copy and controls stay available. */
+.home-launch.has-reveals .home-cast-gallery [data-home-reveal] { opacity: 1; transform: none; transition: none; }
+.has-motion .home-cast-gallery .home-entry.is-visible .home-person-panel:not([hidden]) .home-person-portrait img { animation: home-portrait-arrive .45s cubic-bezier(.16,1,.3,1) both; }
+@keyframes home-portrait-arrive { from { opacity: .6; transform: translate3d(10px,8px,0) scale(.985); } to { opacity: 1; transform: none; } }
+@media (max-width: 1000px) {
+  .home-cast-gallery .home-cast-masthead { grid-template-columns: 1fr; gap: 24px; }
+  .home-cast-gallery .home-person-tabs { max-width: 360px; }
+  .home-cast-gallery .home-person-panel { gap: 32px; }
+}
+@media (max-width: 700px) {
+  .home-cast-gallery .home-cast-masthead { margin: 32px 0 26px; }
+  .home-cast-gallery .home-cast-masthead h2 { font-size: clamp(2.8rem,11vw,4rem); }
+  .home-cast-gallery .home-person-tabs { max-width: none; }
+  .home-cast-gallery .home-person-tabs button { min-height: 58px; padding-inline: 12px; }
+  .home-cast-gallery .home-person-panel { grid-template-columns: minmax(0,1fr); padding-top: 16px; gap: 12px; min-height: 0; }
+  .home-cast-gallery .home-person-portrait { height: 370px; }
+  .home-cast-gallery .home-person-portrait .home-person-wordmark { font-size: clamp(4rem,17vw,6rem); }
+  .home-cast-gallery .home-person-copy { padding: 24px 0 0; }
+  .home-cast-gallery .home-person-name { font-size: 3.4rem; }
+  .home-cast-gallery .home-person-copy > p.home-person-intro { max-width: none; font-size: 1rem; }
+}
+@media (forced-colors: active) {
+  .home-cast-gallery .home-person-portrait .home-person-wordmark,.home-cast-gallery #home-person-panel-1 .home-person-wordmark { color: CanvasText; -webkit-text-stroke: 0; }
+}
