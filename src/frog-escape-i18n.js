@@ -1,5 +1,9 @@
 // Keep gameplay names/IDs stable; translate only when presenting them to players.
 export const escapeEnglish=Object.freeze({
+  '奶蛙致死的爱':'Naiwa’s Deadly Love',
+  '奶蛙致死的爱 · Naiwa Escape':'Naiwa’s Deadly Love · Naiwa Escape',
+  '奶蛙致死的爱：探索古堡、寻找工具、躲避追捕的第一人称3D逃脱游戏。':'Naiwa’s Deadly Love: a first-person 3D escape game. Explore the castle, find tools and evade pursuit.',
+  '古堡逃脱 · 找到线索，逃离奶蛙的追捕':'Castle Escape · Find clues and escape Naiwa’s pursuit',
   '体力值':'Stamina','香蕉':'Banana','香蕉皮':'Banana peel',
   '被门撞中':'Hit by a swinging door','门受到撞击，稍等片刻再使用。':'The door is recovering from an impact. Wait a moment before using it.',
   '设置':'Settings', '设置 · Esc':'Settings · Esc', '打开设置':'Open settings',

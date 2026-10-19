@@ -5,6 +5,7 @@ import { ICE_LAYOUT, ICE_ROUTES, currentIceStage, canCollectIceEvidence } from '
 import { createIceLandmarks } from './ice-landmarks.js';
 import { createIceReflections } from './ice-reflections.js';
 import { isIceControlEvent } from './ice-input.js';
+import { iceQualitySettings } from './ice-quality.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -96,6 +97,7 @@ function post(type, id) {
 function disposeObject(root) {
   const resources = new Set();
   root.traverse(object => {
+    if (object.isInstancedMesh) resources.add(object);
     const target = object.getRenderTarget?.();
     if (target) resources.add(target);
     if (object.geometry) resources.add(object.geometry);
@@ -162,6 +164,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   let storyPaused = false;
   let lightScale = 1;
   let menuPaused = false;
+  let qualitySettings = iceQualitySettings('balanced');
   let routeStep = 0;
   let routeAtStart = false;
   let routeStarted = false;
@@ -567,10 +570,14 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   }
   function setQuality(preset) {
     if (disposed) return;
+    qualitySettings = iceQualitySettings(preset);
     landmarks.setQuality(preset);
     reflections.setQuality(preset);
-    const mirrorSize = preset === 'performance' ? 128 : 256;
+    const transmission = qualitySettings.refraction ? .9 : 0;
+    if (coreCrystal.material.transmission !== transmission) { coreCrystal.material.transmission = transmission; coreCrystal.material.needsUpdate = true; }
+    const mirrorSize = qualitySettings.mirrorSize;
     for (const group of exhibits.values()) {
+      group.userData.setQuality(preset);
       for (const face of group.userData.mirrorFaces) {
         const target = face.getRenderTarget();
         if (target.width !== mirrorSize) target.setSize(mirrorSize, mirrorSize);
@@ -650,15 +657,19 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     if (time * 1000 - lastNavAt > 100) { lastNavAt = time * 1000; updateNavigation(); }
     for (const group of exhibits.values()) {
+      group.userData.beginReflectionFrame();
       const [front, back] = group.userData.mirrorFaces;
+      const [staticFront, staticBack] = group.userData.reflectionFallbacks;
       const nearby = group.visible && camera.position.distanceToSquared(group.position) < 18 * 18;
-      if (!nearby) { front.visible = false; back.visible = false; continue; }
+      if (!nearby) { front.visible = false; back.visible = false; staticFront.visible = false; staticBack.visible = false; continue; }
       group.updateWorldMatrix(true, true);
       front.getWorldPosition(mirrorPosition);
       mirrorPosition.subVectors(camera.position, mirrorPosition);
       const frontFacing = mirrorPosition.dot(front.getWorldDirection(mirrorDirection)) >= 0;
-      front.visible = nearby && frontFacing;
-      back.visible = nearby && !frontFacing;
+      front.visible = qualitySettings.liveMirrors && frontFacing;
+      back.visible = qualitySettings.liveMirrors && !frontFacing;
+      staticFront.visible = !qualitySettings.liveMirrors && frontFacing;
+      staticBack.visible = !qualitySettings.liveMirrors && !frontFacing;
     }
     progressRoute();
     currentTarget = nearbyTarget();

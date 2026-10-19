@@ -361,6 +361,7 @@
               <option value="high" data-i18n="quality.high">高画质</option>
               <option value="balanced" selected data-i18n="quality.balanced">平衡（推荐）</option>
               <option value="performance" data-i18n="quality.performance">性能优先</option>
+              <option value="ultra" data-i18n="quality.ultra">极低画质 · 省电</option>
             </select>
             <p class="quality-note" id="quality-note" data-i18n="quality.note">选择画面细节与流畅度。</p>
           </div>
@@ -425,7 +426,7 @@
       <div class="quality-welcome-panel">
         <p class="settings-kicker" data-i18n="quality.welcome.kicker">NAIWA · 首次进入</p>
         <h1 id="quality-welcome-title" data-i18n="quality.welcome.title">选择画质</h1>
-        <p class="quality-welcome-note" id="quality-welcome-note" data-i18n="quality.welcome.note">低画质会减少场景中的水晶，以提升流畅度。</p>
+        <p class="quality-welcome-note" id="quality-welcome-note" data-i18n="quality.welcome.note">低画质减少水晶；极低画质进一步简化模型和反光，限制至 30 帧，适合较弱手机。</p>
         <fieldset class="quality-choice-list" aria-describedby="quality-welcome-note">
           <legend class="visually-hidden" data-i18n="quality.label">画质</legend>
           <label class="quality-choice" for="welcome-quality-high">
@@ -439,6 +440,10 @@
           <label class="quality-choice" for="welcome-quality-performance">
             <input id="welcome-quality-performance" type="radio" name="welcome-quality" value="performance" />
             <span data-i18n="quality.performance">低画质 · 手机推荐</span>
+          </label>
+          <label class="quality-choice" for="welcome-quality-ultra">
+            <input id="welcome-quality-ultra" type="radio" name="welcome-quality" value="ultra" />
+            <span data-i18n="quality.ultra">极低画质 · 省电</span>
           </label>
         </fieldset>
         <button id="quality-welcome-enter" class="quality-welcome-enter" type="button" data-i18n="quality.welcome.enter">进入镜馆</button>

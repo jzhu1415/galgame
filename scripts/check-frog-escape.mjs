@@ -41,7 +41,7 @@ assert.equal(player.y,5.15,'the balcony has a supporting floor');
 for(let i=0;i<90;i++) advancePlayer(player,0,.06,1/60,navigation);
 assert(player.z<8.4,'the balcony rail stops the player');
 route([[0,5.9],[0,-4.75],[8,-4.75],[8,4.5],[8,5.6],[10,5.6],[10,-4.75],[1,-5.6]]);
-assert.equal(player.y,.15,'the stairs can also be descended');
+assert.equal(player.y,.16,'descending reaches the stone floor finish above the ground-floor slab');
 const front=doors.find(door=>door.id==='front');
 assert.equal(front.parts.length,2,'the castle entrance has two door leaves');
 assert(navigation.blocked(0,.15,6.9),'the closed double entrance blocks passage');

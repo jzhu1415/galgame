@@ -8,7 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { SpatialCellCache, ScrollingDepthField } from './reference-performance.js';
+import { SpatialCellCache, ScrollingDepthField, freezeStaticWorld, FrameCadence } from './reference-performance.js';
 import { referenceRoomColumn, isReferenceCorridor } from './environment/RoomArchetypes.js';
 import { addChunkLights, applyFixturePreset, PoolLighting, PoolLightPlanCache } from './environment/PoolLighting.js';
 import { addChunkPoolAccess, PoolAccessPlanCache } from './environment/PoolAccessFixtures.js';
@@ -162,6 +162,16 @@ const QUALITY_PRESETS = {
     bloom: false,
     mistRatio: 0.5,
   },
+  ultra: {
+    pixelRatio: .65,
+    waterReflectionFps: 0,
+    waterReflectionScale: .2,
+    waterReflectionStrength: 0,
+    activeLights: 3,
+    bloom: false,
+    mistRatio: 0,
+    maxFps: 30,
+  },
 };
 
 function storedQualityPreset() {
@@ -202,7 +212,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.82;
 // Low quality samples refraction at half resolution; crystal silhouettes and
 // physical materials remain unchanged, with a quarter of the sampled pixels.
-renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
+renderer.transmissionResolutionScale = qualityPresetName === 'ultra' ? .25 : qualityPresetName === 'performance' ? .5 : 1;
 // Sixteen shadowed spotlights can exceed mobile GPU shader limits. Pool-light
 // reflection visibility is handled by the tile materials instead.
 renderer.shadowMap.enabled = false;
@@ -228,7 +238,8 @@ controls.pointerSpeed = 0.72;
 applyLookSettings();
 
 const audioSystem = new AudioSystem({
-  camera, scene, mobile: isMobilePlatform, quality: qualityPresetName,
+  camera, scene, mobile: isMobilePlatform,
+  quality: qualityPresetName === 'ultra' ? 'performance' : qualityPresetName,
   environmentProvider: createReferenceAudioEnvironment({
     columnAt, moduleSize: MODULE_SIZE, waterLevel: WATER_LEVEL,
   }),
@@ -880,6 +891,7 @@ function buildChunk(chunkX, chunkZ, poolAccessPlanCache = null, poolLightPlanCac
     });
   }
   scene.add(group);
+  freezeStaticWorld(group);
   return group;
 }
 
@@ -1842,7 +1854,7 @@ mistGeometry.setDrawRange(0, Math.round(mistCount * qualitySettings.mistRatio));
 function applyQualityPreset(presetName, persist = true) {
   qualityPresetName = QUALITY_PRESETS[presetName] ? presetName : 'balanced';
   qualitySettings = QUALITY_PRESETS[qualityPresetName];
-  renderer.transmissionResolutionScale = qualityPresetName === 'performance' ? .5 : 1;
+  renderer.transmissionResolutionScale = qualityPresetName === 'ultra' ? .25 : qualityPresetName === 'performance' ? .5 : 1;
   qualityPresetInput.value = qualityPresetName;
   const viewport = getViewportSize();
   const pixelRatio = Math.min(window.devicePixelRatio, qualitySettings.pixelRatio);
@@ -1856,7 +1868,7 @@ function applyQualityPreset(presetName, persist = true) {
   waterReflector.getRenderTarget().setSize(reflectionSize.width, reflectionSize.height);
   waterUniforms.reflectionStrength.value = qualitySettings.waterReflectionStrength;
   poolLighting.setQuality(qualityPresetName);
-  audioSystem.setQuality(qualityPresetName);
+  audioSystem.setQuality(qualityPresetName === 'ultra' ? 'performance' : qualityPresetName);
   updateSkylightLights(true);
   window.__naiwaIceLayer?.setQuality?.(qualityPresetName);
   lastWaterReflectionAt = -Infinity;
@@ -2476,7 +2488,12 @@ function bindTouchHoldButton(button, setHeld, queueJump = false) {
     onPress: () => { if (queueJump) jumpQueued = true; },
   });
   touchHoldResets.push(binding.reset);
-  window.addEventListener('pagehide', binding.dispose, { once: true });
+  const disposeOnPageHide = event => {
+    if (event.persisted) return;
+    binding.dispose();
+    window.removeEventListener('pagehide', disposeOnPageHide);
+  };
+  window.addEventListener('pagehide', disposeOnPageHide);
 }
 bindTouchHoldButton(touchRiseButton, (held) => { touchRiseHeld = held; }, true);
 bindTouchHoldButton(touchDiveButton, (held) => { touchDiveHeld = held; });
@@ -2795,7 +2812,7 @@ canvas.addEventListener('click', () => {
   if (!firstQualityPending && qualityChosen && hasEntered && settingsMenu.hidden && !controls.isLocked && lastPointerType !== 'touch' && lastPointerType !== 'pen') controls.lock();
 });
 
-let lastRenderedAt = -Infinity;
+const frameCadence = new FrameCadence();
 let lastWaterReflectionAt = -Infinity;
 const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
 window.__naiwaIceLayer = iceChapterLayer;
@@ -2809,15 +2826,23 @@ if (firstQualityPending) {
   settingsTrigger.hidden = false;
 }
 window.__naiwaShowFirstQualityDialog = showFirstQualityDialog;
-window.addEventListener('pagehide', () => { firstQualityPicker.dispose(); iceChapterLayer.dispose(); }, { once: true });
+const disposeWorldOnPageHide = event => {
+  keys.clear();
+  resetTouchInputs();
+  // A cached document resumes this same scene and its current menu/story state.
+  if (event.persisted) return;
+  firstQualityPicker.dispose();
+  iceChapterLayer.dispose();
+  window.removeEventListener('pagehide', disposeWorldOnPageHide);
+};
+window.addEventListener('pagehide', disposeWorldOnPageHide);
 
 function render(frameTime = performance.now()) {
   requestAnimationFrame(render);
   if (document.hidden) return;
   const isPlaying = !iceChapterLayer.isStoryPaused() && (controls.isLocked || touchPlaying);
-  const renderInterval = isPlaying ? 0 : 1000 / PAUSED_RENDER_FPS;
-  if (frameTime - lastRenderedAt < renderInterval) return;
-  lastRenderedAt = frameTime;
+  const renderInterval = isPlaying ? (qualitySettings.maxFps ? 1000 / qualitySettings.maxFps : 0) : 1000 / PAUSED_RENDER_FPS;
+  if (!frameCadence.shouldRender(frameTime, renderInterval)) return;
   const delta = Math.min(clock.getDelta(), 0.05);
   elapsed += delta;
   iceChapterLayer.update(delta, elapsed);

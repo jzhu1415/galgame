@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#18211f" />
-    <meta name="description" content="奶蛙追捕：双层别墅、地下室与铁栅栏庭院的3D地图原型。" />
-    <title>奶蛙追捕 · 暮色古堡</title>
+    <meta name="description" content="奶蛙致死的爱：探索古堡、寻找工具、躲避追捕的第一人称3D逃脱游戏。" />
+    <title>奶蛙致死的爱 · Naiwa Escape</title>
   </head>
   <body>
     <main class="escape-shell" id="app">
       <header class="escape-header">
-        <a class="escape-back" href="/">← 返回主页</a>
-        <div><p class="escape-eyebrow">NAIWA · ESCAPE MAP 01</p><h1>奶蛙追捕：暮色古堡</h1></div>
+        <a class="escape-back" href="https://galgame-ashy.vercel.app">← 返回主页</a>
+        <div><p class="escape-eyebrow">NAIWA · CASTLE ESCAPE</p><h1>奶蛙致死的爱</h1></div>
         <div class="escape-settings">
           <p class="escape-hint">拖动旋转 · 滚轮缩放 · 右键平移</p>
           <div class="escape-settings-controls"><label for="escape-difficulty">游戏难度</label><select id="escape-difficulty" aria-describedby="escape-difficulty-help"><option value="easy">简单模式（Easy）</option><option value="normal" selected>普通模式（Normal）</option><option value="hard">困难模式（Hard）</option><option value="hacker">极限模式（Hacker）</option></select><label for="escape-quality">画质</label><select id="escape-quality"><option value="low">低画质 · Best Performance</option><option value="balanced" selected>中等画质 · Balanced</option><option value="high">高画质 · Best Quality</option></select><button id="escape-settings-button" type="button">设置 · Esc</button><button id="escape-new-run" type="button" aria-label="重新开始并重选难度" hidden>重新开始</button></div>
@@ -77,7 +77,7 @@
           <button id="escape-touch-jump" type="button">跳跃</button>
         </div>
       </section>
-      <footer class="escape-footer"><span>第一人称探索原型 · 从地下室走向庭院</span><button class="release-entry" id="escape-release-entry" type="button">更新内容</button></footer>
+      <footer class="escape-footer"><span>古堡逃脱 · 找到线索，逃离奶蛙的追捕</span><button class="release-entry" id="escape-release-entry" type="button">更新内容</button></footer>
       <dialog id="escape-code-dialog" class="escape-pause escape-code-dialog" aria-labelledby="escape-code-title">
         <h2 id="escape-code-title">大门密码锁</h2>
         <p>每次开启大门都需输入本局四位密码，开启 5 秒后自动关闭。二楼有线索。</p>

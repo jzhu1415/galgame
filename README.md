@@ -4,6 +4,8 @@
 
 **[Play the demo](https://galgame-ashy.vercel.app)** · [Run locally](#run-locally)
 
+**[奶蛙致死的爱 · Naiwa’s Deadly Love](https://naiwa-deadly-love.starrymule6.chatgpt.site)** is a separate first-person 3D castle escape game. Find clues and tools, hide from Naiwa, and escape through the courtyard. It supports four difficulties, Chinese and English, desktop and touch controls, and three graphics settings. The visual-novel home includes an entrance to this standalone game.
+
 ![Naiwa in a rainy alley](public/images/P02.webp)
 
 ## Story
@@ -59,6 +61,8 @@ npm run preview
 ```
 
 The production output is written to `dist/` and can be hosted on a static website platform.
+
+Build only the escape game with `npm run build:escape`, then run `npm run check:escape-site`. Its independent static output is in `sites/naiwa-escape/dist/`, excluding visual-novel media. See [standalone deployment notes](docs/escape-site-deployment.md) for the existing Site identity and publication workflow.
 
 The finale campaign’s numbers cover all five main chapters and the coastal DLC. They are calculated from story data and active artwork, rather than edited by hand. Development startup and changes to TypeScript story data or WebP artwork automatically refresh the counts; production builds refresh them before compilation. Generated output is kept in `src/game-statistics.ts`, with definitions and a per-chapter breakdown in `docs/game-statistics.json`.
 

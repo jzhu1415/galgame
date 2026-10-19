@@ -132,7 +132,7 @@ people[1].fire('click'); assert.equal(controller.snapshot().person, 1)
 people[1].fire('keydown', { key: 'End' }); assert.equal(controller.snapshot().person, homePeople.length - 1)
 people.at(-1).fire('keydown', { key: 'ArrowRight' }); assert.equal(controller.snapshot().person, 0)
 personChapters[1].fire('click'); assert.equal(controller.snapshot().chapter, homePeople[1].chapter)
-assert.equal(page.lastScroll.behavior, 'smooth'); assert(tabs[homePeople[1].chapter - 1].focuses > 0)
+assert.equal(page.lastScroll.behavior, 'smooth'); assert.equal(chapterTarget.focuses, 1, 'a character preview link focuses the visible chapter section')
 assert.equal(page.lastScroll.top, 120 + chapterTarget.top - 122 - 10, 'character links keep the chapter heading below the actual header')
 hello.fire('click'); const text = greeting.textContent; hello.fire('click'); assert.notEqual(greeting.textContent, text)
 

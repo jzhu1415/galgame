@@ -1,3 +1,27 @@
+// Only call for completed chunks attached to the fixed world scene. Cameras,
+// pooled lights, props and floating crystals stay outside these static trees.
+export function freezeStaticWorld(root) {
+  root.updateWorldMatrix(true, true);
+  root.traverse(object => {
+    object.matrixAutoUpdate = false;
+    object.matrixWorldAutoUpdate = false;
+  });
+}
+
+// Advance a fixed deadline rather than restarting the interval at each rAF.
+// The tiny tolerance absorbs floating-point noise at 60/120/144 Hz boundaries.
+export class FrameCadence {
+  constructor() { this.interval = NaN; this.nextAt = 0; }
+  shouldRender(now, interval) {
+    if (interval !== this.interval) { this.interval = interval; this.nextAt = now; }
+    if (interval <= 0) return true;
+    if (now + .01 < this.nextAt) return false;
+    const skipped = Math.floor(Math.max(0, now - this.nextAt + .01) / interval);
+    this.nextAt += (skipped + 1) * interval;
+    return true;
+  }
+}
+
 // Bounded spatial memoization for deterministic world data. Adjacent cell lookups
 // reuse one block instead of allocating a string/Map entry for every world tile.
 export class SpatialCellCache {

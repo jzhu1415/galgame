@@ -74,6 +74,12 @@ try {
   reflections.setQuality('performance');
   visit(7.5);
   assert.equal(outputs.at(-1).size, 64, 'Low quality captures fewer reflection pixels');
+  const lowMap = material.envMap;
+  reflections.setQuality('ultra');
+  assert.equal(material.envMap, lowMap, 'Quality switches retain a valid map until its replacement is ready');
+  assert.equal(outputs.filter(output => !output.disposals).length, 1, 'Quality switches release inactive room maps');
+  visit(7.5);
+  assert.equal(outputs.at(-1).size, 32, 'Ultra captures smaller room reflections');
   reflections.setQuality('high');
   visit(7.5);
   assert.equal(outputs.at(-1).size, 128, 'High quality restores the original reflection resolution');

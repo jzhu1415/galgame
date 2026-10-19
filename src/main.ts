@@ -54,9 +54,12 @@ let preferredLanguage: Language = languageOverride() ?? systemLanguage()
 if (state) state.language = preferredLanguage
 let appDialog: HTMLDialogElement | null = null
 let modalFocus: HTMLElement | null = null
-type SoundPlayback = { key: string; audio: HTMLAudioElement; clips: string[]; clipIndex: number; status: 'playing' | 'finished' | 'error' }
+type SoundPlayback = { key: string; audio: HTMLAudioElement; clips: string[]; clipIndex: number; status: 'playing' | 'finished' | 'error'; playRequest?: number }
 let soundPlayback: SoundPlayback | null = null
 let ambientLaugh: HTMLAudioElement | null = null
+let suspendedSound: SoundPlayback | null = null
+let suspendedAmbient: HTMLAudioElement | null = null
+let ambientPlayRequest = 0
 let ambientEnabled = true
 let ambientError = false
 const requestedChapter = Number(new URLSearchParams(window.location.search).get('chapter'))
@@ -100,6 +103,57 @@ function stopPlayback() {
   dialogueReader.clear()
   clearPlaybackTimer()
   playbackMode = 'off'
+}
+
+function originGameActive() {
+  return active && selectedChapter === 1 && !romanceDlcOpen && !!root.querySelector(':scope > .game')
+}
+
+function originReadingPaused() {
+  return !originGameActive() || document.hidden || !!modal || !!root.querySelector('dialog[open]')
+}
+
+function pauseOriginMedia() {
+  if (soundPlayback?.status === 'playing' && !soundPlayback.audio.paused && !soundPlayback.audio.ended) {
+    suspendedSound = soundPlayback
+    soundPlayback.playRequest = (soundPlayback.playRequest ?? 0) + 1
+    soundPlayback.audio.pause()
+  }
+  if (ambientLaugh && !ambientLaugh.paused && !ambientLaugh.ended) {
+    suspendedAmbient = ambientLaugh
+    ambientPlayRequest++
+    ambientLaugh.pause()
+  }
+}
+
+function resumeOriginAmbient(audio: HTMLAudioElement) {
+  const request = ++ambientPlayRequest
+  void audio.play().catch(() => {
+    if (ambientLaugh !== audio || request !== ambientPlayRequest) return
+    ambientError = true
+    renderGame()
+  })
+}
+
+function syncOriginReading() {
+  if (!originGameActive()) return
+  if (originReadingPaused()) {
+    clearPlaybackTimer()
+    dialogueReader.pause()
+    pauseOriginMedia()
+    return
+  }
+  dialogueReader.resume()
+  const sound = suspendedSound, ambient = suspendedAmbient
+  suspendedSound = null; suspendedAmbient = null
+  if (audioEnabled && sound && soundPlayback === sound && sound.status === 'playing' && !sound.audio.ended) playSound(sound, false)
+  if (audioEnabled && ambientEnabled && !ambientError && ambient && ambientLaugh === ambient && !ambient.ended) resumeOriginAmbient(ambient)
+}
+
+function handleOriginReadingChange() {
+  if (!originGameActive()) return
+  syncOriginReading()
+  if (!originReadingPaused()) renderGame()
 }
 
 const MAP_WIDTH = 1100
@@ -222,15 +276,19 @@ function current() {
 }
 
 function stopSound() {
+  suspendedSound = null
   if (!soundPlayback) return
   const playback = soundPlayback
   soundPlayback = null
+  playback.playRequest = (playback.playRequest ?? 0) + 1
   playback.audio.pause()
   playback.audio.removeAttribute('src')
   playback.audio.load()
 }
 
 function stopAmbientLaugh() {
+  suspendedAmbient = null
+  ambientPlayRequest++
   if (!ambientLaugh) return
   const audio = ambientLaugh
   ambientLaugh = null
@@ -255,18 +313,17 @@ function syncAmbientLaugh() {
     ambientError = true
     renderGame()
   })
-  void audio.play().catch(() => {
-    if (ambientLaugh !== audio) return
-    ambientError = true
-    renderGame()
-  })
+  if (originReadingPaused()) suspendedAmbient = audio
+  else resumeOriginAmbient(audio)
 }
 
-function playSound(playback: SoundPlayback) {
+function playSound(playback: SoundPlayback, restart = true) {
   playback.status = 'playing'
-  playback.audio.currentTime = 0
+  if (restart) playback.audio.currentTime = 0
+  const request = playback.playRequest = (playback.playRequest ?? 0) + 1
+  if (originReadingPaused()) { suspendedSound = playback; return }
   void playback.audio.play().catch(() => {
-    if (soundPlayback !== playback) return
+    if (soundPlayback !== playback || request !== playback.playRequest) return
     playback.status = 'error'
     renderGame()
   })
@@ -429,6 +486,7 @@ function confirmRestart(action: () => void, message: string = ui[preferredLangua
     modal = null
     action()
   })
+  syncOriginReading()
 }
 
 function openModal(kind: NonNullable<typeof modal>) {
@@ -439,6 +497,7 @@ function openModal(kind: NonNullable<typeof modal>) {
   dialogueReader.pause()
   modal = kind
   renderModal()
+  syncOriginReading()
 }
 
 function manualSave() {
@@ -680,7 +739,7 @@ function renderExplorationMap(scene: Scene, choices: NonNullable<Scene['choices'
 }
 
 function renderGame() {
-  if (!state) return
+  if (!state || !active || selectedChapter !== 1 || romanceDlcOpen) return
   let game = root.querySelector<HTMLElement>(':scope > .game')
   if (!game) {
     root.innerHTML = `
@@ -789,8 +848,9 @@ function renderGame() {
     </div>
     ${state.sceneId === 'm06' && finalLine ? renderExplorationMap(scene, choices, lang) : objectChoiceScene ? '' : choices.length ? `<div class="choices" aria-label="${esc(t.select)}">${choices.map((choice, i) => `<button class="choice" data-choice="${i}"><span class="choice-number">${String(i + 1).padStart(2, '0')}</span><span>${esc(choice.text[lang])}</span><span aria-hidden="true" class="choice-arrow">↗</span></button>`).join('')}</div>` : ''}
     ${ended ? `<div class="ending-actions"><span>${esc(scene.ending === 'true' ? t.finish : t.ending)}</span><button class="primary-btn" id="replay">${esc(t.replay)} <span aria-hidden="true">↗</span></button></div>` : ''}`
+  syncOriginReading()
   dialogueReader.bind(game.querySelector('.dialogue-box > p'), `${state.sceneId}/${state.lineIndex}/${lang}`, line.speaker?.en === 'Naiwa\'s journal' ? quoteJournalSpeech(line.text[lang], lang) : line.text[lang])
-  if (playbackMode === 'skip') dialogueReader.finish()
+  if (playbackMode === 'skip' && !originReadingPaused()) dialogueReader.finish()
   stage.querySelector('#object-hotspots')?.remove()
   if (objectChoiceScene) {
     const labels = objectScenes[state.sceneId].labels[lang]
@@ -799,12 +859,12 @@ function renderGame() {
   }
   game.querySelector<HTMLElement>('#stage-foot')!.innerHTML = `<span>${esc(savePersistent && progressPersistent ? t.controls : t.sessionSave)}</span>${inDream ? `<span>${state.memories.map(id => esc(memoryNames[id][lang])).join(' · ') || '◌ ◌ ◌'}</span>` : `<span>01 / NAIWA</span>`}`
   clearPlaybackTimer()
-  if (playbackMode !== 'off' && !modal && !root.querySelector('dialog[open]') && !ended && (!finalLine || !!scene.next)) {
+  if (playbackMode !== 'off' && !originReadingPaused() && !ended && (!finalLine || !!scene.next)) {
     const expectedScene = state.sceneId
     const expectedLine = state.lineIndex
     playbackTimer = window.setTimeout(() => {
       playbackTimer = null
-      if (active && state?.sceneId === expectedScene && state.lineIndex === expectedLine && !modal && !root.querySelector('dialog[open]')) advance()
+      if (playbackMode !== 'off' && !originReadingPaused() && state?.sceneId === expectedScene && state.lineIndex === expectedLine) advance()
     }, playbackMode === 'skip' ? 220 : readingDelay(line.text[lang]) + (getReadingSettings().textSpeed ? Array.from(line.text[lang]).length / getReadingSettings().textSpeed * 1000 : 0))
   }
 }
@@ -905,10 +965,10 @@ function renderModal() {
     if (!currentDialog) return
     appDialog = null
     modal = null
-    dialogueReader.resume()
+    syncOriginReading()
     if (modalFocus?.isConnected) modalFocus.focus()
     else if (modalFocus?.id) root.querySelector<HTMLElement>(`#${modalFocus.id}`)?.focus()
-    if (active && playbackMode !== 'off' && !modal && root.querySelector(':scope > .game')) renderGame()
+    if (originGameActive() && !originReadingPaused()) renderGame()
   })
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return
@@ -960,6 +1020,7 @@ function renderLoading() {
 }
 function render() {
   const generation = ++viewGeneration
+  if (!active || selectedChapter !== 1 || romanceDlcOpen) { stopPlayback(); stopSound(); stopAmbientLaugh() }
   if (homeController) {
     homeSnapshot = homeController.snapshot()
     homeController.dispose()
@@ -1087,6 +1148,8 @@ window.addEventListener('languagechange', () => {
   if (state) { state.language = preferredLanguage; if (selectedChapter < 4) save() }
   render()
 })
+document.addEventListener('visibilitychange', handleOriginReadingChange)
+root.addEventListener('close', handleOriginReadingChange, true)
 document.addEventListener('fullscreenchange', updateFullscreenButton)
 window.addEventListener('appimmersivechange', updateFullscreenButton)
 window.addEventListener('resize', () => {

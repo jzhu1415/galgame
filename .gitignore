@@ -8,3 +8,5 @@ tmp/
 scripts/gen.sh
 scripts/generate.mjs
 scripts/prompts.json
+# Separate Sites source checkout; shared game source stays in this repository.
+sites/naiwa-escape/

@@ -22,6 +22,8 @@
     "check:ice-quality-picker": "node scripts/check-ice-quality-picker.mjs",
     "check:ice-flow": "node scripts/check-ice-flow.mjs",
     "check:ice-rendering": "node scripts/check-ice-rendering.mjs",
+    "check:ice-ultra": "node scripts/check-ice-ultra.mjs",
+    "check:ice-performance": "node scripts/check-ice-performance.mjs",
     "generate:tts": "python3 scripts/generate-neural-tts.py",
     "check:romance-dlc": "node scripts/check-romance-dlc.mjs",
     "check:route-preview": "node scripts/check-route-preview.mjs",
@@ -77,7 +79,13 @@
     "generate:game-statistics": "node scripts/generate-game-statistics.mjs",
     "check:statistics-refresh": "node scripts/check-statistics-refresh.mjs",
     "check:finale-curtain": "node scripts/check-finale-curtain.mjs",
-    "check:speech-compat": "python3 scripts/check-edge-speech-compat.py"
+    "check:speech-compat": "python3 scripts/check-edge-speech-compat.py",
+    "check:reading-tools": "node scripts/check-reading-tools.mjs",
+    "check:origin-reading-lifecycle": "node scripts/check-origin-reading-lifecycle.mjs",
+    "check:ice-replay-lifecycle": "node scripts/check-ice-replay-lifecycle.mjs",
+    "check:ice-page-lifecycle": "node scripts/check-ice-page-lifecycle.mjs",
+    "build:escape": "node scripts/build-escape-site.mjs",
+    "check:escape-site": "node scripts/check-escape-site.mjs"
   },
   "dependencies": {
     "cannon-es": "0.20.0",
