@@ -1,0 +1,5 @@
+Naiwa Andy call: extracted from the video supplied by the user for this game.
+This recording is not represented as CC0. Existing CC0 foley retains its individual license.
+Original attachment: 066f3fd56dfe0573a2774408a4bb6ba0.mp4
+Retained local video: assets/audio/frog-escape/naiwaAndy-source.mp4
+Processing: mono 32kHz PCM, exterior silence trim, DC removal, peak normalization and 5ms fades. No pitch changes or synthesis.

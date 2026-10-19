@@ -1,0 +1,20 @@
+{
+  "revision": "2026-10-17-arm-topology-v12",
+  "source": "naiwa-h25-refined.glb",
+  "sourceSha256": "ba8b4d65458b587a49c9bd26215ce11f95c2aa04b8811870f9dfbaf08d19b4cd",
+  "identityReference": "references/naiwa-escape-turnaround.png",
+  "vertices": 36397,
+  "triangles": 72762,
+  "shoulderGate": 0.678,
+  "shoulderFixed": 0.655,
+  "shoulderTop": 0.755,
+  "closedBodyComponents": 1,
+  "discardedCutDebris": 0,
+  "volumeRemovedFraction": 0.008039296449466216,
+  "leftArmVertices": 3113,
+  "rightArmVertices": 3032,
+  "rebuiltInnerTriangles": 15292,
+  "thicknessPolicy": "preserve original outer silhouette and nominal inner arm boundary; place gap on trunk side",
+  "method": "local Boolean inner-arm separation, closed side surfaces, harmonic shoulder weights",
+  "manifold3d": "3.5.4"
+}

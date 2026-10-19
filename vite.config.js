@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: resolve(projectRoot, 'index.html'),
         iceMap: resolve(projectRoot, 'ice-map.html'),
+        frogEscapeMap: resolve(projectRoot, 'frog-escape-map.html'),
       },
     },
   },

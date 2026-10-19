@@ -1,0 +1,891 @@
+{
+  "revision": "2026-10-18-naiwa-andy-v4",
+  "author": "Kenney (kenney.nl)",
+  "repository": "https://github.com/GeorgeQLe/assets-sfx-combat",
+  "commit": "9662dc1bed3b06ae753045915f9accfac044c7ce",
+  "license": "Mixed; see individual clips",
+  "clips": {
+    "bookPlace1": {
+      "file": "bookPlace1.wav",
+      "duration": 0.27672,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/bookPlace1.ogg",
+      "sourceSha256": "26f3ce60fbde85b678b0ad7f6624d80535fe540d88232ad1e38e47a96662d977",
+      "sha256": "e97a784ab786525099630214aa5c4855eaf08a6e294d11166d322fc9070f5608",
+      "license": "CC0-1.0"
+    },
+    "cloth1": {
+      "file": "cloth1.wav",
+      "duration": 0.65672,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/cloth1.ogg",
+      "sourceSha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d",
+      "sha256": "359a6fdc6f9fffa0019d77d7b0ed91002f4c6923097e7456d261b10cbdcffe97",
+      "license": "CC0-1.0"
+    },
+    "cloth2": {
+      "file": "cloth2.wav",
+      "duration": 0.40694,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/cloth2.ogg",
+      "sourceSha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201",
+      "sha256": "23f32d9086328427a7e387879914a528e115fdc30add891834d08bcff937aa79",
+      "license": "CC0-1.0"
+    },
+    "creak1": {
+      "file": "creak1.wav",
+      "duration": 0.63831,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/creak1.ogg",
+      "sourceSha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e",
+      "sha256": "e763c6a7bd1cc50591936cf17fa6f596b68592c77bc88aaeb9a9e6c66922eceb",
+      "license": "CC0-1.0"
+    },
+    "creak2": {
+      "file": "creak2.wav",
+      "duration": 0.82128,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/creak2.ogg",
+      "sourceSha256": "8a990afdc03aebb91d528f5385e2f95582dbfa8e2c12c71098ab01be9142294a",
+      "sha256": "03e0bcce2f98fb85e84c35704ff5f866fd5b04f2f7691a3fed051ce1a824774e",
+      "license": "CC0-1.0"
+    },
+    "creak3": {
+      "file": "creak3.wav",
+      "duration": 0.33822,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/creak3.ogg",
+      "sourceSha256": "f9638787f95004b9d2d06f8eff8e99d4e594c21b51947daf562856fbcec905d1",
+      "sha256": "710761240fec1db133cab258a82316b94c63e7af02e8a1d8c86dcc06ead6d394",
+      "license": "CC0-1.0"
+    },
+    "doorClose_1": {
+      "file": "doorClose_1.wav",
+      "duration": 0.67503,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/doorClose_1.ogg",
+      "sourceSha256": "834d29c60a8a8bfb50b158cdb6b7dfa8f02812a408a1ee9703d038dfab0b1aeb",
+      "sha256": "10af0ae4954a3e604caf936d349f0fdcac973229561ed9a2007bb62962427e66",
+      "license": "CC0-1.0"
+    },
+    "doorClose_2": {
+      "file": "doorClose_2.wav",
+      "duration": 0.61247,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/doorClose_2.ogg",
+      "sourceSha256": "4aa4fe79836c53cd6d0cb0b22ddc33b9901429463ae1bb75131f072683f63f21",
+      "sha256": "e63bd4fe8c001dcda89753696c5d71dfd6c0976f0477a0431b0b8d82291e9885",
+      "license": "CC0-1.0"
+    },
+    "doorOpen_1": {
+      "file": "doorOpen_1.wav",
+      "duration": 0.91897,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/doorOpen_1.ogg",
+      "sourceSha256": "4ab93bab96522d8eb109ff96dc57cb6765deb02448fe14c10472084be5bb2a0b",
+      "sha256": "ccb923313878a2febe5a271c3a4907b00cc53f4c94140b53b59549d6b0bf1abe",
+      "license": "CC0-1.0"
+    },
+    "doorOpen_2": {
+      "file": "doorOpen_2.wav",
+      "duration": 1.41331,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/doorOpen_2.ogg",
+      "sourceSha256": "68962fb0458c9bac59dec3adefa9849703c7c89d34712de03dd0075d095e79e9",
+      "sha256": "5b09b838b75d26afabeefbbfad8881911e65b476e94346d2b941fcd48cc39358",
+      "license": "CC0-1.0"
+    },
+    "drawKnife1": {
+      "file": "drawKnife1.wav",
+      "duration": 0.31122,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/drawKnife1.ogg",
+      "sourceSha256": "276403e72c3b71c47bc24db3083970c23f8e5551ffa78f436f83483c56f3f0bb",
+      "sha256": "5ef82d71d2367ba4b98f27207aed62f803b321a2b9060740ba21586a96109452",
+      "license": "CC0-1.0"
+    },
+    "dropLeather": {
+      "file": "dropLeather.wav",
+      "duration": 0.39294,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/dropLeather.ogg",
+      "sourceSha256": "097e1d3b74949b0145fda0519d40b7e0773ab82ec4858727f95be830927e1a45",
+      "sha256": "43b71eb9619915b3b7b9fd14fb1be48c27294222bd9a3ed307c8fc47a5fa7672",
+      "license": "CC0-1.0"
+    },
+    "footstep_concrete_000": {
+      "file": "footstep_concrete_000.wav",
+      "duration": 0.10591,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_concrete_000.ogg",
+      "sourceSha256": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe",
+      "sha256": "761174f861933f87a37867876b0a928593f4860aecc43b0b2cd7cf82a7bf53b8",
+      "license": "CC0-1.0"
+    },
+    "footstep_concrete_001": {
+      "file": "footstep_concrete_001.wav",
+      "duration": 0.10766,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_concrete_001.ogg",
+      "sourceSha256": "507a75eb19b897087855a3be3cf11a12d7fa37d143ad535eeebe0b8031c7325d",
+      "sha256": "fe832164578d0269dfbf0ca383b0c2c27687205146b09e5f2ac6e6ce436b872e",
+      "license": "CC0-1.0"
+    },
+    "footstep_concrete_002": {
+      "file": "footstep_concrete_002.wav",
+      "duration": 0.11278,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_concrete_002.ogg",
+      "sourceSha256": "b21fa546d74941196b25da8a20b7010abd8c05c4fcf93545d1f344e66a664e13",
+      "sha256": "132bb0c0c29777d22e5c741ae221b83f7ec83260baae31f3f086c292a368950d",
+      "license": "CC0-1.0"
+    },
+    "footstep_grass_000": {
+      "file": "footstep_grass_000.wav",
+      "duration": 0.77756,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_grass_000.ogg",
+      "sourceSha256": "9d49497777405d78d7cf7f2888e28277f3a23192300cfd1d79d54876b20f479f",
+      "sha256": "00f2118ddafd91712644bd238c743dbedb31be10df8f103086e1a09d2c67f655",
+      "license": "CC0-1.0"
+    },
+    "footstep_grass_001": {
+      "file": "footstep_grass_001.wav",
+      "duration": 0.67359,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_grass_001.ogg",
+      "sourceSha256": "fb28781bd22b2eefdc14077f1adf5c94d7fe9c3a130194633b55f3e0d39d9f04",
+      "sha256": "57c671ece34ab88bde1b6f53dba2eeb7350a91f2ccb32ffd56787fc1253ed8bf",
+      "license": "CC0-1.0"
+    },
+    "footstep_grass_002": {
+      "file": "footstep_grass_002.wav",
+      "duration": 0.69244,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_grass_002.ogg",
+      "sourceSha256": "73a520139f5be716a403bfe9c80e0e94d1e61d8e9de04a354b336392164b53dc",
+      "sha256": "d240a0d9091d3ae728feb8412a495aad6e83a2222f8238bf92f7fbf4a69b9cba",
+      "license": "CC0-1.0"
+    },
+    "footstep_wood_000": {
+      "file": "footstep_wood_000.wav",
+      "duration": 0.24959,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_wood_000.ogg",
+      "sourceSha256": "5f1c252942a220d658121bd9417448cd19649ded9fff2ff15f6e50899373ce8e",
+      "sha256": "573a2744b5e7a61289644b27b4d540f7d8f4c8f481edd8bc3a12ce85fb9beac9",
+      "license": "CC0-1.0"
+    },
+    "footstep_wood_001": {
+      "file": "footstep_wood_001.wav",
+      "duration": 0.25156,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_wood_001.ogg",
+      "sourceSha256": "e4f68e1c9fd55b4dc8ca89ed2bbab6f200171bc54bdc18aa96b80d8e7336f462",
+      "sha256": "87e306db863285d9501817e28a91eda6448f6a003845ba3cfb7f4a410b63417e",
+      "license": "CC0-1.0"
+    },
+    "footstep_wood_002": {
+      "file": "footstep_wood_002.wav",
+      "duration": 0.25138,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/footstep_wood_002.ogg",
+      "sourceSha256": "9ff095b05cee5eec40b081defe3f0eef7232bb16d4865ce03b9f6dbab875cfdd",
+      "sha256": "f07893e5f1c1d76799b287d2c2d93a6f45288140e3d18f3ac057c30a99aa96a8",
+      "license": "CC0-1.0"
+    },
+    "handleCoins": {
+      "file": "handleCoins.wav",
+      "duration": 0.78287,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/handleCoins.ogg",
+      "sourceSha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab",
+      "sha256": "816d08432e6776d06064e0f75a17f60b19153ad8d131134939ad2804573371e8",
+      "license": "CC0-1.0"
+    },
+    "impactGeneric_light_000": {
+      "file": "impactGeneric_light_000.wav",
+      "duration": 0.13869,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactGeneric_light_000.ogg",
+      "sourceSha256": "f0e982611e97512fee5f777986b67e8b435434b601f94992ec044f7e89fb5acb",
+      "sha256": "2b4669e7ceac797c307cec1cc6df66e6297daaa91c39d759ebd7b095bdba4c54",
+      "license": "CC0-1.0"
+    },
+    "impactGlass_heavy_000": {
+      "file": "impactGlass_heavy_000.wav",
+      "duration": 0.24122,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactGlass_heavy_000.ogg",
+      "sourceSha256": "b44b39a940e8948e74b9bd3776bff980df43cf220abdaf0d467dc4c43c0244a5",
+      "sha256": "ad6d606d03e4aeec2f1ac087c9ff8a84f7656597ba704e8b0ce04163dc239f51",
+      "license": "CC0-1.0"
+    },
+    "impactGlass_heavy_001": {
+      "file": "impactGlass_heavy_001.wav",
+      "duration": 0.429,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactGlass_heavy_001.ogg",
+      "sourceSha256": "58686e0e562612cc566791844a10e269f8d1921f4766c14ba43976fd0a429f4e",
+      "sha256": "bd7b3f4550b373ad85f96f30341dc402e4e51387af4fdf613582007bc11765ae",
+      "license": "CC0-1.0"
+    },
+    "impactGlass_light_000": {
+      "file": "impactGlass_light_000.wav",
+      "duration": 0.20959,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactGlass_light_000.ogg",
+      "sourceSha256": "d750cf88097d0c3e69920e6e14496e1444e1a9da01aa4cca8f5ec8cb44c57b4f",
+      "sha256": "db8b7aff4df0cf31f11854324c7aee97deb23a2f8fcbd9c4fa1d4b0ea030b3cf",
+      "license": "CC0-1.0"
+    },
+    "impactGlass_light_001": {
+      "file": "impactGlass_light_001.wav",
+      "duration": 0.20959,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactGlass_light_001.ogg",
+      "sourceSha256": "05e513fbd42829060eb37855f8c3866722ec5c39a8937c9bfde518cc609effa2",
+      "sha256": "df26461259b0b0d39a3533116301f26eb1d62dfb600908c71533fe1b70349b72",
+      "license": "CC0-1.0"
+    },
+    "impactMetal_heavy_000": {
+      "file": "impactMetal_heavy_000.wav",
+      "duration": 0.16766,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactMetal_heavy_000.ogg",
+      "sourceSha256": "e07045693e4a2b3d165c424e3dab4c781d9ff8880a386880ac89a51315d7f831",
+      "sha256": "6d1fb045ca7e22a26614b49f3a548cddfcbf26227f949f8108d5caa0c5d4273c",
+      "license": "CC0-1.0"
+    },
+    "impactMetal_light_000": {
+      "file": "impactMetal_light_000.wav",
+      "duration": 0.35147,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactMetal_light_000.ogg",
+      "sourceSha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d",
+      "sha256": "d5fc26e432f3c531d08db6bcfe43b9aeb5201a2bbff17f6740d31a537a2e9fc3",
+      "license": "CC0-1.0"
+    },
+    "impactMetal_light_001": {
+      "file": "impactMetal_light_001.wav",
+      "duration": 0.25184,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactMetal_light_001.ogg",
+      "sourceSha256": "fba69c467ddd85da7b1d82e259f936b876d9ba6a3d6f1b24bdd10468e46bfe08",
+      "sha256": "da4ddd4afb1f8b8081b3a693eb18b6cd5288b041ab5feb3680eec0c1f0d32888",
+      "license": "CC0-1.0"
+    },
+    "impactMetal_medium_000": {
+      "file": "impactMetal_medium_000.wav",
+      "duration": 0.27178,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactMetal_medium_000.ogg",
+      "sourceSha256": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003",
+      "sha256": "216f1d2fe3a0e32c896fa4ed98b5cb5ce2251b56f19dbeeae4d2979d7cdb5c70",
+      "license": "CC0-1.0"
+    },
+    "impactMetal_medium_001": {
+      "file": "impactMetal_medium_001.wav",
+      "duration": 0.14344,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactMetal_medium_001.ogg",
+      "sourceSha256": "e8a9eaba7c4d27422e4eeb3e6c7100d5d7dc0f83e005efc98c960adcc5265337",
+      "sha256": "4a2ad48b81c4596cbaaadb93b0f063425ced51c6a550d7d9fb82a58b5b74f083",
+      "license": "CC0-1.0"
+    },
+    "impactPlank_medium_000": {
+      "file": "impactPlank_medium_000.wav",
+      "duration": 0.53241,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlank_medium_000.ogg",
+      "sourceSha256": "8403cd7a043f0391574c88c55dd205743725b5363d2407f6de145f201690b68f",
+      "sha256": "a84df534807637744cb13fc39d1e877acdc9fe7f053d54f840ca789787fc571b",
+      "license": "CC0-1.0"
+    },
+    "impactPlank_medium_001": {
+      "file": "impactPlank_medium_001.wav",
+      "duration": 0.53434,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlank_medium_001.ogg",
+      "sourceSha256": "d7c304319f8beac616231b62041fa8da74045b62d7155965516efb9b19303df4",
+      "sha256": "c04ed08cf433eb4d7a41385a84fcfc7243b5f3a362922a8b31bf7fdc6c7ce9fb",
+      "license": "CC0-1.0"
+    },
+    "impactPlate_heavy_000": {
+      "file": "impactPlate_heavy_000.wav",
+      "duration": 0.48866,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlate_heavy_000.ogg",
+      "sourceSha256": "112d4f93ddcc370b410630f971c0f5d991856102da9c76bc5c5540d388e75aaa",
+      "sha256": "8d9a20f51aac0551d8952703a7f969a52a4ddc4decb284ac66a0722834cbf6aa",
+      "license": "CC0-1.0"
+    },
+    "impactPlate_heavy_001": {
+      "file": "impactPlate_heavy_001.wav",
+      "duration": 0.35234,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlate_heavy_001.ogg",
+      "sourceSha256": "142fd6c77f13d25f318265901163f70f8dfe12f87829169a570025be43de7011",
+      "sha256": "151d13dffeb3ab84557f8a784338c651e14604d5b2381abd63b1a7c564c9f39d",
+      "license": "CC0-1.0"
+    },
+    "impactPlate_light_000": {
+      "file": "impactPlate_light_000.wav",
+      "duration": 0.54244,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlate_light_000.ogg",
+      "sourceSha256": "6e797cf8a5bfc52d7ed5eb47c227974c1cf2a674954fec5b539cea7d62c7282c",
+      "sha256": "513190b8df1bcd87c358c17d14ef2410d00acd8ef52b092225a27218d7b9d815",
+      "license": "CC0-1.0"
+    },
+    "impactPlate_light_001": {
+      "file": "impactPlate_light_001.wav",
+      "duration": 0.65466,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPlate_light_001.ogg",
+      "sourceSha256": "947915c2eb6ac57ee08fd3a48b297fd108d69abc72076e79882c21cad0eef56e",
+      "sha256": "bfa678eeccccd466feb47010056d1c853d7477207d394c37b6d9803da54543c3",
+      "license": "CC0-1.0"
+    },
+    "impactPunch_heavy_000": {
+      "file": "impactPunch_heavy_000.wav",
+      "duration": 0.64903,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPunch_heavy_000.ogg",
+      "sourceSha256": "b33a8f14068aec24ec69ba85e5e87fdc41228975f6a1a3e44a6e7d6fc3d9f8d8",
+      "sha256": "281496fa3c400571e76eb03e140f47fc767b34d747ec6bd0b8b9ae0e965e8bdb",
+      "license": "CC0-1.0"
+    },
+    "impactPunch_heavy_001": {
+      "file": "impactPunch_heavy_001.wav",
+      "duration": 0.53594,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPunch_heavy_001.ogg",
+      "sourceSha256": "f92f5cb6ba4ff2766497292ffd90865654317eeca976f5652e0708dbdcdc0dd9",
+      "sha256": "11c5b621b7e72863fd7686dfa77351d399a2ce30295c1e3d6f6e07838942358a",
+      "license": "CC0-1.0"
+    },
+    "impactPunch_medium_000": {
+      "file": "impactPunch_medium_000.wav",
+      "duration": 0.34769,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPunch_medium_000.ogg",
+      "sourceSha256": "486988aa2d6440ffc4c62a0e8ccf3c23673ba84424bd4723378d451b7255eb5c",
+      "sha256": "6e862970b73f3bcf1b8d13a4ba85d046c1f802d1ffe9ac29f97658077dd5a31b",
+      "license": "CC0-1.0"
+    },
+    "impactPunch_medium_001": {
+      "file": "impactPunch_medium_001.wav",
+      "duration": 0.33937,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactPunch_medium_001.ogg",
+      "sourceSha256": "e71d23abcc3f10d9d6bc9615b2a431fff70b12333a5fcdd9964457564ace4349",
+      "sha256": "3cae216a6d87c500fe718b14c327b99aacce0d3db22cbaad590c12c79d783a6f",
+      "license": "CC0-1.0"
+    },
+    "impactSoft_heavy_000": {
+      "file": "impactSoft_heavy_000.wav",
+      "duration": 0.50509,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactSoft_heavy_000.ogg",
+      "sourceSha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1",
+      "sha256": "a8472abb767653400152fdefc0a92006b0b54ec9788368676ca020c3cd4d16e2",
+      "license": "CC0-1.0"
+    },
+    "impactSoft_heavy_001": {
+      "file": "impactSoft_heavy_001.wav",
+      "duration": 0.57203,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactSoft_heavy_001.ogg",
+      "sourceSha256": "4d0096364ba9e46119d2ff6df493fdc101bd2e1efae061da5e5f77a53b3fdcb6",
+      "sha256": "fc7afc47b550f0139388dd9a125e3f8b3e6c8e7749059d99a72143756c1d890c",
+      "license": "CC0-1.0"
+    },
+    "impactSoft_medium_000": {
+      "file": "impactSoft_medium_000.wav",
+      "duration": 0.118,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactSoft_medium_000.ogg",
+      "sourceSha256": "7d3ba0bb5e60a11b5d3e558c141303dcf494256675fbf753c0d252d2cf0481e3",
+      "sha256": "607911d0602d188a7898ea64c2a813c08feaf923d27bbe39b1d0ed00a061af21",
+      "license": "CC0-1.0"
+    },
+    "impactSoft_medium_001": {
+      "file": "impactSoft_medium_001.wav",
+      "duration": 0.18328,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactSoft_medium_001.ogg",
+      "sourceSha256": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf",
+      "sha256": "d950883a6a52fd2fcc59188b16a306700e2324b55faf55e365f9bc9487d56000",
+      "license": "CC0-1.0"
+    },
+    "impactTin_medium_000": {
+      "file": "impactTin_medium_000.wav",
+      "duration": 0.15872,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactTin_medium_000.ogg",
+      "sourceSha256": "f4bbee66ca191ec744b84fc07ac9ed2a6fda955d51cfed8360f12b62815d3cbd",
+      "sha256": "8a98e588039342135d1e71555ed21b3a9f90266178f88ffd3e15078a6e591c7a",
+      "license": "CC0-1.0"
+    },
+    "impactTin_medium_001": {
+      "file": "impactTin_medium_001.wav",
+      "duration": 0.17431,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactTin_medium_001.ogg",
+      "sourceSha256": "84253095543c094d83cd749f42ecfbc96e356b60385f18a192c18eafb25b3cc6",
+      "sha256": "df0a5e0f42899c6e8fa1ddcb339d3b868c0db49c841fbaa4fd0c26d31feeb084",
+      "license": "CC0-1.0"
+    },
+    "impactWood_heavy_000": {
+      "file": "impactWood_heavy_000.wav",
+      "duration": 0.31303,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactWood_heavy_000.ogg",
+      "sourceSha256": "15ff82332f342c30e469215539e1cc57e11b221aa2cf7e11e811d313a9927f3d",
+      "sha256": "2ce4e02ee027f473a5bd300e92c903e88ba4938148bd011938aaa5da9df15f5a",
+      "license": "CC0-1.0"
+    },
+    "impactWood_heavy_001": {
+      "file": "impactWood_heavy_001.wav",
+      "duration": 0.31303,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactWood_heavy_001.ogg",
+      "sourceSha256": "f1b07a53ac10c615fff9ba470511fdeb722b5902e1a8520759fc20ad6f546015",
+      "sha256": "712c7c53d4ea50027c3e4e084a6f4674d575def8f38bcd9ad47f80f3fc6f5a5a",
+      "license": "CC0-1.0"
+    },
+    "impactWood_light_000": {
+      "file": "impactWood_light_000.wav",
+      "duration": 0.26559,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactWood_light_000.ogg",
+      "sourceSha256": "eb45e35b4bed784d3f120de4afec4b0d6ac09d9e143cce8cfcb7d739e1b1f3c3",
+      "sha256": "e192e9d880d1b2fb8e4985505345497832cfce6dbefadd907c250e51355fdf8f",
+      "license": "CC0-1.0"
+    },
+    "impactWood_light_001": {
+      "file": "impactWood_light_001.wav",
+      "duration": 0.26559,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/impact-sounds/Audio/impactWood_light_001.ogg",
+      "sourceSha256": "4b76bf3ccc8e60d19188f3165b778a7817786faa6887c55d9049bcbeef3b425f",
+      "sha256": "a252707c82f4380c3ba9d93fa4aaf27dcb785efd95c283de6bd33eb3854d1efb",
+      "license": "CC0-1.0"
+    },
+    "knifeSlice": {
+      "file": "knifeSlice.wav",
+      "duration": 0.47472,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/knifeSlice.ogg",
+      "sourceSha256": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f",
+      "sha256": "96881189b2bde2190f5cf780749bd1f2457ad94dab10dad9cda5d523707dedff",
+      "license": "CC0-1.0"
+    },
+    "knifeSlice2": {
+      "file": "knifeSlice2.wav",
+      "duration": 0.53966,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/knifeSlice2.ogg",
+      "sourceSha256": "6c2064d0ef988d1ec3d56868e823ea8823a5cac00f2742560052633529407def",
+      "sha256": "18ca2c44d9541dcf06091ec177afee2d864e337774bbab273e97a3d575f01f0d",
+      "license": "CC0-1.0"
+    },
+    "metalClick": {
+      "file": "metalClick.wav",
+      "duration": 0.42288,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/metalClick.ogg",
+      "sourceSha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3",
+      "sha256": "c08dfcdf9a235f3edd96269a9668793e8b631e311ffedb5e5a572af378df04b2",
+      "license": "CC0-1.0"
+    },
+    "metalLatch": {
+      "file": "metalLatch.wav",
+      "duration": 0.26134,
+      "source": "https://raw.githubusercontent.com/GeorgeQLe/assets-sfx-combat/9662dc1bed3b06ae753045915f9accfac044c7ce/assets/kenney/rpg-audio/Audio/metalLatch.ogg",
+      "sourceSha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708",
+      "sha256": "a6ccbc202a0f157320beabef1bf8fe2f9db3e7a2963e85233f77335b349f2c08",
+      "license": "CC0-1.0"
+    },
+    "crowbarSwing_01": {
+      "file": "crowbarSwing_01.wav",
+      "duration": 0.25025,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/Micro%20Pack%20-%20Organic%20Wooshes/Classic%20Swish%201.wav",
+      "sourceFile": "crowbarSwing_01-source.wav",
+      "sourceSha256": "672db5f3decc2c6de750ac8d8d9095f9868c37d64af2ae518d0377c915ead1bd",
+      "sha256": "d2645c4d7225c4963df30a110ed8343a036bb4030a76fddbb19dbe27c919a932",
+      "author": "Benjamin Burnes (Abstraction)",
+      "sourcePage": "https://github.com/lavenderdotpet/CC0-Public-Domain-Sounds/tree/f2b6264f9ab89fabc266914c3654685d68c5a39b/Micro%20Pack%20-%20Organic%20Wooshes",
+      "role": "crowbar-swing",
+      "peakTime": 0.06525,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.25025
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "crowbarSwing_02": {
+      "file": "crowbarSwing_02.wav",
+      "duration": 0.22969,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/Micro%20Pack%20-%20Organic%20Wooshes/Classic%20Swish%202.wav",
+      "sourceFile": "crowbarSwing_02-source.wav",
+      "sourceSha256": "713cd3b0c389b5650e665aa359f061033fdeb329b7e1e23a5b231629b5b97c59",
+      "sha256": "24f03b045f6e2386205a1d3d75c7dd6922edfc39e8a217c435f3ec8696b866d4",
+      "author": "Benjamin Burnes (Abstraction)",
+      "sourcePage": "https://github.com/lavenderdotpet/CC0-Public-Domain-Sounds/tree/f2b6264f9ab89fabc266914c3654685d68c5a39b/Micro%20Pack%20-%20Organic%20Wooshes",
+      "role": "crowbar-swing",
+      "peakTime": 0.04469,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.22969
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalClink_01": {
+      "file": "metalClink_01.wav",
+      "duration": 0.27841,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_hit_05.ogg",
+      "sourceFile": "metalClink_01-source.ogg",
+      "sourceSha256": "393a4e3c38aa1e3144fcc9972f68f25e38d1852e4793bbd9d0d88a467f319b6b",
+      "sha256": "d1f9867d4c43c0dea7bd2647d75fed0c92372db195a1f96db8b2e7a959b081fd",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-clink",
+      "peakTime": 0.01209,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.27841
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalClink_02": {
+      "file": "metalClink_02.wav",
+      "duration": 0.21584,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_hit_06.ogg",
+      "sourceFile": "metalClink_02-source.ogg",
+      "sourceSha256": "f571aff29262c66954900922cd70d1de25e0acd924c5d71c4536137d3659993b",
+      "sha256": "0b125774ae8c85b718063e7ee97c385a2b0cf69e949481651db1777f6ab3b0b4",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-clink",
+      "peakTime": 0.00856,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.21584
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalClang_01": {
+      "file": "metalClang_01.wav",
+      "duration": 0.17959,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_hit_01.ogg",
+      "sourceFile": "metalClang_01-source.ogg",
+      "sourceSha256": "fcb2e28730c725b794af2e48c784ca933396cf5792f9e24869ed969ae4d888ed",
+      "sha256": "208b776c66c4fa748054ba029dbcd4fad94e116d73c3868ffa788aad01d4a683",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-clang",
+      "peakTime": 0.01103,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.17959
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalClang_02": {
+      "file": "metalClang_02.wav",
+      "duration": 0.30572,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_hit_02.ogg",
+      "sourceFile": "metalClang_02-source.ogg",
+      "sourceSha256": "e368991507cfb1ad84743fa64289bd8731acd1b8fa256db1612a30cd0c7d2725",
+      "sha256": "b6c6eeb2c6fa21580026be6c87eb439fcc1e6214f1f96ddb707bfbc1bad43c5b",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-clang",
+      "peakTime": 0.03472,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.30572
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalClang_03": {
+      "file": "metalClang_03.wav",
+      "duration": 0.32703,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_hit_03.ogg",
+      "sourceFile": "metalClang_03-source.ogg",
+      "sourceSha256": "9ae472059557118675f843f5a0a16eea20331d1d1ee2a60a1b4757580579f00f",
+      "sha256": "adb272be613140625134394d879c86835383d416a3eb24c30f69fc37c8a6731b",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-clang",
+      "peakTime": 0.01703,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.02794,
+          0.35497
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalDrop_01": {
+      "file": "metalDrop_01.wav",
+      "duration": 0.72581,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_falling_01.ogg",
+      "sourceFile": "metalDrop_01-source.ogg",
+      "sourceSha256": "7071a56807c7ccf3aa4becba09abd08df0f3e1c844b1ce47d6975dcdfe49562d",
+      "sha256": "5deee2a8e9a82eea675f5f26fb099e69c4ab8abf406160f27719433f780d4600",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-drop",
+      "peakTime": 0.15797,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.15691,
+          0.88272
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "metalDrop_02": {
+      "file": "metalDrop_02.wav",
+      "duration": 0.63256,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_metal_falling_02.ogg",
+      "sourceFile": "metalDrop_02-source.ogg",
+      "sourceSha256": "e40e73a05a9b1ae7d45e24aa898bf610b32334dae80a5c00abe3e2ce0f7d207a",
+      "sha256": "ed6e03da4a53d8c9277cef75025ff2d2e8d7ed4ba28979df61da28d7f1c20e45",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "metal-drop",
+      "peakTime": 0.07481,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.01331,
+          0.64587
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "glassBreak_01": {
+      "file": "glassBreak_01.wav",
+      "duration": 0.43078,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_glass_breaking_01.ogg",
+      "sourceFile": "glassBreak_01-source.ogg",
+      "sourceSha256": "438c45398ee77a40d5cc6ffcc59db0cdc709dc6d0521da5e2896b4afc19fcacb",
+      "sha256": "a40651443736c42b356fb5fa591127ca2fa1443ec5cc09f95d6c339a99122c41",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "glass-break",
+      "peakTime": 0.01588,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.00322,
+          0.434
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "glassBreak_02": {
+      "file": "glassBreak_02.wav",
+      "duration": 0.36212,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_glass_breaking_02.ogg",
+      "sourceFile": "glassBreak_02-source.ogg",
+      "sourceSha256": "35dcb1dc69338bad745e1cd56c676d04e4afb6687b9aa6d05ba83a255252747b",
+      "sha256": "e034854dcc23500c285090441bb1eb9465a02237479f8a5b7a5faeffbc08ed93",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "glass-break",
+      "peakTime": 0.00909,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.36212
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "glassBreak_03": {
+      "file": "glassBreak_03.wav",
+      "duration": 0.644,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_glass_breaking_04.ogg",
+      "sourceFile": "glassBreak_03-source.ogg",
+      "sourceSha256": "b5038806325fa2f336a70cfb72c643d6eaa6e69df084988d4c63d65a0123000c",
+      "sha256": "3ae417b4dd7dbeafb87ce9857607c9a333a947b0a1bcd2c9d2eae39c310a6ea0",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "glass-break",
+      "peakTime": 0.02231,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.02791,
+          0.67191
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "windowBreak_01": {
+      "file": "windowBreak_01.wav",
+      "duration": 0.40094,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_glass_breaking_05.ogg",
+      "sourceFile": "windowBreak_01-source.ogg",
+      "sourceSha256": "9e788240282b05f4fd70414b133ab43f9f0c82e36f4879f7eefc9ed062850574",
+      "sha256": "f50a41b919bcfc37e4fa3297b629b65e481eaa256ef087b270b5d5cd37cce24d",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "window-break",
+      "peakTime": 0.007,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.40094
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "windowBreak_02": {
+      "file": "windowBreak_02.wav",
+      "duration": 0.7735,
+      "source": "https://raw.githubusercontent.com/lavenderdotpet/CC0-Public-Domain-Sounds/f2b6264f9ab89fabc266914c3654685d68c5a39b/75-cc0-breaking-falling-hit-sfx/bfh1_glass_breaking_06.ogg",
+      "sourceFile": "windowBreak_02-source.ogg",
+      "sourceSha256": "5dad395c21e85d0750be4b1f9c110aeba366ee5da0dadae8c307497e0a4b4c0d",
+      "sha256": "9a1751bdfbe6966edd5e850e1ff0d3773f0d9736d9a66771c68c6d44b2a543d7",
+      "author": "rubberduck",
+      "sourcePage": "https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx",
+      "role": "window-break",
+      "peakTime": 0.53584,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.7735
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "ceramicBreak_01": {
+      "file": "ceramicBreak_01.wav",
+      "duration": 0.50816,
+      "source": "https://cdn.freesound.org/previews/583/583310_9395330-hq.mp3",
+      "sourceFile": "ceramicBreak_01-source.mp3",
+      "sourceSha256": "cae48490e1f980485e63aeef304ce3157ff468d50a8d835430b02c3b69f754df",
+      "sha256": "23a9761525d60db4eccdaa3e3deab2cf255c4dae03afdc5be3575b7fbc38519a",
+      "author": "Fission9",
+      "sourcePage": "https://freesound.org/people/Fission9/sounds/583310/",
+      "role": "ceramic-break",
+      "peakTime": 0.00603,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          0.50816
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "ceramicBreak_02": {
+      "file": "ceramicBreak_02.wav",
+      "duration": 1.12,
+      "source": "https://cdn.freesound.org/previews/623/623130_7243104-hq.mp3",
+      "sourceFile": "ceramicBreak_02-source.mp3",
+      "sourceSha256": "88302428335c2c6e59faed1a3f2dde2a0ee1255d0b81b1c17cf1015063252c30",
+      "sha256": "7ced633c7e185c0e0ffbff8c19304d4c8cbdb05895284d92e92efabeee9b33c4",
+      "author": "Brsjak",
+      "sourcePage": "https://freesound.org/people/Brsjak/sounds/623130/",
+      "role": "ceramic-break",
+      "peakTime": 0.00494,
+      "license": "CC0-1.0",
+      "processing": {
+        "sourceRange": [
+          0.0,
+          1.12
+        ],
+        "sampleRate": 32000,
+        "mono": true
+      }
+    },
+    "eatCrunch_01": {
+      "file": "eatCrunch_01.wav",
+      "duration": 0.29,
+      "source": "https://opengameart.org/sites/default/files/crunch_-_tito.zip",
+      "archiveMember": "crunch.1.ogg",
+      "sourceFile": "eatCrunch_01-source.ogg",
+      "sourceSha256": "a9d01831fab133074ea09718de803c717f47be0fa18630a0d4fe082ba0a5fcf8",
+      "sha256": "5d8c0edfb84589bfa3488bc9393f1bf0ee83ae106b21d4a31fbe7bfdd9477bc0",
+      "license": "CC0-1.0",
+      "author": "Tito / StarNinjas",
+      "sourcePage": "https://opengameart.org/content/7-eating-crunches",
+      "role": "eat",
+      "peakTime": 0.09121875
+    },
+    "eatCrunch_02": {
+      "file": "eatCrunch_02.wav",
+      "duration": 0.29,
+      "source": "https://opengameart.org/sites/default/files/crunch_-_tito.zip",
+      "archiveMember": "crunch.3.ogg",
+      "sourceFile": "eatCrunch_02-source.ogg",
+      "sourceSha256": "a24b3e10c6085662eed6ac9f34e133b4d2e645d67121ecdc1d9e66dc279e828d",
+      "sha256": "4d4c01bc5a98a9fbd7e744ee803441c29dfbd933f7f97d1ec8739ccabf3833ee",
+      "license": "CC0-1.0",
+      "author": "Tito / StarNinjas",
+      "sourcePage": "https://opengameart.org/content/7-eating-crunches",
+      "role": "eat",
+      "peakTime": 0.1410625
+    },
+    "eatChew_01": {
+      "file": "eatChew_01.wav",
+      "duration": 0.27,
+      "source": "https://opengameart.org/sites/default/files/crunch_-_tito.zip",
+      "archiveMember": "crunch.6.ogg",
+      "sourceFile": "eatChew_01-source.ogg",
+      "sourceSha256": "7c2cdcc7645471e9623c2da9ef48af527c4c95f9d91e3e8453e4d9fbb6facd24",
+      "sha256": "b06e1695ba767fb2352a159f3bc4ceb4f1baf532f9fb7c81dd627179ffac9d88",
+      "license": "CC0-1.0",
+      "author": "Tito / StarNinjas",
+      "sourcePage": "https://opengameart.org/content/7-eating-crunches",
+      "role": "eat",
+      "peakTime": 0.1453125
+    },
+    "drinkGulp_01": {
+      "file": "drinkGulp_01.wav",
+      "duration": 0.29975,
+      "source": "https://opengameart.org/sites/default/files/qubodup-bottle-and-drink-sounds.7z",
+      "archiveMember": "qubodup-bottle-and-drink-sounds/swallow-01.flac",
+      "sourceFile": "drinkGulp_01-source.flac",
+      "sourceSha256": "46e6bbb47d2572b1f2d7155e18906ee736454c7145252d8427c2c1c1125478d3",
+      "sha256": "6c8ddc2d1ac18c1c5e40ff8749b9aec9fb1b840eaf74f0ba3071202b44667fe1",
+      "license": "CC0-1.0",
+      "author": "qubodup",
+      "sourcePage": "https://opengameart.org/content/liquid-bottle-drink-set",
+      "role": "drink",
+      "peakTime": 0.01278125
+    },
+    "drinkGulp_02": {
+      "file": "drinkGulp_02.wav",
+      "duration": 0.34,
+      "source": "https://opengameart.org/sites/default/files/qubodup-bottle-and-drink-sounds.7z",
+      "archiveMember": "qubodup-bottle-and-drink-sounds/swallow-03.flac",
+      "sourceFile": "drinkGulp_02-source.flac",
+      "sourceSha256": "b31f41a16daa67b8d4a3f7c47bd2a12542afddec6c90a6f5b5db9533389f080b",
+      "sha256": "10f79fb6c4895c2150f5175741eb69b2d99acf5ec6e1099413d0ab2bae30fae4",
+      "license": "CC0-1.0",
+      "author": "qubodup",
+      "sourcePage": "https://opengameart.org/content/liquid-bottle-drink-set",
+      "role": "drink",
+      "peakTime": 0.1981875
+    },
+    "naiwaAndy": {
+      "file": "naiwaAndy.wav",
+      "duration": 1.225406,
+      "source": "User-supplied video 066f3fd56dfe0573a2774408a4bb6ba0.mp4",
+      "sourceFile": "naiwaAndy-source.wav",
+      "sourceSha256": "5d9c18096d72ba877af7db4ce630a740609271ceda4101db0bc2f132955d0353",
+      "sourceVideo": "naiwaAndy-source.mp4",
+      "sourceVideoSha256": "389cf3ee21ec99e94d55214d7424483598f91f2e7fef375f42468ae4f7461141",
+      "sha256": "79ef2bacbb66b00905aefa82fbc91706aab812e30a0c657e033ee51aa89b390c",
+      "license": "User-provided; not CC0",
+      "author": "User-provided recording",
+      "sourcePage": "User attachment: 066f3fd56dfe0573a2774408a4bb6ba0.mp4",
+      "role": "naiwa-capture-call",
+      "trim": [
+        0.614,
+        1.839406
+      ],
+      "peakTime": 0.041094
+    }
+  },
+  "authors": [
+    "Kenney",
+    "Benjamin Burnes (Abstraction)",
+    "rubberduck",
+    "Fission9",
+    "Brsjak"
+  ],
+  "supplementalRepository": "https://github.com/lavenderdotpet/CC0-Public-Domain-Sounds",
+  "supplementalCommit": "f2b6264f9ab89fabc266914c3654685d68c5a39b"
+}

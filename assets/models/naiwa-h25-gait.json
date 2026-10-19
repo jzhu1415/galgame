@@ -1,0 +1,15 @@
+{
+  "Walk": {
+    "duration": 1.2,
+    "stanceFraction": 0.62,
+    "strideDistance": 0.344,
+    "modelSpeed": 0.46236559139784944
+  },
+  "Run": {
+    "duration": 0.88,
+    "stanceFraction": 0.46,
+    "strideDistance": 0.41,
+    "modelSpeed": 1.0128458498023716
+  },
+  "revision": "2026-10-17-shoulder-face-wrists-v13"
+}
