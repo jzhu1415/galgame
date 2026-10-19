@@ -23,6 +23,7 @@ import { AudioSystem } from './audio/AudioSystem.js';
 import { createPlayerAudioSnapshot, createReferenceAudioEnvironment,
   describeAudioRoom } from './audio/ReferenceAudioAdapter.js';
 import { createIceChapterLayer } from './ice-chapter-layer.js';
+import { collidesWithIceCore } from './ice-core-collision.js';
 import { bindIceQualityPicker } from './ice-quality-picker.js';
 import { bindIceHoldButton, isIceControlEvent } from './ice-input.js';
 
@@ -1914,6 +1915,7 @@ function playerColumnAt(x, z) {
 
 function collides(x, z, allowShoreExit = false) {
   const radius = 0.27;
+  if (collidesWithIceCore(x, z, radius, camera.position)) return true;
   const curved = curvedRoomCollision(x, z, {
     fromX: camera.position.x, fromZ: camera.position.z, eyeY: baseEyeHeight,
     grounded: verticalState === 'grounded', swimming: verticalState === 'swimming',

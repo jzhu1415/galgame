@@ -66,17 +66,28 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  "id": "2026-10-18-naiwa-escape-standalone",
-  "date": "2026-10-18",
+  "id": "2026-10-19-ice-frozen-naiwa",
+  "date": "2026-10-19",
   "title": {
-    "zh": "奶蛙致死的爱 · 独立逃脱游戏",
-    "en": "Naiwa’s Deadly Love · Standalone Escape"
+    "zh": "冰封镜馆 · 水晶中的身影",
+    "en": "Mirror hall · A figure in the crystal"
   },
   "intro": {
-    "zh": "古堡逃脱拥有独立网站，主页新增游戏入口；同步新版角色介绍、阅读设置与镜馆优化。独立站已向所有玩家开放。",
-    "en": "Castle Escape now has a standalone site and a home-page entrance. The updated cast, reading settings and mirror-hall improvements are included. The standalone site is open to all players."
+    "zh": "镜馆尽头的核心水晶中，出现了冰封的奶蛙三维身影。透明冰晶随冷光轻轻浮动，极低画质也能看清内部角色。此前的古堡独立游戏、角色介绍与镜馆优化继续保留。",
+    "en": "A frozen 3D Naiwa now rests inside the core crystal at the end of the mirror hall. The transparent ice drifts gently in the cold light, with the figure visible even on Very low graphics. The standalone castle game, cast spreads and hall improvements are retained."
   },
   "items": [
+    {
+      "tag": "FROZEN NAIWA",
+      "title": {
+        "zh": "水晶里的奶蛙",
+        "en": "Naiwa inside the crystal"
+      },
+      "body": {
+        "zh": "核心水晶加入彩色三维角色，保留黄色身体、奶白腹部与绿色眼睛，以静止姿态封存在淡蓝冰晶中。水晶与底座具有碰撞范围，可贴边绕行并在外侧触发核心，物证顺序与存档进度不变。",
+        "en": "The core crystal now holds a coloured 3D character with a yellow body, cream belly and green eyes, frozen still inside pale blue ice. The crystal and base have collision boundaries: walk around them and interact from outside. Evidence order and save progress are unchanged."
+      }
+    },
     {
       "tag": "STANDALONE ESCAPE",
       "title": {
