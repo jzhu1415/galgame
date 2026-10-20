@@ -2816,7 +2816,7 @@ canvas.addEventListener('click', () => {
 
 const frameCadence = new FrameCadence();
 let lastWaterReflectionAt = -Infinity;
-const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer });
+const iceChapterLayer = createIceChapterLayer({ scene, camera, canvas, columnAt, renderer, viewRadius: VIEW_RADIUS });
 window.__naiwaIceLayer = iceChapterLayer;
 iceChapterLayer.setQuality(qualityPresetName);
 iceChapterLayer.setBrightness(Number(lightBrightnessInput.value) / 100);

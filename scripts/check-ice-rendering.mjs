@@ -9,6 +9,8 @@ const fog = new THREE.Fog(0xaabbcc, 1, 40);
 scene.fog = fog;
 const root = new THREE.Group();
 const material = new THREE.MeshPhysicalMaterial();
+const lazyMaterial = new THREE.MeshPhysicalMaterial();
+root.userData.iceReflectionMaterials = [lazyMaterial];
 root.add(new THREE.Mesh(new THREE.BoxGeometry(), material));
 scene.add(root);
 const hiddenRoot = new THREE.Group();
@@ -49,6 +51,7 @@ try {
   visit(7.5);
   assert.equal(captures, 1);
   assert.equal(material.envMap, outputs[0].target.texture);
+  assert(lazyMaterial.envMap === outputs[0].target.texture, 'Not-yet-loaded crystal materials receive the room map too');
   assert.equal(scene.fog, fog);
   assert.equal(root.visible, true);
   assert.equal(hiddenRoot.visible, false);
@@ -103,6 +106,7 @@ try {
   THREE.PMREMGenerator.prototype.fromCubemap = filterCube;
   root.children[0].geometry.dispose();
   material.dispose();
+  lazyMaterial.dispose();
   mirror.geometry.dispose();
   mirror.material.dispose();
   light.dispose();

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { iceQualitySettings } from './ice-quality.js';
 
 /** Three readable landmarks along the northbound route. All geometry stays outside x=6.5..8.5. */
-export function createIceLandmarks({ scene }) {
+export function createIceLandmarks({ scene, camera, viewRadius = 2, streaming = true }) {
   const root = new THREE.Group();
   root.name = 'ice-route-landmarks';
   root.userData.iceReflective = true;
@@ -12,7 +12,18 @@ export function createIceLandmarks({ scene }) {
   const floating = [];
   const crystalLights = [];
   const lightRooms = [];
-  const qualityRebuilders = [];
+  const qualityRebuilders = new Set();
+  const geometryOwners = new WeakMap();
+  const crystalRooms = new Map([
+    ['arrival', 0, 15], ['connector', 15, 30], ['mirror', 30, 45],
+    ['crystal', 60, 75], ['core', 90, 105],
+  ].map(([name, startZ, endZ]) => [name, {
+    name, startZ, endZ, builders: [], objects: [], geometries: new Set(),
+    rebuilders: new Set(), floating: new Set(), loaded: false,
+  }]));
+  const chunkRadius = Math.max(0, Math.min(4, Math.floor(viewRadius)));
+  let buildingRoom = null;
+  let lastChunkX = NaN, lastChunkZ = NaN;
   let quality = 'balanced';
   let brightness = 1;
   let activeLightRoom = null;
@@ -40,15 +51,77 @@ export function createIceLandmarks({ scene }) {
     emissive: 0x356b83, emissiveIntensity: .11,
   }));
   for (const material of [silver, edge, glass, ice]) material.userData.iceReflective = true;
+  // Shared materials exist before distant meshes. Reflection setup must bind
+  // them now so later streamed rooms inherit a valid environment map.
+  root.userData.iceReflectionMaterials = [silver, edge, glass, ice];
 
   function ownMaterial(material) { materials.add(material); return material; }
-  function ownGeometry(geometry) { geometries.add(geometry); return geometry; }
+  function ownGeometry(geometry) {
+    geometries.add(geometry);
+    if (buildingRoom) { buildingRoom.geometries.add(geometry); geometryOwners.set(geometry, buildingRoom); }
+    return geometry;
+  }
   function replaceQualityGeometry(object, buildGeometry) {
     const previous = object.geometry;
-    if (previous && geometries.delete(previous)) previous.dispose();
-    object.geometry = buildGeometry();
+    const owner = geometryOwners.get(previous);
+    if (previous && geometries.delete(previous)) { owner?.geometries.delete(previous); previous.dispose(); }
+    const before = buildingRoom;
+    buildingRoom = owner || before;
+    try { object.geometry = buildGeometry(); } finally { buildingRoom = before; }
   }
-  function registerQualityRebuilder(rebuild) { qualityRebuilders.push(rebuild); }
+  function registerQualityRebuilder(rebuild) {
+    qualityRebuilders.add(rebuild); buildingRoom?.rebuilders.add(rebuild);
+  }
+  function registerFloating(entry) {
+    floating.push(entry); buildingRoom?.floating.add(entry);
+  }
+  function deferCrystals(room, build) { crystalRooms.get(room).builders.push(build); }
+  function unloadRoom(room) {
+    for (const object of room.objects) {
+      root.remove(object);
+      object.traverse(child => { if (child.isInstancedMesh) child.dispose(); });
+    }
+    for (const geometry of room.geometries) { geometries.delete(geometry); geometry.dispose(); }
+    for (const rebuild of room.rebuilders) qualityRebuilders.delete(rebuild);
+    for (const entry of room.floating) floating.splice(floating.indexOf(entry), 1);
+    room.objects.length = 0; room.geometries.clear(); room.rebuilders.clear(); room.floating.clear();
+    room.loaded = false;
+  }
+  function loadRoom(room) {
+    const existing = new Set(root.children);
+    buildingRoom = room;
+    try {
+      for (const build of room.builders) build();
+      if (iceQualitySettings(quality).simpleGeometry) for (const rebuild of room.rebuilders) rebuild(true);
+      room.objects = root.children.filter(object => !existing.has(object));
+      const animated = new Set([...room.floating].map(entry => entry.object));
+      for (const object of room.objects) object.traverse(child => {
+        if (!animated.has(child)) { child.updateMatrix(); child.matrixAutoUpdate = false; }
+      });
+      room.loaded = true;
+    } catch (error) {
+      room.objects = root.children.filter(object => !existing.has(object));
+      unloadRoom(room); throw error;
+    } finally { buildingRoom = null; }
+  }
+  function syncCrystals(position) {
+    if (!streaming) return;
+    const x = Math.floor(position.x / 16), z = Math.floor(position.z / 16);
+    if (x === lastChunkX && z === lastChunkZ) return;
+    lastChunkX = x; lastChunkZ = z;
+    // Same 16m chunk window as walls/floors, with 3m of conservative coverage
+    // for tilted crystal tips and floating rotations at the region boundaries.
+    const minX = (x - chunkRadius) * 16, maxX = (x + chunkRadius + 1) * 16;
+    const minZ = (z - chunkRadius) * 16, maxZ = (z + chunkRadius + 1) * 16;
+    for (const room of crystalRooms.values()) {
+      const needed = minX < 18 && maxX > -3 && minZ < room.endZ + 3 && maxZ > room.startZ - 3;
+      if (!needed && room.loaded) unloadRoom(room);
+    }
+    for (const room of crystalRooms.values()) {
+      const needed = minX < 18 && maxX > -3 && minZ < room.endZ + 3 && maxZ > room.startZ - 3;
+      if (needed && !room.loaded) loadRoom(room);
+    }
+  }
   function box(w, h, d) {
     const key = `${w}:${h}:${d}`;
     if (!boxGeometries.has(key)) boxGeometries.set(key, ownGeometry(new THREE.BoxGeometry(w, h, d)));
@@ -222,13 +295,15 @@ export function createIceLandmarks({ scene }) {
     ] },
   ];
   for (const cluster of crystalGroups) {
-    const members = cluster.entries.map(entry => ({ ...entry, x: entry.x, z: entry.z }));
-    const object = mesh(makeCrystalCluster(members), ice, cluster.x, 0, cluster.z);
-    object.userData.growthSurface = 'floor';
-    object.userData.crystalRoom = 'crystal';
-    object.userData.crystalCount = members.length;
-    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
-      () => makeCrystalCluster(members, reduced)));
+    deferCrystals('crystal', () => {
+      const members = cluster.entries.map(entry => ({ ...entry, x: entry.x, z: entry.z }));
+      const object = mesh(makeCrystalCluster(members), ice, cluster.x, 0, cluster.z);
+      object.userData.growthSurface = 'floor';
+      object.userData.crystalRoom = 'crystal';
+      object.userData.crystalCount = members.length;
+      registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+        () => makeCrystalCluster(members, reduced)));
+    });
   }
   function makeFloatingCrystal(variantIndex, reduced = iceQualitySettings(quality).simpleGeometry) {
     const profile = crystalVariantFor(variantIndex);
@@ -276,17 +351,19 @@ export function createIceLandmarks({ scene }) {
     [4.95, 2.76, 68.3, 1.05, 2], [10.15, 3.08, 71.2, .9, 0],
   ];
   floatingSpecs.forEach(([x, y, z, size, variantIndex], index) => {
-    const crystal = mesh(makeFloatingCrystal(variantIndex, false), ice, x, y, z);
-    crystal.userData.floatingCrystal = true;
-    crystal.userData.growthSurface = 'air';
-    crystal.userData.crystalRoom = 'crystal';
-    crystal.userData.crystalCount = 1;
-    crystal.scale.setScalar(size);
-    crystal.rotation.set(.12 * (variantIndex - 1), .26 * variantIndex, .1 * (variantIndex % 2 ? -1 : 1));
-    floating.push({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
-    registerQualityRebuilder((reduced) => replaceQualityGeometry(crystal,
-      () => makeFloatingCrystal(variantIndex, reduced)));
-    addFissures(crystal);
+    deferCrystals('crystal', () => {
+      const crystal = mesh(makeFloatingCrystal(variantIndex), ice, x, y, z);
+      crystal.userData.floatingCrystal = true;
+      crystal.userData.growthSurface = 'air';
+      crystal.userData.crystalRoom = 'crystal';
+      crystal.userData.crystalCount = 1;
+      crystal.scale.setScalar(size);
+      crystal.rotation.set(.12 * (variantIndex - 1), .26 * variantIndex, .1 * (variantIndex % 2 ? -1 : 1));
+      registerFloating({ object: crystal, baseY: y, phase: index * 1.61, baseRotationY: crystal.rotation.y });
+      registerQualityRebuilder((reduced) => replaceQualityGeometry(crystal,
+        () => makeFloatingCrystal(variantIndex, reduced)));
+      addFissures(crystal);
+    });
   });
   // Low, broad mineral growth frames the former mirror core, with one strong
   // diagonal crystal on each side instead of a freestanding mirror silhouette.
@@ -303,14 +380,16 @@ export function createIceLandmarks({ scene }) {
     ] },
   ];
   for (const cluster of coreClusters) {
+    deferCrystals('core', () => {
       const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
-    object.name = cluster.x < 7.5 ? 'ice-core-crystal-left' : 'ice-core-crystal-right';
-    object.userData.kind = 'coreCrystalCluster';
-    object.userData.growthSurface = 'floor';
-    object.userData.crystalRoom = 'core';
-    object.userData.crystalCount = cluster.entries.length;
-    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
-      () => makeCrystalCluster(cluster.entries, reduced)));
+      object.name = cluster.x < 7.5 ? 'ice-core-crystal-left' : 'ice-core-crystal-right';
+      object.userData.kind = 'coreCrystalCluster';
+      object.userData.growthSurface = 'floor';
+      object.userData.crystalRoom = 'core';
+      object.userData.crystalCount = cluster.entries.length;
+      registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+        () => makeCrystalCluster(cluster.entries, reduced)));
+    });
   }
 
   // Early rooms use smaller growths at the dry arrival perimeter and richer
@@ -337,14 +416,16 @@ export function createIceLandmarks({ scene }) {
     ] },
   ];
   for (const cluster of earlyClusters) {
-    const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
-    object.name = cluster.name;
-    object.userData.earlyRoom = cluster.room;
-    object.userData.growthSurface = cluster.surface;
-    object.userData.crystalRoom = cluster.room;
-    object.userData.crystalCount = cluster.entries.length;
-    registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
-      () => makeCrystalCluster(cluster.entries, reduced)));
+    deferCrystals(cluster.room, () => {
+      const object = mesh(makeCrystalCluster(cluster.entries), ice, cluster.x, 0, cluster.z);
+      object.name = cluster.name;
+      object.userData.earlyRoom = cluster.room;
+      object.userData.growthSurface = cluster.surface;
+      object.userData.crystalRoom = cluster.room;
+      object.userData.crystalCount = cluster.entries.length;
+      registerQualityRebuilder((reduced) => replaceQualityGeometry(object,
+        () => makeCrystalCluster(cluster.entries, reduced)));
+    });
   }
 
   // Four wall stations on both faces of each early/core room are merged into
@@ -386,31 +467,33 @@ export function createIceLandmarks({ scene }) {
           });
         }
       });
-      const object = mesh(makeCrystalCluster(specs), ice, anchorX, 0, centerZ);
-      object.name = `ice-wall-crystals-${wallRoom}-${side}`;
-      object.userData.growthSurface = 'wall';
-      object.userData.wallRoom = wallRoom;
-      object.userData.crystalRoom = wallRoom;
-      object.userData.crystalCount = specs.length;
-      if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
-      const lightBranch = 3; // First growth at the second, dry wall station.
-      const growthDirection = new THREE.Vector3().fromArray(object.geometry.userData.growthDirections[lightBranch]);
-      object.userData.crystalLightPoint = new THREE.Vector3()
-        .fromArray(object.geometry.userData.growthRoots[lightBranch])
-        .addScaledVector(growthDirection, object.geometry.userData.growthHeights[lightBranch] * .36)
-        .toArray();
-      registerQualityRebuilder((reduced) => {
-        const retainedIndexes = quality === 'ultra' ? [0, 3, 6, 9] : reduced ? [0, 2, 3, 5, 6, 9] : specs.map((_, index) => index);
-        const selected = retainedIndexes.map(index => specs[index]);
-        replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
-        object.userData.crystalCount = selected.length;
-        const retainedLightBranch = retainedIndexes.indexOf(lightBranch);
-        const growth = object.geometry.userData.growthDirections[retainedLightBranch];
+      deferCrystals(room, () => {
+        const object = mesh(makeCrystalCluster(specs), ice, anchorX, 0, centerZ);
+        object.name = `ice-wall-crystals-${wallRoom}-${side}`;
+        object.userData.growthSurface = 'wall';
+        object.userData.wallRoom = wallRoom;
+        object.userData.crystalRoom = wallRoom;
+        object.userData.crystalCount = specs.length;
+        if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
+        const lightBranch = 3; // First growth at the second, dry wall station.
+        const growthDirection = new THREE.Vector3().fromArray(object.geometry.userData.growthDirections[lightBranch]);
         object.userData.crystalLightPoint = new THREE.Vector3()
-          .fromArray(object.geometry.userData.growthRoots[retainedLightBranch])
-          .addScaledVector(new THREE.Vector3().fromArray(growth),
-            object.geometry.userData.growthHeights[retainedLightBranch] * .36)
+          .fromArray(object.geometry.userData.growthRoots[lightBranch])
+          .addScaledVector(growthDirection, object.geometry.userData.growthHeights[lightBranch] * .36)
           .toArray();
+        registerQualityRebuilder((reduced) => {
+          const retainedIndexes = quality === 'ultra' ? [0, 3, 6, 9] : reduced ? [0, 2, 3, 5, 6, 9] : specs.map((_, index) => index);
+          const selected = retainedIndexes.map(index => specs[index]);
+          replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
+          object.userData.crystalCount = selected.length;
+          const retainedLightBranch = retainedIndexes.indexOf(lightBranch);
+          const growth = object.geometry.userData.growthDirections[retainedLightBranch];
+          object.userData.crystalLightPoint = new THREE.Vector3()
+            .fromArray(object.geometry.userData.growthRoots[retainedLightBranch])
+            .addScaledVector(new THREE.Vector3().fromArray(growth),
+              object.geometry.userData.growthHeights[retainedLightBranch] * .36)
+            .toArray();
+        });
       });
     }
   }
@@ -480,16 +563,18 @@ export function createIceLandmarks({ scene }) {
           rotationQuaternion: orientation.toArray(),
         });
       }
-      const object = mesh(makeCrystalCluster(specs), ice, 0, 0, 0);
-      object.name = `ice-dense-ground-${room}-${side}`;
-      object.userData.crystalRoom = room;
-      object.userData.crystalCount = specs.length;
-      object.userData.growthSurface = 'floor';
-      if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
-      registerQualityRebuilder((reduced) => {
-        const selected = reduced ? sampleCrystalSpecs(specs, Math.max(1, Math.ceil(specs.length * iceQualitySettings(quality).crystalRatio))) : specs;
-        replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
-        object.userData.crystalCount = selected.length;
+      deferCrystals(room, () => {
+        const object = mesh(makeCrystalCluster(specs), ice, 0, 0, 0);
+        object.name = `ice-dense-ground-${room}-${side}`;
+        object.userData.crystalRoom = room;
+        object.userData.crystalCount = specs.length;
+        object.userData.growthSurface = 'floor';
+        if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
+        registerQualityRebuilder((reduced) => {
+          const selected = reduced ? sampleCrystalSpecs(specs, Math.max(1, Math.ceil(specs.length * iceQualitySettings(quality).crystalRatio))) : specs;
+          replaceQualityGeometry(object, () => makeCrystalCluster(selected, reduced));
+          object.userData.crystalCount = selected.length;
+        });
       });
     }
   }
@@ -501,49 +586,51 @@ export function createIceLandmarks({ scene }) {
   function addRoomFloatBatches({ room, startZ, endZ, perSide, minY, maxY, maxScale }) {
     for (const side of ['west', 'east']) {
       const west = side === 'west';
-      const instances = [];
       const variantIndex = west ? 0 : 2;
-      const geometry = makeFloatingCrystal(variantIndex, false);
-      const object = new THREE.InstancedMesh(geometry, ice, perSide);
-      object.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      object.name = `ice-floating-${room}-${side}`;
-      object.userData.floatingCrystal = true;
-      object.userData.growthSurface = 'air';
-      object.userData.crystalRoom = room;
-      object.userData.crystalCount = perSide;
-      if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
-      for (let i = 0; i < perSide; i++) {
-        const xUnit = deterministicUnit(room.length * 31 + (west ? 17 : 23), i, 9);
-        const zUnit = deterministicUnit(room.length * 43 + (west ? 29 : 37), i, 10);
-        const yUnit = deterministicUnit(room.length * 59 + (west ? 41 : 47), i, 11);
-        const size = .36 + deterministicUnit(307, i + room.length, west ? 12 : 13) * (maxScale - .36);
-        const sideMargin = size * 1.4 + .12;
-        const maxWestX = 6.5 - sideMargin;
-        const minEastX = 8.5 + sideMargin;
-        const x = west
-          ? 3.45 + xUnit * Math.max(0, maxWestX - 3.45)
-          : 11.55 - xUnit * Math.max(0, 11.55 - minEastX);
-        const z = startZ + 1.2 + zUnit * ((endZ - startZ) - 2.4);
-        const baseY = minY + yUnit * (maxY - minY);
-        instances.push({
-          x, z, baseY, phase: i * 1.731 + (west ? 0 : 1.13), size,
-          scale: [size * (.72 + xUnit * .58), size * (.78 + yUnit * .72), size * (.7 + zUnit * .62)],
-          rotation: [(.2 + yUnit * .9) * (west ? 1 : -1), xUnit * Math.PI * 2, (.16 + zUnit * .8) * (west ? -1 : 1)],
+      deferCrystals(room, () => {
+        const instances = [];
+        const geometry = makeFloatingCrystal(variantIndex);
+        const object = new THREE.InstancedMesh(geometry, ice, perSide);
+        object.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        object.name = `ice-floating-${room}-${side}`;
+        object.userData.floatingCrystal = true;
+        object.userData.growthSurface = 'air';
+        object.userData.crystalRoom = room;
+        object.userData.crystalCount = perSide;
+        if (room === 'arrival' || room === 'mirror') object.userData.earlyRoom = room;
+        for (let i = 0; i < perSide; i++) {
+          const xUnit = deterministicUnit(room.length * 31 + (west ? 17 : 23), i, 9);
+          const zUnit = deterministicUnit(room.length * 43 + (west ? 29 : 37), i, 10);
+          const yUnit = deterministicUnit(room.length * 59 + (west ? 41 : 47), i, 11);
+          const size = .36 + deterministicUnit(307, i + room.length, west ? 12 : 13) * (maxScale - .36);
+          const sideMargin = size * 1.4 + .12;
+          const maxWestX = 6.5 - sideMargin;
+          const minEastX = 8.5 + sideMargin;
+          const x = west
+            ? 3.45 + xUnit * Math.max(0, maxWestX - 3.45)
+            : 11.55 - xUnit * Math.max(0, 11.55 - minEastX);
+          const z = startZ + 1.2 + zUnit * ((endZ - startZ) - 2.4);
+          const baseY = minY + yUnit * (maxY - minY);
+          instances.push({
+            x, z, baseY, phase: i * 1.731 + (west ? 0 : 1.13), size,
+            scale: [size * (.72 + xUnit * .58), size * (.78 + yUnit * .72), size * (.7 + zUnit * .62)],
+            rotation: [(.2 + yUnit * .9) * (west ? 1 : -1), xUnit * Math.PI * 2, (.16 + zUnit * .8) * (west ? -1 : 1)],
+          });
+        }
+        root.add(object);
+        const entry = { object, instances, allInstances: instances, perSide, variantIndex };
+        registerFloating(entry);
+        updateInstancedFloatBatch(object, instances, 0);
+        setFloatBounds(object, instances);
+        registerQualityRebuilder((reduced) => {
+          const count = reduced ? Math.max(1, Math.ceil(perSide * iceQualitySettings(quality).crystalRatio)) : perSide;
+          entry.instances = entry.allInstances.slice(0, count);
+          object.count = count;
+          object.userData.crystalCount = count;
+          replaceQualityGeometry(object, () => makeFloatingCrystal(variantIndex, reduced));
+          updateInstancedFloatBatch(object, entry.instances, 0);
+          setFloatBounds(object, entry.instances);
         });
-      }
-      root.add(object);
-      const entry = { object, instances, allInstances: instances, perSide, variantIndex };
-      floating.push(entry);
-      updateInstancedFloatBatch(object, instances, 0);
-      setFloatBounds(object, instances);
-      registerQualityRebuilder((reduced) => {
-        const count = reduced ? Math.max(1, Math.ceil(perSide * iceQualitySettings(quality).crystalRatio)) : perSide;
-        entry.instances = entry.allInstances.slice(0, count);
-        object.count = count;
-        object.userData.crystalCount = count;
-        replaceQualityGeometry(object, () => makeFloatingCrystal(variantIndex, reduced));
-        updateInstancedFloatBatch(object, entry.instances, 0);
-        setFloatBounds(object, entry.instances);
       });
     }
   }
@@ -586,15 +673,7 @@ export function createIceLandmarks({ scene }) {
 
   // Reuse two lights at the original embedded positions in all four rooms.
   // Keeping the light count constant also keeps the shader configuration stable.
-  for (const centerZ of [7.5, 37.5, 67.5, 97.5]) {
-    const room = { z: centerZ, clusters: [] };
-    for (const side of ['west', 'east']) {
-      const cluster = root.children.find(object => object.userData.wallRoom
-        && object.position.z === centerZ && object.name.endsWith(`-${side}`));
-      room.clusters.push(cluster);
-    }
-    lightRooms.push(room);
-  }
+  for (const centerZ of [7.5, 37.5, 67.5, 97.5]) lightRooms.push({ z: centerZ });
   for (const side of ['west', 'east']) {
     const light = new THREE.PointLight(0xb6eaff, 5, 10, 1.6);
     light.name = `ice-crystal-light-${side}`;
@@ -604,32 +683,39 @@ export function createIceLandmarks({ scene }) {
     crystalLights.push(light);
   }
   function positionLights(room) {
+    if (!room) return;
+    const clusters = ['west', 'east'].map(side => root.children.find(object => object.userData.wallRoom
+      && object.position.z === room.z && object.name.endsWith(`-${side}`)));
+    if (clusters.some(cluster => !cluster)) {
+      crystalLights.forEach(light => { light.intensity = 0; }); activeLightRoom = null; return;
+    }
     crystalLights.forEach((light, index) => {
-      const cluster = room.clusters[index];
+      const cluster = clusters[index];
       light.position.fromArray(cluster.userData.crystalLightPoint).add(cluster.position);
       light.userData.roomZ = room.z;
     });
     activeLightRoom = room;
   }
-  positionLights(lightRooms[0]);
 
   // A small pair grows off the walls of the long connecting passage without
   // crossing into the central path or the evidence pickup at z=22.5.
   for (const [side, x, lean] of [['west', 6.05, -.3], ['east', 8.95, .3]]) {
-    const object = mesh(makeCrystalCluster([{
-      variantIndex: side === 'west' ? 1 : 0, x: 0, z: 0,
-      scale: [.12, .15], height: .65, rootY: .38,
-      rotation: [0, .12, lean], embed: .02,
-    }, {
-      variantIndex: side === 'west' ? 2 : 1, x: 0, z: 7.0,
-      scale: [.16, .17], height: .78, rootY: .52,
-      rotation: [.08, -.18, lean * .8], embed: .02,
-    }]), ice, x, 0, 18.6);
-    object.name = `ice-connector-wall-${side}`;
-    object.userData.earlyRoom = 'arrival';
-    object.userData.growthSurface = 'wall';
-    object.userData.crystalRoom = 'connector';
-    object.userData.crystalCount = 2;
+    deferCrystals('connector', () => {
+      const object = mesh(makeCrystalCluster([{
+        variantIndex: side === 'west' ? 1 : 0, x: 0, z: 0,
+        scale: [.12, .15], height: .65, rootY: .38,
+        rotation: [0, .12, lean], embed: .02,
+      }, {
+        variantIndex: side === 'west' ? 2 : 1, x: 0, z: 7.0,
+        scale: [.16, .17], height: .78, rootY: .52,
+        rotation: [.08, -.18, lean * .8], embed: .02,
+      }]), ice, x, 0, 18.6);
+      object.name = `ice-connector-wall-${side}`;
+      object.userData.earlyRoom = 'arrival';
+      object.userData.growthSurface = 'wall';
+      object.userData.crystalRoom = 'connector';
+      object.userData.crystalCount = 2;
+    });
   }
 
   scene.add(root);
@@ -640,6 +726,10 @@ export function createIceLandmarks({ scene }) {
       object.matrixAutoUpdate = false;
     }
   });
+  if (!streaming) for (const room of crystalRooms.values()) loadRoom(room);
+  else if (camera) syncCrystals(camera.position);
+  positionLights(lightRooms.reduce((nearest, room) =>
+    Math.abs(room.z - (camera?.position.z ?? 7.5)) < Math.abs(nearest.z - (camera?.position.z ?? 7.5)) ? room : nearest));
   let disposed = false;
   return {
     setQuality(preset) {
@@ -664,6 +754,7 @@ export function createIceLandmarks({ scene }) {
       if (disposed) return;
       void found;
       void delta;
+      if (camera) syncCrystals(camera.position);
       for (const entry of floating) {
         if (!iceQualitySettings(quality).animateCrystals) break;
         // Geometry remains visible to the main and reflection cameras. Distant
@@ -685,15 +776,16 @@ export function createIceLandmarks({ scene }) {
         if (activeLightRoom !== nearest) positionLights(nearest);
         // Both sides fade out before relocation in the unlit connecting passage.
         const fade = 1 - THREE.MathUtils.smoothstep(Math.abs(nearest.z - camera.position.z), 10, 15);
-        for (const light of crystalLights) light.intensity = 5 * brightness * fade;
+        for (const light of crystalLights) light.intensity = activeLightRoom ? 5 * brightness * fade : 0;
       } else {
-        for (const light of crystalLights) light.intensity = 5 * brightness;
+        for (const light of crystalLights) light.intensity = activeLightRoom ? 5 * brightness : 0;
       }
     },
     dispose() {
       if (disposed) return;
       disposed = true;
       scene.remove(root);
+      for (const room of crystalRooms.values()) if (room.loaded) unloadRoom(room);
       root.traverse((object) => {
         if (object.isInstancedMesh) object.dispose();
         if (object.isMesh) {
@@ -707,7 +799,8 @@ export function createIceLandmarks({ scene }) {
       geometries.clear();
       materials.clear();
       floating.length = 0;
-      qualityRebuilders.length = 0;
+      qualityRebuilders.clear();
+      crystalRooms.clear();
       crystalLights.forEach(light => { scene.remove(light); light.dispose(); });
       crystalLights.length = 0;
       lightRooms.length = 0;

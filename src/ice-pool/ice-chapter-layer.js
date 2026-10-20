@@ -110,8 +110,8 @@ function disposeObject(root) {
   resources.forEach(resource => resource.dispose());
 }
 
-export function createIceChapterLayer({ scene, camera, canvas, columnAt, renderer }) {
-  const landmarks = createIceLandmarks({ scene });
+export function createIceChapterLayer({ scene, camera, canvas, columnAt, renderer, viewRadius = 2 }) {
+  const landmarks = createIceLandmarks({ scene, camera, viewRadius });
   const found = new Set();
   const groups = new Map();
   const raycaster = new THREE.Raycaster();
@@ -552,6 +552,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     if (!initialized) camera.lookAt(camera.position.x, camera.position.y, camera.position.z + 10);
     initialized = true;
+    landmarks.update(0, 0, { camera });
     if (stage === 'routeOne' || stage === 'routeTwo') { routeStarted = true; routeAtStart = true; makeRouteMarkers(); }
     refreshEvidenceVisibility();
     updateLabels(); updatePrompt();

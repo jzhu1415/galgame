@@ -66,17 +66,33 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  "id": "2026-10-19-ice-frozen-naiwa",
+  "id": "2026-10-19-ice-crystal-streaming",
   "date": "2026-10-19",
   "title": {
-    "zh": "冰封镜馆 · 水晶中的身影",
-    "en": "Mirror hall · A figure in the crystal"
+    "zh": "冰馆 · 水晶分区加载",
+    "en": "Mirror hall · Crystal streaming"
   },
   "intro": {
-    "zh": "镜馆尽头的核心水晶中，出现了冰封的奶蛙三维身影。透明冰晶随冷光轻轻浮动，极低画质也能看清内部角色。此前的古堡独立游戏、角色介绍与镜馆优化继续保留。",
-    "en": "A frozen 3D Naiwa now rests inside the core crystal at the end of the mirror hall. The transparent ice drifts gently in the cold light, with the figure visible even on Very low graphics. The standalone castle game, cast spreads and hall improvements are retained."
+    "zh": "水晶现在随墙壁和地面的可见区域按需生成，离远后释放模型缓冲，返回时恢复原来的形状。此前的冰封奶蛙、碰撞和画质设置继续保留。",
+    "en": "Crystals now load with the nearby wall and floor regions, release their model buffers when distant, and return with their original shapes. Frozen Naiwa, collision and graphics settings are retained."
   },
   "items": [
+    {
+      "tag": "CRYSTAL STREAMING",
+      "title": { "zh": "走近时加载，离开后释放", "en": "Load nearby, release when distant" },
+      "body": {
+        "zh": "地面、墙面和浮空水晶沿用地图的分块范围，提前准备附近房间；远处区域不再一次性创建全部模型。返回时恢复相同的位置、朝向和房间密度，卸载时同时释放几何与实例缓冲。",
+        "en": "Ground, wall and floating crystals use the map’s chunk window to prepare nearby rooms. Distant regions no longer create every model on entry. Returning restores the same positions, directions and room density; unloading releases geometry and instance buffers."
+      }
+    },
+    {
+      "tag": "QUALITY & RETURN",
+      "title": { "zh": "继续探索时也能接上", "en": "Ready when exploration resumes" },
+      "body": {
+        "zh": "新进入的区域采用当前画质，切回高画质恢复完整细节。嵌入灯光与环境反光随区域正确接续，读档和剧情回放会先准备对应位置的水晶，线索与路线进度保持原样。",
+        "en": "Newly loaded regions use the current graphics preset, and High restores full detail. Embedded lights and environment reflections follow the loaded crystals. Loading a save or replay prepares crystals at the resumed location while keeping clue and route progress."
+      }
+    },
     {
       "tag": "FROZEN NAIWA",
       "title": {

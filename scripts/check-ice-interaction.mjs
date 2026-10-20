@@ -6,7 +6,8 @@ import { ICE_LAYOUT, currentIceStage, canCollectIceEvidence } from '../src/ice-p
 import { createIceLandmarks } from '../src/ice-pool/ice-landmarks.js';
 
 const landmarkScene = new THREE.Scene();
-const landmarks = createIceLandmarks({ scene: landmarkScene });
+// Inspect the complete deterministic catalog; streamed lifecycle has its own check.
+const landmarks = createIceLandmarks({ scene: landmarkScene, streaming: false });
 landmarks.update(.05, 1, { found: new Set(['routeOne']) });
 landmarkScene.updateMatrixWorld(true);
 const walkingLane = new THREE.Box3(new THREE.Vector3(6.5, .2, 0), new THREE.Vector3(8.5, 2.7, 105));

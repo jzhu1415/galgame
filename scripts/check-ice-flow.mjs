@@ -115,12 +115,14 @@ assert.ok(messages.some(message => message.type === 'core'), 'A legacy second ro
 layer.dispose();
 const resumeCamera = new THREE.PerspectiveCamera();
 resumeCamera.position.set(7.5, 1.7, 2.5);
-const resumedLayer = createIceChapterLayer({ scene: new THREE.Scene(), camera: resumeCamera,
+const resumeScene = new THREE.Scene();
+const resumedLayer = createIceChapterLayer({ scene: resumeScene, camera: resumeCamera,
   canvas: { addEventListener: noop, removeEventListener: noop },
   columnAt: () => ({ solid: false, level: 0, ceiling: 5 }),
 });
 resumedLayer.setInit({ found: ['note', 'footage', 'routeOne', 'shard'] });
 assert.ok(resumeCamera.position.z > 45, 'A resumed game enters near its current passage');
+assert(resumeScene.getObjectByName('ice-dense-ground-crystal-west'), 'Save initialization prepares crystals at the resumed location before the first movement frame');
 assert.ok(resumeCamera.getWorldDirection(new THREE.Vector3()).z > .99);
 // A save that used to stop at the second cipher now resumes the walking route.
 resumedLayer.setStoryPaused(true);

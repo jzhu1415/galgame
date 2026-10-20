@@ -12,7 +12,7 @@ const vertices = root => {
   });
   return count;
 };
-const scene = new THREE.Scene(), landmarks = createIceLandmarks({ scene });
+const scene = new THREE.Scene(), landmarks = createIceLandmarks({ scene, streaming: false });
 const full = vertices(scene);
 landmarks.setQuality('performance'); const low = vertices(scene);
 landmarks.setQuality('ultra');
