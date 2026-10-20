@@ -66,17 +66,19 @@ export const previousRelease = {
 }
 
 export const latestRelease = {
-  "id": "2026-10-19-ice-crystal-streaming",
-  "date": "2026-10-19",
+  "id": "2026-10-20-mobile-ui-home-entry",
+  "date": "2026-10-20",
   "title": {
-    "zh": "冰馆 · 水晶分区加载",
-    "en": "Mirror hall · Crystal streaming"
-  },
+  "zh": "手机阅读与便捷开始入口",
+  "en": "Mobile reading and easier Play entrances"
+},
   "intro": {
-    "zh": "水晶现在随墙壁和地面的可见区域按需生成，离远后释放模型缓冲，返回时恢复原来的形状。此前的冰封奶蛙、碰撞和画质设置继续保留。",
-    "en": "Crystals now load with the nearby wall and floor regions, release their model buffers when distant, and return with their original shapes. Frozen Naiwa, collision and graphics settings are retained."
-  },
+  "zh": "手机对白和工具栏给画面让出更多空间，电脑与手机也更容易找到开始游戏。此前的独立逃生游戏、镜馆分区加载与冰封奶蛙继续保留。",
+  "en": "Compact phone dialogue and tools leave more room for the scene, while Play is easier to reach on desktop and mobile. The standalone escape game, mirror-hall streaming and Frozen Naiwa are retained."
+},
   "items": [
+    { tag: 'MOBILE SCENES', title: { zh: '少一点遮挡，多看见画面', en: 'Less UI, more of the scene' }, body: { zh: '手机与小屏横屏下，章节工具收入菜单，压缩对白标题、状态条和底部间距。长对白、人物介绍与选项可以滚动阅读；镜馆阅读工具保留在原有菜单中。第一章、剧场、金笼、终章和海岸番外支持一键收起界面看图，再点击恢复。看图时停止自动与快进，点击画面不会推进剧情，桌面布局保持原样。', en: 'On phones and short landscape screens, chapter tools move into a menu and dialogue headings, status bars and footer spacing become compact. Long lines, introductions and choices remain scrollable. Mirror-hall reading tools stay available in its menu. Chapter one, the theatre, gilded cage, finale and coastal story can hide the interface for art viewing and restore it with one button. Art view stops Auto and Skip; tapping the image cannot advance the story. Desktop layouts are retained.' } },
+    {"tag":"QUICK START","title":{"zh":"随时找到开始游戏","en":"An entrance always within reach"},"body":{"zh":"顶部导航和首屏提供醒目的开始游戏入口，电脑右下角另有常驻按钮，可直接定位章节选择。手机把故事、角色、逃脱游戏和制作过程收进更多菜单，保留已存进度与章节介绍。","en":"The header and cover have prominent Play entrances, with an additional persistent button at the lower right on desktop. They lead directly to chapter selection. On phones, story, cast, escape-game and production links move into More. Existing saves and chapter introductions are retained."}},
     {
       "tag": "CRYSTAL STREAMING",
       "title": { "zh": "走近时加载，离开后释放", "en": "Load nearby, release when distant" },

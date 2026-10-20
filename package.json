@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "check:site": "node scripts/check-site.mjs",
     "check:home": "node scripts/check-home.mjs",
+    "check:mobile-scene-ui": "node scripts/check-mobile-scene-ui.mjs",
     "check:review-fixes": "node scripts/check-review-fixes.mjs",
     "check:frontend-audit": "node scripts/check-frontend-audit.mjs",
     "check:chapter-promo": "node scripts/check-chapter-promo.mjs",
