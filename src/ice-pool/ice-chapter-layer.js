@@ -6,6 +6,7 @@ import { createIceLandmarks } from './ice-landmarks.js';
 import { createIceReflections } from './ice-reflections.js';
 import { isIceControlEvent } from './ice-input.js';
 import { iceQualitySettings } from './ice-quality.js';
+import { createIceFrozenNaiwa } from './ice-frozen-naiwa.js';
 
 const MESSAGE_SOURCE = 'naiwa-ice-map';
 const ALLOWED_CLUES = new Set(['footage', 'shard', 'echo', 'note', 'routeOne', 'route']);
@@ -109,8 +110,8 @@ function disposeObject(root) {
   resources.forEach(resource => resource.dispose());
 }
 
-export function createIceChapterLayer({ scene, camera, canvas, columnAt, renderer }) {
-  const landmarks = createIceLandmarks({ scene });
+export function createIceChapterLayer({ scene, camera, canvas, columnAt, renderer, viewRadius = 2 }) {
+  const landmarks = createIceLandmarks({ scene, camera, viewRadius });
   const found = new Set();
   const groups = new Map();
   const raycaster = new THREE.Raycaster();
@@ -119,12 +120,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
   coreGroup.position.copy(CORE_POSITION);
   const coreRing = new THREE.Mesh(new THREE.TorusGeometry(1.1, .045, 8, 48), new THREE.MeshPhysicalMaterial({ color: 0x8eb6c2, metalness: .88, roughness: .09, emissive: 0x163241, emissiveIntensity: .2 }));
   coreRing.rotation.x = Math.PI / 2; coreRing.position.y = -1.23; coreGroup.add(coreRing);
-  const coreCrystal = new THREE.Mesh(new THREE.OctahedronGeometry(.85, 0), new THREE.MeshPhysicalMaterial({
-    color: 0xd8f3fa, metalness: 0, roughness: .025, transmission: .9,
-    ior: 1.46, thickness: 1.15, attenuationColor: 0xbfe8f2, attenuationDistance: 4,
-    envMapIntensity: 1.7, flatShading: true,
-  }));
-  coreCrystal.position.y = .96; coreCrystal.scale.set(.6, 1.1, .6); coreGroup.add(coreCrystal);
+  const frozenNaiwa = createIceFrozenNaiwa();
+  const coreCrystal = frozenNaiwa.root;
+  coreCrystal.position.y = .25; coreGroup.add(coreCrystal);
   const coreLight = new THREE.PointLight(0x9be4f2, 1.35, 8, 2); coreLight.position.y = 1; coreGroup.add(coreLight);
   scene.add(coreGroup);
 
@@ -512,7 +510,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     coreTriggered = true; post('core');
     if (promptText) promptText.textContent = COPY[language].coreReply;
     if (interact) interact.hidden = true;
-    coreCrystal.material.emissiveIntensity = .5;
+    frozenNaiwa.shell.material.emissiveIntensity = .5;
   }
   function interactWithTarget() {
     if (menuPaused || storyPaused) return;
@@ -554,6 +552,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     }
     if (!initialized) camera.lookAt(camera.position.x, camera.position.y, camera.position.z + 10);
     initialized = true;
+    landmarks.update(0, 0, { camera });
     if (stage === 'routeOne' || stage === 'routeTwo') { routeStarted = true; routeAtStart = true; makeRouteMarkers(); }
     refreshEvidenceVisibility();
     updateLabels(); updatePrompt();
@@ -573,8 +572,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     qualitySettings = iceQualitySettings(preset);
     landmarks.setQuality(preset);
     reflections.setQuality(preset);
-    const transmission = qualitySettings.refraction ? .9 : 0;
-    if (coreCrystal.material.transmission !== transmission) { coreCrystal.material.transmission = transmission; coreCrystal.material.needsUpdate = true; }
+    frozenNaiwa.setQuality(preset);
     const mirrorSize = qualitySettings.mirrorSize;
     for (const group of exhibits.values()) {
       group.userData.setQuality(preset);
@@ -649,8 +647,9 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
       pickup.group.scale.copy(pickup.scale).multiplyScalar(1 - progress * .55);
       if (progress === 1) finishPickup();
     }
-    coreCrystal.rotation.y += dt * .16;
-    coreCrystal.position.y = .96 + Math.sin(time * .8) * .05;
+    // Keep the frozen face towards arriving visitors instead of spinning it away.
+    coreCrystal.rotation.y = Math.sin(time * .18) * .12;
+    coreCrystal.position.y = .25 + Math.sin(time * .8) * .035;
     coreLight.intensity = (1.3 + Math.sin(time * 1.4) * .13) * lightScale;
     for (const marker of routeMarkers) {
       if (marker.userData.pulseMaterial) marker.userData.pulseMaterial.opacity = .55 + Math.sin(time * 2.6) * .18;
@@ -691,6 +690,7 @@ export function createIceChapterLayer({ scene, camera, canvas, columnAt, rendere
     disposed = true;
     reflections.dispose();
     landmarks.dispose();
+    frozenNaiwa.dispose();
     window.removeEventListener('keydown', handleKey);
     canvas.removeEventListener('click', handleClick);
     interact?.removeEventListener('click', interactWithTarget);

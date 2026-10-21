@@ -215,7 +215,7 @@ export const unknownModeEscapeRelease = {
   ],
 }
 
-export const latestRelease = {
+export const naidanEscapeRelease = {
   id: '2026-10-20-escape-naidan-invisibility-labels',
   date: '2026-10-20',
   title: { zh: '奶蛙致死的爱 · 奶蛋与滚木模式', en: 'Naiwa’s Deadly Love · Eggs and Invisibility' },
@@ -225,6 +225,137 @@ export const latestRelease = {
     { tag: 'CALMING IMPACT', title: { zh: '命中后警觉减 2', en: 'Hits lower alertness by 2' }, body: { zh: '奶蛋保留原有伤害，击中站立、踉跄或倒地的奶蛙都会降低 2 点警觉，最低降至零。命中后的碎裂不会抵消这次降低；滚木模式继续固定显示 6767。', en: 'Eggs keep their original damage and lower alertness by 2 when they hit standing, staggered or downed Naiwa, stopping at zero. Impact breakage does not offset the reduction. Invisibility continues to display a fixed 6767.' } },
     { tag: 'MODE NAMES', title: { zh: '滚木模式 · Invisibility', en: 'Invisibility status' }, body: { zh: '隐身难度的中文名称显示为前两字留空的“模式（???）”，奶蛙状态名称改为“滚木模式”，英文为 Invisibility。隐身、碰撞、声音、永久唐王行为及其他极限规则保持原样。', en: 'The Chinese difficulty name keeps two blank characters before its mode label and adds (???). Naiwa’s status is named Invisibility. The invisible body, collision, sound, permanent Ninja behavior and other Hacker rules remain unchanged.' } },
     { tag: 'MILK NAME', title: { zh: '野生狗奶', en: 'Milk naming' }, body: { zh: '牛奶的中文物品名改为“野生狗奶”，空包装和抗性提示同步更新，饮用效果保持原样。', en: 'Milk has a new Chinese item name, also shown on its empty container and resistance status. Its drinking effects remain unchanged.' } },
+  ],
+}
+
+export const mainlineOctoberRelease = {
+  "id": "2026-10-20-mobile-ui-home-entry",
+  "date": "2026-10-20",
+  "title": {
+  "zh": "手机阅读与便捷开始入口",
+  "en": "Mobile reading and easier Play entrances"
+},
+  "intro": {
+  "zh": "手机对白和工具栏给画面让出更多空间，电脑与手机也更容易找到开始游戏。此前的独立逃生游戏、镜馆分区加载与冰封奶蛙继续保留。",
+  "en": "Compact phone dialogue and tools leave more room for the scene, while Play is easier to reach on desktop and mobile. The standalone escape game, mirror-hall streaming and Frozen Naiwa are retained."
+},
+  "items": [
+    { tag: 'MOBILE SCENES', title: { zh: '少一点遮挡，多看见画面', en: 'Less UI, more of the scene' }, body: { zh: '手机与小屏横屏下，章节工具收入菜单，压缩对白标题、状态条和底部间距。长对白、人物介绍与选项可以滚动阅读；镜馆阅读工具保留在原有菜单中。第一章、剧场、金笼、终章和海岸番外支持一键收起界面看图，再点击恢复。看图时停止自动与快进，点击画面不会推进剧情，桌面布局保持原样。', en: 'On phones and short landscape screens, chapter tools move into a menu and dialogue headings, status bars and footer spacing become compact. Long lines, introductions and choices remain scrollable. Mirror-hall reading tools stay available in its menu. Chapter one, the theatre, gilded cage, finale and coastal story can hide the interface for art viewing and restore it with one button. Art view stops Auto and Skip; tapping the image cannot advance the story. Desktop layouts are retained.' } },
+    {"tag":"QUICK START","title":{"zh":"随时找到开始游戏","en":"An entrance always within reach"},"body":{"zh":"顶部导航和首屏提供醒目的开始游戏入口，电脑右下角另有常驻按钮，可直接定位章节选择。手机把故事、角色、逃脱游戏和制作过程收进更多菜单，保留已存进度与章节介绍。","en":"The header and cover have prominent Play entrances, with an additional persistent button at the lower right on desktop. They lead directly to chapter selection. On phones, story, cast, escape-game and production links move into More. Existing saves and chapter introductions are retained."}},
+    {
+      "tag": "CRYSTAL STREAMING",
+      "title": { "zh": "走近时加载，离开后释放", "en": "Load nearby, release when distant" },
+      "body": {
+        "zh": "地面、墙面和浮空水晶沿用地图的分块范围，提前准备附近房间；远处区域不再一次性创建全部模型。返回时恢复相同的位置、朝向和房间密度，卸载时同时释放几何与实例缓冲。",
+        "en": "Ground, wall and floating crystals use the map’s chunk window to prepare nearby rooms. Distant regions no longer create every model on entry. Returning restores the same positions, directions and room density; unloading releases geometry and instance buffers."
+      }
+    },
+    {
+      "tag": "QUALITY & RETURN",
+      "title": { "zh": "继续探索时也能接上", "en": "Ready when exploration resumes" },
+      "body": {
+        "zh": "新进入的区域采用当前画质，切回高画质恢复完整细节。嵌入灯光与环境反光随区域正确接续，读档和剧情回放会先准备对应位置的水晶，线索与路线进度保持原样。",
+        "en": "Newly loaded regions use the current graphics preset, and High restores full detail. Embedded lights and environment reflections follow the loaded crystals. Loading a save or replay prepares crystals at the resumed location while keeping clue and route progress."
+      }
+    },
+    {
+      "tag": "FROZEN NAIWA",
+      "title": {
+        "zh": "水晶里的奶蛙",
+        "en": "Naiwa inside the crystal"
+      },
+      "body": {
+        "zh": "核心水晶加入彩色三维角色，保留黄色身体、奶白腹部与绿色眼睛，以静止姿态封存在淡蓝冰晶中。水晶与底座具有碰撞范围，可贴边绕行并在外侧触发核心，物证顺序与存档进度不变。",
+        "en": "The core crystal now holds a coloured 3D character with a yellow body, cream belly and green eyes, frozen still inside pale blue ice. The crystal and base have collision boundaries: walk around them and interact from outside. Evidence order and save progress are unchanged."
+      }
+    },
+    {
+      "tag": "STANDALONE ESCAPE",
+      "title": {
+        "zh": "奶蛙致死的爱",
+        "en": "Naiwa’s Deadly Love"
+      },
+      "body": {
+        "zh": "在双层别墅、地下室和庭院中寻找线索、收集工具，躲避奶蛙的追捕。独立站仅加载逃脱游戏资源，支持中英文、手机触控、全屏和三档画质。",
+        "en": "Search a two-storey house, basement and courtyard for clues and tools while evading Naiwa. The separate site loads only escape assets, with Chinese and English, touch controls, fullscreen and three graphics settings."
+      }
+    },
+    {
+      "tag": "HOME ENTRANCE",
+      "title": {
+        "zh": "从主页进入逃脱游戏",
+        "en": "Enter Escape from the home page"
+      },
+      "body": {
+        "zh": "奶蛙 galgame 主页新增独立游戏窗口，简介为“奶蛙致死的爱”。入口附有玩法简介，原有章节、角色与制作时间线继续保留。",
+        "en": "The galgame home now has a separate Escape card, introduced as “Naiwa’s Deadly Love”, with a gameplay summary. Existing chapters, cast and production timeline remain available."
+      }
+    },
+    {
+      "tag": "SURVIVE & ESCAPE",
+      "title": {
+        "zh": "四种难度，寻找出路",
+        "en": "Four difficulties and a way out"
+      },
+      "body": {
+        "zh": "提供四档难度、生命与体力、七格物品栏、进食效果、工具与钥匙、隐藏和搜索，以及多种警觉形态。声音、光线与障碍会影响奶蛙的追踪。",
+        "en": "Four difficulties include health and stamina, seven inventory slots, food effects, tools and keys, hiding and searches, and multiple alertness forms. Sound, light and obstacles affect Naiwa’s pursuit."
+      }
+    },
+    {
+      "tag": "POSE & PERFORMANCE",
+      "title": {
+        "zh": "忍者姿势与轻量渲染",
+        "en": "Hand-walking poses and lighter rendering"
+      },
+      "body": {
+        "zh": "唐王与通透模式保留双手爬行、左脚技能及左六右五的扇形脚趾，修正折叠右腿与手部的衔接。合并静态装饰和门柜绘制，低画质降低分辨率与阴影开销，灯光氛围保留。",
+        "en": "Ninja and Transcendent retain hand walking, left-foot skills and fanned six-left/five-right toes, with improved folded-leg and hand connections. Batched details and panels reduce rendering work; low graphics lowers resolution and shadow cost while preserving the lighting atmosphere."
+      }
+    },
+    {
+      "tag": "CAST & READING",
+      "title": {
+        "zh": "保留主线新版角色与阅读设置",
+        "en": "Updated cast and reading settings retained"
+      },
+      "body": {
+        "zh": "同步 GitHub 主线的大幅奶蛙与奶霸角色档案、键盘切换和阅读工具修复。章节预览、制作工作台和剧情进度继续沿用现有交互。",
+        "en": "Includes the latest GitHub cast spreads for Naiwa and Naiba, keyboard switching and reading-tool fixes. Chapter previews, the production workbench and story progress retain their existing interactions."
+      }
+    },
+    {
+      "tag": "MIRROR HALL",
+      "title": {
+        "zh": "镜馆性能与重玩清理",
+        "en": "Mirror-hall performance and replay cleanup"
+      },
+      "body": {
+        "zh": "保留主线的镜面采样复用、静态变换优化、极低画质帧调度与退出清理；阅读和探索页面在退出后停止不再需要的后台工作。",
+        "en": "Retains shared mirror captures, static-transform optimizations, Very low frame pacing and exit cleanup. Reading and exploration pages stop unnecessary background work after leaving."
+      }
+    }
+  ]
+}
+
+export const latestRelease = {
+  id: '2026-10-20-mainline-escape-sync',
+  date: '2026-10-20',
+  title: { zh: '主线同步 · 逃脱游戏与手机体验', en: 'Escape gameplay and mobile reading' },
+  intro: { zh: '本次整合奶蛙致死的爱的玩法与场景更新，以及主线的手机阅读、快捷开始和镜馆优化。', en: 'This update brings together new Naiwa escape gameplay and scenery with mobile reading, easier Play entrances and mirror-hall improvements.' },
+  items: [
+    naidanEscapeRelease.items[0],
+    naidanEscapeRelease.items[1],
+    naidanEscapeRelease.items[2],
+    naidanEscapeRelease.items[3],
+    { tag: 'GUIDE & CONTROLS', title: { zh: '可跳步的新手任务与更顺手的操作', en: 'Flexible tasks and controls' }, body: { zh: '简单与普通模式加入左侧新手任务和更易记的大门密码，进度超前时可自动跳步。设置加入鼠标灵敏度，剪栅栏使用完整的 2.5 秒动画，剪开后出现可通行缺口。', en: 'Easy and Normal have left-side beginner tasks and memorable front-door codes, with skipped steps allowed when your progress is ahead. Settings include mouse sensitivity. Fence cutting has a full 2.5-second animation and leaves a passable opening.' } },
+    { tag: 'WATER & FURNITURE', title: { zh: '可踏入的水与独立家具材质', en: 'Walk into water and see distinct furniture' }, body: { zh: '浴缸和后院水池可进入并减慢移动，高画质增加清澈水面、波纹与材质细节。厨房改用白色大理石台面，桌椅采用浅木纹，地下室采用深色木材和可取酒架。书架开放格、书桌和厨房摆放真实物品，书可拿放和投掷，基础伤害为 2。', en: 'Bathtub and garden-pool water can be entered and slows movement, with clearer water, ripples and finer surfaces in High graphics. Kitchen tops use white marble, tables and chairs lighter timber, and the cellar dark wood and usable wine racks. Open bookshelves, desks and kitchen storage hold real props; books can be placed or thrown for 2 base damage.' } },
+    { tag: 'PURSUIT & IMPACTS', title: { zh: '追捕与门柜撞击修复', en: 'Pursuit and door impacts' }, body: { zh: '修复奶蛙看见玩家后仍沿旧路线走，以及无法进入后院水池追捕的问题。检查衣柜前会短暂停留，玩家可开柜门反击；门与柜门撞击奶蛙的伤害为 8。拿走盛着番茄的盘碗后，番茄会自然落下。', en: 'Naiwa replaces an old route when it spots you and can enter the garden pool to continue pursuit. It pauses before inspecting a wardrobe, giving you time to strike by opening it. Player-operated doors and wardrobe doors deal 8 damage to Naiwa. Tomatoes fall naturally when their supporting dish is removed.' } },
+    mainlineOctoberRelease.items[0],
+    mainlineOctoberRelease.items[1],
+    mainlineOctoberRelease.items[2],
+    mainlineOctoberRelease.items[3],
+    mainlineOctoberRelease.items[4],
   ],
 }
 

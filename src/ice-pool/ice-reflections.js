@@ -17,6 +17,9 @@ export function createIceReflections({ renderer, scene, roots }) {
   }));
   const originalMaps = new Map();
   for (const root of captureRoots) {
+    for (const material of root.userData.iceReflectionMaterials || []) {
+      if (material.isMeshStandardMaterial && !originalMaps.has(material)) originalMaps.set(material, material.envMap);
+    }
     root.traverse(object => {
       if (!object.isMesh || object.isReflector) return;
       for (const material of [].concat(object.material || [])) {

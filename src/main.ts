@@ -6,6 +6,8 @@ import { bindReadingControls, createDialogueReader, getReadingSettings, onReadin
 import './story-map.css'
 import './finale-map.css'
 import './chapter-dialogue-themes.css'
+import './mobile-scene-ui.css'
+import { mountMobileSceneUI } from './mobile-scene-ui'
 import './release-notes.css'
 import './chapter-promo.css'
 import { renderChapterPromo, mountChapterPromo } from './chapter-promo'
@@ -43,6 +45,7 @@ function languageOverride(): Language | null {
 }
 
 const root = document.querySelector<HTMLDivElement>('#app')!
+mountMobileSceneUI(root)
 let state: GameState | null = loadSave()
 let progress: Progress = loadProgress()
 let romanceDlcOpen = false
