@@ -7,10 +7,13 @@ import {createDoorDisplacement,advanceDoorDisplacement} from './frog-escape-door
 import {updateFixtureAction,nearestFixture,wardrobeContaining,insertFixtureKey} from './frog-escape-interactions.js';
 import {nearestBed,hideUnderBed,leaveBed} from './frog-escape-hiding.js';
 import {CROWBAR_MELEE,createCrowbarGrip,poseCrowbar} from './frog-escape-melee.js';
-import {MAX_PLAYER_HEALTH,INITIAL_ALERTNESS,alertnessPhase,damagePlayer,ESCAPE_DIFFICULTIES,difficultyRules,playerDamageScale,playerMovementScale} from './frog-escape-vitals.js';
+import {MAX_PLAYER_HEALTH,INITIAL_ALERTNESS,displayAlertnessPhase,damagePlayer,ESCAPE_DIFFICULTIES,difficultyRules,displayAlertness,playerDamageScale,playerMovementScale} from './frog-escape-vitals.js';
 import {createEscapeAudio} from './frog-escape-audio.js';
 import {syncStamina,sprintFraction,tickStamina} from './frog-escape-stamina.js';
 import {createClueDialogs} from './frog-escape-clue-dialogs.js';
+import {FENCE_CUT_SECONDS,poseBoltCutters} from './frog-escape-cutting.js';
+import {createEscapeGuide,createEscapeGuideHud} from './frog-escape-guide.js';
+import {waterMovementScale,createWaterInteraction} from './frog-escape-water.js';
 import {inventoryItemIcon} from './frog-escape-inventory-icons.js';
 import {tr,itemLabel,foodLabel} from './frog-escape-i18n.js';
 import {createConsumption,canConsume,isDrink,tickPlayerEffects,poseEating,CONSUMPTION} from './frog-escape-consumption.js';
@@ -19,6 +22,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   const camera=new THREE.PerspectiveCamera(70,1,.05,130);
   camera.rotation.order='YXZ'; scene.add(camera);
   const player=createPlayer(), keys=new Set();
+  const waterInteraction=createWaterInteraction({volumes:navigation.waterVolumes??[],onDisturb:event=>scene.dispatchEvent({type:'escape-water-disturbance',...event})});
   const touch=window.matchMedia('(pointer:coarse)').matches;
   const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   let hurtAnimation=null;
@@ -59,6 +63,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   }
   const vitalNodes=Object.fromEntries(['vitals','stamina-meter','player-vitals','health-value','alertness-value','health-meter','alertness-meter','alertness-phase'].map(id=>[id,document.querySelector(`#escape-${id}`)]));
   const effectPanel=document.querySelector('#escape-player-effects'),consumeProgress=document.querySelector('#escape-consume-progress'),consumeLabel=document.querySelector('#escape-consume-label'),consumeMeter=document.querySelector('#escape-consume-meter');
+  const cutProgress=document.querySelector('#escape-cut-progress'),cutLabel=document.querySelector('#escape-cut-label'),cutMeter=document.querySelector('#escape-cut-meter');
   const inventoryNodes=inventoryButtons.map(button=>({name:button.querySelector('[data-item-name]'),symbol:button.querySelector('[data-item-symbol]')}));
   const inventory=createInventory(renderInventory);
   const consumption=createConsumption({player,inventory,onEvent:event=>{
@@ -92,6 +97,21 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   soundEnabled.checked=audio.settings.enabled;soundVolume.value=String(Math.round(audio.settings.volume*100));soundValue.textContent=`${soundVolume.value}%`;
   soundEnabled.addEventListener('change',()=>{audio.setSettings({enabled:soundEnabled.checked});if(active&&!paused)void audio.unlock();});
   soundVolume.addEventListener('input',()=>{audio.setSettings({volume:Number(soundVolume.value)/100});soundValue.textContent=`${Math.round(audio.settings.volume*100)}%`;});
+  let mouseSensitivity=1;
+  const sensitivityKey='naiwa-escape-mouse-sensitivity-v1';
+  const clampSensitivity=value=>Math.round(THREE.MathUtils.clamp(value,.25,3)*20)/20;
+  try{const saved=globalThis.localStorage?.getItem(sensitivityKey);if(typeof saved==='string'&&saved.trim()&&Number.isFinite(Number(saved)))mouseSensitivity=clampSensitivity(Number(saved));}catch{}
+  const sensitivityControl=document.querySelector('#escape-mouse-sensitivity'),sensitivityValue=document.querySelector('#escape-mouse-sensitivity-value');
+  function renderSensitivity() {
+    const percent=Math.round(mouseSensitivity*100);sensitivityControl.value=String(percent);sensitivityValue.textContent=`${percent}%`;sensitivityControl.setAttribute('aria-valuetext',`${percent}%`);
+  }
+  function setSensitivity(value) {
+    if(Number.isFinite(value)){mouseSensitivity=clampSensitivity(value);try{globalThis.localStorage?.setItem(sensitivityKey,String(mouseSensitivity));}catch{}}
+    renderSensitivity();
+  }
+  renderSensitivity();
+  sensitivityControl.addEventListener('input',()=>setSensitivity(Number(sensitivityControl.value)/100));
+  document.querySelector('#escape-mouse-sensitivity-reset').addEventListener('click',()=>setSensitivity(1));
   const direction=new THREE.Vector3();
   const lightOrigin=new THREE.Vector3(),lightTarget=new THREE.Vector3();
   function flashlightBeam() {
@@ -112,9 +132,12 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   let difficulty='normal',pendingWake=false,lastCaptureDamage=30;
   try{const saved=globalThis.localStorage?.getItem('naiwa-escape-difficulty-v1');if(Object.hasOwn(ESCAPE_DIFFICULTIES,saved))difficulty=saved;}catch{}
   runClues?.configureDifficulty(difficulty);
+  const guide=createEscapeGuide({player,inventory,clues:runClues,progress:escapeProgress,chest:interactables.find(action=>action.id==='shed-tool-chest')});
+  const guideHud=createEscapeGuideHud({root:document.querySelector('#escape-guide'),guide,touch});
+  function renderGuide(){guideHud.render({difficulty,active,won});}
   const clueDialogs=runClues?createClueDialogs({clues:runClues,
     onOpen(){hurtAnimation?.cancel();paused=true;audio.setActive(false);clearInput();prompt.hidden=true;placementMarker.visible=false;if(document.pointerLockElement===canvas)document.exitPointerLock();},
-    onClose(){if(document.hidden){if(active&&!dialog.open)dialog.showModal();}else resume();},
+    onClose(){renderGuide();if(document.hidden){if(active&&!dialog.open)dialog.showModal();}else resume();},
     onSuccess(value){if(!active||captured)return false;const opened=runClues.submit(value,player);if(opened)setHint('大门已开启，5 秒后自动关闭。');return opened;},
     onFailure(){audio.lock(runClues.frontDoor);},
   }):null;
@@ -122,11 +145,18 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   const newRunButtons=['#escape-new-run','#escape-pause-new-run'].map(id=>document.querySelector(id));
   function renderDifficulty() {
     const rules=difficultyRules(difficulty);
-    difficultyControls.forEach(control=>{control.value=difficulty;control.disabled=hasEntered;});
+    difficultyControls.forEach(control=>{
+      control.value=difficulty;control.disabled=hasEntered;
+      // Reapply the full label after localization, preserving both missing
+      // Chinese characters and the exact English label without leading space.
+      const hiddenMode=control.querySelector?.('option[value="gunmu"]');
+      if(hiddenMode)hiddenMode.textContent=tr(ESCAPE_DIFFICULTIES.gunmu.label);
+    });
     newRunButtons.forEach(button=>{button.hidden=!hasEntered;});
     document.querySelector('#escape-difficulty-help').textContent=tr(hasEntered?'本局难度已锁定。重新开始后可重新选择。':'难度仅能在开局前选择，开始后本局锁定。');
     document.querySelector('#escape-difficulty-status').textContent=tr('{mode} · 被抓 -{damage}',{mode:tr(rules.label),damage:rules.captureDamage*(player.effects?.milk>0?.5:1)});
-    document.querySelector('#escape-capture-rule').textContent=tr('被抓基础扣血 {damage}；开局警觉 {alertness}。醒来后警觉 -10。',{damage:rules.captureDamage,alertness:rules.initialAlertness});
+    document.querySelector('#escape-capture-rule').textContent=tr(rules.fixedAlertness!==undefined?'被抓基础扣血 {damage}；警觉固定为 {alertness}。':'被抓基础扣血 {damage}；开局警觉 {alertness}。醒来后警觉 -10。',{damage:rules.captureDamage,alertness:displayAlertness(rules.initialAlertness,difficulty)});
+    renderGuide();
   }
   function setDifficulty(id) {
     if(hasEntered){renderDifficulty();return false;}
@@ -139,16 +169,17 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   renderDifficulty();
   function renderVitals() {
     syncStamina(player);
-    const hud=vitalNodes.vitals,phase=alertnessPhase(alertness),staminaMeter=vitalNodes['stamina-meter'];
+    const hud=vitalNodes.vitals,phase=displayAlertnessPhase(alertness,difficulty),staminaMeter=vitalNodes['stamina-meter'];
     ui(staminaMeter,'max',Math.max(.01,player.staminaMax));ui(staminaMeter,'value',player.stamina);uiAttribute(staminaMeter,'aria-valuenow',String(player.stamina));uiAttribute(staminaMeter,'aria-valuemax',String(player.staminaMax));
     uiAttribute(staminaMeter,'aria-valuetext',tr('体力剩余 {percent}%',{percent:Math.round(player.stamina/Math.max(.01,player.staminaMax)*100)}));
     ui(vitalNodes['player-vitals'].dataset,'health',player.health<=30?'low':'normal');
     ui(vitalNodes['health-value'],'textContent',String(player.health));
-    ui(vitalNodes['alertness-value'],'textContent',String(alertness));
+    const shownAlertness=displayAlertness(alertness,difficulty),meterValue=Math.min(100,shownAlertness);
+    ui(vitalNodes['alertness-value'],'textContent',String(shownAlertness));
     const healthMeter=vitalNodes['health-meter'],alertMeter=vitalNodes['alertness-meter'];
     ui(healthMeter,'value',player.health);ui(healthMeter,'textContent',`${player.health} / ${MAX_PLAYER_HEALTH}`);uiAttribute(healthMeter,'aria-valuenow',String(player.health));
-    ui(alertMeter,'value',alertness);ui(alertMeter,'textContent',`${alertness} / 100`);uiAttribute(alertMeter,'aria-valuenow',String(alertness));
-    uiAttribute(alertMeter,'aria-valuetext',`${alertness} / 100, ${tr(phase.label)}`);
+    ui(alertMeter,'value',meterValue);ui(alertMeter,'textContent',`${shownAlertness} / 100`);uiAttribute(alertMeter,'aria-valuenow',String(meterValue));
+    uiAttribute(alertMeter,'aria-valuetext',`${shownAlertness} / 100, ${tr(phase.label)}`);
     ui(vitalNodes['alertness-phase'],'textContent',tr(phase.label));
     ui(hud.dataset,'health',player.health<=30?'low':'normal');ui(hud.dataset,'phase',phase.id);
   }
@@ -158,7 +189,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     document.querySelector('#escape-vitals-message').textContent=tr('{cause}，生命值减少 {damage}，剩余 {health}。',{cause:tr(cause),damage,health});
   }
   player.onHealthChange=event=>{
-    lastHealthEvent=event;if(event.damage>0){consumption.cancel();shakeDamage();}renderVitals();renderHealthMessage(event);
+    lastHealthEvent=event;if(event.damage>0){consumption.cancel();cancelCutting();shakeDamage();}renderVitals();renderHealthMessage(event);
     const {health}=event;
     if(health<=0)endRun();
   };
@@ -185,11 +216,11 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     const lightVisible=active&&equipped&&!!item.on;if(torch.visible!==lightVisible)shadowsDirty=true;torch.visible=lightVisible;
     heldFlashlight.visible=active&&equipped;
     heldFlashlight.userData.lens.emissiveIntensity=equipped&&item.on ? .8 : 0;
-    ui(useButton,'disabled',!item||!!bedHide&&!equipped||consumption.active);ui(dropButton,'disabled',!item||!!bedHide||consumption.active);
-    ui(attackButton,'hidden',!item?.melee);ui(attackButton,'disabled',swingCooldown>0||!!bedHide||consumption.active);
+    ui(useButton,'disabled',!item||!!bedHide&&!equipped||consumption.active||!!escapeProgress?.cutting);ui(dropButton,'disabled',!item||!!bedHide||consumption.active||!!escapeProgress?.cutting);
+    ui(attackButton,'hidden',!item?.melee);ui(attackButton,'disabled',swingCooldown>0||!!bedHide||consumption.active||!!escapeProgress?.cutting);
     ui(useButton,'textContent',tr(equipped?(item.on?'关闭手电':'打开手电'):item?.kind==='rearDoorKey'?'使用钥匙':item?.type==='key'?'插入钥匙':item?.kind==='boltCutters'?'剪栅栏':'投掷'));
     const visualId=item?`${item.id}:${!!item.empty}`:null;
-    ui(eatButton,'hidden',!canConsume(item));ui(eatButton,'disabled',consumption.active||!!player.heldBy);ui(eatButton,'textContent',tr(isDrink(item)?'饮用':'进食'));
+    ui(eatButton,'hidden',!canConsume(item));ui(eatButton,'disabled',consumption.active||!!player.heldBy||!!escapeProgress?.cutting);ui(eatButton,'textContent',tr(isDrink(item)?'饮用':'进食'));
     if(lastHeldId!==visualId) {
       swingTime=0;swingItemId=null;swingHit=false;
       if(heldProp){camera.remove(heldProp);disposeItemModel(heldProp);heldProp=null;}
@@ -202,6 +233,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     }
     if(heldProp){heldProp.visible=active;if(!item?.melee){heldProp.position.set(.28,-.25,-.5);heldProp.rotation.set(.3,-.18,.08);heldProp.scale.setScalar(.8);}}
     if(active&&heldProp&&consumption.active)poseEating(heldProp,item,consumption.action.elapsed);
+    if(heldProp&&item?.kind==='boltCutters')poseBoltCutters(heldProp,escapeProgress?.cutting?.elapsed??null);
     if(heldProp&&item?.melee)poseCrowbar(heldProp,swingTime>0?CROWBAR_MELEE.duration-swingTime:null);
   }
 
@@ -226,8 +258,10 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     }
   }
   function movePlayer(f,r,dt) {
-    const requested=keys.has('KeyR')||sprintPointer!==null,burst=sprintFraction(player,dt,requested,!doorForce&&Math.hypot(f,r)>.001);
-    const speed=(doorForce?0:1)*(player.crouched?CROUCH_SPEED:WALK_SPEED+(SPRINT_SPEED-WALK_SPEED)*burst)*(player.skillControlScale??1)*playerMovementScale(player)*(consumption.active?CONSUMPTION.movementScale:1);
+    const cutting=!!escapeProgress?.cutting;
+    const requested=keys.has('KeyR')||sprintPointer!==null,burst=sprintFraction(player,dt,requested,!doorForce&&!cutting&&Math.hypot(f,r)>.001);
+    const speed=(doorForce||cutting?0:1)*(player.crouched?CROUCH_SPEED:WALK_SPEED+(SPRINT_SPEED-WALK_SPEED)*burst)*(player.skillControlScale??1)*playerMovementScale(player)*(consumption.active?CONSUMPTION.movementScale:1)*waterMovementScale(navigation.waterAt?.(player));
+    if(cutting)motion.vx=motion.vz=0;
     uiAttribute(sprintButton,'aria-pressed',String(burst>0));
     // Eating takes effect immediately, including when started at full sprint.
     const currentSpeed=Math.hypot(motion.vx,motion.vz);
@@ -302,11 +336,13 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   function showMap() {
     hurtAnimation?.cancel();
     if(!active) return;
+    cancelCutting();
     active=false; paused=false;audio.setActive(false);clearInput(); dialog.close();caughtDialog.close();clueDialogs?.dismiss();
     document.querySelector('#escape-consume-progress').hidden=true;
     shadowsDirty=true;
     if(document.pointerLockElement===canvas) document.exitPointerLock();
     stage.classList.remove('is-walking');
+    renderGuide();
     modeButton.textContent=tr('继续游戏');modeButton.hidden=false;modeButton.setAttribute('aria-pressed','false');
     prompt.hidden=true; torch.visible=false;heldFlashlight.visible=false;if(heldProp)heldProp.visible=false;placementMarker.visible=false;
     groups.labels.visible=true; playerPin.visible=true;
@@ -314,7 +350,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     onMap(); modeButton.focus({preventScroll:true});
   }
   function interact() {
-    if(!active || paused||consumption.active) return;
+    if(!active || paused||consumption.active||escapeProgress?.cutting) return;
     if(bedHide) {
       if(!leaveBed(bedHide,player,navigation)){setHint('床边暂时被挡住，换个时机再按 E 出来。');return;}
       bedHide=null;clearInput();setHint();return;
@@ -334,7 +370,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     }
     if(nearest.kind==='item') {
       if(!worldItems.pickup(nearest.entry,inventory))setHint('物品栏已满，先丢下一件物品。');
-      else setHint();
+      else {setHint();renderGuide();}
       nearest=null;prompt.hidden=true;updateEquipment();return;
     }
     if(nearest.kind==='naiwa-key') {
@@ -347,6 +383,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     if(nearest.kind==='escape-fence'){setHint(escapeProgress.missingStep(inventory.slots[inventory.selected])??'选中断线钳，对准北侧逃生栅栏按右键。');return;}
     if(nearest.kind==='code-note'){clueDialogs?.open('note');return;}
     if(nearest.kind==='fixture') {
+      if(doorImpactLocked(nearest)){setHint('门受到撞击，稍等片刻再使用。');return;}
       if(nearest.locked) {
         audio.lock(nearest);setHint(inventory.slots.some(item=>item?.kind===nearest.keyKind)?'选中工具箱钥匙，对准箱锁按右键插入，再按 E 开关箱子。':'工具箱上了锁，需要找到对应的钥匙。');return;
       }
@@ -364,7 +401,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     setCastleDoorOpen(door,!door.open,player);setHint();
   }
   function useSelected() {
-    if(!active||paused||consumption.active)return;
+    if(!active||paused||consumption.active||escapeProgress?.cutting)return;
     const item=inventory.slots[inventory.selected];
     if(item?.type==='flashlight') {item.on=!item.on;audio.switchFlashlight();scene.dispatchEvent({type:'escape-player-action',action:'flashlight'});renderInventory();setHint();}
     else if(item?.kind==='rearDoorKey'&&!bedHide) {
@@ -373,7 +410,6 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     else if(item?.type==='key'&&!bedHide) {
       camera.getWorldDirection(direction);
       const target=nearestFixture(interactables,player,camera,direction,navigation);
-      if(target?.beforeUnlock&&!target.beforeUnlock()){setHint('先阅读正门密码线索。二楼有线索。');return;}
       if(insertFixtureKey(target,item)) {
         audio.lock(target,true);inventory.remove(inventory.selected);nearest=target;shadowsDirty=true;
         setHint('钥匙已插在箱锁上，永久保留；按 E 开关箱子。');
@@ -383,7 +419,8 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
       camera.getWorldDirection(direction);
       if(player.heldBy){setHint('被抱住时先反击或挣脱！');return;}
       if(escapeProgress?.tryCut(item,camera.position,direction,navigation)) {
-        worldItems.physics.syncColliders();shadowsDirty=true;nearest=null;prompt.hidden=true;setHint('栅栏已剪开，穿过缺口跑到庭院外！');
+        motion.vx=motion.vz=0;nearest=null;prompt.hidden=true;placementMarker.visible=false;
+        setHint('正在剪开栅栏，保持对准目标；切换物品可取消。');renderEffects();updateEquipment();
       }else setHint(escapeProgress?.missingStep(item)??'靠近并对准北侧逃生栅栏，再按右键剪开。');
     }
     else if(item&&!bedHide) {
@@ -393,18 +430,19 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     }
   }
   function dropSelected() {
-    if(!active||paused||bedHide||consumption.active)return;
+    if(!active||paused||bedHide||consumption.active||escapeProgress?.cutting)return;
     const item=inventory.slots[inventory.selected];if(!item)return;
     if(!worldItems.drop(item,player)){setHint('这里空间不足，后退一点再丢弃。');return;}inventory.remove(inventory.selected);
     nearest=null;prompt.hidden=true;setHint('{item}已丢下，靠近后按 E 拾取。',{item});
   }
-  function look(dx,dy) {
-    player.yaw-=dx*.0025;
-    player.pitch=THREE.MathUtils.clamp(player.pitch-dy*.0025,-1.35,1.35);
+  function look(dx,dy,mouse=true) {
+    const speed=.0025*(mouse?mouseSensitivity:1);
+    player.yaw-=dx*speed;
+    player.pitch=THREE.MathUtils.clamp(player.pitch-dy*speed,-1.35,1.35);
   }
   function attack() {
     const item=inventory.slots[inventory.selected];
-    if(!active||paused||bedHide||consumption.active||!item?.melee||swingCooldown>0)return;
+    if(!active||paused||bedHide||consumption.active||escapeProgress?.cutting||!item?.melee||swingCooldown>0)return;
     swingItemId=item.id;swingTime=CROWBAR_MELEE.duration;swingCooldown=CROWBAR_MELEE.interval;swingHit=false;updateEquipment();
   }
   function updateMelee(dt) {
@@ -449,10 +487,17 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
       updateCamera();
       if(pursuer?.tick(dt))dirty=true;
       if(captured)return true;
+      if(waterInteraction.tick(player,dt))dirty=true;
       worldItems.tick(dt,player);
       updateCamera();
+      camera.getWorldDirection(direction);
+      const cutState=escapeProgress?.tickCut?.(dt,inventory.slots[inventory.selected],camera.position,direction,navigation,!!player.heldBy||player.health<=0||!!doorForce);
+      if(cutState){dirty=true;shadowsDirty=true;updateEquipment();}
+      if(cutState==='complete')setHint('栅栏已剪开，穿过缺口跑到庭院外！');
+      if(cutState==='cancelled')setHint('剪切已中断，重新对准栅栏使用断线钳。');
       updateMelee(dt);renderEffects();
       if(escapeProgress?.observe(player,inventory)){showVictory();return true;}
+      renderGuide();
       nearest=null; let best=2.25;
       camera.getWorldDirection(direction);
       if(!bedHide)for(const door of doors) {
@@ -468,7 +513,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
       if(item)nearest={kind:'item',entry:item};
       const codeNote=!bedHide?runClues?.nearbyNote(camera.position,direction,navigation):null;if(codeNote)nearest=codeNote;
       const fenceTarget=!bedHide?escapeProgress?.fence.nearby(camera.position,direction,navigation):null;if(fenceTarget)nearest=fenceTarget;
-      const waistKey=!bedHide?pursuer?.nearbyKey?.(camera.position,direction):null;if(waistKey)nearest=waistKey;
+      const waistKey=!bedHide?pursuer?.nearbyKey?.(camera.position,direction):null;if(waistKey&&(waistKey.available||!nearest))nearest=waistKey;
       if(!nearest&&!bedHide)nearest=nearestBed(beds,player,camera,navigation);
       let promptHidden=!nearest,promptText='';
       const key=touch?tr('点按'):'E';
@@ -484,11 +529,11 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
       if(nearest?.playerKeyKind&&!inventory.slots.some(item=>item?.kind===nearest.playerKeyKind))promptText=tr('{key} · 需要后门钥匙 · {item}',{key,item:tr(nearest.name)});
       if(nearest?.kind==='escape-fence')promptText=tr(escapeProgress.missingStep(inventory.slots[inventory.selected])??(touch?'点按 · 剪开栅栏':'右键 · 剪开栅栏'));
       if(nearest?.codeRequired)promptText=tr('{key} · 输入大门密码',{key});
-      if(nearest?.parts&&doorImpactLocked(nearest))promptText=tr('门受到撞击，稍等片刻再使用。');
-      const held=inventory.slots[inventory.selected],target=!nearest&&!bedHide?worldItems.placement(held,camera.position,direction,player):null;
+      if(nearest&&doorImpactLocked(nearest))promptText=tr('门受到撞击，稍等片刻再使用。');
+      const held=inventory.slots[inventory.selected],target=!nearest&&!bedHide&&!escapeProgress?.cutting?worldItems.placement(held,camera.position,direction,player):null;
       placementMarker.visible=!!target;
       if(target){placementMarker.position.copy(target.position);placementMarker.rotation.y=target.yaw;placementMarker.scale.set(...held.size);placementMarker.material.color.setHex(target.valid?0x97c5a6:0xb36756);if(target.valid){promptHidden=false;promptText=tr('{key} · 放置{item}',{key,item:itemLabel(held)});}}
-      ui(prompt,'hidden',promptHidden);if(!promptHidden)ui(prompt,'textContent',promptText);
+      ui(prompt,'hidden',promptHidden||!!escapeProgress?.cutting);if(!promptHidden)ui(prompt,'textContent',promptText);
       const closet=bedHide?null:wardrobeContaining(interactables,player);player.hidden=!!bedHide||!!closet&&closet.amount<.04;player.hidingWardrobe=closet?.id??null;
       renderLocation();
       audio.tick(dt);
@@ -504,24 +549,30 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   }
   function renderEffects() {
     const lines=[];
-    if(player.effects?.milk>0)lines.push(tr('牛奶抗性 · 所有伤害减半 · {time} 秒',{time:Math.ceil(player.effects.milk)}));
+    if(player.effects?.milk>0)lines.push(tr('野生狗奶抗性 · 所有伤害减半 · {time} 秒',{time:Math.ceil(player.effects.milk)}));
     if(player.effects?.wine>0)lines.push(tr('酒劲 · 伤害 +50% · 移速 80% · {time} 秒',{time:Math.ceil(player.effects.wine)}));
     if(pursuer?.struggleTime>0)lines.push(tr('挣扎剩余 {time} 秒 · 连续点跳或反击',{time:pursuer.struggleTime.toFixed(1)}));
     const text=lines.join('\n');
     if(text!==effectSnapshot){effectSnapshot=text;ui(effectPanel,'textContent',text);renderDifficulty();}ui(effectPanel,'hidden',!text);
     ui(consumeProgress,'hidden',!consumption.active||!active);
     if(consumption.active){const action=consumption.action;ui(consumeLabel,'textContent',tr(isDrink(action.item)?'正在喝{item} · {time} 秒':'正在吃{item} · {time} 秒',{item:foodLabel(action.item),time:Math.max(0,CONSUMPTION.duration-action.elapsed).toFixed(1)}));ui(consumeMeter,'value',action.elapsed);}
+    const cutting=escapeProgress?.cutting;ui(cutProgress,'hidden',!cutting||!active);
+    if(cutting){ui(cutLabel,'textContent',tr('剪切栅栏 · 剩余 {time} 秒',{time:Math.max(0,FENCE_CUT_SECONDS-cutting.elapsed).toFixed(1)}));ui(cutMeter,'value',cutting.elapsed);}
     ui(jumpButton,'textContent',tr(pursuer?.struggleTime>0?'挣扎':'跳跃'));
   }
+  function cancelCutting() {
+    if(!escapeProgress?.cancelCut?.())return;
+    cutProgress.hidden=true;shadowsDirty=true;setHint('剪切已中断，重新对准栅栏使用断线钳。');updateEquipment();
+  }
   function eatSelected() {
-    if(!active||paused||consumption.active||swingTime>0)return;
+    if(!active||paused||consumption.active||escapeProgress?.cutting||swingTime>0)return;
     const item=inventory.slots[inventory.selected];
     if(player.heldBy){setHint('被抱住时先反击或挣脱！');return;}
-    if(!canConsume(item)){setHint(item?.empty?'包装已经空了。':item?.kind==='egg'?'鸡蛋不能食用。':'当前物品不能食用。');return;}
+    if(!canConsume(item)){setHint(item?.empty?'包装已经空了。':item?.kind==='egg'?'奶蛋不能食用。':'当前物品不能食用。');return;}
     if(consumption.start()){nearest=null;prompt.hidden=true;placementMarker.visible=false;renderEffects();}
   }
   function attemptJump() {
-    if(!active||paused)return;
+    if(!active||paused||escapeProgress?.cutting)return;
     if(player.heldBy){if(pursuer?.struggleJump?.())jumpPlayer(player);renderEffects();return;}
     jumpPlayer(player);
   }
@@ -548,7 +599,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   function resetPlayerPosition({preserveCapture=false}={}) {
     if(preserveCapture)audio.setActive(false,{preserveCapture:true});
     doorForce=null;
-    consumption.cancel();const {health,effects,stamina,sprintExhausted}=player;
+    consumption.cancel();cancelCutting();const {health,effects,stamina,sprintExhausted}=player;
     bedHide=null;Object.assign(player,createPlayer(),{health,effects,stamina,sprintExhausted,hidden:false,hidingWardrobe:null});delete player.skillControlScale;
     escapeProgress?.resetPosition(player);pursuer?.reset({keepAlertness:true});audio.reset({preserveCapture});eyeOffset=EYE_HEIGHT;clearInput();renderVitals();shadowsDirty=true;
   }
@@ -563,13 +614,16 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   document.querySelector('#escape-caught-map').addEventListener('click',showMap);
   caughtDialog.addEventListener('cancel',event=>event.preventDefault());
   function showOutcome({preserveCapture=false}={}) {
+    cancelCutting();
     captured=true;paused=true;consumption.cancel();audio.setActive(false,{preserveCapture});audio.outcome({captured:preserveCapture});clearInput();prompt.hidden=true;placementMarker.visible=false;dialog.close();clueDialogs?.dismiss();
     renderOutcome();
     if(document.pointerLockElement===canvas)document.exitPointerLock();if(!caughtDialog.open)caughtDialog.showModal();
   }
   function showVictory() {
     if(won||captured||gameOver||!active)return;
+    cancelCutting();
     won=true;paused=true;hurtAnimation?.cancel();consumption.cancel();audio.setActive(false);clearInput();prompt.hidden=true;placementMarker.visible=false;dialog.close();clueDialogs?.dismiss();
+    renderGuide();
     renderOutcome();if(document.pointerLockElement===canvas)document.exitPointerLock();if(!caughtDialog.open)caughtDialog.showModal();
     scene.dispatchEvent({type:'escape-victory',health:player.health,difficulty,route:escapeProgress?.rearRoute});
   }
@@ -578,17 +632,19 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     caughtDialog.dataset.outcome=won?'won':gameOver?'lost':'caught';
     if(won){
       document.querySelector('#escape-caught-title').textContent=tr('逃脱成功 · 游戏胜利');
-      document.querySelector('#escape-caught-description').textContent=tr('你记住了密码，拿到断线钳，进入后院并剪开栅栏，成功逃出古堡！');
+      document.querySelector('#escape-caught-description').textContent=tr('你找到了工具和出路，剪开栅栏，成功逃出古堡！');
       document.querySelector('#escape-caught-retry').textContent=tr('重新开始');return;
     }
     document.querySelector('#escape-caught-title').textContent=tr(gameOver?'生命耗尽 · 游戏结束':'你晕了过去');
-    document.querySelector('#escape-caught-description').textContent=gameOver?tr('生命值已归零。重新开始会重置生命、警觉、物品和本次探索进度。'):tr(difficulty==='easy'?'被奶蛙抱住，失去 {damage} 点生命。你已回到地下室起点，剩余生命 {health}。简单模式保留后门钥匙、其他物品和场景状态，醒来后奶蛙警觉值降低 10。':'被奶蛙抱住，失去 {damage} 点生命。你已回到地下室起点，剩余生命 {health}。后门钥匙被奶蛙没收并重新挂回腰间；其他物品和场景状态保留，醒来后奶蛙警觉值降低 10。',{damage:lastCaptureDamage,health:player.health});
+    const captureText=difficultyRules(difficulty).fixedAlertness!==undefined?'被奶蛙抱住，失去 {damage} 点生命。你已回到地下室起点，剩余生命 {health}。后门钥匙被奶蛙收回，其他物品和场景状态保留；警觉仍为 6767。':difficulty==='easy'?'被奶蛙抱住，失去 {damage} 点生命。你已回到地下室起点，剩余生命 {health}。简单模式保留后门钥匙、其他物品和场景状态，醒来后奶蛙警觉值降低 10。':'被奶蛙抱住，失去 {damage} 点生命。你已回到地下室起点，剩余生命 {health}。后门钥匙被奶蛙没收并重新挂回腰间；其他物品和场景状态保留，醒来后奶蛙警觉值降低 10。';
+    document.querySelector('#escape-caught-description').textContent=gameOver?tr('生命值已归零。重新开始会重置生命、警觉、物品和本次探索进度。'):tr(captureText,{damage:lastCaptureDamage,health:player.health});
     document.querySelector('#escape-caught-retry').textContent=tr(gameOver?'重新开始':'醒来继续');
   }
   function endRun() {
     if(gameOver||won)return;gameOver=true;showOutcome({preserveCapture:lastHealthEvent?.source==='grab'});
   }
   function capture() {
+    if(active&&!captured&&!won)cancelCutting();
     if(!active||captured||won)return;captured=true;paused=true;clearInput();prompt.hidden=true;placementMarker.visible=false;dialog.close();clueDialogs?.dismiss();
     if(difficulty!=='easy'){
       for(let i=0;i<inventory.slots.length;i++)if(inventory.slots[i]?.kind==='rearDoorKey')inventory.remove(i);
@@ -612,7 +668,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
   document.addEventListener('mousemove',event=>{if(active&&!paused&&document.pointerLockElement===canvas) look(event.movementX,event.movementY);});
   document.addEventListener('keydown',event=>{
     if(event.code==='Escape'&&!active&&!dialog.open&&!caughtDialog.open&&!clueDialogs?.active&&!event.repeat&&!event.target.closest?.('dialog')){event.preventDefault();openSettings();return;}
-    if(!active || paused || event.target.closest('dialog,input,select,textarea,button,a,[contenteditable="true"]')) return;
+    if(!active || paused || event.target.closest('dialog,input,select,textarea,button,summary,a,[contenteditable="true"]')) return;
     if(event.ctrlKey || event.metaKey || event.altKey) return;
     if(['KeyW','KeyA','KeyS','KeyD','KeyR','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','ShiftLeft','ShiftRight'].includes(event.code)) {event.preventDefault();keys.add(event.code);}
     if(event.repeat) return;
@@ -623,6 +679,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     if(event.code==='KeyE') {event.preventDefault();interact();}
     if(event.code==='KeyQ') {event.preventDefault();dropSelected();}
     if(event.code==='KeyM') {event.preventDefault();showMap();}
+    if(event.code==='KeyH') {event.preventDefault();guideHud.togglePlan();}
     if(event.code==='Escape' && document.pointerLockElement!==canvas) {event.preventDefault();pause();}
   });
   document.addEventListener('keyup',event=>keys.delete(event.code));
@@ -642,7 +699,7 @@ export function createEscapeExplorer({scene,canvas,stage,status,groups,roof,navi
     if(!active||paused||document.pointerLockElement===canvas) return;
     if(event.pointerType==='touch'||event.pointerType==='pen') {
       if(lookPointer?.id!==event.pointerId) return;
-      look(event.clientX-lookPointer.x,event.clientY-lookPointer.y);
+      look(event.clientX-lookPointer.x,event.clientY-lookPointer.y,false);
       lookPointer.x=event.clientX;lookPointer.y=event.clientY;
     } else {
       if(hoverPointer) look(event.clientX-hoverPointer.x,event.clientY-hoverPointer.y);

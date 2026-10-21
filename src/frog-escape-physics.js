@@ -76,7 +76,25 @@ export function createPropPhysics(navigation,onImpact) {
     });
     body.updateAABB();world.addBody(body);entries.add(entry);if(sleep)body.sleep();return body;
   }
-  function remove(entry){if(entry.body)world.removeBody(entry.body);entries.delete(entry);entry.body=null;}
+  function wakeSupportedBy(removed) {
+    // Authored props start asleep. Removing their support generates no contact
+    // to wake them, so follow the stack upward before removing its base.
+    const queue=[removed],seen=new Set(queue);
+    for(let i=0;i<queue.length;i++) {
+      const support=queue[i];if(support.aabbNeedsUpdate)support.updateAABB();
+      const a=support.aabb;
+      for(const candidate of entries) {
+        const body=candidate.body;
+        if(!body||body.type!==CANNON.Body.DYNAMIC||seen.has(body))continue;
+        if(body.aabbNeedsUpdate)body.updateAABB();const b=body.aabb;
+        if(b.lowerBound.y<a.upperBound.y-.025||b.lowerBound.y>a.upperBound.y+.055||
+          b.upperBound.x<=a.lowerBound.x||b.lowerBound.x>=a.upperBound.x||
+          b.upperBound.z<=a.lowerBound.z||b.lowerBound.z>=a.upperBound.z)continue;
+        seen.add(body);queue.push(body);body.wakeUp();
+      }
+    }
+  }
+  function remove(entry){if(entry.body){wakeSupportedBy(entry.body);world.removeBody(entry.body);}entries.delete(entry);entry.body=null;}
   function ray(from,to,mask=STATIC|PROP|ACTOR|CHAIR_GROUP) {
     const hit=new CANNON.RaycastResult();world.raycastClosest(new CANNON.Vec3(from.x,from.y,from.z),new CANNON.Vec3(to.x,to.y,to.z),{collisionFilterMask:mask,collisionFilterGroup:PROP,skipBackfaces:true},hit);return hit.hasHit?hit:null;
   }

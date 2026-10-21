@@ -7,6 +7,7 @@ import { createNaiwaPursuer } from './frog-escape-pursuer.js';
 import {createEscapeRenderBatches} from './frog-escape-render-batches.js';
 import {createEscapeQuality,bindEscapeQualityControls} from './frog-escape-quality.js';
 import {createEscapeFullscreen} from './frog-escape-fullscreen.js';
+import {createEscapeWater} from './frog-escape-water-renderer.js';
 import { showReleaseNotes } from './release-notes';
 import './release-notes.css';
 import {tr,escapeLanguage,initEscapeLanguage,setEscapeLanguage,onEscapeLanguageChange,bindEscapeDocument} from './frog-escape-i18n.js';
@@ -52,6 +53,8 @@ duskFill.position.set(24, 9, -26);
 scene.add(duskFill);
 
 const castle=createEscapeScene(scene);
+const water=createEscapeWater({scene,volumes:castle.waterVolumes});
+scene.addEventListener('escape-water-disturbance',event=>water.disturb(event.volume,event.position,event.strength));
 createEscapeRenderBatches(castle);
 const { groups, roof, navigation, playerPin, doors,interactables,pickupSeeds,beds,rooms,runClues,escapeProgress,refreshLabels } = castle;
 const explorer=createEscapeExplorer({scene,canvas,stage,status,groups,roof,navigation,playerPin,doors,interactables,pickupSeeds,beds,runClues,escapeProgress,onMap:()=>setLevel('all')});
@@ -60,7 +63,7 @@ let pursuerText='',mapLayer='all';
 const pursuer=createNaiwaPursuer({scene,navigation,doors,interactables,beds,rooms,worldItems:explorer.worldItems,player:explorer.player,onCatch:()=>explorer.capture(),onState:({state,text})=>{pursuerText=text;alert.textContent=tr(text);alert.dataset.state=state;}});
 explorer.setPursuer(pursuer);
 let renderRequested=true;
-const quality=createEscapeQuality({renderer,scene,moonlight,flashlight:explorer.flashlight,mobile:window.matchMedia('(pointer:coarse)').matches,onChange:id=>{renderRequested=true;document.querySelector('#app').dataset.quality=id;}});
+const quality=createEscapeQuality({renderer,scene,moonlight,flashlight:explorer.flashlight,mobile:window.matchMedia('(pointer:coarse)').matches,onChange:id=>{water.setQuality(id);renderRequested=true;document.querySelector('#app').dataset.quality=id;}});
 quality.watchRoot(explorer.camera);quality.watchRoot(pursuer.model.root);
 const refreshQuality=bindEscapeQualityControls(quality);
 const fullscreen=createEscapeFullscreen({root:document.querySelector('#app'),onChange:()=>{renderRequested=true;quality.invalidate();}});
@@ -98,7 +101,8 @@ renderer.setAnimationLoop(time=>{
   const dirty=explorer.tick(dt),orbitChanged=!explorer.active&&controls.update();
   const playing=explorer.active&&!explorer.paused&&!explorer.captured&&!explorer.won&&!explorer.gameOver;
   if(playing)castle.flicker.tick(dt);
-  if(playing||dirty||orbitChanged||renderRequested||quality.needsShadowUpdate){quality.render(explorer.active?explorer.camera:camera,{dt,frameMs,playing,dirty});renderRequested=false;}
+  const waterChanged=playing&&water.tick(dt);
+  if(playing||dirty||waterChanged||orbitChanged||renderRequested||quality.needsShadowUpdate){quality.render(explorer.active?explorer.camera:camera,{dt,frameMs,playing,dirty});renderRequested=false;}
 });
 document.addEventListener('visibilitychange',()=>{lastTime=performance.now();renderRequested=true;quality.invalidate();});
 const app=document.querySelector('#app');

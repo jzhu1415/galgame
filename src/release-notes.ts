@@ -65,7 +65,7 @@ export const previousRelease = {
   ],
 }
 
-export const latestRelease = {
+export const standaloneEscapeRelease = {
   "id": "2026-10-18-naiwa-escape-standalone",
   "date": "2026-10-18",
   "title": {
@@ -144,6 +144,88 @@ export const latestRelease = {
       }
     }
   ]
+}
+
+export const mouseSensitivityEscapeRelease = {
+  id: '2026-10-20-escape-mouse-sensitivity-door-damage',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 灵敏度与开门反击', en: 'Naiwa’s Deadly Love · Mouse sensitivity and door counters' },
+  intro: { zh: '设置中可调节并保存鼠标灵敏度，房门与衣柜门对奶蛙的撞击伤害统一提高到 8 点；保留柜前反击时机与自由探索优化。', en: 'Adjust and save mouse sensitivity in settings. Room and wardrobe doors now both deal 8 damage to Naiwa, alongside the wardrobe reaction window and free-exploration improvements.' },
+  items: [
+    { tag: 'MOUSE SENSITIVITY', title: { zh: '转头速度由你调节', en: 'Choose your look speed' }, body: { zh: '设置新增 25%–300% 鼠标灵敏度滑块，实时生效并自动记住选择，也可一键恢复默认 100%。锁定鼠标与普通鼠标转头均适用。', en: 'Settings now includes a 25%–300% mouse sensitivity slider. Changes apply immediately and are remembered, with a button to restore the default 100%. It works with both pointer lock and ordinary mouse look.' } },
+    { tag: 'DOOR DAMAGE', title: { zh: '房门与柜门撞击统一为 8 点', en: 'Both door counters deal 8 damage' }, body: { zh: '玩家打开房门或衣柜门撞中奶蛙时，伤害从 5 点提高到 8 点，继续触发踉跄或倒地、击退及短暂门锁定。', en: 'Opening a room or wardrobe door into Naiwa now deals 8 damage, up from 5, and still triggers stagger or knockdown, knockback and the brief door lock.' } },
+    { tag: 'WARDROBE COUNTER', title: { zh: '查柜前留出反击时间', en: 'Time to counter before an inspection' }, body: { zh: '奶蛙到达衣柜前先停留 1.2 秒，再开始开柜。此时玩家从柜内开门即可撞退奶蛙，主卧与客卧都适用；触发与房门相同的伤害、踉跄、击退与短暂门锁定。暂停冻结停顿时间；反击或搜索被打断后，本次反击窗口结束。', en: 'Naiwa waits in front of a wardrobe for 1.2 seconds before opening it. Opening from inside during this pause reliably strikes Naiwa in both bedrooms, with the same damage, stagger, knockback and brief door lock as a room door. Pausing freezes the wait; a counter or interrupted search ends that opportunity.' } },
+    { tag: 'ATTACK STAGES', title: { zh: '按奶蛙形态调整伤害', en: 'Damage follows Naiwa’s stage' }, body: { zh: '未开智与已开智不会踢飞椅子，也不会造成踢椅伤害。未开智举砸 6、门撞 10，已开智分别提高 2 点；唐王举砸 10、门撞与椅子 15；通透举砸 20、门撞与椅子 25。摔落、抱住与牛奶减伤继续沿用原规则。', en: 'Dormant and Intelligent cannot kick chairs or deal kicked-chair damage. Dormant slam/door damage is 6/10, and Intelligent adds 2 to each. Ninja deals 10 for a slam and 15 for doors or chairs; Transcendent deals 20 and 25 respectively. Falls, capture and milk resistance retain their existing rules.' } },
+    { tag: 'NATURAL FALLS', title: { zh: '盘子拿走，番茄自然落下', en: 'Food falls when its dish is taken' }, body: { zh: '拿走或打碎承托物时，唤醒上方食物及叠放物品，让它们按重力落到下方表面，修复静止悬空的问题。', en: 'Taking or breaking a supporting prop wakes the food and stacked items above it. They fall under gravity onto the surface below instead of remaining suspended.' } },
+    { tag: 'FENCE CUTTING', title: { zh: '2.5 秒剪切与断裂反馈', en: 'A 2.5-second cutting action' }, body: { zh: '断线钳逐次张合、施力，显示剪切进度并配合金属声音。连接件依次断开，栅栏两侧弯开并轻微回弹，碎片落地后留下切口；通道在空隙足够宽时开放。暂停保留动作进度，切换物品、离开目标或受伤会中断剪切。', en: 'Bolt cutters open and squeeze with a progress indicator and metal sounds. Connectors break in sequence; the fence bends apart and settles as fragments fall, leaving visible cut ends. Passage opens once the gap is wide enough. Pausing retains action progress; switching items, losing the target or taking damage interrupts cutting.' } },
+    { tag: 'GUIDED ESCAPE', title: { zh: '任务跟随自由探索', en: 'Tasks follow free exploration' }, body: { zh: '简单与普通模式的左侧任务会根据实际进度自动跳过先前建议，标记“已跳过”。可先取工具或进入后院，猜对密码后也可继续探索；工具箱与逃脱不再要求补做教程步骤。醒来与地图切换保留本局进度。', en: 'Easy and Normal tasks skip earlier suggestions when you advance, marking them Skipped. Collect tools or reach the back yard early, or continue after guessing the code. The chest and escape no longer require completing tutorial steps. Capture and map viewing retain progress within the run.' } },
+    { tag: 'MEMORABLE CODES', title: { zh: '更容易记住的大门密码', en: 'Front-door codes that are easier to remember' }, body: { zh: '简单与普通模式每局随机使用成对、重复或顺序数字，困难与极限保留原有随机密码。纸条可选阅读，猜对即可开门；逃脱仍需实际取得和使用工具。', en: 'Easy and Normal choose random paired, repeating or sequential codes; Hard and Hacker retain unrestricted codes. Reading the note is optional, and a correct guess opens the door. Escape still requires finding and using real tools.' } },
+    { tag: 'CONTROLS & LANGUAGE', title: { zh: '键鼠、触屏与双语指引', en: 'Mouse, touch and bilingual guidance' }, body: { zh: '指引随语言切换更新，支持展开完整步骤；电脑按 H 展开或收起。任务面板支持滚动与键盘焦点，并为手机横竖屏及全屏保留操作空间。', en: 'Guidance follows your language setting. Expand the full task list, or press H on desktop. The task panel supports scrolling and keyboard focus, with space reserved for controls on portrait, landscape and fullscreen displays.' } },
+  ],
+}
+
+export const liquidWaterEscapeRelease = {
+  id: '2026-10-20-escape-liquid-water-surface-detail',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 清水与房屋细节', en: 'Naiwa’s Deadly Love · Water and surface detail' },
+  intro: { zh: '简单模式从 0 警觉开始；浴缸与后院水池可以踏入，高画质加入清澈水波和更细致的房屋纹理。', en: 'Easy starts at 0 alertness. Step into the bathtub and garden pool, with clear rippling water and more detailed house textures in High graphics.' },
+  items: [
+    { tag: 'CALMER EASY START', title: { zh: '简单模式从 0 警觉开始', en: 'Easy begins at 0 alertness' }, body: { zh: '简单模式开局和重新开始时，奶蛙初始警觉值调整为 0，让最初的探索更从容。普通、困难与极限模式保持原有开局警觉。', en: 'Naiwa starts at 0 alertness when beginning or restarting Easy, giving you a calmer opening. Normal, Hard and Hacker retain their existing starting alertness.' } },
+    { tag: 'STEP INTO WATER', title: { zh: '浴缸与半圆水池真正中空', en: 'Enter the tub and semicircular pool' }, body: { zh: '浴缸和后院半圆水池改为中空容器与液体水面。水池增设浅台阶，浴缸可越过边缘进入；水中移动稍慢，离水后恢复。水体用于环境体验。', en: 'The bathtub and semicircular garden pool now have hollow basins and liquid surfaces. Shallow steps lead into the pool; cross the tub rim to enter. Move a little slower in water and regain your speed on leaving. Water adds to the atmosphere.' } },
+    { tag: 'CLEAR WATER', title: { zh: '清澈水面与入水涟漪', en: 'Clear water and entry ripples' }, body: { zh: '高画质可透过水面看到池底，入水和涉水会产生向外扩散的涟漪，细波随灯光显现。低画质保留轻量透明水面和水中减速；切换画质无需重新开始。', en: 'High graphics lets you see the basin floor through clear water. Entering and wading create expanding ripples, with fine waves catching the lights. Low retains lightweight transparent water and movement resistance. Change graphics without restarting.' } },
+    { tag: 'HOUSE SURFACES', title: { zh: '高画质增加房屋材质细节', en: 'More house detail in High graphics' }, body: { zh: '木板加入木纹与结疤，石墙增加凹陷灰缝和细小缺口，灰泥、瓷砖与屋瓦加入细致表面和反光变化，让近距离探索更有质感。', en: 'Wood gains grain and knots; stone gains recessed mortar and small chips. Plaster, tile and roof slate gain finer surfaces and varied reflections, adding detail when exploring up close.' } },
+  ],
+}
+
+export const furniturePursuitEscapeRelease = {
+  id: '2026-10-20-escape-furniture-cellar-pursuit',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 家具材质与追捕修复', en: 'Naiwa’s Deadly Love · Furniture and pursuit fixes' },
+  intro: { zh: '厨房换上白色大理石台面，桌椅使用浅木纹，柜体采用独立材质；同步修复室外追踪方向和水池内追捕。', en: 'White marble kitchen tops, lighter timber tables and chairs, and separate cabinet materials arrive alongside outdoor pursuit and pool-entry fixes.' },
+  items: [
+    { tag: 'DISTINCT FURNITURE', title: { zh: '家具用回家具的材质', en: 'Materials made for furniture' }, body: { zh: '厨房台面采用白色带灰纹的大理石，桌椅采用浅橡木，衣柜、床头柜和书柜使用独立胡桃木纹。浴室台面与部分木制家具同步调整，原有地板和墙面保持原样。', en: 'Kitchen tops use white marble with grey veins, tables and chairs use light oak, and wardrobes, bedside cabinets and bookshelves use separate walnut grain. Vanity tops and selected timber furniture are updated; existing floors and walls retain their appearance.' } },
+    { tag: 'CELLAR WINE RACKS', title: { zh: '地下室深木家具与开放酒架', en: 'Dark cellar timber and open wine racks' }, body: { zh: '地下室家具改用深色木材，最里侧的装饰高柜换成开放酒架，摆放可拾取的酒瓶与玻璃杯。', en: 'Basement furniture now uses dark timber. The decorative rear cabinets become open racks with wine bottles and glasses you can pick up.' } },
+    { tag: 'FINE SURFACES', title: { zh: '高画质更细致的木纹与石纹', en: 'Finer timber and marble in High graphics' }, body: { zh: '家具木纹沿构件延伸，不再套用地板拼缝。高画质加入细木纹、结疤、自然灰色石纹与更细腻的反光变化；其他画质保留清晰的材质区分。', en: 'Furniture grain follows each timber part without floorboard joints. High graphics adds fine grain, knots, natural grey veins and subtler reflected light. Other presets retain the distinct furniture materials.' } },
+    { tag: 'LIVE PURSUIT', title: { zh: '发现玩家后及时改变方向', en: 'Turn toward a newly spotted player' }, body: { zh: '奶蛙看到玩家时立即替换旧的声音或巡逻路线，追逐中也会更及时地跟随位置变化。丢失视线后提示追踪最后出现的位置，通透形态则提示气息追踪。', en: 'Spotting you immediately replaces an old sound or patrol route, with faster updates during a chase. Losing sight shows pursuit of your last seen position; Transcendent displays scent tracking.' } },
+    { tag: 'POOL PURSUIT', title: { zh: '水池不再成为追捕盲区', en: 'The pool no longer stops pursuit' }, body: { zh: '修复奶蛙无法识别水池入口台阶、在池外转向退开的情况。入口为玩家和奶蛙留出通行空间，奶蛙可以沿台阶进入池内继续追捕。', en: 'Naiwa now recognizes the pool entrance steps instead of retreating outside. The entrance has room for both player and pursuer, so Naiwa can walk into the basin and continue the chase.' } },
+  ],
+}
+
+export const booksStorageEscapeRelease = {
+  id: '2026-10-20-escape-books-kitchen-storage',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 书籍与柜内物品', en: 'Naiwa’s Deadly Love · Books and cupboard contents' },
+  intro: { zh: '清理抽屉里的装饰占位物，厨房换上真实餐具，一层书桌和书架加入可拿放、可投掷的书。', en: 'Drawer placeholders are cleared, kitchen storage gains usable tableware, and ground-floor desks and shelves hold books you can pick up, place and throw.' },
+  items: [
+    { tag: 'DRAWER CLEANUP', title: { zh: '保留真正的线索', en: 'Keep the real clues' }, body: { zh: '删除二楼抽屉里类似纸条的无用装饰，以及厨房和书桌抽屉里的灰色占位块。真正的密码纸条与钥匙继续保留，书桌抽屉不再额外摆放装饰。', en: 'Removed paper-like upstairs drawer decorations and grey kitchen and desk drawer placeholders. The real code note and keys remain, and desk drawers receive no extra decoration.' } },
+    { tag: 'USABLE TABLEWARE', title: { zh: '打开柜子，拿出餐具', en: 'Open storage and take the tableware' }, body: { zh: '厨房柜内的假杯子换成可拾取的瓷杯和瓷盘，抽屉摆入可拿放的餐具。抽屉中的物品随抽屉移动，并为可能出现的钥匙留出空间。', en: 'Fake kitchen cupboard cups become porcelain cups and plates you can pick up, with usable utensils in drawers. Contents move with each drawer and leave space for a possible key.' } },
+    { tag: 'PHYSICAL BOOKS', title: { zh: '书可以拿，也可以扔', en: 'Pick up, place or throw a book' }, body: { zh: '书架朝向房间，每层为真正开放的空格，里面与顶端摆上可拿取的书，一层书桌的书同步改为实物。书籍带有封面、书脊与书页细节，支持放置和反复投掷，命中奶蛙的基础伤害为 2。', en: 'The bookshelf faces the room with open compartments holding real books, plus usable books on its top and the ground-floor desk. Books have covers, spines and page details; place or throw them repeatedly for 2 base damage on a hit against Naiwa.' } },
+  ],
+}
+
+export const unknownModeEscapeRelease = {
+  id: '2026-10-20-escape-unknown-mode',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 看不见的追逐', en: 'Naiwa’s Deadly Love · An unseen pursuit' },
+  intro: { zh: '难度列表新增一个名称残缺的模式：看不见奶蛙，但仍能听见它，危险也依然存在。', en: 'A mode with a missing name joins the difficulty list. Naiwa cannot be seen, but you can still hear it, and it remains dangerous.' },
+  items: [
+    { tag: 'UNKNOWN MODE', title: { zh: '名字消失了一部分', en: 'A missing name' }, body: { zh: '中文模式名称前两字留空，英文显示为 ???。开局前可以选择，开始后本局锁定；其他难度继续保留。', en: 'The first two Chinese characters are blank, and the English name is ???. Choose it before starting; the selection stays locked for the run. Other difficulties remain available.' } },
+    { tag: 'INVISIBLE PURSUER', title: { zh: '听得见，碰得到', en: 'Still audible, still solid' }, body: { zh: '奶蛙隐身，保留碰撞、脚步声、动作音效、攻击与左上角状态提示。倒地后仍可取得后门钥匙，原有逃生路线继续有效。', en: 'Naiwa is invisible but keeps its collision, footsteps, action sounds, attacks and upper-left status messages. The back door key can still be collected after a knockdown, and existing escape routes remain available.' } },
+    { tag: 'PERMANENT NINJA', title: { zh: '6767', en: '6767' }, body: { zh: '其他规则沿用极限模式，奶蛙永久处于唐王状态。警觉数字固定显示 6767，攻击、倒地、起身和醒来都不会改变它。', en: 'Other rules follow Hacker, while Naiwa remains permanently in Ninja mode. Alertness always displays 6767, unchanged by attacks, knockdowns, recovery or waking up.' } },
+  ],
+}
+
+export const latestRelease = {
+  id: '2026-10-20-escape-naidan-invisibility-labels',
+  date: '2026-10-20',
+  title: { zh: '奶蛙致死的爱 · 奶蛋与滚木模式', en: 'Naiwa’s Deadly Love · Eggs and Invisibility' },
+  intro: { zh: '冰箱里换上四个更大的黄色笑脸奶蛋，命中奶蛙可以降低警觉；同步更新隐身模式和牛奶的中文名称。', en: 'Four larger yellow smiling eggs arrive in the fridge, lowering Naiwa’s alertness on impact. Invisibility status and the Chinese milk name are updated.' },
+  items: [
+    { tag: 'YELLOW EGGS', title: { zh: '四个奶蛋', en: 'Four smiling eggs' }, body: { zh: '奶蛋参考黄色笑脸蛋的外形制作，带绿色眼睛、黑色瞳孔与微笑，模型和物品图标同步更新。冰箱数量改为四个，体积稍微增大，仍可拾取、拿放和投掷。英文名称仍为 egg。', en: 'Yellow egg shapes now have green eyes, black pupils and a smile, with a matching inventory icon. The fridge contains four slightly larger eggs that can be picked up, placed and thrown. Their English name remains egg.' } },
+    { tag: 'CALMING IMPACT', title: { zh: '命中后警觉减 2', en: 'Hits lower alertness by 2' }, body: { zh: '奶蛋保留原有伤害，击中站立、踉跄或倒地的奶蛙都会降低 2 点警觉，最低降至零。命中后的碎裂不会抵消这次降低；滚木模式继续固定显示 6767。', en: 'Eggs keep their original damage and lower alertness by 2 when they hit standing, staggered or downed Naiwa, stopping at zero. Impact breakage does not offset the reduction. Invisibility continues to display a fixed 6767.' } },
+    { tag: 'MODE NAMES', title: { zh: '滚木模式 · Invisibility', en: 'Invisibility status' }, body: { zh: '隐身难度的中文名称显示为前两字留空的“模式（???）”，奶蛙状态名称改为“滚木模式”，英文为 Invisibility。隐身、碰撞、声音、永久唐王行为及其他极限规则保持原样。', en: 'The Chinese difficulty name keeps two blank characters before its mode label and adds (???). Naiwa’s status is named Invisibility. The invisible body, collision, sound, permanent Ninja behavior and other Hacker rules remain unchanged.' } },
+    { tag: 'MILK NAME', title: { zh: '野生狗奶', en: 'Milk naming' }, body: { zh: '牛奶的中文物品名改为“野生狗奶”，空包装和抗性提示同步更新，饮用效果保持原样。', en: 'Milk has a new Chinese item name, also shown on its empty container and resistance status. Its drinking effects remain unchanged.' } },
+  ],
 }
 
 export const releaseSeenKey = 'naiwa-release-notes-seen-v1'

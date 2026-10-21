@@ -230,3 +230,39 @@ h1 { margin: 0; font-size: clamp(20px, 3vw, 27px); font-weight: 500; letter-spac
 @media(pointer:coarse),(max-width:660px){.escape-left-hud{--escape-hud-reserved:194px;top:62px;left:12px;gap:7px}}
 #app:is(:fullscreen,.is-fullscreen) .escape-left-hud{--escape-hud-reserved:330px}
 @media(pointer:coarse),(max-width:660px){#app:is(:fullscreen,.is-fullscreen) .escape-left-hud{--escape-hud-reserved:250px}}
+
+/* The task tracker shares the left message flow; its scrollable plan never
+   captures movement or view input outside the panel itself. */
+.escape-guide{width:min(310px,100%);min-height:0;max-height:300px;overflow:auto;overscroll-behavior:contain;pointer-events:auto;padding:12px 14px;color:#eee6d6;background:#111b26eb;border:1px solid #c3ab754d;border-left:2px solid #d8b777;border-radius:5px;font-size:13px;line-height:1.6;scrollbar-width:thin}
+.escape-guide[hidden],.escape-stage:not(.is-walking) .escape-guide{display:none}
+.escape-guide header{display:flex;justify-content:space-between;gap:10px;color:#d8b777;font-size:11px;letter-spacing:.04em}
+.escape-guide [data-guide-count]{white-space:nowrap;flex-shrink:0}
+.escape-guide h2{margin:7px 0 5px;font-size:15px;font-weight:500;line-height:1.5}
+.escape-guide p{margin:0;color:#c9c6b8;overflow-wrap:anywhere}
+.escape-guide progress{display:block;width:100%;height:4px;margin:7px 0 0;accent-color:#d8b777}
+.escape-guide details{margin-top:10px;border-top:1px solid #c3ab7533;padding-top:7px}
+.escape-guide summary{cursor:pointer;color:#d8b777;min-height:28px}
+.escape-guide summary:focus-visible{outline:2px solid #f2cb81;outline-offset:2px}
+.escape-guide details p{margin:8px 0;font-size:12px}
+.escape-guide ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:7px}
+.escape-guide li{color:#bcbfb7;line-height:1.5}
+.escape-guide li>span:first-child{display:inline-block;min-width:22px;color:#a89c80;font-variant-numeric:tabular-nums}
+.escape-guide li[data-done="true"]{color:#a6c892}
+.escape-guide li[data-skipped="true"]{color:#a9b6c4}
+.escape-guide li small{font:inherit;font-size:.85em}
+.escape-guide li[aria-current="step"]{color:#f4d795}
+@media(max-width:1100px){.escape-guide{max-height:180px}}
+@media(pointer:coarse),(max-width:660px){
+  .escape-guide{max-height:160px;padding:8px 10px;font-size:12px}
+  .escape-guide h2{font-size:13px}
+  .escape-guide header{font-size:10px;letter-spacing:0}
+  .escape-guide details{margin-top:6px}
+  /* Keep the entire left stack above the health panel and joystick. */
+  .is-walking:has(.escape-guide:not([hidden])) .escape-left-hud{max-height:max(100px,calc(100% - 410px));overflow:auto;scrollbar-width:thin;overscroll-behavior:contain}
+}
+@media(pointer:coarse) and (orientation:landscape) and (max-height:600px){
+  .escape-guide{max-height:130px}
+  .is-walking:has(.escape-guide:not([hidden])) .escape-left-hud{top:62px;max-height:max(64px,calc(100% - 310px));width:calc(50% - 110px)}
+  .is-walking:has(.escape-guide:not([hidden])) .escape-player-vitals{left:50%;right:auto;top:14px;bottom:auto;width:190px;transform:translateX(-50%)}
+  #app:is(:fullscreen,.is-fullscreen) .is-walking:has(.escape-guide:not([hidden])) .escape-player-vitals{left:50%;right:auto;top:14px;bottom:auto;width:190px}
+}

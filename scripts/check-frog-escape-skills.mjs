@@ -48,17 +48,21 @@ for(const fps of [25,60,144])for(const lowCeiling of [false,true]) {
   assert.equal(player.skillControlScale,undefined);
 }
 
-function setup({wall=false,occluded=false,behind=false}={}) {
+function setup({wall=false,occluded=false,behind=false,phase=10}={}) {
   const scene=new THREE.Scene(),platform=box(0,behind?1.1:-1.1,.9,.4,.15,1.05),solids=[platform];
   if(wall)solids.push(box(0,-2.1,2,.1,.15,3));
   if(occluded)solids.push(box(0,-.5,2,.05,.15,3));
   const navigation=createNavigation({solids,stairs:[],boundary}),spawn={x:0,y:.15,z:0};
   const player={...createPlayer(),x:0,y:1.05,z:behind?1.05:-1.05,hidden:true,crouched:false},events=[];
   const worldItems={physics:{addActor:()=>({remove(){}}),syncActors(){}}};
-  const npc=createNaiwaPursuer({scene,navigation,doors:[],worldItems,player,spawn,patrolRoute:[spawn]});
+  const npc=createNaiwaPursuer({scene,navigation,doors:[],worldItems,player,spawn,patrolRoute:[spawn],random:()=>.99});
+  while(npc.alertness<phase){if(npc.state==='down')npc.reset({keepAlertness:true});npc.hit({item:{kind:'bread'},source:'projectile'});}
+  npc.reset({keepAlertness:true});
   scene.addEventListener('escape-pursuer-skill',event=>events.push({kind:event.kind,stage:event.stage,velocityY:player.velocityY}));
   const step=seconds=>{for(let remaining=seconds;remaining>1e-9;){const dt=Math.min(.02,remaining);advancePlayer(player,0,0,dt,navigation);npc.tick(dt);remaining-=dt;}};
-  step(5.2);player.hidden=false;
+  if(phase===100){Object.assign(player,{x:12,y:.15,z:12});step(5.2);Object.assign(player,{x:0,y:1.05,z:behind?1.05:-1.05,grounded:true,velocityY:0});}
+  else step(5.2);
+  player.hidden=false;
   return {scene,navigation,spawn,player,npc,events,step};
 }
 const slam=setup();slam.step(.02);assert.equal(slam.npc.state,'slam','a nearby player standing above Naiwa triggers the elevated attack');
@@ -90,6 +94,12 @@ assert.equal(slam.player.heldBy,slam.npc.actor);assert(!jumpPlayer(slam.player),
 assert(slam.events.some(event=>event.kind==='pull'&&event.stage==='end'),'contact finishes the pulling animation without waiting out its recovery');
 slam.npc.hit({damage:5});assert.equal(slam.player.heldBy,null,'a crowbar strike releases the pull hug');
 slam.npc.reset();assert.equal(slam.player.skillControlScale,undefined);assert.equal(slam.player.heldBy,null);slam.npc.dispose();
+
+for(const [phase,damage] of [[10,6],[30,8],[70,10],[100,20]]) {
+  const test=setup({phase});test.step(.02);test.step(.9);
+  assert(test.events.some(event=>event.kind==='slam'&&event.stage==='hit'),`phase ${phase} lands a real timed slam`);
+  assert.equal(test.player.health,100-damage,`phase ${phase} slam damage follows the requested table`);test.npc.dispose();
+}
 
 function sameFloorJump(atApex=false) {
   const test=setup();Object.assign(test.npc.actor,{x:2,y:.15,z:0,yaw:0});test.npc.setMapLayer('all');

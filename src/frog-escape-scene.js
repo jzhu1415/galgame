@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {createEscapeFlicker} from './frog-escape-flicker.js';
 import { houseWidthScale, upperWidthScale, escapeFloors, escapeStairs, stairWell, frontPorch, upperBalcony, subtractRect, createNavigation } from './frog-escape-navigation.js';
-import {finishCastleMaterials,castleSurfaceUV} from './frog-escape-materials.js';
+import {finishCastleMaterials,finishFurnitureMaterials,castleSurfaceUV,furnitureSurfaceUV} from './frog-escape-materials.js';
 import {createCastleDoor,syncBoxCollider} from './frog-escape-doors.js';
 import {castleFixtures} from './frog-escape-fixtures.js';
 import {createPickupProps} from './frog-escape-props.js';
@@ -11,6 +11,7 @@ import {castleSearchRooms} from './frog-escape-investigation.js';
 import {tr} from './frog-escape-i18n.js';
 import {createRunClues} from './frog-escape-run-clues.js';
 import {createEscapeFence,createEscapeProgress} from './frog-escape-victory.js';
+import {createWaterVolume} from './frog-escape-water.js';
 
 export function createEscapeScene(scene, { labels = true, random = Math.random, difficulty = 'normal' } = {}) {
 const circles = [], doors = [],chairs=[];
@@ -26,6 +27,12 @@ const mats = {
   basement: new THREE.MeshStandardMaterial({ color: 0x37383b, roughness: 1 }),
   floor: new THREE.MeshStandardMaterial({ color: 0x66584b, roughness: .9 }),
   wood: new THREE.MeshStandardMaterial({ color: 0x644936, roughness: .75 }),
+  furnitureWood:new THREE.MeshStandardMaterial({color:0xd0b282,roughness:.54}),
+  furnitureTrim:new THREE.MeshStandardMaterial({color:0xb1946b,roughness:.58}),
+  cabinetWood:new THREE.MeshStandardMaterial({color:0x936c4a,roughness:.5}),
+  basementWood:new THREE.MeshStandardMaterial({color:0x4b3423,roughness:.62}),
+  basementTrim:new THREE.MeshStandardMaterial({color:0x322217,roughness:.64}),
+  marble:new THREE.MeshPhysicalMaterial({color:0xf4f2ed,roughness:.24,metalness:0,clearcoat:.35,clearcoatRoughness:.16}),
   darkWood: new THREE.MeshStandardMaterial({ color: 0x392a20, roughness: .8 }),
   roof: new THREE.MeshStandardMaterial({ color: 0x292d39, roughness: .96 }),
   iron: new THREE.MeshStandardMaterial({ color: 0x171b22, metalness: .7, roughness: .48 }),
@@ -47,15 +54,17 @@ const mats = {
   filament: new THREE.MeshStandardMaterial({color:0xffd898,emissive:0xffb153,emissiveIntensity:3.5,roughness:.45}),
 };
 finishCastleMaterials(mats);
+finishFurnitureMaterials(mats);
 for(const [name,material] of Object.entries(mats))material.userData.audioMaterial=
-  ['wood','darkWood','floor'].includes(name)?'wood':['iron','gold','steel','mirror'].includes(name)?'metal':
+  ['wood','darkWood','floor','furnitureWood','furnitureTrim','cabinetWood','basementWood','basementTrim'].includes(name)?'wood':['iron','gold','steel','mirror'].includes(name)?'metal':
   ['glass','bulbGlass','windowGlow'].includes(name)?'glass':['ceramic','enamel'].includes(name)?'ceramic':['cloth','rug'].includes(name)?'soft':'stone';
 const floorGroups = ['basement', 'ground', 'upper'];
 // Keep the wider frontage adjustable as the castle layout evolves.
 floorGroups.forEach(id => { groups[id].scale.x = id === 'upper' ? upperWidthScale : houseWidthScale; });
 function box(parent, x, y, z, w, h, d, material, opts = {}) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
-  if(material.map)castleSurfaceUV(mesh.geometry,parent.scale.x);
+  if(material.userData.furnitureSurface)furnitureSurfaceUV(mesh.geometry,parent.scale.x);
+  else if(material.map)castleSurfaceUV(mesh.geometry,parent.scale.x);
   mesh.position.set(x, y + h / 2, z);
   mesh.castShadow = opts.castShadow !== false;
   mesh.receiveShadow = true;
@@ -166,11 +175,11 @@ function facade(parent,z,foot,height,opening) {
 }
 function chair(parent,x,z,foot,angle=0) {
   const group=new THREE.Group();group.position.set(x,foot,z);group.rotation.y=angle;parent.add(group);
-  box(group,0,.43,0,.58,.055,.55,mats.wood);
+  box(group,0,.43,0,.58,.055,.55,mats.furnitureWood);
   box(group,0,.485,0,.53,.045,.5,mats.cloth);
-  for(const px of [-.22,.22])for(const pz of [-.21,.21])box(group,px,0,pz,.055,.45,.055,mats.darkWood);
-  for(const px of [-.24,.24])box(group,px,.5,.22,.055,.64,.06,mats.darkWood);
-  box(group,0,.86,.22,.53,.23,.065,mats.wood);
+  for(const px of [-.22,.22])for(const pz of [-.21,.21])box(group,px,0,pz,.055,.45,.055,mats.furnitureTrim);
+  for(const px of [-.24,.24])box(group,px,.5,.22,.055,.64,.06,mats.furnitureTrim);
+  box(group,0,.86,.22,.53,.23,.065,mats.furnitureWood);
   box(group,0,.895,.176,.43,.13,.018,mats.cloth,{solid:false});
   for(const px of [-.24,.24])fixtures.rounded(group,px,1.16,.22,.045,.045,.045,mats.gold);
   const chair={id:`chair-${chairs.length}`,root:group,colliders:[],meshes:[]};chairs.push(chair);
@@ -179,13 +188,32 @@ function chair(parent,x,z,foot,angle=0) {
   return group;
 }
 function bookcase(parent,x,z,foot,angle=0) {
-  const group=new THREE.Group();group.position.set(x,foot,z);group.rotation.y=angle;parent.add(group);
-  box(group,0,0,.16,2.25,2.35,.08,mats.darkWood);
-  for(const side of [-1,1])box(group,side*1.12,0,0,.1,2.35,.44,mats.wood);
+  const group=new THREE.Group();group.name='furniture:bookcase';group.position.set(x,foot,z);group.rotation.y=angle;parent.add(group);
+  box(group,0,.12,.2075,2.25,2.255,.025,mats.cabinetWood).name='bookcase:back';
+  for(const side of [-1,1])box(group,side*1.12,0,0,.1,2.35,.44,mats.cabinetWood);
   for(let y=.12;y<2.4;y+=.55) {
-    box(group,0,y,0,2.14,.055,.44,mats.wood);
-    for(let i=0;i<9;i++)box(group,-.96+i*.23,y+.055,-.04,.12,.28+(i%3)*.06,.24,i%3?mats.rug:mats.cloth,{solid:false});
+    box(group,0,y,0,2.14,.055,.44,mats.cabinetWood).name='bookcase:shelf';
+    if(y<2) {
+      const compartment=new THREE.Group();compartment.name='bookcase:open-compartment';compartment.position.y=y+.055;group.add(compartment);
+      for(let i=0;i<8;i++)pickups.place(compartment,'book',-.88+(i%4)*.065+Math.floor(i/4)*1.18,.002,-.055,{rotation:[Math.PI/2,0,Math.PI/2]}).name='bookcase:book';
+    }else{
+      for(let i=0;i<3;i++)pickups.place(group,'book',.35+i*.025,y+.057+i*.035,-.04).name='bookcase:top-book';
+    }
   }
+}
+function wineRack(parent,x,z,foot) {
+  const rack=new THREE.Group();rack.name='furniture:cellar-wine-rack';rack.position.set(x,foot,z);parent.add(rack);
+  box(rack,0,.08,-.29,1.6,2.29,.055,mats.basementWood);
+  for(const side of [-1,1])box(rack,side*.78,0,0,.065,2.4,.65,mats.basementWood);
+  for(let shelf=0;shelf<4;shelf++){
+    const top=.175+shelf*.55;
+    box(rack,0,top-.055,0,1.52,.055,.62,mats.basementWood).name='wine-rack:shelf';
+    for(const [index,px]of [-.5,-.18,.3].entries()){
+      const kind=index===0||index===1&&shelf%2===0?'bottle':'glass';
+      pickups.place(rack,kind,px,top+.002,.12).name=`wine-rack:${kind}`;
+    }
+  }
+  box(rack,0,2.37,0,1.65,.06,.68,mats.basementTrim);return rack;
 }
 
 // Recesses and diagonal corners follow the old estate boundary. The lawn shares its outline.
@@ -291,16 +319,33 @@ for(const [a,b,h] of [
   }
 }
 for(const [x,z,w,h,d,angle] of [[17,10.6,1.4,1.45,1.2,.12],[15.5,11,1.3,1,1,-.15],[17.4,12.1,1.2,1.9,1.2,-.08],[-16,-3,1.6,1.2,1.1,.2]]) {
-  const crate=box(groups.yard,x,-.82,z,w,h,d,mats.darkWood); crate.rotation.y=angle;
+  const crate=box(groups.yard,x,-.82,z,w,h,d,mats.cabinetWood); crate.rotation.y=angle;
   for(const band of [-.3,.3]) {
     const strap=box(groups.yard,x+band*w,-.81,z,.06,h+.03,d+.04,mats.iron); strap.rotation.y=angle;
   }
   furnitureTargets.push({type:'crate',x,z,top:-.82+h});
 }
 // Fountain, trees, benches and tool shed.
-const fountain = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.65, .48, 32), mats.stone); fountain.position.set(-8, -.56, -7); fountain.castShadow = true; groups.yard.add(fountain);
-circles.push({x:-8,z:-7,radius:2.65,minY:-.83,maxY:.1});
-const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 2, .12, 32), mats.water); pool.position.set(-8, -.28, -7); groups.yard.add(pool);
+const basin=new THREE.Group();basin.name='fixture:garden-pool';basin.position.set(-8,0,-7);groups.yard.add(basin);
+basin.userData.waterVolume={id:'garden-pool',shape:'semicircle',radius:1.96,surfaceY:-.36,bottomY:-.74};
+const basinShape=new THREE.Shape();basinShape.moveTo(-2,0);basinShape.lineTo(2,0);basinShape.absarc(0,0,2,0,Math.PI,false);basinShape.closePath();
+const basinFloorGeometry=new THREE.ExtrudeGeometry(basinShape,{depth:.09,bevelEnabled:false});basinFloorGeometry.rotateX(-Math.PI/2);if(mats.stone.map)castleSurfaceUV(basinFloorGeometry);
+const basinFloor=new THREE.Mesh(basinFloorGeometry,mats.stone);basinFloor.position.y=-.83;basinFloor.receiveShadow=true;basin.add(basinFloor);
+// Thin bottom strips follow the semicircle; there is no circular solid across
+// the water. The matching floor remains available to player and prop physics.
+for(let i=0;i<32;i++){
+  const x=-2+(i+.5)/8,extent=Math.sqrt(Math.max(0,4-x*x));
+  const bottom=box(basin,x,-.83,-extent/2,.125,.09,extent,mats.stone,{castShadow:false});bottom.visible=false;bottom.userData.collisionOnly=true;bottom.userData.walkableTerrain=true;
+}
+for(let i=0;i<28;i++){
+  const angle=(i+.5)*Math.PI/28,x=Math.cos(angle)*2.13,z=-Math.sin(angle)*2.13;
+  if(Math.abs(x)<.82&&z<-1.8)continue;
+  const edge=box(basin,x,-.83,z,.255,.57,.3,mats.stone);edge.rotation.y=angle+Math.PI/2;
+  const coping=box(basin,x,-.26,z,.28,.07,.34,mats.stone);coping.rotation.y=edge.rotation.y;
+}
+box(basin,0,-.83,.025,4.48,.64,.21,mats.stone);
+// Three shallow treads let the player walk into and out of the basin.
+for(const [z,height,depth]of [[-2.62,.2,.66],[-2.2,.39,.38],[-1.8,.23,.44]])box(basin,0,-.83,z,1.45,height,depth,mats.stone).userData.walkableTerrain=true;
 box(groups.yard, -8, -.19, -7, .38, 2.3, .38, mats.stone);
 createOldGardenTrees(groups.yard,circles,fenceBoundary);
 // Tool shed and its high-contrast bolt-cutter pickup marker.
@@ -369,18 +414,13 @@ for (const level of levelData) {
     partition(group,[-2.1,-6.9],[-2.1,1.6],foot,profile.wallHeight,mats.wallSide,{at:4.5,width:1.4});
     // Starting cell bars.
     for (let x=-7.3; x<=-4.3; x+=.6) box(group,x,foot,5.65,.07,2.05,.07,mats.iron).userData.transparentPassable=true;
-    box(group,2.5,foot,-4.1,3,1.1,.8,mats.wood);
-    box(group,-6.5,foot,-3.7,1.4,1.15,1.5,mats.darkWood);
-    box(group,.7,foot,6.35,3,.9,.4,mats.darkWood);
+    box(group,2.5,foot,-4.1,3,1.1,.8,mats.furnitureWood);
+    box(group,-6.5,foot,-3.7,1.4,1.15,1.5,mats.cabinetWood);
+    box(group,.7,foot,6.35,3,.9,.4,mats.furnitureWood);
     for(const x of [-.2,.7,1.6])pickups.place(group,'glass',x,foot+.902,6.35);
     for(const x of [-.55,1.95])pickups.place(group,'bottle',x,foot+.902,6.35);
     furnitureTargets.push({type:'crate',x:-6.5*group.scale.x,z:-3.7,top:foot+1.15});
-    for(const x of [-7.6,-5.4]) {
-      box(group,x,foot,-6.4,1.6,2.4,.65,mats.darkWood);
-      for(let shelf=0;shelf<4;shelf++)for(let bottle=0;bottle<5;bottle++) {
-        const mesh=new THREE.Mesh(new THREE.CylinderGeometry(.055,.075,.28,7),mats.green);mesh.position.set(x-.55+bottle*.27,foot+.2+shelf*.53,-6.0);group.add(mesh);
-      }
-    }
+    for(const x of [-7.6,-5.4])wineRack(group,x,-6.4,foot);
   }
   if (level.id === 'ground') {
     // End the divider before the entrance so the double door opens onto a clear vestibule.
@@ -391,15 +431,15 @@ for (const level of levelData) {
     partition(group,[0,-2.7],[5.3,-2.7],foot,profile.wallHeight,mats.plaster,{at:4,width:1.5});
     floorPatch(group,[-8.72,5.3,-6.72,-2.8],foot,mats.tile);
     // Kitchen table, dining table and study shelves.
-    box(group,3.8,foot+.82,-.2,3.2,.08,1.4,mats.wood);
-    for(const x of [2.45,5.15])for(const z of [-.7,.3])box(group,x,foot,z,.14,.82,.14,mats.darkWood);
+    box(group,3.8,foot+.82,-.2,3.2,.08,1.4,mats.furnitureWood).name='furniture:dining-tabletop';
+    for(const x of [2.45,5.15])for(const z of [-.7,.3])box(group,x,foot,z,.14,.82,.14,mats.furnitureTrim);
     chair(group,2.8,1.2,foot);chair(group,4.7,1.2,foot);
-    box(group,3.8,foot+.82,3.6,2.2,.12,1.1,mats.darkWood);
-    for (let x=3;x<=4.6;x+=1.6) for (const z of [3.15,4.05]) box(group,x,foot,z,.12,.82,.12,mats.wood);
+    box(group,3.8,foot+.82,3.6,2.2,.12,1.1,mats.furnitureWood).name='furniture:desk-tabletop';
+    for (let x=3;x<=4.6;x+=1.6) for (const z of [3.15,4.05]) box(group,x,foot,z,.12,.82,.12,mats.furnitureTrim);
     chair(group,3.8,4.75,foot);
     fixtures.deskDrawers(group,3.8,3.6,foot);
     fixtures.tableDetails(group,foot);
-    bookcase(group,-8.45,3.8,foot,Math.PI/2);
+    bookcase(group,-8.45,3.8,foot,-Math.PI/2);
     fixtures.counter(group,-5.4,-6.3,foot,3,'厨房左柜');
     fixtures.counter(group,3.8,-6.3,foot,3,'厨房右柜');
     fixtures.fridge(group,-7.9,-5.95,foot);
@@ -445,6 +485,10 @@ for (const level of levelData) {
   for(const [x,z] of [[-4,3],[3,-4]])fixtures.pendant(group,x,z,foot,profile.wallHeight);
   roomLabel(groups.labels, level.name, 0, level.y+3.25, 0);
 }
+groups.basement.traverse(mesh=>{
+  const material=mesh.material;if(!material?.userData.furnitureSurface||material===mats.basementWood||material===mats.basementTrim)return;
+  if(['furnitureWood','cabinetWood'].includes(material.userData.furnitureSurface))mesh.material=material===mats.furnitureTrim?mats.basementTrim:mats.basementWood;
+});
 for(const stair of escapeStairs) {
   const parent=groups[stair.floor], scale=parent.scale.x;
   const depth=Math.abs(stair.endZ-stair.startZ)/stair.steps;
@@ -504,8 +548,8 @@ for(const side of [-1,1]) {
   const light=new THREE.PointLight(0xffba75,9,7,1.6);light.userData.escapeFlickerGlow=lanternGlow;light.position.set(0,.05,.35);lantern.add(light);
 }
 box(groups.ground,0,3.43,7.15,3.55,.2,.42,mats.stone);
-for(const side of [-1,1])box(groups.ground,-3.2+side*.65,.15,6.2,.12,.42,.5,mats.darkWood);
-box(groups.ground,-3.2,.57,6.2,1.7,.09,.6,mats.wood);
+for(const side of [-1,1])box(groups.ground,-3.2+side*.65,.15,6.2,.12,.42,.5,mats.furnitureTrim);
+box(groups.ground,-3.2,.57,6.2,1.7,.09,.6,mats.furnitureWood);
 box(groups.ground,-3.2,.66,6.2,1.62,.055,.54,mats.cloth,{solid:false});
 // Worn paths bend around planting and walls, rather than drawing a bright line across the garden.
 function gardenPath(points,width) {
@@ -543,7 +587,7 @@ scene.traverse(mesh => {
   const e = mesh.matrixWorld.elements, shape = mesh.geometry.parameters;
   const sx = Math.hypot(e[0], e[2]), sy = Math.abs(e[5]), sz = Math.hypot(e[8], e[10]);
   const solid={ x: e[12], z: e[14], halfX: shape.width*sx/2, halfZ: shape.depth*sz/2,
-    transparentPassable:!!mesh.userData.transparentPassable||railing,
+    transparentPassable:!!mesh.userData.transparentPassable||railing,walkableTerrain:!!mesh.userData.walkableTerrain,
     audioMaterial:mesh.material?.userData.audioMaterial??'stone',
     doorFrame:mesh.userData.doorFrame,
     minY: e[13]-shape.height*sy/2, maxY: e[13]+shape.height*sy/2,
@@ -561,15 +605,16 @@ scene.traverse(mesh => {
     solid.dynamic=true;
     if(motion.axis!=='y'){solid.fullRotation=true;syncBoxCollider(mesh,solid);}
   }
-  if(mesh.userData.escapeFence){const target=mesh.userData.escapeFence;target.colliders.push(solid);solid.dynamic=true;solid.enabled=()=>!target.cut;}
+  if(mesh.userData.escapeFence){const target=mesh.userData.escapeFence;target.colliders.push(solid);target.colliderMeshes.push({mesh,solid});solid.dynamic=true;solid.fullRotation=true;solid.enabled=()=>!target.passable;syncBoxCollider(mesh,solid);}
   if(mesh.userData.breakable) {
     const target=mesh.userData.breakable;target.colliders.push(solid);solid.breakable=target;
     solid.dynamic=true;solid.enabled=()=>!target.broken;
   }
 });
-const navigation = createNavigation({solids,circles,boundary:fenceBoundary,doors,chairs,exits:[escapeFence]});
+const waterVolumes=[];scene.traverse(root=>{if(root.userData.waterVolume)waterVolumes.push(createWaterVolume({root,...root.userData.waterVolume}));});
+const navigation = createNavigation({solids,circles,boundary:fenceBoundary,doors,chairs,exits:[escapeFence],waterVolumes});
 navigation.windowPassages=objectives.breakables.map(target=>target.passage).filter(Boolean);
 const escapeProgress=createEscapeProgress({scene,clues:runClues,fence:escapeFence,chest:objectives.actions.find(action=>action.id==='shed-tool-chest'),cuttersSeed:pickups.seeds.find(seed=>seed.item.kind==='boltCutters'),rearDoor:doors.find(door=>door.id==='rear'),window:objectives.breakables.find(target=>target.escapeRoute)});
 const flicker=createEscapeFlicker(scene);
-return { groups, roof, fenceBoundary, yardDivider, runClues, escapeProgress, navigation, playerPin, doors, furnitureTargets, flicker, rooms:castleSearchRooms(groups), interactables:[...fixtures.actions,...objectives.actions], pickupSeeds:pickups.seeds,breakables:objectives.breakables,beds:fixtures.beds,refreshLabels(){labelUpdates.forEach(redraw=>redraw());} };
+return { groups, roof, fenceBoundary, yardDivider, runClues, escapeProgress, navigation, waterVolumes, playerPin, doors, furnitureTargets, flicker, rooms:castleSearchRooms(groups), interactables:[...fixtures.actions,...objectives.actions], pickupSeeds:pickups.seeds,breakables:objectives.breakables,beds:fixtures.beds,refreshLabels(){labelUpdates.forEach(redraw=>redraw());} };
 }

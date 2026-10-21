@@ -8,14 +8,15 @@ export const propTypes={
   glass:{name:'玻璃酒杯',type:'glass',size:[.13,.23,.13],mass:.16,fragile:true,breakSpeed:5.8,shape:'cylinder',icon:'♧'},
   fork:{name:'金属叉',type:'cutlery',size:[.04,.014,.24],mass:.08,icon:'⋔'},
   knife:{name:'餐刀',type:'cutlery',size:[.03,.016,.24],mass:.09,icon:'╱'},
-  egg:{name:'鸡蛋',type:'egg',size:[.075,.1,.075],mass:.065,fragile:true,breakSpeed:1.8,shape:'sphere',energy:8,icon:'●'},
+  book:{name:'书籍',type:'book',size:[.22,.035,.3],mass:.38,icon:'▤'},
+  egg:{name:'奶蛋',type:'egg',size:[.1,.135,.1],mass:.065,fragile:true,breakSpeed:1.8,shape:'sphere',energy:8,icon:'●'},
   apple:{name:'苹果',type:'food',size:[.15,.17,.15],mass:.16,shape:'sphere',energy:12,icon:'●'},
   tomato:{name:'番茄',type:'food',size:[.15,.15,.15],mass:.12,shape:'sphere',energy:8,icon:'●'},
   banana:{name:'香蕉',type:'food',size:[.14,.11,.36],mass:.15,energy:12,icon:'☽'},
   bananaPeel:{name:'香蕉皮',type:'peel',size:[.34,.045,.34],mass:.045,energy:0,icon:'✧'},
   bread:{name:'面包',type:'food',size:[.38,.17,.23],mass:.3,energy:28,icon:'▰'},
   cheese:{name:'奶酪',type:'food',size:[.28,.1,.22],mass:.22,energy:22,icon:'◩'},
-  milk:{name:'牛奶',type:'food',size:[.2,.4,.18],mass:.45,energy:18,icon:'▣'},
+  milk:{name:'野生狗奶',type:'food',size:[.2,.4,.18],mass:.45,energy:18,icon:'▣'},
   jar:{name:'果酱罐',type:'food',size:[.16,.19,.16],mass:.3,fragile:true,breakSpeed:7.5,shape:'cylinder',energy:16,icon:'▤'},
   bottle:{name:'酒瓶',type:'glass',size:[.13,.3,.13],mass:.4,fragile:true,breakSpeed:8,shape:'cylinder',icon:'♧'},
   crowbar:{name:'撬棍',type:'tool',size:[.16,1.4,.12],mass:1.3,icon:'⌝',melee:true,damage:5},
@@ -58,7 +59,47 @@ export function createPropModel(item) {
     for(let i=0;i<4;i++)tube([-.0195+i*.013,.01,-.045],[-.0195+i*.013,.01,-.12],.003,metal);
   } else if(kind==='knife') {
     box(0,0,-.06,.025,.012,.12,metal);box(0,0,.055,.029,.016,.11,gold);
-  } else if(kind==='egg')sphere(0,.05,0,.0375,.05,.0375,porcelain);
+  } else if(kind==='book') {
+    const palette=[0x596977,0x86584a,0x657254,0x92794e,0x635670,0x407775];
+    const tint=[...item.id].reduce((value,char)=>(value+char.charCodeAt(0))%palette.length,0);
+    const cover=new THREE.MeshStandardMaterial({color:palette[tint],roughness:.88});
+    const pages=new THREE.MeshStandardMaterial({color:0xe2d7b9,roughness:1});
+    box(0,0,0,.22,.0035,.3,cover);box(0,.0315,0,.22,.0035,.3,cover);
+    box(.001,.0035,.001,.208,.028,.287,pages);box(-.107,.0035,0,.006,.028,.3,cover);
+    // One fine line mesh depicts page edges without adding a mesh per page.
+    const lines=[];
+    for(let i=1;i<9;i++) {
+      const y=.0035+i*.0031;
+      lines.push(-.102,y,.1446,.105,y,.1446,.1056,y,-.142,.1056,y,.144);
+    }
+    const edges=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(lines,3)),new THREE.LineBasicMaterial({color:0xb8ab8e}));
+    g.add(edges);
+    for(const z of [-.105,.105])box(-.1102,.006,z,.001,.022,.005,gold);
+    box(0,.0351,-.025,.11,.0004,.065,gold);
+  } else if(kind==='egg') {
+    // Model the supplied yellow egg reference directly: tapered crown, broad
+    // rounded base, green oval eyes and the small upturned smile.
+    const yellow=new THREE.MeshStandardMaterial({color:0xffd83e,roughness:.3});
+    const rim=new THREE.MeshStandardMaterial({color:0x97ad4a,roughness:.45});
+    const iris=new THREE.MeshStandardMaterial({color:0x425e25,roughness:.35});
+    const pupil=new THREE.MeshStandardMaterial({color:0x111b0b,roughness:.18});
+    const shine=new THREE.MeshBasicMaterial({color:0xfffbd7});
+    const profile=Array.from({length:33},(_,i)=>{const angle=i*Math.PI/32;return [.052*Math.sin(angle)*(1+.2*Math.cos(angle)),.07*(1-Math.cos(angle))];});
+    const shell=lathe(profile,yellow);shell.name='egg:yellow-shell';
+    function front(x,y) {
+      const angle=Math.acos(1-y/.07),radius=.052*Math.sin(angle)*(1+.2*Math.cos(angle));
+      return Math.sqrt(Math.max(0,radius*radius-x*x));
+    }
+    for(const side of [-1,1]) {
+      const x=side*.0205,y=.105,z=front(x,y);
+      sphere(x,y,z+.0015,.009,.012,.004,rim).name='egg:eye';
+      sphere(x,y,z+.0042,.0068,.0095,.0022,iris);
+      sphere(x,y,z+.0061,.0045,.007,.0015,pupil);
+      sphere(x-.0018,y+.003,z+.0075,.0017,.0021,.0008,shine);
+    }
+    const smilePoints=Array.from({length:13},(_,i)=>{const x=-.016+i*.032/12,y=.082+.005*(x/.016)**2;return new THREE.Vector3(x,y,front(x,y)+.001);});
+    const smile=mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(smilePoints),16,.001,6,false),new THREE.MeshStandardMaterial({color:0x77501b,roughness:.8}));smile.name='egg:smile';
+  }
   else if(kind==='apple'||kind==='tomato') {
     sphere(0,.075,0,.075,.075,.075,new THREE.MeshStandardMaterial({color:kind==='apple'?0x809d43:0xa54232,roughness:.65}));
     tube([0,.135,0],[.009,.17,0],.007,gold);
@@ -90,11 +131,21 @@ export function createPropModel(item) {
     }
   } else if(kind==='boltCutters') {
     const grips=new THREE.MeshStandardMaterial({color:0x763a2c,roughness:.92});
+    const rig={handles:[],jaws:[]};model.userData.cutterRig=rig;
+    function articulated(name,side,build) {
+      const pivot=new THREE.Group();pivot.name=`cutters:${name}:${side}`;pivot.position.set(0,.025,-.14);g.add(pivot);
+      const first=g.children.length;build();for(const child of g.children.slice(first))pivot.attach(child);
+      rig[name].push({pivot,side});
+    }
     for(const side of [-1,1]) {
-      tube([side*.125,.025,.37],[side*.045,.025,-.14],.017,metal);
-      tube([side*.125,.025,.37],[side*.095,.025,.2],.026,grips);
-      tube([side*.045,.025,-.14],[side*.075,.025,-.29],.027,metal);
-      tube([side*.075,.025,-.29],[side*.018,.025,-.4],.032,metal);
+      articulated('handles',side,()=>{
+        tube([side*.125,.025,.37],[side*.045,.025,-.14],.017,metal);
+        tube([side*.125,.025,.37],[side*.095,.025,.2],.026,grips);
+      });
+      articulated('jaws',side,()=>{
+        tube([side*.045,.025,-.14],[side*.075,.025,-.29],.027,metal);
+        tube([side*.075,.025,-.29],[side*.018,.025,-.4],.032,metal);
+      });
     }
     mesh(new THREE.CylinderGeometry(.036,.036,.07,12),gold,0,.025,-.14);
   } else if(kind==='shedKey'||kind==='rearDoorKey') {
@@ -120,10 +171,17 @@ export function createPropModel(item) {
 
 export function createPickupProps() {
   const seeds=[];let serial=0;
-  function place(parent,kind,x,y,z) {
+  function place(parent,kind,x,y,z,{rotation=null}={}) {
     const item=propItem(kind,`prop-${serial++}-${kind}`),mesh=createPropModel(item);
-    parent.updateWorldMatrix(true,false);const scale=parent.getWorldScale(new THREE.Vector3());mesh.scale.x=1/scale.x;
-    mesh.position.set(x,y+item.size[1]/2,z);parent.add(mesh);seeds.push({item,mesh});return mesh;
+    parent.updateWorldMatrix(true,false);
+    if(rotation)mesh.rotation.set(...rotation);
+    mesh.position.set(x,y,z);parent.add(mesh);
+    // Cancel the room stretch along the rotated prop's axes. This also keeps
+    // upright books on turned shelves aligned with their rigid-body bounds.
+    const scale=mesh.getWorldScale(new THREE.Vector3());mesh.scale.set(1/scale.x,1/scale.y,1/scale.z);
+    const bottom=mesh.getWorldPosition(new THREE.Vector3()).y,bounds=new THREE.Box3().setFromObject(mesh);
+    mesh.position.y+=(bottom-bounds.min.y)/parent.getWorldScale(new THREE.Vector3()).y;
+    seeds.push({item,mesh});return mesh;
   }
   return {seeds,place};
 }

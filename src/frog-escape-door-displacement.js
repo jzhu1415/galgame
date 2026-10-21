@@ -10,7 +10,7 @@ export function createDoorDisplacement(actor,{door,direction,distance}){
 export function advanceDoorDisplacement(force,actor,navigation,dt){
   const from=force.elapsed,to=Math.min(force.duration,from+Math.max(0,dt));
   const travel=t=>force.distance*(2*t/force.duration-(t/force.duration)**2),distance=travel(to)-travel(from);
-  const ignore=[...force.door.parts.map(part=>part.collider),actor.collider].filter(Boolean);
+  const ignore=[...(force.door.parts?.map(part=>part.collider)??force.door.colliders??[]),actor.collider].filter(Boolean);
   const world={...navigation,blocked:(x,y,z,step,height,radius,extra=[])=>navigation.blocked(x,y,z,step,height,radius,[...ignore,...extra])};
   const x=actor.x,z=actor.z;
   advancePlayer(actor,force.direction.x*distance,force.direction.z*distance,0,world,{forced:true});

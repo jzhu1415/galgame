@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {createNavigation,createPlayer,advancePlayer,jumpPlayer,WALK_SPEED} from '../src/frog-escape-navigation.js';
-import {damagePlayer,fallDamage,alertnessPhase,itemAlertness,changeAlertness} from '../src/frog-escape-vitals.js';
+import {damagePlayer,fallDamage,alertnessPhase,itemAlertness,itemAlertnessChange,changeAlertness,naiwaAttackDamage} from '../src/frog-escape-vitals.js';
 import {createNaiwaPursuer} from '../src/frog-escape-pursuer.js';
 import {createWorldItems} from '../src/frog-escape-items.js';
 import {propItem} from '../src/frog-escape-props.js';
@@ -16,6 +16,10 @@ damagePlayer(player,500,'fall');assert.equal(player.health,0);damagePlayer(playe
 assert.equal(fallDamage(3),0);assert(fallDamage(3.1)>0);assert.equal(fallDamage(5.98),8);assert(fallDamage(10)>fallDamage(6));
 for(const [value,phase] of [[0,'dormant'],[10,'dormant'],[29,'dormant'],[30,'intelligent'],[69,'intelligent'],[70,'tangwang'],[99,'tangwang'],[100,'transparent']])assert.equal(alertnessPhase(value).id,phase);
 assert.equal(changeAlertness(99,5),100);assert.equal(changeAlertness(1,-5),0);
+for(const [level,slam,door,chair]of [[0,6,10,0],[29,6,10,0],[30,8,12,0],[69,8,12,0],[70,10,15,15],[99,10,15,15],[100,20,25,25]]) {
+  assert.equal(naiwaAttackDamage(6,'slam',level),slam);assert.equal(naiwaAttackDamage(10,'door',level),door);assert.equal(naiwaAttackDamage(8,'chair',level),chair);
+  assert.equal(naiwaAttackDamage(8,'fall',level),8);assert.equal(naiwaAttackDamage(30,'grab',level),30);
+}
 
 for(const fps of [25,60,144])for(const height of [1.3,3,3.1,4,5.98,6.36,10]) {
   const navigation=createNavigation({solids:[],stairs:[],boundary}),falling={...createPlayer(),x:15,z:-10,y:-.83+height,grounded:false,fallStartY:-.83+height};
@@ -40,14 +44,15 @@ const contacts=setup();
 for(const [kind,increase] of Object.entries(tiers)) {
   contacts.npc.reset();const item=propItem(kind,`tier-${kind}`);
   assert.equal(itemAlertness(item),increase);contacts.impact(item);
-  assert.equal(contacts.npc.alertness,10+increase,`${kind} has its specified alertness tier`);
+  const expectedAlertness=10+itemAlertnessChange(item);
+  assert.equal(contacts.npc.alertness,expectedAlertness,`${kind} has its specified alertness change`);
   assert.equal(contacts.npc.health,20-increase,'item damage matches its alertness tier');
-  contacts.impact(item);assert.equal(contacts.npc.alertness,10+increase,'one bouncing contact cannot be counted repeatedly');
+  contacts.impact(item);assert.equal(contacts.npc.alertness,expectedAlertness,'one bouncing contact cannot be counted repeatedly');
 }
 contacts.npc.reset();contacts.npc.hit({damage:35,item:propItem('crowbar','melee'),source:'melee'});assert.equal(contacts.npc.alertness,15);
 contacts.npc.reset({keepAlertness:true});assert.equal(contacts.npc.alertness,15,'a position reset can retain alertness');contacts.npc.reset();assert.equal(contacts.npc.alertness,10);contacts.npc.dispose();
 
-for(const [kind,increase,damage] of [['bread',1,1],['egg',2,1],['fork',2,2],['bottle',6,5]]) {
+for(const [kind,increase,damage] of [['bread',1,1],['egg',-2,1],['fork',2,2],['bottle',6,5]]) {
   const physical=setup({realPhysics:true});
   physical.items.throw(propItem(kind,`physical-${kind}`),physical.player,new THREE.Vector3(0,1.5,-1.8),new THREE.Vector3(0,0,1));physical.step(.6);
   assert.equal(physical.npc.alertness,10+increase,'real actor collisions and nearby breakage combine exactly once');

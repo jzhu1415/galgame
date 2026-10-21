@@ -13,7 +13,11 @@ import {updateCastleDoor} from '../src/frog-escape-doors.js';
 import {updateFixtureAction} from '../src/frog-escape-interactions.js';
 
 assert.equal(createHash('sha256').update(readFileSync('references/naiwa-escape-turnaround.png')).digest('hex'),'e322248de265797af7b60f64fca3546d12b949c753efb51cb8cff0a091d87dcf','the actual supplied turnaround is preserved');
-const model=createNaiwaModel(),size=new THREE.Box3().setFromObject(model.root).getSize(new THREE.Vector3());
+const model=createNaiwaModel(),visibleBounds=new THREE.Box3();model.root.updateWorldMatrix(true,true);
+// Hidden hand-walk helpers can extend beyond the current pose. Door clearance
+// concerns the rendered character, not auxiliary geometry waiting off-screen.
+model.root.traverseVisible(mesh=>{if(mesh.isMesh){mesh.geometry.computeBoundingBox();visibleBounds.union(mesh.geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld));}});
+const size=visibleBounds.getSize(new THREE.Vector3());
 assert(size.y>2.1&&size.y<2.3&&size.x<1.4,'the real 3D character fits castle doors');
 const eyes=[];model.root.traverse(mesh=>{if(mesh.name==='naiwa:green-eye')eyes.push(mesh);});
 assert.equal(eyes.length,2);assert(eyes.every(eye=>eye.material.color.getHex()===0x6da84b));

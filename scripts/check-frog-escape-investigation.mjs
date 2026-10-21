@@ -5,7 +5,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createNavigation,createPlayer} from '../src/frog-escape-navigation.js';
 import {createEscapeScene} from '../src/frog-escape-scene.js';
 import {createNaiwaPursuer} from '../src/frog-escape-pursuer.js';
-import {chooseSearchKinds,roomContaining,BED_SEARCH} from '../src/frog-escape-investigation.js';
+import {chooseSearchKinds,roomContaining,BED_SEARCH,WARDROBE_SEARCH} from '../src/frog-escape-investigation.js';
 import {createEscapeNoise} from '../src/frog-escape-noise.js';
 import {updateCastleDoor} from '../src/frog-escape-doors.js';
 import {updateFixtureAction} from '../src/frog-escape-interactions.js';
@@ -105,6 +105,11 @@ for(const cabinetIndex of [0,1]) {
   Object.assign(test.npc.actor,{x:front.x,y:front.y,z:front.z,yaw:Math.atan2(front.x-inside.x,front.z-inside.z)});test.npc.setMapLayer('all');
   Object.assign(test.player,{x:inside.x,y:inside.y,z:inside.z,hidingBed:null,hidingWardrobe:cabinet.id,hidden:true});
   assert(test.npc.observeHiding({kind:'wardrobe',target:cabinet,position:before}));assert.deepEqual(test.events.find(event=>event.stage==='begin').checks,['wardrobe']);
+  test.until(()=>test.npc.state==='cabinet-prepare');assert.equal(cabinet.wardrobeInspection,test.npc.actor);
+  const position={x:test.npc.actor.x,z:test.npc.actor.z};test.step(WARDROBE_SEARCH.prepare-.08);
+  assert.equal(test.npc.state,'cabinet-prepare');assert(!cabinet.open&&cabinet.amount===0,'the full reaction window precedes any opening');
+  assert.equal(test.npc.actor.x,position.x);assert.equal(test.npc.actor.z,position.z);assert.equal(test.caught,0);
+  test.step(.1);assert.equal(test.npc.state,'cabinet-search');assert(!cabinet.wardrobeInspection);
   test.until(()=>test.caught===1,8);assert(cabinet.amount>.55,'the actual wardrobe leaves must open before capture');test.npc.dispose();
 }
 

@@ -22,6 +22,14 @@ function arena({wall=false,scaled=false}={}) {
 function step(arena,dt,player,npc=null) {npc?.tick(dt);arena.items.tick(dt,player);}
 function meshes(scene) {const result=[];scene.traverse(object=>{if(object.isMesh)result.push(object);});return result;}
 
+for(const fps of [30,60,144])for(const milk of [false,true])for(const [phase,damage]of [[10,0],[30,0],[70,15],[100,25]]) {
+  const place=arena(),player={...createPlayer(),x:0,y:.15,z:-2,health:100,effects:{milk:milk?15:0}};
+  const owner={kind:'pursuer',alertness:phase,x:0,y:.15,z:1};assert.equal(place.navigation.chairMotion.kick(place.chair,owner),phase>=70);
+  if(phase<70)assert.equal(place.chair.body.velocity.length(),0,'Dormant and Intelligent cannot launch a chair');
+  for(let i=0;i<fps*.8;i++)step(place,1/fps,player);
+  assert.equal(player.health,100-damage*(milk?.5:1),`real kicked chair damage at phase ${phase}, ${fps} FPS, milk=${milk}`);
+}
+
 for(const fps of[30,60,144]) {
   const place=arena({wall:true,scaled:true}),player={...createPlayer(),x:15,y:.15,z:-4,hidden:true},original=meshes(place.scene),body=place.chair.body,events=[];
   place.scene.addEventListener('escape-prop-break',event=>events.push(event));
@@ -108,4 +116,4 @@ try {
 }finally {
   globalThis.fetch=original.fetch;for(const key of['document','ProgressEvent'])if(original[key]===undefined)delete globalThis[key];else globalThis[key]=original[key];
 }
-console.log('Chair upgrade OK: Fool and Nerd push chairs easily without climbing, including low ceilings at 30/60/144 FPS; stronger kicks travel farther; wall fracture preserves every mesh, mass and persistent physical component; Ninja retains sharper senses without seeing through walls or hiding.');
+console.log('Chair upgrade OK: Dormant/Intelligent cannot kick or deal kicked-chair damage; Ninja/Transcendent 15/25 before milk at 30/60/144 FPS; low-ceiling pushing, kick distance, wall fracture, preserved meshes/mass and persistent pieces with shared damage cooldown; Ninja senses retain wall/hiding limits.');

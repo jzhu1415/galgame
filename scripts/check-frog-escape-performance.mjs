@@ -12,7 +12,11 @@ import {updateFixtureAction} from '../src/frog-escape-interactions.js';
 
 const scene=new THREE.Scene(),castle=createEscapeScene(scene,{labels:false}),{navigation}=castle;
 const opaque=()=>{let count=0;scene.traverseVisible(mesh=>{if(mesh.isMesh&&mesh.layers.isEnabled(0)&&!mesh.material?.transparent)count++;});return count;};
-const before=opaque(),batcher=createEscapeRenderBatches(castle),after=opaque();assert(before-after>1900);assert.equal(before-after,batcher.stats.savedDrawCalls);
+const before=opaque(),batcher=createEscapeRenderBatches(castle),after=opaque();
+// Real books and usable drawer contents replace static decorative blocks.
+// Measure batching efficiency against the remaining static sources, while
+// the checks below keep all interactive props individually rendered.
+assert(batcher.stats.sourceMeshes>1800);assert(before-after>batcher.stats.sourceMeshes*.8);assert.equal(before-after,batcher.stats.savedDrawCalls);
 const foliage=scene.getObjectByName('vegetation:long-leaves'),quadrants=count=>{const totals=[0,0,0,0],values=foliage.instanceMatrix.array;for(let i=0;i<count;i++)totals[(values[i*16+12]>0?1:0)+(values[i*16+14]>0?2:0)]++;return totals;};
 const allLeaves=quadrants(foliage.count),thinLeaves=quadrants(Math.ceil(foliage.count*.35));allLeaves.forEach((count,i)=>assert(Math.abs(thinLeaves[i]/count-.35)<.04,'lower foliage density remains spread across every garden quadrant'));
 for(const seed of castle.pickupSeeds)seed.mesh.traverse(mesh=>assert(mesh.layers.isEnabled(0),'items remain individually rendered and selectable'));

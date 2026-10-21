@@ -1,14 +1,31 @@
 export const MAX_PLAYER_HEALTH=100;
 export const INITIAL_ALERTNESS=10;
 export const MAX_ALERTNESS=100;
+const hackerRules=Object.freeze({label:'极限模式',en:'Hacker',captureDamage:100,initialAlertness:100,naiwaHealth:30,downDuration:3.5});
 export const ESCAPE_DIFFICULTIES=Object.freeze({
-  easy:Object.freeze({label:'简单模式',en:'Easy',captureDamage:20,initialAlertness:10,naiwaHealth:15,downDuration:8}),
+  easy:Object.freeze({label:'简单模式',en:'Easy',captureDamage:20,initialAlertness:0,naiwaHealth:15,downDuration:8}),
   normal:Object.freeze({label:'普通模式',en:'Normal',captureDamage:30,initialAlertness:10,naiwaHealth:20,downDuration:6.5}),
   hard:Object.freeze({label:'困难模式',en:'Hard',captureDamage:50,initialAlertness:30,naiwaHealth:25,downDuration:5}),
-  hacker:Object.freeze({label:'极限模式',en:'Hacker',captureDamage:100,initialAlertness:100,naiwaHealth:30,downDuration:3.5}),
+  hacker:hackerRules,
+  gunmu:Object.freeze({...hackerRules,label:'\u3000\u3000模式（???）',en:'???',phaseLabel:'滚木模式',initialAlertness:70,fixedAlertness:70,displayAlertness:6767,invisible:true}),
 });
 export const difficultyRules=id=>ESCAPE_DIFFICULTIES[id]??ESCAPE_DIFFICULTIES.normal;
+// The frightening HUD number never enters perception, damage or phase checks.
+export const displayAlertness=(value,difficulty)=>difficultyRules(difficulty).displayAlertness??value;
+export function displayAlertnessPhase(value,difficulty) {
+  const phase=alertnessPhase(value);return {...phase,label:difficultyRules(difficulty).phaseLabel??phase.label};
+}
 export const WAKE_ALERTNESS_REDUCTION=10;
+
+// Stage scaling applies only to Naiwa's direct attacks. Falls and capture keep
+// their existing rules, and milk resistance is applied later by damagePlayer.
+export function naiwaAttackDamage(base,source,alertness=0) {
+  if(!['slam','door','chair'].includes(source))return base;
+  if(alertness>=100)return source==='slam'?20:25;
+  if(alertness>=70)return source==='slam'?10:15;
+  if(source==='chair')return 0;
+  return base+(alertness>=30?2:0);
+}
 
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -31,7 +48,7 @@ export function healPlayer(player,amount) {
   return healed;
 }
 
-// Naiwa takes the item's alertness tier as base damage. Keep drink effects and
+// Naiwa takes the item's original item tier as base damage. Keep drink effects and
 // the one-point empty-container penalty; collision speed only determines contact.
 export function itemDamage(item,source='projectile',damageScale=1,shattered=false) {
   return Math.max(0,(itemAlertness(item,source)+(item?.kind==='vase'&&shattered?1:0))*damageScale-(item?.empty?1:0));
@@ -65,10 +82,13 @@ export function itemAlertness(item,source='projectile') {
   if(source==='melee'&&!item||item?.kind==='bottle'||item?.kind==='crowbar')return 5;
   if(item?.kind==='glass'||item?.kind==='knife')return 4;
   if(['plate','bowl','cup','jar'].includes(item?.kind))return 3;
-  if(item?.kind==='milk'||item?.kind==='fork'||item?.type==='cutlery')return 2;
+  if(item?.kind==='book'||item?.kind==='milk'||item?.kind==='fork'||item?.type==='cutlery')return 2;
   if(isSoftProjectile(item)||item?.type==='food'||item?.type==='egg')return 1;
   return 2;
 }
+
+// Nai Dan keeps the egg's original damage while calming the pursuer on impact.
+export const itemAlertnessChange=(item,source='projectile')=>source==='projectile'&&item?.kind==='egg'?-2:itemAlertness(item,source);
 
 export function changeAlertness(current,amount) {
   return clamp(current+amount,0,MAX_ALERTNESS);

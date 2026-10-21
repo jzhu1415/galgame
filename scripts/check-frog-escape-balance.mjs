@@ -18,8 +18,21 @@ function npcSetup(difficulty='normal',random=()=>.99) {
   const npc=createNaiwaPursuer({scene,navigation,player,spawn,doors:[],patrolRoute:[spawn],difficulty,random,worldItems:{physics:{addActor:()=>({remove(){}}),syncActors(){}}}});
   return {npc,events,tick:dt=>npc.tick(dt)};
 }
-assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(r=>r.naiwaHealth),[15,20,25,30]);
-assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(r=>r.downDuration),[8,6.5,5,3.5]);
+assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(r=>r.naiwaHealth),[15,20,25,30,30]);
+assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(r=>r.downDuration),[8,6.5,5,3.5,3.5]);
+for(const [difficulty,opening]of [['easy',0],['normal',10],['hard',30],['hacker',100],['gunmu',70]]) {
+  const test=npcSetup(difficulty);assert.equal(test.npc.alertness,opening,'construction applies this difficulty’s opening alertness');
+  test.npc.hit({item:propItem('bread','opening-hit'),source:'projectile'});
+  assert.equal(test.npc.alertness,difficultyRules(difficulty).fixedAlertness??Math.min(100,opening+1));
+  test.npc.reset();assert.equal(test.npc.alertness,opening,'a fresh run resets to the selected opening alertness');
+  const wakeAlertness=difficultyRules(difficulty).fixedAlertness??Math.max(0,opening-10);
+  test.npc.onPlayerWake();assert.equal(test.npc.alertness,wakeAlertness,'waking respects fixed alertness or lowers it without going negative');
+  test.npc.reset({keepAlertness:true});assert.equal(test.npc.alertness,wakeAlertness,'position resets preserve wake alertness');
+  for(const [next,nextOpening]of [['easy',0],['normal',10],['hard',30],['hacker',100],['gunmu',70],['easy',0]]) {
+    assert(test.npc.setDifficulty(next,{restartOpening:true}));assert.equal(test.npc.alertness,nextOpening,'pre-run difficulty changes reset the real opening value');
+  }
+  test.npc.beginRun();assert(!test.npc.setDifficulty('normal',{restartOpening:true}));assert.equal(test.npc.alertness,0,'locked difficulty cannot restore ten points in Easy');test.npc.dispose();
+}
 for(const difficulty of Object.keys(ESCAPE_DIFFICULTIES))for(const kind of Object.keys(propTypes).filter(kind=>kind!=='shedKey')) {
   const {npc,events}=npcSetup(difficulty),item=propItem(kind,kind),base=itemAlertness(item);
   assert.equal(npc.hit({damage:999,item,source:kind==='crowbar'?'melee':'projectile'}),base>0,'zero-damage peel hits do not become damage through the supplied override');
@@ -87,8 +100,7 @@ for(const fps of[30,60,144]) {
   key('KeyE');assert(chest.locked&&explorer.inventory.slots[slot],'E with a carried key does not unlock');
   explorer.player.yaw+=Math.PI;explorer.tick(1/fps);dispatch(canvas,'pointerdown',{button:2,pointerType:'mouse'});assert(chest.locked&&explorer.inventory.slots[slot],'a failed right click keeps the key instead of throwing it');
   assert(!insertFixtureKey(chest,propItem('bread','wrong')),'only a matching key fits');
-  aim();dispatch(canvas,'pointerdown',{button:2,pointerType:'mouse'});assert(chest.locked&&explorer.inventory.slots[slot],'knowing the code is mandatory before opening the chest');castle.runClues.readNote();
-  aim();dispatch(canvas,'pointerdown',{button:2,pointerType:'mouse'});assert(!chest.locked&&!chest.open&&chest.insertedKey===keyItem);assert.equal(explorer.inventory.slots[slot],null);
+  aim();dispatch(canvas,'pointerdown',{button:2,pointerType:'mouse'});assert(!chest.locked&&!chest.open&&chest.insertedKey===keyItem);assert.equal(explorer.inventory.slots[slot],null);assert(!castle.runClues.codeKnown,'a real matching key works without reading the code note');
   const model=chest.keySocket.getObjectByName('fixture:inserted-key'),closed=model.getWorldPosition(new THREE.Vector3());assert(model&&model.visible);key('KeyE');
   run(1.2,dt=>explorer.tick(dt),fps);assert(chest.open&&chest.amount>.99&&chest.content.visible);assert(model.getWorldPosition(new THREE.Vector3()).distanceTo(closed)>.2,'the permanently inserted key follows the actual lid');
   chest.open=false;updateFixtureAction(chest,2,null,castle.navigation);assert(model.getWorldPosition(new THREE.Vector3()).distanceTo(closed)<1e-6);assert(model.parent===chest.keySocket);
@@ -97,4 +109,4 @@ for(const fps of[30,60,144]) {
   assert(!insertFixtureKey(chest,keyItem),'the same key cannot be inserted twice');
 }
 const html=readFileSync('frog-escape-map.html','utf8');assert(!html.includes('escape-naiwa-health'),'Naiwa’s health remains hidden');
-console.log('Balance/key rules OK: locked run difficulty and restart selection; 15/20/25/30 hidden health, item-tier damage including soft food and blocks; 8/6.5/5/3.5-second knockdowns with one +2-second first bonus at 30/60/144 FPS; wake/reset lifecycle; permanent matching-key insertion with real right-click/E/lid/world/map/capture behavior.');
+console.log('Balance/key rules OK: 0/10/30/100 opening alertness through construction, pre-run selection, locked runs, waking and reset; 15/20/25/30 hidden health, item-tier damage including soft food and blocks; 8/6.5/5/3.5-second knockdowns with one +2-second first bonus at 30/60/144 FPS; permanent matching-key insertion with real right-click/E/lid/world/map/capture behavior.');

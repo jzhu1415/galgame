@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import {syncBoxCollider} from './frog-escape-doors.js';
 import {playerHeight} from './frog-escape-navigation.js';
-import {damagePlayer} from './frog-escape-vitals.js';
+import {damagePlayer,naiwaAttackDamage} from './frog-escape-vitals.js';
 
 export const CHAIR_GROUP=32;
 export const CHAIR_RULES=Object.freeze({playerPushSpeed:.42,naiwaPushSpeed:2.2,kickSpeed:12,kickLift:3,damageSpeed:3.4,damage:8,breakSpeed:7});
@@ -34,7 +34,8 @@ export function createChairPhysics({world,navigation,playerBody,onImpact=()=>{},
       const speed=Math.abs(event.contact.getImpactVelocityAlongNormal());
       const group=chair.damageGroup??chair;
       if(event.body===playerBody&&player&&speed>=CHAIR_RULES.damageSpeed&&time-group.lastImpact>1) {
-        group.lastImpact=time;damagePlayer(player,CHAIR_RULES.damage,'chair');
+        group.lastImpact=time;const owner=chair.kickedBy??group.kickedBy;
+        damagePlayer(player,owner?.kind==='pursuer'?naiwaAttackDamage(CHAIR_RULES.damage,'chair',owner.alertness):CHAIR_RULES.damage,'chair');
       }
       if(speed>1.2&&time-chair.lastSound>.22) {
         chair.lastSound=time;onImpact({chair,speed,position:{...body.position},owner:chair.kickedBy??null});
@@ -105,6 +106,7 @@ export function createChairPhysics({world,navigation,playerBody,onImpact=()=>{},
   }
   function kick(chair,actor) {
     if(!records.includes(chair)||chair.broken)return false;
+    if(actor.kind==='pursuer'&&(actor.alertness??0)<70)return false;
     const body=chair.body,dx=body.position.x-actor.x,dz=body.position.z-actor.z,length=Math.hypot(dx,dz)||1;
     if(length>1.55||Math.abs(body.position.y-.55-actor.y)>.85)return false;
     body.wakeUp();body.velocity.set(dx/length*CHAIR_RULES.kickSpeed,CHAIR_RULES.kickLift,dz/length*CHAIR_RULES.kickSpeed);

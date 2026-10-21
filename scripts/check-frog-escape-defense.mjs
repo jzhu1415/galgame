@@ -61,8 +61,10 @@ for(const phase of [10,30,70])for(const fps of [25,60,144]) {
   assert(test.npc.lightExposed&&test.npc.guarding,'all three alertness modes lift a hand against direct eye light');
   assert.equal(test.npc.movementSpeedScale,phase>=70?.75:.5);assert.equal(test.npc.model.root.userData.guardAmount,1);
   test.step(.8);assert.equal(test.events.filter(event=>event.type==='escape-pursuer-light'&&event.active).length,1,'the lifted hand does not occlude its own detector or cause repeated shield triggers');
-  beam=test.aim(new THREE.Vector3(0,.8,0));test.step(.04);assert(!test.npc.lightExposed,'aiming at the body is not direct eye illumination');assert.equal(test.npc.movementSpeedScale,1);
-  beam.origin.z=-18;beam.direction=new THREE.Vector3(0,.8,0).sub(beam.origin).normalize();test.step(.04);assert(test.npc.lightExposed,'both eyes inside the distant central beam trigger shielding without pinpoint aim');
+  // Handwalking lowers the eyes. Aim at the lower body so the nearby cone
+  // clearly misses them; the same target still includes them from farther away.
+  beam=test.aim(new THREE.Vector3(0,.3,0));test.step(.04);assert(!test.npc.lightExposed,'aiming at the lower body leaves the eyes outside the close central beam');assert.equal(test.npc.movementSpeedScale,1);
+  beam.origin.z=-18;beam.direction=new THREE.Vector3(0,.3,0).sub(beam.origin).normalize();test.step(.04);assert(test.npc.lightExposed,'both eyes inside the distant central beam trigger shielding without pinpoint aim');
   beam=test.aim();test.navigation.solids.push({x:0,z:-2,halfX:1,halfZ:.1,minY:.15,maxY:3,axisX:[1,0],axisZ:[0,1]});test.step(.04);assert(!test.npc.lightExposed,'walls stop the beam');test.navigation.solids.pop();
   beam.enabled=false;test.step(.3);assert(!test.npc.guarding,'switching off the light lowers the hand');assert.equal(test.npc.movementSpeedScale,1);
   beam=test.aim();beam.origin.z=4;beam.direction=test.npc.model.getEyePositions()[0].clone().sub(beam.origin).normalize();test.step(.04);assert(!test.npc.lightExposed,'light aimed from behind does not reach the eyes');

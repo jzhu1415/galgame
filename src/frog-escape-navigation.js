@@ -1,4 +1,5 @@
 import {MAX_PLAYER_HEALTH,damagePlayer,fallDamage} from './frog-escape-vitals.js';
+import {waterAt} from './frog-escape-water.js';
 
 // Shared dimensions for the rendered building and its walkable surfaces (metres).
 export const houseWidthScale = 1.25;
@@ -62,7 +63,7 @@ export function subtractRect(rect,hole) {
     {minX:cut.minX,maxX:cut.maxX,minZ:cut.maxZ,maxZ:rect.maxZ},
   ].filter(part=>part.maxX-part.minX>.001 && part.maxZ-part.minZ>.001);
 }
-export function createNavigation({solids=[],circles=[],boundary,doors=[],chairs=[],stairs=escapeStairs,exits=[]}) {
+export function createNavigation({solids=[],circles=[],boundary,doors=[],chairs=[],stairs=escapeStairs,exits=[],waterVolumes=[]}) {
   const slabs=escapeFloors.flatMap(floor=>{
     const rect={minX:-9*floor.scale,maxX:9*floor.scale,minZ:-7,maxZ:7};
     return (floor.id==='basement'?[rect]:subtractRect(rect,stairWell)).map(part=>({...part,height:floor.top,underside:floor.base}));
@@ -143,7 +144,7 @@ export function createNavigation({solids=[],circles=[],boundary,doors=[],chairs=
     }
     return true;
   }
-  return {solids,circles,doors,chairs,stairs,slabs,surfaces,ceilings,boundary,support,ceiling,blocked,overlapsBox,lineClear};
+  return {solids,circles,doors,chairs,stairs,slabs,surfaces,ceilings,boundary,support,ceiling,blocked,overlapsBox,lineClear,waterVolumes,waterAt:position=>waterAt(waterVolumes,position)};
 }
 function segmentHitsBox(a,b,box) {
   let enter=0,leave=1;

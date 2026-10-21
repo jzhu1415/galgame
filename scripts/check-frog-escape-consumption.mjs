@@ -146,7 +146,7 @@ for(const [mode,cost]of[['easy',10],['normal',15],['hard',25],['hacker',50]]) {
   const {explorer,npc,equip,key,controls,slots}=explorerSetup(mode),milk=equip('milk');key('KeyG');assert(explorer.consumption.active);run(1.49,dt=>explorer.tick(dt));assert.equal(explorer.player.effects?.milk??0,0);
   const beforePause=explorer.consumption.action.elapsed;explorer.pause();run(3,dt=>explorer.tick(dt));assert.equal(explorer.consumption.action.elapsed,beforePause,'pausing freezes the eating action');
   controls.get('#escape-resume').dispatchEvent(new Event('click'));run(.01,dt=>explorer.tick(dt));assert.equal(explorer.player.effects.milk,15);assert(milk.empty);assert.equal(explorer.inventory.slots[explorer.inventory.selected],milk);
-  assert.equal(slots[explorer.inventory.selected].querySelector('[data-item-name]').textContent,'牛奶（空）');
+  assert.equal(slots[explorer.inventory.selected].querySelector('[data-item-name]').textContent,'野生狗奶（空）');
   setEscapeLanguage('en');explorer.refreshLanguage();assert(controls.get('#escape-player-effects').textContent.includes('Milk resistance'));assert(itemLabel(milk).includes('Empty'));setEscapeLanguage('zh');explorer.refreshLanguage();
   explorer.capture();assert.equal(explorer.player.health,100-cost);assert(!explorer.gameOver,'milk lets even Hacker survive one grab at full health');assert(controls.get('#escape-caught-description').textContent.includes(`失去 ${cost}`),'faint text reports mitigated damage');
   const remaining=explorer.player.effects.milk;run(20,dt=>explorer.tick(dt));assert.equal(explorer.player.effects.milk,remaining,'faint dialogs pause timed effects');explorer.restartPosition();assert.equal(npc.alertness,Math.max(0,difficultyRules(mode).initialAlertness-10));

@@ -28,7 +28,7 @@ export function propSoundMaterial(item) {
   if(['glass','bottle','jar'].includes(item?.kind)||item?.type==='glass')return 'glass';
   if(['plate','bowl','cup','vase'].includes(item?.kind))return 'ceramic';
   if(['egg','tomato'].includes(item?.kind))return 'wet';
-  if(item?.kind==='milk')return 'carton';
+  if(item?.kind==='milk'||item?.kind==='book')return 'carton';
   if(item?.type==='food')return 'soft';
   if(item?.type==='cutlery'||item?.type==='tool'||item?.type==='flashlight'||item?.type==='key')return 'metal';
   return 'wood';
@@ -193,6 +193,7 @@ export function createEscapeAudio({scene,player,listener,navigation,doors=[],int
   });
   bind('escape-prop-place',event=>impact(event.item,{position:event.position,volume:.1,heavy:false,key:`place:${event.item.id}`,cooldown:.15}));
   bind('escape-fence-cut',event=>{play('metalHeavy',{position:event.position,volume:.22,rate:1.12,key:'fence-snip',priority:2});play('metalLatch',{position:event.position,volume:.14,delay:.09,key:'fence-release'});});
+  bind('escape-fence-snip',event=>{play('metalClick',{position:event.position,volume:.14,rate:.86,key:`fence-squeeze-${event.index}`,priority:2});play('metalLatch',{position:event.position,volume:.08,rate:1.18,delay:.06,key:`fence-link-${event.index}`});});
   bind('escape-prop-pickup',event=>play(propSoundMaterial(event.item)==='metal'?'metalClick':'cloth',{local:true,volume:.055,key:'pickup',cooldown:.08}));
   bind('escape-prop-release',event=>play(event.thrown?'swing':'cloth',{local:true,volume:event.thrown?.08:.045,rate:event.thrown?1.25:1,key:'release'}));
   bind('escape-player-action',event=>{

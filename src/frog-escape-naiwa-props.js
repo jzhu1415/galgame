@@ -15,8 +15,9 @@ export function createNaiwaProps({scene,model,actor,navigation}) {
   const texture=new THREE.DataTexture(pixels,64,64);texture.needsUpdate=true;
   const shadow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x11110e,map:texture,transparent:true,opacity:.34,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));
   shadow.name='naiwa:contact-shadow';shadow.userData.excludeContactOcclusion=true;shadow.rotation.x=-Math.PI/2;shadow.renderOrder=1;scene.add(shadow);
-  let taken=false;
-  function update(state) {
+  let taken=false,concealedAvailable=false;
+  function update(state,{invisible=false}={}) {
+    concealedAvailable=invisible&&state==='down';
     const pose=model.getWaistPose();key.position.copy(pose.position);key.quaternion.copy(pose.quaternion).multiply(turn);key.visible=!taken&&model.root.visible;
     const floor=navigation.support(actor.x,actor.z,actor.y,.04,.25),height=actor.y-floor,down=state==='down';
     if(down)key.position.y=Math.max(key.position.y,actor.y+.14);
@@ -25,7 +26,7 @@ export function createNaiwaProps({scene,model,actor,navigation}) {
     shadow.rotation.z=actor.yaw;shadow.scale.set(down?1.05:1.15,down?1.8:.85,1);shadow.material.opacity=.34*Math.max(0,1-height/1.2);
   }
   function nearby(origin,direction) {
-    if(taken||!key.visible)return null;
+    if(taken||!key.visible&&!concealedAvailable)return null;
     const distance=origin.distanceTo(key.position);if(distance>2.25||distance<.02)return null;
     if(key.position.clone().sub(origin).normalize().dot(direction)<.89)return null;
     if(!navigation.lineClear(origin,key.position,[actor.collider]))return null;

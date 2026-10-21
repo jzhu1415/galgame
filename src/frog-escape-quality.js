@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import {tr} from './frog-escape-i18n.js';
+import {createCastleDetailMaps} from './frog-escape-surface-detail.js';
 
 export const ESCAPE_QUALITY_KEY='naiwa-escape-quality-v1';
 export const ESCAPE_QUALITY=Object.freeze({
   low:Object.freeze({label:'低画质 · Best Performance',description:'适合手机：优先帧率，降低渲染分辨率、阴影和装饰细节。',desktopDpr:1,mobileDpr:.75,pixels:960*540,moonShadow:768,torchShadow:0,shadowHz:10,anisotropy:1,pointLights:4}),
   balanced:Object.freeze({label:'中等画质 · Balanced',description:'默认画质：保留原有画面，兼顾清晰度与流畅度。',desktopDpr:1.8,mobileDpr:1.3,pixels:Infinity,moonShadow:2048,torchShadow:512,shadowHz:60,anisotropy:4,pointLights:Infinity}),
-  high:Object.freeze({label:'高画质 · Best Quality',description:'更细腻的阴影、接触阴影与表面粗糙度细节，适合性能较强的设备。',desktopDpr:2,mobileDpr:1.6,pixels:2560*1440,moonShadow:4096,torchShadow:1024,shadowHz:60,anisotropy:8,pointLights:Infinity}),
+  high:Object.freeze({label:'高画质 · Best Quality',description:'细致房屋纹理、清澈水面与入水涟漪，适合性能较强的设备。',desktopDpr:2,mobileDpr:1.6,pixels:2560*1440,moonShadow:4096,torchShadow:1024,shadowHz:60,anisotropy:8,pointLights:Infinity}),
 });
 export function readEscapeQuality(storage){try{const id=(storage??globalThis.localStorage)?.getItem(ESCAPE_QUALITY_KEY);return Object.hasOwn(ESCAPE_QUALITY,id)?id:'balanced';}catch{return 'balanced';}}
 export function qualityPixelRatio(id,{dpr=1,mobile=false,width=1,height=1,scale=1}={}){
@@ -13,18 +14,6 @@ export function qualityPixelRatio(id,{dpr=1,mobile=false,width=1,height=1,scale=
   return Math.max(.25,Math.min(dpr,mobile?preset.mobileDpr:preset.desktopDpr,Math.sqrt(preset.pixels/Math.max(1,width*height)))*scale);
 }
 
-// High quality varies reflected light across grain/mortar, without external assets.
-function roughnessTexture(kind){
-  const size=256,data=new Uint8Array(size*size*4);
-  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-    const noise=Math.sin(x*17.13+y*83.71)*43758.5453,grain=noise-Math.floor(noise);
-    const mortar=kind==='wood'?x%32<2||y%75<2:x%64<2||y%32<2;
-    const value=Math.round(255*(mortar?.99:.78+grain*.18)),index=(y*size+x)*4;
-    data[index]=data[index+1]=data[index+2]=value;data[index+3]=255;
-  }
-  const texture=new THREE.DataTexture(data,size,size);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
-  texture.generateMipmaps=true;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.magFilter=THREE.LinearFilter;texture.needsUpdate=true;return texture;
-}
 function resizeShadow(light,size){
   if(!light?.shadow||!size)return;
   if(light.shadow.mapSize.x===size)return;
@@ -36,19 +25,23 @@ const effectivelyVisible=object=>{for(let node=object;node;node=node.parent)if(!
 export function createEscapeQuality({renderer,scene,moonlight,flashlight,mobile=false,dpr=()=>globalThis.devicePixelRatio??1,onChange=()=>{},loadEffects=()=>import('./frog-escape-quality-effects.js')} ){
   let id=readEscapeQuality(),width=1,height=1,scale=1,shadowPending=true,lastShadow=-Infinity,elapsed=0,lightWait=0;
   let effects=null,effectsRequest=null,effectsFailed=false,disposed=false,frameAverage=16.7,adaptiveTime=0,warmup=0;
-  const materials=new Map(),textures=new Map(),roughness=new Map(),lights=new Map(),ornaments=new Map(),watchers=[];
+  const materials=new Map(),textures=new Map(),surfaceDetails=new Map(),lights=new Map(),ornaments=new Map(),watchers=[];
   const originalShadows=new Map([moonlight,flashlight].filter(Boolean).map(light=>[light,{normalBias:light.shadow.normalBias,bias:light.shadow.bias,near:light.shadow.camera.near,far:light.shadow.camera.far}]));
   const pointPool=Array.from({length:4},()=>{const light=new THREE.PointLight(0xffffff,0,1);light.name='quality:nearby-light';light.visible=false;scene.add(light);return light;});
   const position=new THREE.Vector3(),cameraPosition=new THREE.Vector3();
   function applyMaterial(material){
     if(!materials.has(material)){
       const onDispose=()=>materials.delete(material);material.addEventListener('dispose',onDispose);
-      materials.set(material,{bumpMap:material.bumpMap,roughnessMap:material.roughnessMap,onDispose});
+      materials.set(material,{map:material.map,bumpMap:material.bumpMap,normalMap:material.normalMap,normalScale:material.normalScale?.clone(),roughnessMap:material.roughnessMap,onDispose});
     }
-    const original=materials.get(material),bump=id==='low'?null:original.bumpMap;
-    let detail=original.roughnessMap;
-    if(id==='high'&&material.userData.castleSurface){const kind=material.userData.castleSurface;if(!roughness.has(kind))roughness.set(kind,roughnessTexture(kind));detail=roughness.get(kind);}
-    if(material.bumpMap!==bump||material.roughnessMap!==detail){material.bumpMap=bump;material.roughnessMap=detail;material.needsUpdate=true;}
+    const original=materials.get(material),kind=material.userData.castleSurface;
+    let maps={map:original.map,bumpMap:id==='low'?null:original.bumpMap,normalMap:original.normalMap,roughnessMap:original.roughnessMap};
+    if(id==='high'&&kind){
+      if(!surfaceDetails.has(kind))surfaceDetails.set(kind,createCastleDetailMaps(kind));
+      maps={...surfaceDetails.get(kind),bumpMap:null};
+    }
+    for(const key of ['map','bumpMap','normalMap','roughnessMap'])if(material[key]!==maps[key]){material[key]=maps[key];material.needsUpdate=true;}
+    if(material.normalScale&&original.normalScale){if(id==='high'&&kind)material.normalScale.set(1,1);else material.normalScale.copy(original.normalScale);}
     for(const texture of [material.map,material.bumpMap,material.normalMap,material.roughnessMap])if(texture){
       if(!textures.has(texture)){
         const onDispose=()=>textures.delete(texture);texture.addEventListener('dispose',onDispose);textures.set(texture,{anisotropy:texture.anisotropy,onDispose});
@@ -102,7 +95,7 @@ export function createEscapeQuality({renderer,scene,moonlight,flashlight,mobile=
     pointPool.forEach(light=>light.visible=id==='low');
     applyObject(scene);lightWait=0;updateSize();
     if(id!=='high'&&effects){effects.dispose();effects=null;}
-    if(id!=='high'){roughness.forEach(texture=>texture.dispose());roughness.clear();}
+    if(id!=='high'){surfaceDetails.forEach(detail=>detail.dispose());surfaceDetails.clear();}
     startEffects();lastShadow=-Infinity;shadowPending=true;onChange(id);
   }
   function setQuality(next){
@@ -141,7 +134,7 @@ export function createEscapeQuality({renderer,scene,moonlight,flashlight,mobile=
   configure();watchRoot(scene);
   return {get id(){return id;},get preset(){return ESCAPE_QUALITY[id];},get resolutionScale(){return scale;},get needsShadowUpdate(){return shadowPending;},setQuality,render,applyObject,watchRoot,
     resize(w,h){width=Math.max(1,w);height=Math.max(1,h);updateSize();},invalidate(){shadowPending=true;lastShadow=-Infinity;},
-    dispose(){if(disposed)return;disposed=true;effects?.dispose();watchers.forEach(([root,listener])=>root.removeEventListener('childadded',listener));lights.forEach((mask,light)=>light.layers.mask=mask);ornaments.forEach((original,mesh)=>mesh.count=original.count);materials.forEach((original,material)=>{material.bumpMap=original.bumpMap;material.roughnessMap=original.roughnessMap;material.needsUpdate=true;material.removeEventListener('dispose',original.onDispose);});textures.forEach((value,texture)=>{texture.anisotropy=value.anisotropy;texture.removeEventListener('dispose',value.onDispose);});roughness.forEach(texture=>texture.dispose());pointPool.forEach(light=>light.removeFromParent());materials.clear();textures.clear();},
+    dispose(){if(disposed)return;disposed=true;effects?.dispose();watchers.forEach(([root,listener])=>root.removeEventListener('childadded',listener));lights.forEach((mask,light)=>light.layers.mask=mask);ornaments.forEach((original,mesh)=>mesh.count=original.count);materials.forEach((original,material)=>{for(const key of ['map','bumpMap','normalMap','roughnessMap'])material[key]=original[key];if(material.normalScale&&original.normalScale)material.normalScale.copy(original.normalScale);material.needsUpdate=true;material.removeEventListener('dispose',original.onDispose);});textures.forEach((value,texture)=>{texture.anisotropy=value.anisotropy;texture.removeEventListener('dispose',value.onDispose);});surfaceDetails.forEach(detail=>detail.dispose());surfaceDetails.clear();pointPool.forEach(light=>light.removeFromParent());materials.clear();textures.clear();},
   };
 }
 

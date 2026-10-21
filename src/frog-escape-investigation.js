@@ -20,6 +20,7 @@ export function roomContaining(rooms,point) {
 }
 
 export const BED_SEARCH={approach:2.65,lower:1.05,check:1.4,duration:2.15,reach:.85,catchAt:.66,rise:1.05};
+export const WARDROBE_SEARCH={prepare:1.2};
 
 export function chooseSearchKinds(alertness,random=Math.random) {
   const kinds=[];
@@ -31,7 +32,11 @@ export function chooseSearchKinds(alertness,random=Math.random) {
 }
 
 export function createRoomInvestigation({rooms,beds,interactables,navigation,actor,player,random,onEvent=()=>{}}) {
-  let visit=null,rememberedRoom=null;
+  let visit=null,rememberedRoom=null,preparingWardrobe=null;
+  function clearPreparation() {
+    if(preparingWardrobe?.wardrobeInspection===actor)delete preparingWardrobe.wardrobeInspection;
+    preparingWardrobe=null;
+  }
   const position=root=>{root.updateWorldMatrix(true,false);return root.getWorldPosition(new Vector3());};
   const furniture={bed:beds,wardrobe:interactables.filter(action=>action.hideVolume)};
   const rootOf=(kind,target)=>kind==='bed'?target.root:target.hideVolume.root;
@@ -65,11 +70,12 @@ export function createRoomInvestigation({rooms,beds,interactables,navigation,act
     else if(inside.z>room.maxZ)inside.z=room.maxZ-Math.min(1.7,(room.maxZ-room.minZ)/2);
     if(safe(inside))queue.push({kind:'route',point:inside});
     queue.push({kind:'exit',point:room.exit});
+    clearPreparation();
     visit={room,queue,index:0,phase:'approach',elapsed:0,travel:0,exact:!!exact};
     onEvent({stage:'begin',room:room.id,exact:!!exact,checks:queue.filter(task=>task.target).map(task=>task.kind)});
     return true;
   }
-  function next() {visit.index++;visit.phase='approach';visit.elapsed=0;visit.travel=0;}
+  function next() {clearPreparation();visit.index++;visit.phase='approach';visit.elapsed=0;visit.travel=0;}
   function tick(dt,move) {
     if(!visit)return null;
     const task=visit.queue[visit.index];
@@ -88,14 +94,25 @@ export function createRoomInvestigation({rooms,beds,interactables,navigation,act
         actor.yaw+=Math.max(-dt*4,Math.min(dt*4,turn));
         if(Math.abs(turn)>.06)return {state:'search',speed:0};
       }
-      visit.phase=task.kind==='bed'?'bed-search':task.kind==='wardrobe'?'cabinet-search':'look';visit.elapsed=0;
-      onEvent({stage:'inspect',kind:task.kind,fixtureId:task.target?.id});
+      visit.phase=task.kind==='bed'?'bed-search':task.kind==='wardrobe'?'cabinet-prepare':'look';visit.elapsed=0;
+      if(task.kind==='wardrobe') {
+        preparingWardrobe=task.target;preparingWardrobe.wardrobeInspection=actor;
+        onEvent({stage:'prepare',kind:task.kind,fixtureId:task.target.id});
+      }else onEvent({stage:'inspect',kind:task.kind,fixtureId:task.target?.id});
     }
     visit.elapsed+=dt;
     const elapsed=visit.elapsed,phase=visit.phase;
     if(phase==='look') {
       if(elapsed>1.25)next();
       return {state:'search',speed:0,look:true};
+    }
+    if(phase==='cabinet-prepare') {
+      // Stand facing the closed cabinet before reaching for it. This window
+      // also lets a hidden player counter from between the two door leaves.
+      if(elapsed+1e-8<WARDROBE_SEARCH.prepare)return {state:'cabinet-prepare',actionTime:elapsed,speed:0};
+      clearPreparation();visit.phase='cabinet-search';visit.elapsed=0;
+      onEvent({stage:'inspect',kind:'wardrobe',fixtureId:task.target.id});
+      return {state:'cabinet-search',actionTime:0,speed:0};
     }
     if(phase==='cabinet-search') {
       task.target.open=true;task.target.noiseOwner=actor;
@@ -118,7 +135,7 @@ export function createRoomInvestigation({rooms,beds,interactables,navigation,act
     return {state:phase,actionTime:elapsed,speed:0};
   }
   return {begin,tick,remember(point){rememberedRoom=roomContaining(rooms,point);},
-    clear(){visit=null;rememberedRoom=null;},cancel(){visit=null;},
+    clear(){clearPreparation();visit=null;rememberedRoom=null;},cancel(){clearPreparation();visit=null;},
     get active(){return !!visit;},get exact(){return !!visit?.exact;},
     get room(){return visit?.room??null;},
     get lookTarget(){
@@ -127,6 +144,6 @@ export function createRoomInvestigation({rooms,beds,interactables,navigation,act
       return player.hidingBed===task.target.id?{x:player.x,y:player.y+.42,z:player.z}:task.target.root.localToWorld(new Vector3(0,.42,-.12));
     },
     get prone(){return !!visit&&(visit.phase==='bed-search'&&visit.elapsed>=.75||visit.phase==='bed-reach'||visit.phase==='bed-rise'&&visit.elapsed<.75);},
-    get inspecting(){return !!visit&&['bed-search','bed-reach','bed-rise','cabinet-search'].includes(visit.phase);},
+    get inspecting(){return !!visit&&['bed-search','bed-reach','bed-rise','cabinet-prepare','cabinet-search'].includes(visit.phase);},
   };
 }

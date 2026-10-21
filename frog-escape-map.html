@@ -14,7 +14,7 @@
         <div><p class="escape-eyebrow">NAIWA · CASTLE ESCAPE</p><h1>奶蛙致死的爱</h1></div>
         <div class="escape-settings">
           <p class="escape-hint">拖动旋转 · 滚轮缩放 · 右键平移</p>
-          <div class="escape-settings-controls"><label for="escape-difficulty">游戏难度</label><select id="escape-difficulty" aria-describedby="escape-difficulty-help"><option value="easy">简单模式（Easy）</option><option value="normal" selected>普通模式（Normal）</option><option value="hard">困难模式（Hard）</option><option value="hacker">极限模式（Hacker）</option></select><label for="escape-quality">画质</label><select id="escape-quality"><option value="low">低画质 · Best Performance</option><option value="balanced" selected>中等画质 · Balanced</option><option value="high">高画质 · Best Quality</option></select><button id="escape-settings-button" type="button">设置 · Esc</button><button id="escape-new-run" type="button" aria-label="重新开始并重选难度" hidden>重新开始</button></div>
+          <div class="escape-settings-controls"><label for="escape-difficulty">游戏难度</label><select id="escape-difficulty" aria-describedby="escape-difficulty-help"><option value="easy">简单模式（Easy）</option><option value="normal" selected>普通模式（Normal）</option><option value="hard">困难模式（Hard）</option><option value="hacker">极限模式（Hacker）</option><option value="gunmu">　　模式（???）</option></select><label for="escape-quality">画质</label><select id="escape-quality"><option value="low">低画质 · Best Performance</option><option value="balanced" selected>中等画质 · Balanced</option><option value="high">高画质 · Best Quality</option></select><button id="escape-settings-button" type="button">设置 · Esc</button><button id="escape-new-run" type="button" aria-label="重新开始并重选难度" hidden>重新开始</button></div>
         </div>
       </header>
       <section class="escape-stage" aria-label="3D别墅地图">
@@ -27,6 +27,14 @@
         <div class="escape-left-hud">
           <div id="escape-status" class="escape-overlay escape-status" aria-live="polite">完整庭院 · 地下室 · 两层别墅</div>
           <div id="escape-pursuer-alert" class="escape-overlay escape-pursuer-alert" role="status" aria-live="polite"></div>
+          <section id="escape-guide" class="escape-guide" hidden aria-label="新手任务">
+            <header><span data-guide-heading>新手任务</span><span data-guide-count></span></header>
+            <progress data-guide-progress max="8" value="0" aria-label="新手任务进度"></progress>
+            <h2 data-guide-current></h2>
+            <p data-guide-hint></p>
+            <details><summary data-guide-summary>全部步骤与操作</summary><p data-guide-controls></p><ol data-guide-list></ol></details>
+            <span class="escape-sr-only" data-guide-announcement role="status" aria-live="polite" aria-atomic="true"></span>
+          </section>
         </div>
         <section id="escape-player-vitals" class="escape-player-vitals" aria-label="生命与体力">
           <div class="escape-vital-health">
@@ -56,6 +64,7 @@
         <div class="escape-crosshair" aria-hidden="true"></div>
         <p id="escape-walk-hint" class="escape-walk-hint"></p>
         <div id="escape-consume-progress" class="escape-consume-progress" hidden><span id="escape-consume-label"></span><progress id="escape-consume-meter" max="1.5" value="0" aria-label="进食进度"></progress></div>
+        <div id="escape-cut-progress" class="escape-consume-progress escape-cut-progress" hidden><span id="escape-cut-label"></span><progress id="escape-cut-meter" max="2.5" value="0" aria-label="剪切栅栏进度"></progress></div>
         <button id="escape-interact" class="escape-interact" type="button" hidden></button>
         <section class="escape-inventory" aria-label="七格物品栏">
           <span id="escape-inventory-selection" class="escape-sr-only" aria-live="polite">1 / 7</span>
@@ -106,7 +115,14 @@
           <button id="escape-fullscreen" type="button" aria-pressed="false">全屏 · F11</button><small id="escape-fullscreen-status" role="status" hidden></small>
         </fieldset>
         <fieldset class="escape-audio-options escape-quality-options"><legend>画质设置</legend><label for="escape-pause-quality">画质</label><select id="escape-pause-quality" aria-describedby="escape-quality-help"><option value="low">低画质 · Best Performance</option><option value="balanced" selected>中等画质 · Balanced</option><option value="high">高画质 · Best Quality</option></select><p id="escape-quality-help" role="status"></p></fieldset>
-        <fieldset class="escape-audio-options escape-difficulty-options"><legend>游戏难度</legend><label for="escape-pause-difficulty">游戏难度</label><select id="escape-pause-difficulty" aria-describedby="escape-difficulty-help"><option value="easy">简单模式（Easy）</option><option value="normal" selected>普通模式（Normal）</option><option value="hard">困难模式（Hard）</option><option value="hacker">极限模式（Hacker）</option></select><small id="escape-difficulty-help">难度仅能在开局前选择，开始后本局锁定。</small><p id="escape-capture-rule" role="status"></p></fieldset>
+        <fieldset class="escape-audio-options escape-look-options">
+          <legend>视角设置</legend>
+          <label for="escape-mouse-sensitivity">鼠标灵敏度 <output id="escape-mouse-sensitivity-value" for="escape-mouse-sensitivity">100%</output></label>
+          <input id="escape-mouse-sensitivity" type="range" min="25" max="300" step="5" value="100" aria-valuetext="100%" aria-describedby="escape-mouse-sensitivity-help" />
+          <small id="escape-mouse-sensitivity-help">默认 100%，调节后自动保存。</small>
+          <button id="escape-mouse-sensitivity-reset" type="button">恢复默认灵敏度</button>
+        </fieldset>
+        <fieldset class="escape-audio-options escape-difficulty-options"><legend>游戏难度</legend><label for="escape-pause-difficulty">游戏难度</label><select id="escape-pause-difficulty" aria-describedby="escape-difficulty-help"><option value="easy">简单模式（Easy）</option><option value="normal" selected>普通模式（Normal）</option><option value="hard">困难模式（Hard）</option><option value="hacker">极限模式（Hacker）</option><option value="gunmu">　　模式（???）</option></select><small id="escape-difficulty-help">难度仅能在开局前选择，开始后本局锁定。</small><p id="escape-capture-rule" role="status"></p></fieldset>
         <fieldset class="escape-audio-options">
           <legend>音效</legend>
           <label class="escape-audio-toggle"><input id="escape-sfx-enabled" type="checkbox" checked /> 开启环境与动作音效</label>

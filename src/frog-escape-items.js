@@ -37,7 +37,7 @@ export function dropPosition(player,world) {
 
 export function createItemModel(item){return item.type==='flashlight'?createFlashlightModel():createPropModel(item);}
 export function disposeItemModel(model) {
-  const geometry=new Set(),materials=new Set();model.traverse(child=>{if(child.isMesh){geometry.add(child.geometry);for(const material of [].concat(child.material))materials.add(material);}});
+  const geometry=new Set(),materials=new Set();model.traverse(child=>{if(child.isMesh||child.isLineSegments){geometry.add(child.geometry);for(const material of [].concat(child.material))materials.add(material);}});
   geometry.forEach(value=>value.dispose());materials.forEach(value=>value.dispose());
 }
 
@@ -87,7 +87,7 @@ export function createWorldItems(scene,world,seeds=[]) {
   }
   function breakItem(entry,impact) {
     const position=entry.body.position.clone(),velocity=entry.body.velocity.clone();entry.broken=true;entry.item.broken=true;brokenIds.add(entry.item.id);
-    const color=entry.item.kind==='egg'?0xe0d3a4:entry.item.type==='glass'?0x9db6bc:0xc3bba8;
+    const color=entry.item.kind==='egg'?0xffd83e:entry.item.type==='glass'?0x9db6bc:0xc3bba8;
     remove(entry);
     fragments(position,color,velocity,7,entry.item.id);
     scene.dispatchEvent({type:'escape-prop-break',item:entry.item,position:impact.point});
@@ -140,7 +140,7 @@ export function createWorldItems(scene,world,seeds=[]) {
       flight.velocity.y-=9.82*dt;flight.mesh.position.addScaledVector(flight.velocity,dt);flight.mesh.rotateX(dt*7);flight.mesh.rotateZ(dt*4);
       flight.mesh.traverse(mesh=>{if(mesh.material)mesh.material.opacity=Math.min(1,flight.remaining/.15);});
     }
-    // Quest props follow their actual moving drawer until picked up. Releasing
+    // Stored props follow their actual moving drawer until picked up. Releasing
     // the inventory item later creates an ordinary dynamic prop again.
     for(const entry of entries)if(entry.trackContainer) {
       const position=entry.mesh.getWorldPosition(new THREE.Vector3()),quaternion=entry.mesh.getWorldQuaternion(new THREE.Quaternion()),body=entry.body;

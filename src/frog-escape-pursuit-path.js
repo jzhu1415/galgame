@@ -11,6 +11,7 @@ class Heap {
 export function createPursuitPathfinder(navigation,{radius=.4,height=2.1,passages=()=>[]}={}) {
   const layers=[{id:0,y:-5.05,x:11.3,minZ:-7,maxZ:7},{id:1,y:.15,x:11.3,minZ:-7,maxZ:8.7},{id:2,y:5.15,x:9.6,minZ:-7,maxZ:8.8},{id:3,y:-.83,x:30,minZ:-30,maxZ:30}];
   const doorLeaves=new Set(navigation.doors.flatMap(door=>door.parts.map(part=>part.collider)));
+  const terrain=navigation.solids.filter(solid=>solid.walkableTerrain);
   let ignoredChairs=[];
   let buckets=new Map(),cache=new Map(),edges=new Map(),links=new Map(),revision=0,avoid=[],portalNodes=[],portalEdges=new Map();
   const geometryState=[];let stateIndex=0,stateChanged=false;
@@ -101,6 +102,13 @@ export function createPursuitPathfinder(navigation,{radius=.4,height=2.1,passage
     let y=-Infinity;
     if(layer.id===3&&!(Math.abs(x)<=9*houseWidthScale&&Math.abs(z)<=7)&&pointInPolygon(x,z,navigation.boundary))y=-.83;
     for(const surface of navigation.surfaces)if(Math.abs(surface.height-layer.y)<.25&&x>=surface.minX&&x<=surface.maxX&&z>=surface.minZ&&z<=surface.maxZ)y=Math.max(y,surface.height);
+    // Authored shallow basin treads are walkable terrain, unlike the pool wall
+    // or furniture. Using a flat garden height here made the entrance look
+    // impassable to A*, even though the physical player could walk through it.
+    for(const solid of terrain)if(Math.abs(solid.maxY-layer.y)<.65){
+      const dx=x-solid.x,dz=z-solid.z,ex=Math.max(Math.abs(dx*solid.axisX[0]+dz*solid.axisX[1])-solid.halfX,0),ez=Math.max(Math.abs(dx*solid.axisZ[0]+dz*solid.axisZ[1])-solid.halfZ,0);
+      if(ex*ex+ez*ez<radius*radius)y=Math.max(y,solid.maxY);
+    }
     return y;
   }
   function freeAt(x,y,z) {

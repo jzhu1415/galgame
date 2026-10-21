@@ -11,15 +11,41 @@ import {updateFixtureAction} from '../src/frog-escape-interactions.js';
 import {createPursuitPathfinder} from '../src/frog-escape-pursuit-path.js';
 import {setEscapeLanguage} from '../src/frog-escape-i18n.js';
 import {createNaiwaPursuer} from '../src/frog-escape-pursuer.js';
+import {createRunClues,MEMORABLE_FRONT_DOOR_CODES} from '../src/frog-escape-run-clues.js';
 
-const scene=new THREE.Scene(),castle=createEscapeScene(scene,{labels:false,random:()=>0});
+// Cover every friendly code, difficulty changes before play and the actual
+// canvas print. Hard/Hacker must still reach both ends of the original range.
+assert.equal(new Set(MEMORABLE_FRONT_DOOR_CODES).size,MEMORABLE_FRONT_DOOR_CODES.length);
+for(const code of MEMORABLE_FRONT_DOOR_CODES)assert(/^(\d)\1(\d)\2$/.test(code)||/^(\d\d)\1$/.test(code)||[...code].slice(1).every((digit,i)=>Number(digit)-Number(code[i])===1)||[...code].slice(1).every((digit,i)=>Number(digit)-Number(code[i])===-1));
+const printed=[];
+globalThis.document={createElement:()=>({getContext:()=>({fillRect(){},fillText(value){printed.push(value);}})})};
+for(let i=0;i<MEMORABLE_FRONT_DOOR_CODES.length;i++) {
+  const root=new THREE.Group(),key=new THREE.Group();root.add(key);
+  const actions=[0,1,2].map((n)=>{const anchor=new THREE.Group();root.add(anchor);return {id:String(n),amount:0,loot:{anchor,room:n===0?'master-bedroom':'kitchen'}};});
+  const seed={mesh:key,item:{kind:'shedKey',size:[.1,.1,.1]}};
+  let draws=0;const roll=(i+.1)/MEMORABLE_FRONT_DOOR_CODES.length;
+  const run=createRunClues({seeds:[seed],actions,frontDoor:{},random:()=>{draws++;return roll;},difficulty:'easy'});
+  assert.equal(run.code,MEMORABLE_FRONT_DOOR_CODES[i]);assert.equal(printed.at(-1),run.code);
+  run.configureDifficulty('normal');const keyContainer=run.keyContainer,noteContainer=run.noteContainer,drawsBefore=draws;
+  for(const difficulty of ['hard','hacker','normal','easy','normal']) {
+    run.configureDifficulty(difficulty);
+    assert.equal(run.code,difficulty==='easy'||difficulty==='normal'?MEMORABLE_FRONT_DOOR_CODES[i]:String(Math.floor(roll*10000)).padStart(4,'0'));
+    assert.equal(printed.at(-1),run.code,'printed paper uses the selected difficulty code');
+    assert.equal(run.noteContainer,noteContainer);
+  }
+  assert.equal(draws,drawsBefore+1,'switching out of Easy only redraws the key location, never the code');
+  assert(keyContainer);const frozenCode=run.code;run.beginRun();assert.equal(run.configureDifficulty('hard'),false);assert.equal(run.code,frozenCode);
+}
+delete globalThis.document;
+
+const scene=new THREE.Scene(),castle=createEscapeScene(scene,{labels:false,random:()=>0,difficulty:'hard'});
 const clues=castle.runClues,front=clues.frontDoor;
 assert.equal(clues.code,'0000');assert.equal(clues.noteContainer.loot.room,'master-bedroom');
 const chooseIndex=i=>{let call=0;return ()=>++call===1?.99999:call===2?0:(i+.1)/(clues.containers.length-1);};
 // Cover every valid randomized compartment, with real movable colliders and pickup rays.
 const locations=new Set();
 for(let i=0;i<clues.containers.length-1;i++) {
-  const scene=new THREE.Scene(),map=createEscapeScene(scene,{labels:false,random:chooseIndex(i)}),run=map.runClues,container=run.keyContainer;
+  const scene=new THREE.Scene(),map=createEscapeScene(scene,{labels:false,random:chooseIndex(i),difficulty:'hard'}),run=map.runClues,container=run.keyContainer;
   assert.equal(run.code,'9999');assert.notEqual(container,run.noteContainer);locations.add(container.id);
   assert.equal(map.pickupSeeds.filter(seed=>seed.item.kind==='shedKey').length,1);
   const items=createWorldItems(scene,map.navigation,map.pickupSeeds),entry=items.entries.find(e=>e.item.kind==='shedKey'),bag=createInventory();
@@ -50,7 +76,7 @@ for(const difficulty of ['easy','normal','hard','hacker']) {
   clues.configureDifficulty(difficulty);assert.equal(clues.keyContainer===null,difficulty==='easy');
   if(difficulty==='easy')assert.equal(clues.keySeed.mesh.parent.name,'fixture:toilet');
   else assert.notEqual(clues.keyContainer,clues.noteContainer);
-  assert.equal(clues.code,'0000');
+  assert.equal(clues.code,difficulty==='easy'||difficulty==='normal'?'2233':'0000');
 }
 clues.beginRun();assert.equal(clues.configureDifficulty('easy'),false);
 assert(!clues.submit('0'));assert(!clues.submit('1234'));assert(!front.open);assert(clues.submit('0000'));
@@ -115,7 +141,7 @@ for(const side of [-1,1]) {
   key('KeyE');assert(explorer.paused&&controls.get('#escape-code-dialog').open);
   const input=controls.get('#escape-code-input');input.value='1234';emit(controls.get('#escape-code-form'),'submit');assert(!door.open&&controls.get('#escape-code-error').textContent.includes('错误'));
   input.value='abc007xyz';emit(input,'input');assert.equal(input.value,'007');emit(controls.get('#escape-code-form'),'submit');assert(!door.open);
-  input.value='';for(const digit of map.runClues.code)emit(digits[Number(digit)],'click');assert.equal(input.value,'0007');
+  input.value='';for(const digit of map.runClues.code)emit(digits[Number(digit)],'click');assert.equal(input.value,'2233');
   emit(controls.get('#escape-code-form'),'submit');assert(door.open&&!explorer.paused&&!controls.get('#escape-code-dialog').open);
   // Opening from the other side still requires a new code after automatic closure.
   Object.assign(explorer.player,{x:0,y:-5.05,z:4});for(let i=0;i<420;i++)explorer.tick(1/60);assert(!door.open);
@@ -124,7 +150,7 @@ const note=map.runClues.noteContainer;note.open=true;updateFixtureAction(note,2,
 const notePoint=map.runClues.paper.getWorldPosition(new THREE.Vector3()),forward=new THREE.Vector3(0,0,1).applyQuaternion(note.loot.anchor.getWorldQuaternion(new THREE.Quaternion()));
 const viewer=notePoint.clone().addScaledVector(forward,.62);aim(notePoint,{x:viewer.x,y:5.15,z:viewer.z});
 assert(controls.get('#escape-interact').textContent.includes('放大查看'),`actual E target for ${note.id}: ${controls.get('#escape-interact').textContent}`);
-key('KeyE');assert(controls.get('#escape-note-dialog').open&&explorer.paused);assert.equal(controls.get('#escape-note-code').textContent,'0007');
+key('KeyE');assert(controls.get('#escape-note-dialog').open&&explorer.paused);assert.equal(controls.get('#escape-note-code').textContent,'2233');
 const hp=explorer.player.health,code=map.runClues.code;setEscapeLanguage('en');explorer.refreshLanguage();assert.equal(map.runClues.code,code);assert.equal(explorer.player.health,hp);
 emit(controls.get('#escape-note-dialog'),'cancel');assert(!explorer.paused&&document.activeElement===canvas);
 explorer.showMap();explorer.enter();assert.equal(map.runClues.code,code);assert.equal(explorer.setDifficulty('easy'),false);
@@ -135,4 +161,4 @@ explorer.showMap();explorer.audio.dispose();delete globalThis.document;delete gl
 const source=readFileSync('src/frog-escape-map.js','utf8');assert(source.includes('beds,runClues,escapeProgress,onMap'),'the real entry passes run clues to the explorer');
 const html=readFileSync('frog-escape-map.html','utf8'),gateCopy=html.slice(html.indexOf('id="escape-code-dialog"'),html.indexOf('id="escape-note-dialog"'));
 assert(gateCopy.includes('二楼有线索')&&!/主卧|床头|柜子/.test(gateCopy),'the gate only hints that the clue is upstairs');
-console.log('Passcode/yard OK: 0000–9999 strings, every random loot slot physically reachable, Easy toilet, no note/key overlap, stable run clues, code required on both sides, input and keypad, note E zoom, modal pause/focus/locale, safe auto-close at 30/60/144 FPS, continuous fences and a real route through the house.');
+console.log('Passcode/yard OK: every memorable Easy/Normal code and canvas print, unchanged Hard/Hacker range, stable difficulty/run clues, every random loot slot physically reachable, Easy toilet, no note/key overlap, code required on both sides, input and keypad, note E zoom, modal pause/focus/locale, safe auto-close at 30/60/144 FPS and continuous yard fences.');

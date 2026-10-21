@@ -400,7 +400,7 @@ aimAtPoint(placedPlate,propViewer);key('keydown','KeyE');assert.equal(explorer.i
 dispatch(canvas,'pointerdown',{button:2,pointerType:'mouse'});assert(!explorer.inventory.slots[1],'right click launches the selected prop');
 for(let frame=0;frame<100;frame++)explorer.tick(1/60);
 assert(explorer.worldItems.brokenIds.has(plateIdentity),'the thrown plate breaks after its physical impact');
-runClues.readNote(); // This regression's tool route starts after the mandatory clue; E reading is covered by the victory integration.
+runClues.readNote(); // Optional E reading and unread-note escape are covered by the victory integration.
 const chest=interactables.find(action=>action.id==='shed-tool-chest');
 const cuttersEntry=explorer.worldItems.entries.find(entry=>entry.item.kind==='boltCutters');
 assert(chest.locked&&!chest.content.visible&&!explorer.worldItems.pickup(cuttersEntry,explorer.inventory),'cutters cannot be picked through the locked lid');

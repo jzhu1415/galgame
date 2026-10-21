@@ -73,6 +73,11 @@ for(const fps of [25,60,144]) {
 }
 
 const test=setup();test.audio.setActive(true);test.audio.tick(0);
+for(const index of [0,1]) {
+  const before=test.mixer.calls.length;test.event('escape-fence-snip',{position:{x:0,y:1,z:-1},index});
+  assert.equal(test.mixer.calls.length,before+2,'each cutting squeeze plays its metal click and connector release');
+}
+{const before=test.mixer.calls.length;test.event('escape-fence-cut',{position:{x:0,y:1,z:-1}});assert.equal(test.mixer.calls.length,before+2,'the final snip has its own metal release');}
 for(const [kind,prefix] of [['glass','impactGlass'],['plate','impactPlate'],['fork','metalClink'],['bread','impactSoft'],['egg','impactSoft'],['milk','bookPlace']]) {
   const before=test.mixer.calls.length;test.event('escape-prop-impact',{item:propItem(kind,`hit-${kind}`),position:{x:1,y:1,z:0},speed:4,energy:4});
   assert(test.mixer.calls.at(-1).name.startsWith(prefix),`${kind} uses an appropriate material impact`);

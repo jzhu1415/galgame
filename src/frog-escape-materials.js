@@ -1,4 +1,33 @@
 import * as THREE from 'three';
+import {createCastleDetailMaps} from './frog-escape-surface-detail.js';
+
+// Furniture uses continuous timber and veined stone, independent of the
+// floorboard/masonry maps used by the building. Base maps remain lightweight.
+export function finishFurnitureMaterials(materials,{textures=typeof document!=='undefined'&&typeof document.createElement==='function'}={}) {
+  const families=[['furnitureWood','furnitureWood',0xd0b282,0xffffff],['furnitureTrim','furnitureWood',0xb1946b,0xcbb99e],['cabinetWood','cabinetWood',0x936c4a,0xffffff],['basementWood','cabinetWood',0x4b3423,0x78614c],['basementTrim','cabinetWood',0x322217,0x544331],['marble','marble',0xf4f2ed,0xffffff]];
+  const maps=new Map();
+  for(const [key,kind,color,tint]of families){
+    const material=materials[key];if(!material)continue;
+    material.userData.castleSurface=kind;material.userData.furnitureSurface=kind;material.color.setHex(color);
+    if(!textures)continue;
+    if(!maps.has(kind)){const detail=createCastleDetailMaps(kind,{size:128});maps.set(kind,detail.map);detail.normalMap.dispose();detail.roughnessMap.dispose();}
+    material.map=maps.get(kind);material.color.setHex(tint);
+  }
+}
+
+export function furnitureSurfaceUV(geometry,scaleX=1) {
+  const positions=geometry.getAttribute('position'),normals=geometry.getAttribute('normal'),bounds=geometry.parameters;
+  const width=(bounds.width??1)*scaleX,height=bounds.height??1,depth=bounds.depth??1,uv=new Float32Array(positions.count*2);
+  for(let i=0;i<positions.count;i++){
+    const x=positions.getX(i)*scaleX,y=positions.getY(i),z=positions.getZ(i);
+    let across,along;
+    if(Math.abs(normals.getY(i))>.5){[across,along]=width>=depth?[z,x]:[x,z];}
+    else if(Math.abs(normals.getX(i))>.5){[across,along]=height>=depth?[z,y]:[y,z];}
+    else {[across,along]=height>=width?[x,y]:[y,x];}
+    uv[i*2]=across*.5;uv[i*2+1]=along*.5;
+  }
+  geometry.setAttribute('uv',new THREE.BufferAttribute(uv,2));return geometry;
+}
 
 // Procedural surface patterns stay local to the 3D scene; no external image downloads.
 export function finishCastleMaterials(materials) {

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {castleSurfaceUV} from './frog-escape-materials.js';
 import {PLAYER_RADIUS,playerHeight} from './frog-escape-navigation.js';
+import {naiwaAttackDamage} from './frog-escape-vitals.js';
 
 // Work in metres even when the containing floor has a wider X scale.
 export function createCastleDoor({parent,id,name,x,z,y,width,height=2.48,openingHeight=height+.17,rotation=0,double=false,swing=1,wallDepth=.18,materials}) {
@@ -89,7 +90,7 @@ function applyDoorAmount(door,amount){
   door.amount=amount;
   for(const part of door.parts){part.pivot.rotation.y=-part.direction*door.swing*amount*Math.PI/2;syncDoorCollider(part);}
 }
-function boxesOverlap(a,b){
+export function boxesOverlap(a,b){
   if(a.minY>=b.maxY-.012||a.maxY<=b.minY+.012)return false;
   const dx=b.x-a.x,dz=b.z-a.z;
   for(const axis of [a.axisX,a.axisZ,b.axisX,b.axisZ]){
@@ -123,6 +124,15 @@ function openingHasRoom(door,navigation){
   }finally{applyDoorAmount(door,amount);}
   door.impactClearance=clear;door.impactClearanceWait=.2;return clear;
 }
+export function resolveOpeningImpact(door,operator,victim,direction) {
+  if(!operator||operator===victim||!victim.onDoorImpact||victim.hidden||victim.hidingBed||victim.hidingWardrobe)return null;
+  if(operator.kind==='pursuer'?victim.kind==='pursuer':victim.kind!=='pursuer')return null;
+  const impact={door,operator,victim,direction,distance:victim.kind==='pursuer'?2:4,
+    damage:victim.kind==='pursuer'?8:naiwaAttackDamage(10,'door',operator.alertness)};
+  if(victim.onDoorImpact(impact)===false)return null;
+  door.impactArmed=false;door.impactCooldown=victim.kind==='pursuer'?5:0;
+  return impact;
+}
 function tryDoorImpact(door,part,victim,navigation){
   const operator=door.openingActor??door.noiseOwner;
   if(!door.open||!door.impactArmed||!operator||operator===victim||!victim.onDoorImpact||victim.hidden||victim.hidingBed||victim.hidingWardrobe)return false;
@@ -131,9 +141,8 @@ function tryDoorImpact(door,part,victim,navigation){
   const hinge=part.pivot.getWorldPosition(new THREE.Vector3()),sign=-part.direction*door.swing;
   let dx=(victim.z-hinge.z)*sign,dz=-(victim.x-hinge.x)*sign,length=Math.hypot(dx,dz);
   if(length<.001){dx=door.normal[0]*door.swing;dz=door.normal[1]*door.swing;length=1;}
-  const impact={door,operator,victim,direction:{x:dx/length,z:dz/length},distance:victim.kind==='pursuer'?2:4,damage:victim.kind==='pursuer'?5:10};
-  if(victim.onDoorImpact(impact)===false)return false;
-  door.impactArmed=false;door.impactCooldown=victim.kind==='pursuer'?5:0;door.open=true;door.pressureActor=null;door.naiwaReachDelay=0;
+  const impact=resolveOpeningImpact(door,operator,victim,{x:dx/length,z:dz/length});if(!impact)return false;
+  door.open=true;door.pressureActor=null;door.naiwaReachDelay=0;
   if(door.autoCloseDelay){door.autoCloseWasOpen=true;door.autoCloseRemaining=door.autoCloseDelay;}
   applyDoorAmount(door,1);door.blocked=false;door.blockedBy=[];
   let scene=door.root;while(scene.parent)scene=scene.parent;

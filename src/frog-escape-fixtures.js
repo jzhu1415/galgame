@@ -3,6 +3,7 @@ import {castleStorage} from './frog-escape-storage.js';
 
 export function castleFixtures(box,mats,pickups) {
   const actions=[];
+  const furnitureWood=mats.furnitureWood??mats.wood,cabinetWood=mats.cabinetWood??mats.darkWood;
   const beds=[];
   const newels=new Set();
   function group(parent,name,x,y,z,angle=0) {
@@ -58,14 +59,14 @@ export function castleFixtures(box,mats,pickups) {
   }
   function bed(parent,x,z,foot,angle=0,width=2.35) {
     const g=group(parent,'furniture:bed',x,foot,z,angle);
-    for(const px of [-width/2+.1,width/2-.1])for(const pz of [-.94,.94])box(g,px,0,pz,.12,.9,.12,mats.darkWood);
-    box(g,0,.72,0,width,.19,2.15,mats.wood);
+    for(const px of [-width/2+.1,width/2-.1])for(const pz of [-.94,.94])box(g,px,0,pz,.12,.9,.12,cabinetWood);
+    box(g,0,.72,0,width,.19,2.15,furnitureWood);
     box(g,0,.91,0,width-.07,.25,2.1,mats.cloth);
     box(g,0,1.168,-.25,width-.025,.055,1.52,mats.rug,{solid:false});
-    box(g,0,.82,1.06,width+.08,.87,.12,mats.wood);
-    box(g,0,.99,1.135,width-.25,.48,.045,mats.darkWood,{solid:false});
+    box(g,0,.82,1.06,width+.08,.87,.12,cabinetWood);
+    box(g,0,.99,1.135,width-.25,.48,.045,furnitureWood,{solid:false});
     for(const px of [-width/2,width/2]) {
-      box(g,px,0,1.07,.13,1.77,.15,mats.darkWood);
+      box(g,px,0,1.07,.13,1.77,.15,cabinetWood);
       rounded(g,px,1.82,1.07,.09,.09,.09,mats.gold);
     }
     for(const px of [-width*.23,width*.23])rounded(g,px,1.24,.69,width*.2,.115,.23,mats.ceramic);
@@ -74,8 +75,13 @@ export function castleFixtures(box,mats,pickups) {
   }
   function bathroom(parent,foot) {
     const bath=group(parent,'fixture:bathtub',4.75,foot,.95);
-    box(bath,0,.13,0,2.08,.49,.83,mats.ceramic);
-    box(bath,0,.62,0,1.78,.018,.59,mats.water,{solid:false});
+    box(bath,0,.13,0,2.08,.12,.83,mats.ceramic);
+    for(const side of [-1,1]){
+      box(bath,0,.25,side*.385,2.08,.385,.06,mats.ceramic);
+      box(bath,side*1.005,.25,0,.07,.385,.71,mats.ceramic);
+    }
+    bath.userData.waterVolume={id:'bathtub',shape:'rectangle',width:1.88,depth:.64,surfaceY:.62,bottomY:.25};
+    mesh(bath,new THREE.CylinderGeometry(.065,.065,.008,16),mats.steel,-.65,.254,0);
     // Separate rim pieces surround the inset without sharing its top surface.
     for(const side of [-1,1]) {
       box(bath,0,.635,side*.39,2.12,.085,.1,mats.ceramic);
@@ -154,7 +160,7 @@ export function castleFixtures(box,mats,pickups) {
     const centerpiece=group(parent,'furniture:serving-bowl',3.8,foot+.903,-.2);centerpiece.scale.x=1/parent.scale.x;
     pickups.place(centerpiece,'bowl',0,0,0);
     for(let i=0;i<3;i++)pickups.place(centerpiece,'tomato',Math.cos(i*Math.PI*2/3)*.11,.122,Math.sin(i*Math.PI*2/3)*.11);
-    for(let i=0;i<3;i++)box(parent,3.35+i*.025,foot+.95+i*.055,3.5,.45,.045,.3,i%2?mats.rug:mats.cloth,{solid:false});
+    for(let i=0;i<3;i++)pickups.place(parent,'book',3.35+i*.025,foot+.941+i*.035,3.5);
   }
   const storage=castleStorage(box,mats,actions,{tube,mesh,rounded,lamp},pickups);
   return {actions,beds,bed,bedside,cabinet,bathroom,lamp,bulb,pendant,stairRailing,landingRailing,tableDetails,tube,mesh,rounded,

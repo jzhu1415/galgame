@@ -6,7 +6,7 @@ import {createPursuitPathfinder} from './frog-escape-pursuit-path.js';
 import {createObstacleRecovery} from './frog-escape-obstacle-recovery.js';
 import {searchLookPose} from './frog-escape-search-look.js';
 import {NAIWA_SKILLS,NAIWA_BED_PULL,standingOnBed,elevatedPlayerInReach,createSkillDisplacement,advanceSkillDisplacement} from './frog-escape-naiwa-skills.js';
-import {alertnessPhase,changeAlertness,itemAlertness,itemDamage,isSoftProjectile,damagePlayer,WAKE_ALERTNESS_REDUCTION,difficultyRules,projectileDamage,ESCAPE_DIFFICULTIES} from './frog-escape-vitals.js';
+import {alertnessPhase,displayAlertnessPhase,changeAlertness,itemAlertnessChange,itemDamage,isSoftProjectile,damagePlayer,naiwaAttackDamage,WAKE_ALERTNESS_REDUCTION,difficultyRules,displayAlertness,projectileDamage,ESCAPE_DIFFICULTIES} from './frog-escape-vitals.js';
 import {NAIWA_DEFENSE,incomingFromFront,flashlightHitsEyes} from './frog-escape-naiwa-defense.js';
 import {createRoomInvestigation,roomContaining} from './frog-escape-investigation.js';
 import {createEscapeNoise} from './frog-escape-noise.js';
@@ -25,7 +25,7 @@ export const naiwaPatrol=[
   {x:1,y:5.15,z:-5.2},{x:-1,y:-5.05,z:3.7},{x:3,y:-5.05,z:-4.8},{x:1.8,y:.15,z:5.6},
 ];
 const labels={patrol:'奶蛙正在巡逻',chase:'奶蛙发现了你！',search:'奶蛙正在附近搜寻',stunned:'奶蛙被击中，暂时踉跄',down:'奶蛙暂时倒地',grab:'奶蛙伸手抓你，快躲开！',caught:'奶蛙抓到了你',slam:'奶蛙高举右拳，快避开！',pull:'奶蛙伸出右手，快避开！'};
-Object.assign(labels,{'cabinet-search':'奶蛙正在打开衣柜搜查','bed-search':'奶蛙双手撑地，正在查看床底','bed-reach':'奶蛙伸出右手抓向床底！','bed-rise':'奶蛙正在从地上起身'});
+Object.assign(labels,{'cabinet-prepare':'奶蛙停在柜前，准备检查衣柜','cabinet-search':'奶蛙正在打开衣柜搜查','bed-search':'奶蛙双手撑地，正在查看床底','bed-reach':'奶蛙伸出右手抓向床底！','bed-rise':'奶蛙正在从地上起身'});
 labels.kick='奶蛙抬脚踹开挡路的椅子！';
 
 export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds=[],rooms=[],worldItems,player,onCatch=()=>{},onState=()=>{},random=Math.random,patrolRoute=naiwaPatrol,spawn={x:1.8,y:.15,z:5.6},difficulty='normal'}) {
@@ -35,11 +35,13 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
   let downCount=0,difficultyLocked=false,bananaSlip=null;
   let lastKnown=null,path=[],goal=null,routeIndex=0,dwell=0,planWait=0,stuck=0,mapLayer='all',disposed=false;
   let lookOrigin=null,lookTime=0,lookYaw=0,lookPitch=0;
+  let chaseTargetVisible=false;
   let skill=null,skillCooldown=0,nextSkill='slam',playerForce=null;
   let operation=null,kick=null,kickCooldown=0,doorForce=null;
   let frame=0,gravityFrame=-1,chairProgress=null,shadowStamp=-1;
   const chairAvoided=new Map();
   let runDifficulty=difficulty,alertness=difficultyRules(difficulty).initialAlertness;
+  Object.defineProperty(actor,'alertness',{get:()=>alertness});
   let holdDuration=.65,lastStruggle=-10,struggleAttempts=0;
   let flashlightSource=()=>null,lightLit=false,lightAmount=0,guardAmount=0,guardUntil=-1,lastPoseSpeed=0;
   const collider={x:actor.x,z:actor.z,radius:.4,minY:actor.y,maxY:actor.y+2.1,npc:true,enabled:()=>!disposed};actor.collider=collider;
@@ -63,7 +65,7 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     onEvent:event=>{if(event.stage==='inspect'&&event.kind==='wardrobe')startOperation(interactables.find(action=>action.id===event.fixtureId),true);scene.dispatchEvent({type:'escape-pursuer-investigation',actor,...event});}});
   let investigationTime=0,witnessedHide=null;
   const handWalking=()=>alertness>=70;
-  const stateLabel=state=>handWalking()?({slam:'奶蛙高举左脚，快避开！',pull:'奶蛙伸出左脚，快避开！',grab:'奶蛙用左脚抓你，快躲开！',kick:'奶蛙用左脚砸开挡路的椅子！'}[state]??labels[state]):labels[state];
+  const stateLabel=state=>state==='chase'?(isTransparent(alertness)?'奶蛙正在循着气息追踪你！':chaseTargetVisible?labels.chase:'奶蛙正在追踪你最后出现的位置'):handWalking()?({slam:'奶蛙高举左脚，快避开！',pull:'奶蛙伸出左脚，快避开！',grab:'奶蛙用左脚抓你，快躲开！',kick:'奶蛙用左脚砸开挡路的椅子！'}[state]??labels[state]):labels[state];
   function syncBodyProfile(){
     const height=handWalking()?NAIWA_HANDWALK.height:2.1;
     if(actor.standingHeight!==height){actor.standingHeight=height;planner.setHeight(height);path=[];goal=null;planWait=0;resolvedPassages=null;}
@@ -79,10 +81,10 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
         &&Math.hypot(x-player.x,z-player.z)<Math.hypot(actor.x-player.x,actor.z-player.z)-.000001};
   function publishAlertness(source) {
     syncBodyProfile();
-    scene.dispatchEvent({type:'escape-pursuer-alertness',value:alertness,phase:alertnessPhase(alertness),source,actor});
+    scene.dispatchEvent({type:'escape-pursuer-alertness',value:alertness,displayValue:displayAlertness(alertness,runDifficulty),phase:displayAlertnessPhase(alertness,runDifficulty),source,actor});
   }
   function addAlertness(amount,source) {
-    const before=alertness;alertness=changeAlertness(alertness,amount);
+    const before=alertness;alertness=difficultyRules(runDifficulty).fixedAlertness??changeAlertness(alertness,amount);
     if(alertness!==before)publishAlertness(source);
   }
   function transition(next) {
@@ -112,7 +114,7 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     onState({state:'stunned',text:'你挣脱了奶蛙，快跑！'});return true;
   }
   function startOperation(obstacle,wanted) {
-    if(!obstacle||obstacle.locked||obstacle.parts&&doorImpactLocked(obstacle))return;
+    if(!obstacle||obstacle.locked||doorImpactLocked(obstacle))return;
     if(wanted&&obstacle.parts&&!doorClosures.has(obstacle)) {
       const side=(actor.x-obstacle.x)*obstacle.normal[0]+(actor.z-obstacle.z)*obstacle.normal[1];
       doorClosures.set(obstacle,{side:Math.sign(side)||1,wait:0,started:time});
@@ -180,9 +182,10 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     }
     if(kick)kickAmount=THREE.MathUtils.smoothstep(kick.elapsed,0,.28)*(1-THREE.MathUtils.smoothstep(kick.elapsed,.35,.75));
     model.root.userData.interactionHands=!handWalking()&&reachTargets?Object.keys(reachTargets):[];
-    model.root.visible=mapLayer==='all'||mapLayer===layer;model.animate(dt,{speed,state,stun,lookYaw,lookPitch,lookTarget:investigation.lookTarget,actionTime:skill?.elapsed??kick?.elapsed??investigationTime,variant:skill?.bed?'bed':null,guardAmount:bedInspecting?0:guardAmount,lightAmount:bedInspecting?0:lightAmount,reachTargets,reachAmount,bodyLean,kickAmount,slipElapsed:bananaSlip?.elapsed??null,intelligent:alertnessPhase(alertness).id==='intelligent'&&!traversal.active,handWalking:handWalking()});
+    const invisible=!!difficultyRules(runDifficulty).invisible;
+    model.root.visible=!invisible&&(mapLayer==='all'||mapLayer===layer);model.animate(dt,{speed,state,stun,lookYaw,lookPitch,lookTarget:investigation.lookTarget,actionTime:skill?.elapsed??kick?.elapsed??investigationTime,variant:skill?.bed?'bed':null,guardAmount:bedInspecting?0:guardAmount,lightAmount:bedInspecting?0:lightAmount,reachTargets,reachAmount,bodyLean,kickAmount,slipElapsed:bananaSlip?.elapsed??null,intelligent:alertnessPhase(alertness).id==='intelligent'&&!traversal.active,handWalking:handWalking()});
     if(traversal.active){model.root.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),traversal.lean));model.root.position.y-=traversal.lean*.25/1.2;}
-    props.update(state);
+    props.update(state,{invisible});
   }
   function lightSpeedScale(){return !lightLit?1:alertnessPhase(alertness).id==='tangwang'?NAIWA_DEFENSE.tangwangLightSpeedScale:NAIWA_DEFENSE.lightSpeedScale;}
   function updateDefense(dt) {
@@ -270,14 +273,21 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     const slipWorld={...movement,blocked:(x,y,z,...args)=>actor.grounded&&movement.support(x,z,actor.y,.235)<actor.y-.25||movement.blocked(x,y,z,...args)};
     advancePlayer(actor,bananaSlip.x*distance,bananaSlip.z*distance,dt,slipWorld);gravityFrame=frame;
   }
+  function calmEgg(item) {
+    hitItems.set(item.id,time);addAlertness(itemAlertnessChange(item),'egg-hit');
+  }
   function hit({damage=0,item=null,origin=null,source='melee',velocity=null,position=null,onBlock=null,damageScale=1,shattered=false}={}) {
     const soft=source==='projectile'&&isSoftProjectile(item);
     const appliedDamage=item?itemDamage(item,source,damageScale,shattered):damage;
-    if(disposed||state==='down'||state==='caught'||investigation.prone||appliedDamage<=0||(!soft&&source!=='door'&&time-lastDamage<.3))return false;
+    const egg=source==='projectile'&&item?.kind==='egg';
+    if(disposed)return false;
+    if(state==='down'||state==='caught'||investigation.prone||appliedDamage<=0||(!soft&&source!=='door'&&time-lastDamage<.3)) {
+      if(egg)calmEgg(item);return false;
+    }
     const intelligent=alertness>=30;
     const blocked=intelligent&&state!=='stunned'&&!state.startsWith('bed-')&&item&&(source==='projectile'||source==='melee')
       &&incomingFromFront(actor,{origin,velocity})&&random()<(alertness>=100?NAIWA_DEFENSE.transparentBlockChance:alertness>=70?NAIWA_DEFENSE.tangwangBlockChance:NAIWA_DEFENSE.blockChance);
-    addAlertness(source==='door'?appliedDamage:itemAlertness(item,source),'hit');
+    if(egg)calmEgg(item);else addAlertness(source==='door'?appliedDamage:itemAlertnessChange(item,source),'hit');
     if(blocked) {
       guardUntil=time+NAIWA_DEFENSE.blockHold;guardAmount=Math.max(guardAmount,.45);onBlock?.();
       scene.dispatchEvent({type:'escape-pursuer-block',actor,item,source,position:position??{x:actor.x,y:actor.y+1.9,z:actor.z}});
@@ -299,7 +309,11 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     doorForce=createDoorDisplacement(actor,impact);return true;
   };
   const physical=worldItems.physics.addActor(actor,({entry,speed,position,velocity:incomingVelocity})=>{
-    if(!entry.thrown||speed<3||entry.isDebris)return;
+    if(disposed||entry.isDebris)return;
+    if(!entry.thrown||speed<3) {
+      if(entry.item.kind==='egg'&&speed>.6&&time-(hitItems.get(entry.item.id)??-100)>=1)calmEgg(entry.item);
+      return;
+    }
     if(time-(hitItems.get(entry.item.id)??-100)<1)return;
     hitItems.set(entry.item.id,time);
     const damage=projectileDamage(entry.item,speed,entry.damageScale??1);
@@ -345,7 +359,8 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
   const onBreak=event=>{
     if(disposed||!canHear(event.position,1.35))return;
     const near=Math.hypot(event.position.x-actor.x,event.position.y-actor.y-1,event.position.z-actor.z)<=6;
-    if(near)addAlertness(1,'nearby-break');
+    const calmingEgg=event.item?.kind==='egg'&&time-(hitItems.get(event.item.id)??-100)<1;
+    if(near&&!calmingEgg)addAlertness(1,'nearby-break');
     if(event.breakable?.kind==='window')addAlertness(3,'window-break');
     hear(event.position,1.35);
   };
@@ -353,15 +368,16 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
   scene.addEventListener('escape-prop-pickup',onPickup);
   scene.addEventListener('escape-prop-impact',onImpact);scene.addEventListener('escape-prop-break',onBreak);scene.addEventListener('escape-scenery-break',onBreak);
   scene.addEventListener('escape-noise',onNoise);scene.addEventListener('escape-player-land',onLand);scene.addEventListener('escape-melee-strike',onMelee);
-  function moveTowards(target,speed,dt,precise=false) {
+  function moveTowards(target,speed,dt,precise=false,liveTarget=false) {
     if(isTransparent(alertness))speed=TRANSPARENT.speed;
     speed*=lightSpeedScale();
     for(const [chair,until]of chairAvoided)if(until<=time)chairAvoided.delete(chair);
     planWait=Math.max(0,planWait-dt);
-    const changed=!goal||Math.hypot(target.x-goal.x,target.z-goal.z)>1.25||Math.abs(target.y-goal.y)>.8;
+    const changed=!goal||Math.hypot(target.x-goal.x,target.z-goal.z)>(liveTarget?.45:1.25)||Math.abs(target.y-goal.y)>.8;
+    if(liveTarget&&changed&&path[0]&&(path[0].x-actor.x)*(target.x-actor.x)+(path[0].z-actor.z)*(target.z-actor.z)<0)planWait=0;
     if((changed||!path.length||stuck>1.1)&&planWait===0) {
       const avoidedChairs=[...chairAvoided.keys()].flatMap(chair=>chair.colliders.map(solid=>({...solid,halfX:solid.halfX+.06,halfZ:solid.halfZ+.06})));
-      path=planner.findPath(actor,target,{avoidSolids:[...recovery.solids,...avoidedChairs]});goal={...target};planWait=.9;stuck=0;
+      path=planner.findPath(actor,target,{avoidSolids:[...recovery.solids,...avoidedChairs]});goal={...target};planWait=liveTarget?.2:.9;stuck=0;
     }
     while(path.length&&!path[0].traverse&&Math.hypot(path[0].x-actor.x,path[0].z-actor.z)<.06&&Math.abs(path[0].y-actor.y)<.26)path.shift();
     if(path.length>1&&!path[0].traverse&&!path[1].traverse&&Math.hypot(path[0].x-actor.x,path[0].z-actor.z)<.55
@@ -443,7 +459,7 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
       const facing=length<.01||(-Math.sin(actor.yaw)*dx-Math.cos(actor.yaw)*dz)/length>.45;
       const contactDistance=current.kind==='pull'?(handWalking()?model.getFootPositions().R:model.getHandPositions().L).distanceTo(pullContactTarget()):0;
       current.hit=facing&&elevatedPlayerInReach(actor,player,navigation,current.bed?NAIWA_BED_PULL.range:1.65)&&contactDistance<.55;
-      if(current.hit){playerForce=createSkillDisplacement(current.kind,actor,player,config);if(current.kind==='slam')damagePlayer(player,6,'slam');}
+      if(current.hit){playerForce=createSkillDisplacement(current.kind,actor,player,config);if(current.kind==='slam')damagePlayer(player,naiwaAttackDamage(6,'slam',alertness),'slam');}
       scene.dispatchEvent({type:'escape-pursuer-skill',kind:current.kind,stage:current.hit?'hit':'miss',actor,contactDistance});
     }
     if(current.kind==='pull'&&current.hit&&current.elapsed<config.impact+config.forceDuration) {
@@ -500,6 +516,8 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     if(closePassedDoors(dt)){updatePose(dt);return true;}
     const sensesTarget=isTransparent(alertness)&&(hasPlayerScent()||tracksPlayer());
     const sees=grace===0&&(sensesTarget||visiblePlayer());
+    const sightChanged=chaseTargetVisible!==sees;chaseTargetVisible=sees;
+    if(sightChanged&&state==='chase')onState({state,text:stateLabel(state)});
     if(sees&&!investigation.inspecting) {
       if(investigation.exact&&!player.hidingBed&&!player.hidingWardrobe){investigation.cancel();witnessedHide=null;}
       if(isTransparent(alertness)&&(player.hidingBed||player.hidingWardrobe)) {
@@ -511,6 +529,9 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
         if(target)observeHiding({kind:'wardrobe',target});
       }
       if(!investigation.exact){
+        // Visual contact takes priority over an old sound/patrol route and its
+        // temporary unsticking waypoint, even while the path cache is cooling.
+        if(state!=='grab'&&(state!=='chase'||sightChanged)){path=[];goal=null;planWait=0;stuck=0;recovery.pause();}
         investigation.cancel();witnessedHide=null;lastKnown={x:player.x,y:player.y,z:player.z};
         rememberedLanding=observedStairLanding(lastKnown,observedPoint,actor,navigation.stairs,rememberedLanding);observedPoint={...lastKnown};
         investigation.remember(rememberedLanding??player);memory=naiwaSenses(alertness).memory;searchTime=8;lostTravel=lostStall=0;if(state!=='grab')transition('chase');
@@ -559,7 +580,7 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
       if(Math.hypot(target.x-actor.x,target.z-actor.z)<.65&&Math.abs(target.y-actor.y)<.4){recovery.pause();dwell+=dt;if(dwell>.65){dwell=0;routeIndex++;path=[];goal=null;}}
       else speed=moveTowards(target,1.55,dt);
     }else if(state==='chase'&&lastKnown) {
-      speed=moveTowards(memory===0&&rememberedLanding?rememberedLanding:lastKnown,3.45*alertnessPhase(alertness).speedScale,dt);
+      speed=moveTowards(memory===0&&rememberedLanding?rememberedLanding:lastKnown,3.45*alertnessPhase(alertness).speedScale,dt,false,sees);
       lostStall=!sees&&speed<.04?lostStall+dt:0;
     }
     else if(state==='search') {
@@ -585,9 +606,9 @@ export function createNaiwaPursuer({scene,navigation,doors,interactables=[],beds
     lightLit=false;lightAmount=0;guardAmount=0;guardUntil=-1;lastPoseSpeed=0;model.reset?.();
     Object.assign(actor,spawn,{yaw:0,velocityY:0,grounded:true});time=0;grace=5;stun=0;health=difficultyRules(runDifficulty).naiwaHealth;lastDamage=-10;noiseCooldown=0;searchTime=0;memory=0;grabTime=0;
     if(!keepAlertness){downCount=0;difficultyLocked=false;}
-    lastKnown=null;path=[];goal=null;routeIndex=0;dwell=0;planWait=0;stuck=0;lookOrigin=null;lookTime=0;lookYaw=lookPitch=0;skill=null;playerForce=null;skillCooldown=0;nextSkill='slam';delete player.skillControlScale;releaseHold();recovery.reset();hitItems.clear();if(!keepAlertness)alertness=difficultyRules(runDifficulty).initialAlertness;publishAlertness('reset');transition('patrol');updatePose(0);worldItems.physics.syncActors();onState({state,text:stateLabel(state)});
+    lastKnown=null;path=[];goal=null;routeIndex=0;dwell=0;planWait=0;stuck=0;lookOrigin=null;lookTime=0;lookYaw=lookPitch=0;chaseTargetVisible=false;skill=null;playerForce=null;skillCooldown=0;nextSkill='slam';delete player.skillControlScale;releaseHold();recovery.reset();hitItems.clear();if(!keepAlertness)alertness=difficultyRules(runDifficulty).initialAlertness;publishAlertness('reset');transition('patrol');updatePose(0);worldItems.physics.syncActors();onState({state,text:stateLabel(state)});
   }
   updatePose(0);onState({state,text:stateLabel(state)});publishAlertness('initial');
-  return {actor,model,planner,tick,reset,hit,struggleJump,nearbyKey:(origin,direction)=>{const target=props.nearby(origin,direction);return target?{...target,available:state==='down'}:null;},pickupKey:(inventory,origin,direction)=>state==='down'&&props.take(inventory,origin,direction),reclaimKey(){props.reset();props.update(state);},get struggleTime(){return player.heldBy===actor&&holdDuration===1.5?Math.max(0,holdDuration-grabTime):0;},beginRun(){difficultyLocked=true;},setDifficulty(id,{restartOpening=false}={}){if(difficultyLocked||!Object.hasOwn(ESCAPE_DIFFICULTIES,id))return false;runDifficulty=id;if(restartOpening){health=difficultyRules(id).naiwaHealth;downCount=0;alertness=difficultyRules(id).initialAlertness;publishAlertness('difficulty-opening');}return true;},visiblePlayer,hear,observeHiding,setTrackingSource(source){trackingSource=typeof source==='function'?source:()=>false;},get crossingWindow(){return traversal.active;},get knowsPlayer(){return isTransparent(alertness)&&(hasPlayerScent()||tracksPlayer());},setFlashlightSource(source){flashlightSource=typeof source==='function'?source:()=>null;},setMapLayer(layer){mapLayer=layer;updatePose(0);},get state(){return state;},get health(){return health;},get alertness(){return alertness;},onPlayerWake(){addAlertness(-WAKE_ALERTNESS_REDUCTION,'player-wake');},get phase(){return alertnessPhase(alertness);},get stunTime(){return stun;},get graceTime(){return grace;},get path(){return path;},get lightExposed(){return lightLit;},get guarding(){return guardAmount>.01;},get movementSpeedScale(){return lightSpeedScale();},get investigating(){return investigation.active;},get prone(){return investigation.prone;},
+  return {actor,model,planner,tick,reset,hit,struggleJump,nearbyKey:(origin,direction)=>{const target=props.nearby(origin,direction);return target?{...target,available:state==='down'}:null;},pickupKey:(inventory,origin,direction)=>state==='down'&&props.take(inventory,origin,direction),reclaimKey(){props.reset();props.update(state,{invisible:!!difficultyRules(runDifficulty).invisible});},get struggleTime(){return player.heldBy===actor&&holdDuration===1.5?Math.max(0,holdDuration-grabTime):0;},beginRun(){difficultyLocked=true;},setDifficulty(id,{restartOpening=false}={}){if(difficultyLocked||!Object.hasOwn(ESCAPE_DIFFICULTIES,id))return false;runDifficulty=id;if(restartOpening){health=difficultyRules(id).naiwaHealth;downCount=0;alertness=difficultyRules(id).initialAlertness;publishAlertness('difficulty-opening');}updatePose(0);return true;},visiblePlayer,hear,observeHiding,setTrackingSource(source){trackingSource=typeof source==='function'?source:()=>false;},get crossingWindow(){return traversal.active;},get knowsPlayer(){return isTransparent(alertness)&&(hasPlayerScent()||tracksPlayer());},setFlashlightSource(source){flashlightSource=typeof source==='function'?source:()=>null;},setMapLayer(layer){mapLayer=layer;updatePose(0);},get state(){return state;},get health(){return health;},get alertness(){return alertness;},onPlayerWake(){addAlertness(-WAKE_ALERTNESS_REDUCTION,'player-wake');},get phase(){return displayAlertnessPhase(alertness,runDifficulty);},get stunTime(){return stun;},get graceTime(){return grace;},get path(){return path;},get lightExposed(){return lightLit;},get guarding(){return guardAmount>.01;},get movementSpeedScale(){return lightSpeedScale();},get investigating(){return investigation.active;},get prone(){return investigation.prone;},
     dispose(){disposed=true;traversal.reset();noise.dispose();scene.removeEventListener('escape-prop-pickup',onPickup);props.dispose();doorClosures.clear();vaseImpacts.clear();if(operation)operation.obstacle.naiwaReachDelay=0;operation=null;kick=null;investigation.clear();noise.reset();skill=null;playerForce=null;delete player.skillControlScale;releaseHold();recovery.reset();physical.remove();navigation.circles.splice(navigation.circles.indexOf(collider),1);model.dispose?.();model.root.removeFromParent();scene.removeEventListener('escape-prop-impact',onImpact);scene.removeEventListener('escape-prop-break',onBreak);scene.removeEventListener('escape-scenery-break',onBreak);scene.removeEventListener('escape-noise',onNoise);scene.removeEventListener('escape-player-land',onLand);scene.removeEventListener('escape-melee-strike',onMelee);}};
 }

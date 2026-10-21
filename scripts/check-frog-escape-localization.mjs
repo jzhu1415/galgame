@@ -7,7 +7,7 @@ import {createEscapeScene} from '../src/frog-escape-scene.js';
 import {createEscapeExplorer} from '../src/frog-escape-explorer.js';
 import {createNaiwaPursuer} from '../src/frog-escape-pursuer.js';
 import {createNavigation,createPlayer} from '../src/frog-escape-navigation.js';
-import {ESCAPE_DIFFICULTIES,difficultyRules,damagePlayer} from '../src/frog-escape-vitals.js';
+import {ESCAPE_DIFFICULTIES,difficultyRules,displayAlertness,damagePlayer} from '../src/frog-escape-vitals.js';
 import {propTypes} from '../src/frog-escape-props.js';
 
 const han=/\p{Script=Han}/u,english=source=>assert(!han.test(tr(source,{},'en')),`Missing English: ${source}`);
@@ -19,7 +19,7 @@ for(const [zh,en]of Object.entries(escapeEnglish)) {
   assert.deepEqual(keys(en),keys(zh),`Translation preserves all template fields: ${zh}`);
 }
 // Parse source literals and exercise actual generated fixture names as well.
-for(const name of ['explorer','pursuer','scene','props','items','objectives','hiding','vitals','map','run-clues','clue-dialogs','victory','stamina','transparent','quality','fullscreen']) {
+for(const name of ['explorer','pursuer','scene','props','items','objectives','hiding','vitals','map','run-clues','clue-dialogs','victory','stamina','transparent','quality','fullscreen','guide','cutting']) {
   const file=ts.createSourceFile(name,readFileSync(`src/frog-escape-${name}.js`,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
   function visit(node){if(ts.isStringLiteralLike(node)&&han.test(node.text)&&!['中文','切换为中文'].includes(node.text))english(node.text);ts.forEachChild(node,visit);}visit(file);
 }
@@ -27,7 +27,8 @@ const reference=createEscapeScene(new THREE.Scene(),{labels:false});
 for(const item of Object.values(propTypes))english(item.name);
 for(const item of [...reference.interactables,...reference.doors,...reference.pickupSeeds.map(seed=>seed.item),...reference.breakables])english(item.name);
 assert.equal(tr('未开智',{},'en'),'Fool');assert.equal(tr('已开智',{},'en'),'Nerd');assert.equal(tr('唐王模式',{},'en'),'Ninja');
-assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(rule=>rule.captureDamage),[20,30,50,100]);assert.equal(difficultyRules('unknown').captureDamage,30);
+assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(rule=>rule.captureDamage),[20,30,50,100,100]);assert.equal(difficultyRules('unknown').captureDamage,30);
+assert.deepEqual(Object.values(ESCAPE_DIFFICULTIES).map(rule=>rule.initialAlertness),[0,10,30,100,70]);
 
 const storage=new Map([['story-progress','do not touch']]),writes=[];
 Object.defineProperty(globalThis,'localStorage',{configurable:true,writable:true,value:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>{storage.set(key,value);writes.push(key);}}});
@@ -59,10 +60,12 @@ function setup(mode) {
   if(mode)assert(explorer.setDifficulty(mode));
   return {explorer,npc,controls,slots,status,reloads:()=>reloads};
 }
-for(const [mode,damage]of [['easy',20],['normal',30],['hard',50],['hacker',100]]) {
+for(const [mode,damage]of [['easy',20],['normal',30],['hard',50],['hacker',100],['gunmu',100]]) {
   const {explorer,npc,controls,slots,status,reloads}=setup(mode);
   assert.equal(explorer.difficulty,mode);assert.equal(controls.get('#escape-difficulty').value,mode);assert.equal(controls.get('#escape-pause-difficulty').value,mode);
   assert.equal(npc.alertness,difficultyRules(mode).initialAlertness,'difficulty configures the actual opening alertness');
+  explorer.refreshLanguage();assert.equal(controls.get('#escape-alertness-value').textContent,String(displayAlertness(difficultyRules(mode).initialAlertness,mode)),'the live HUD uses the selected difficulty’s displayed opening alertness');
+  assert.equal(controls.get('#escape-capture-rule').textContent,tr(mode==='gunmu'?'被抓基础扣血 {damage}；警觉固定为 {alertness}。':'被抓基础扣血 {damage}；开局警觉 {alertness}。醒来后警觉 -10。',{damage,alertness:displayAlertness(difficultyRules(mode).initialAlertness,mode)}),'the rule text displays the same opening value');
   explorer.enter();for(let i=0;npc.alertness<70&&i<20;i++){npc.hit({damage:.0001});for(let frame=0;frame<7;frame++)npc.tick(.05);}assert(npc.alertness>=70);npc.reset({keepAlertness:true});const startingAlertness=npc.alertness;
   if(mode==='normal') {
     const event=new Event('keydown',{cancelable:true});Object.defineProperties(event,{code:{value:'Space'},target:{value:{closest:selector=>selector.includes('select')?{}:null}}});
@@ -81,7 +84,7 @@ for(const [mode,damage]of [['easy',20],['normal',30],['hard',50],['hacker',100]]
   assert.deepEqual({x:explorer.player.x,y:explorer.player.y,z:explorer.player.z},position,'language changes preserve position');assert.equal(explorer.inventory.slots[0],item);assert.equal(item.on,false);assert.equal(npc.alertness,startingAlertness);assert.equal(explorer.player.health,100-damage);
   setEscapeLanguage('zh');explorer.refreshLanguage();assert.equal(slots[0].querySelector('[data-item-name]').textContent,'手电筒');
   explorer.showMap();explorer.enter();assert(explorer.paused&&explorer.captured,'map and language controls cannot bypass capture');
-  if(mode==='hacker') {
+  if(mode==='hacker'||mode==='gunmu') {
     assert(explorer.gameOver);explorer.restartPosition();assert.equal(reloads(),1);assert.equal(npc.alertness,startingAlertness,'a lethal capture does not produce a wake-up');
   }else {
     assert.equal(explorer.player.x,-6.25);assert.equal(explorer.player.y,-5.05);assert.equal(npc.alertness,startingAlertness);
@@ -94,11 +97,28 @@ for(const [mode,damage]of [['easy',20],['normal',30],['hard',50],['hacker',100]]
   }
   assert(!explorer.setDifficulty('invalid'));assert.equal(explorer.difficulty,mode);npc.dispose();
 }
-storage.set('naiwa-escape-difficulty-v1','hard');{const {explorer,npc}=setup();assert.equal(explorer.difficulty,'hard','difficulty survives reloads');npc.dispose();}
+for(const [mode,opening]of [['easy',0],['normal',10],['hard',30],['hacker',100],['gunmu',70]]) {
+  storage.set('naiwa-escape-difficulty-v1',mode);const {explorer,npc,controls,reloads}=setup();assert.equal(explorer.difficulty,mode,'difficulty survives reloads');assert.equal(npc.alertness,opening,'a new run restores the saved difficulty’s opening alertness');
+  explorer.enter();assert.equal(controls.get('#escape-alertness-value').textContent,String(displayAlertness(opening,mode)));explorer.showMap();explorer.enter();explorer.pause();assert.equal(npc.alertness,opening,'pause, map and resume preserve opening alertness');
+  const restart=controls.get('#escape-pause-new-run');restart.dispatchEvent(new Event('click'));assert.equal(reloads(),1,'new run requests a complete reload');npc.dispose();
+}
 storage.set('naiwa-escape-difficulty-v1','bad');{const {explorer,npc}=setup();assert.equal(explorer.difficulty,'normal','invalid old preferences safely use Normal');npc.dispose();}
+{
+  const {explorer,npc,controls}=setup('gunmu');
+  for(const locale of ['en','zh','en','zh']) {
+    setEscapeLanguage(locale);explorer.refreshLanguage();
+    for(const selector of ['#escape-difficulty','#escape-pause-difficulty'])assert.equal(controls.get(selector).querySelector('option[value="gunmu"]').textContent,locale==='en'?'???':'\u3000\u3000模式（???）','language changes preserve the exact missing mode name');
+    assert.equal(controls.get('#escape-alertness-phase').textContent,locale==='en'?'Invisibility':'滚木模式','the mode status has its own localized name');
+    assert.equal(controls.get('#escape-alertness-value').textContent,'6767');assert.equal(controls.get('#escape-vitals').dataset.phase,'tangwang');
+  }
+  explorer.enter();explorer.player.effects={milk:30};explorer.capture();
+  assert.equal(explorer.player.health,50);assert(!explorer.gameOver);assert(controls.get('#escape-caught-description').textContent.includes('6767'));
+  explorer.restartPosition();assert.equal(npc.alertness,70);assert.equal(controls.get('#escape-alertness-value').textContent,'6767');assert(!npc.model.root.visible);
+  npc.hit({damage:1,source:'door'});explorer.refreshLanguage();assert.equal(controls.get('#escape-alertness-value').textContent,'6767');npc.dispose();
+}
 // Blocked storage must still allow live choices, capture, waking and language.
 globalThis.localStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};
-{const {explorer,npc}=setup('easy');setEscapeLanguage('en');explorer.refreshLanguage();explorer.enter();explorer.capture();assert.equal(explorer.player.health,80);explorer.restartPosition();assert.equal(npc.alertness,0,'wake reduction clamps at zero');npc.dispose();}
+{const {explorer,npc,controls}=setup('easy');setEscapeLanguage('en');explorer.refreshLanguage();assert.equal(npc.alertness,0);assert.equal(controls.get('#escape-alertness-value').textContent,'0');explorer.enter();explorer.capture();assert.equal(explorer.player.health,80);explorer.restartPosition();assert.equal(npc.alertness,0,'wake reduction clamps at zero');npc.dispose();}
 assert.equal(storage.get('story-progress'),'do not touch');assert(writes.every(key=>['naiwa-language-override-v1','naiwa-escape-difficulty-v1'].includes(key)),'preferences never write story saves');
 setEscapeLanguage('zh');
 // The former interior cubes are gone. Every trim vertex stays outside at least
