@@ -339,11 +339,13 @@ export const mainlineOctoberRelease = {
 }
 
 export const latestRelease = {
-  id: '2026-10-20-mainline-escape-sync',
-  date: '2026-10-20',
-  title: { zh: '主线同步 · 逃脱游戏与手机体验', en: 'Escape gameplay and mobile reading' },
-  intro: { zh: '本次整合奶蛙致死的爱的玩法与场景更新，以及主线的手机阅读、快捷开始和镜馆优化。', en: 'This update brings together new Naiwa escape gameplay and scenery with mobile reading, easier Play entrances and mirror-hall improvements.' },
+  id: '2026-10-21-ice-pool-performance-sync',
+  date: '2026-10-21',
+  title: { zh: '冰馆 · 更轻的光影与加载', en: 'Mirror hall · Lighter rendering and loading' },
+  intro: { zh: '第二章同步 Pool 参考版的渲染与加载优化，保留水晶、镜面和现有探索路线。', en: 'Chapter Two adopts rendering and loading improvements from Pool while keeping its crystals, mirrors and exploration routes.' },
   items: [
+    { tag: 'ICE HALL', title: { zh: '按屏幕分配渲染开销', en: 'Rendering sized to your screen' }, body: { zh: '各档画质新增大屏像素预算，平衡档使用更轻的泛光；全屏与旋转屏幕后重新匹配反射尺寸，保留原有四档画质。', en: 'Each graphics preset now caps large-screen rendering work. Balanced uses lighter bloom, and reflections resize after fullscreen or screen rotation. All four presets remain available.' } },
+    { tag: 'LIGHT & SOUND', title: { zh: '远景过渡与渐进音效', en: 'Distant haze and progressive audio' }, body: { zh: '同步天窗天空的遮挡处理与远景雾边界。脚步和水花音效优先加载，已就绪的音效可以先播放；保留水晶按区域加载。', en: 'Skylight skies now respect room occlusion, with a fog boundary behind distant openings. Footsteps and splashes load first, and ready sounds can play while others load. Crystals continue to stream by area.' } },
     naidanEscapeRelease.items[0],
     naidanEscapeRelease.items[1],
     naidanEscapeRelease.items[2],

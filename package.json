@@ -100,7 +100,9 @@
     "check:ice-replay-lifecycle": "node scripts/check-ice-replay-lifecycle.mjs",
     "check:ice-page-lifecycle": "node scripts/check-ice-page-lifecycle.mjs",
     "build:escape": "node scripts/build-escape-site.mjs",
-    "check:escape-site": "node scripts/check-escape-site.mjs"
+    "check:escape-site": "node scripts/check-escape-site.mjs",
+    "check:ice-pool-sync": "node scripts/check-ice-pool-sync.mjs",
+    "check:ice-audio-loading": "node scripts/check-ice-audio-loading.mjs"
   },
   "dependencies": {
     "cannon-es": "0.20.0",
