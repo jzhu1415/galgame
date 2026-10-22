@@ -5,8 +5,7 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 import { Reflector } from 'three/addons/objects/Reflector.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { referencePixelRatio, ReferenceBloomPass } from './reference-rendering.js';
-import { createFogBoundary } from './reference-fog.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { SpatialCellCache, ScrollingDepthField, freezeStaticWorld, FrameCadence } from './reference-performance.js';
@@ -139,8 +138,6 @@ let firstQualityPending = !qualityChosen;
 const QUALITY_PRESETS = {
   high: {
     pixelRatio: isCompactViewport ? 1.2 : 1.65,
-    maxPixels: 3840 * 2160,
-    bloomScale: 1,
     waterReflectionFps: Infinity,
     waterReflectionScale: isCompactViewport ? 0.68 : 0.78,
     waterReflectionStrength: 1,
@@ -150,8 +147,6 @@ const QUALITY_PRESETS = {
   },
   balanced: {
     pixelRatio: isCompactViewport ? 1.1 : 1.35,
-    maxPixels: 2560 * 1440,
-    bloomScale: .5,
     waterReflectionFps: Infinity,
     waterReflectionScale: isCompactViewport ? 0.48 : 0.54,
     waterReflectionStrength: 0.88,
@@ -161,8 +156,6 @@ const QUALITY_PRESETS = {
   },
   performance: {
     pixelRatio: 1,
-    maxPixels: 1920 * 1080,
-    bloomScale: .5,
     waterReflectionFps: 0,
     waterReflectionScale: 0.4,
     waterReflectionStrength: 0,
@@ -172,8 +165,6 @@ const QUALITY_PRESETS = {
   },
   ultra: {
     pixelRatio: .65,
-    maxPixels: 1280 * 720,
-    bloomScale: .5,
     waterReflectionFps: 0,
     waterReflectionScale: .2,
     waterReflectionStrength: 0,
@@ -216,7 +207,7 @@ const renderer = new THREE.WebGLRenderer({
   stencil: false,
 });
 renderer.setSize(initialViewport.width, initialViewport.height, false);
-renderer.setPixelRatio(referencePixelRatio(initialViewport, qualitySettings, window.devicePixelRatio));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, qualitySettings.pixelRatio));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.82;
@@ -1128,12 +1119,6 @@ function updateWaterCaptureSeal() {
 
 updateWaterCaptureSeal();
 
-// Pool's open-top boundary conceals the streamed edge with a tone-mapped
-// surface. Keep the hall's existing fog density and nearby clue visibility.
-const distanceFogBoundary = createFogBoundary(scene, { chunkSize: CHUNK_SIZE, viewRadius: VIEW_RADIUS });
-distanceFogBoundary.update(chunks.centerX, chunks.centerZ);
-if (import.meta.hot) import.meta.hot.dispose(() => distanceFogBoundary.dispose());
-
 const WATER_SURFACE_SIZE = CHUNK_SIZE * (VIEW_RADIUS * 2 + 1) + 32;
 const WATER_FIELD_RESOLUTION = WATER_SURFACE_SIZE;
 const MAX_POOL_DEPTH = 3;
@@ -1856,14 +1841,13 @@ const composer = new EffectComposer(renderer);
 composer.setPixelRatio(renderer.getPixelRatio());
 composer.setSize(initialViewport.width, initialViewport.height);
 composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new ReferenceBloomPass(
+const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(initialViewport.width, initialViewport.height),
   0.08,
   0.5,
   1.04,
 );
 bloomPass.enabled = qualitySettings.bloom;
-bloomPass.resolutionScale = qualitySettings.bloomScale;
 composer.addPass(bloomPass);
 composer.addPass(new OutputPass());
 mistGeometry.setDrawRange(0, Math.round(mistCount * qualitySettings.mistRatio));
@@ -1873,9 +1857,16 @@ function applyQualityPreset(presetName, persist = true) {
   qualitySettings = QUALITY_PRESETS[qualityPresetName];
   renderer.transmissionResolutionScale = qualityPresetName === 'ultra' ? .25 : qualityPresetName === 'performance' ? .5 : 1;
   qualityPresetInput.value = qualityPresetName;
+  const viewport = getViewportSize();
+  const pixelRatio = Math.min(window.devicePixelRatio, qualitySettings.pixelRatio);
+  renderer.setPixelRatio(pixelRatio);
+  renderer.setSize(viewport.width, viewport.height, false);
+  composer.setPixelRatio(pixelRatio);
+  composer.setSize(viewport.width, viewport.height);
   bloomPass.enabled = qualitySettings.bloom;
-  resize();
   mistGeometry.setDrawRange(0, Math.round(mistCount * qualitySettings.mistRatio));
+  const reflectionSize = getWaterReflectionSize(viewport);
+  waterReflector.getRenderTarget().setSize(reflectionSize.width, reflectionSize.height);
   waterUniforms.reflectionStrength.value = qualitySettings.waterReflectionStrength;
   poolLighting.setQuality(qualityPresetName);
   audioSystem.setQuality(qualityPresetName === 'ultra' ? 'performance' : qualityPresetName);
@@ -2555,15 +2546,8 @@ function resize() {
   const viewport = getViewportSize();
   camera.aspect = viewport.width / viewport.height;
   camera.updateProjectionMatrix();
-  const pixelRatio = referencePixelRatio(viewport, qualitySettings, window.devicePixelRatio);
-  renderer.setPixelRatio(pixelRatio);
   renderer.setSize(viewport.width, viewport.height, false);
-  bloomPass.resolutionScale = qualitySettings.bloomScale;
-  composer.setPixelRatio(pixelRatio);
   composer.setSize(viewport.width, viewport.height);
-  const reflectionSize = getWaterReflectionSize(viewport);
-  waterReflector.getRenderTarget().setSize(reflectionSize.width, reflectionSize.height);
-  lastWaterReflectionAt = -Infinity;
 }
 
 let resizeFrame = 0;
@@ -2851,7 +2835,6 @@ const disposeWorldOnPageHide = event => {
   if (event.persisted) return;
   firstQualityPicker.dispose();
   iceChapterLayer.dispose();
-  distanceFogBoundary.dispose();
   window.removeEventListener('pagehide', disposeWorldOnPageHide);
 };
 window.addEventListener('pagehide', disposeWorldOnPageHide);
@@ -2890,7 +2873,6 @@ function render(frameTime = performance.now()) {
   }
   updateFloatingObjects(delta);
   const chunksChanged = chunks.update(camera.position);
-  distanceFogBoundary.update(chunks.centerX, chunks.centerZ);
   updateSkylightLights(chunksChanged);
   poolLighting.update(delta, camera, chunks.chunks, chunksChanged,
     Number(lightBrightnessInput.value) / 100);

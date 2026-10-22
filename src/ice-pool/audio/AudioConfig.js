@@ -11,10 +11,7 @@ export const AUDIO_CONFIG = {
   sends: { FOOTSTEP: 0.42, WATER: 0.3, AMBIENCE: 0.12, SPATIAL: 0.55 },
   devPlaceholder: true, // additionally gated by import.meta.env.DEV; never ships as sound
   debug: false, // opt in with ?audioDebug=1 during development
-  loading: {
-    concurrency: 4, timeoutMs: 8000,
-    priorityPools: ['WET_TILE_STEPS', 'RUN_STEPS', 'SPLASH_SMALL', 'SPLASH_LARGE'],
-  },
+  loading: { concurrency: 4, timeoutMs: 8000 },
   voices: { total: 24, FOOTSTEP: 3, WATER: 4, SPATIAL: 4, AMBIENCE: 4 },
   fade: { loop: 0.24, stop: 0.12, pause: 0.25, mute: 0.15 },
   pauseAmbience: 0.16,

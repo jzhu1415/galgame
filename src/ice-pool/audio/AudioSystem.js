@@ -11,11 +11,6 @@ import { UnderwaterAudio } from './UnderwaterAudio.js';
 const ACTIVE_SYSTEM = Symbol.for('poolrooms.reference.audio');
 const dev = Boolean(import.meta.env?.DEV);
 
-function sampleIdentity(sample) {
-  if (typeof sample?.url !== 'string') return sample;
-  return JSON.stringify([sample.url, sample.loopStart ?? null, sample.loopEnd ?? null]);
-}
-
 export class AudioSystem {
   constructor({ camera, scene, mobile = false, quality = 'balanced', config = AUDIO_CONFIG,
     environmentProvider = () => [], eventTarget = globalThis.document, singleton = true }) {
@@ -106,15 +101,7 @@ export class AudioSystem {
     this.underwater.filter.connect(this.master);
     this.master.connect(this.pauseGain);
     this.pauseGain.connect(this.listener.getInput());
-    this.assets = new AudioAssets(this.context, {
-      config: this.config,
-      dev,
-      onPoolReady: () => {
-        if (this.disposed || this.ready) return;
-        this.ready = true;
-        this.needsReset = true;
-      },
-    });
+    this.assets = new AudioAssets(this.context, { config: this.config, dev });
     this.reverb = new ReverbSystem(this.context, {
       output: this.reverbVolume, dryGain: this.dryGain, assets: this.assets, config: this.config,
     });
@@ -241,19 +228,11 @@ export class AudioSystem {
   selectSample(name, { cooldown = 0, rateRange = [1, 1], gainRange = [1, 1] } = {}) {
     const samples = this.assets.getPool(name);
     if (!samples.length) return null;
-    const previous = this.pools.get(name) ?? { index: -1, sampleIdentity: undefined, time: -Infinity };
+    const previous = this.pools.get(name) ?? { index: -1, time: -Infinity };
     if (this.context.currentTime - previous.time < cooldown) return null;
-    const candidates = samples.map((sample, index) => ({ sample, index }))
-      .filter(({ sample }) => sampleIdentity(sample) !== previous.sampleIdentity);
-    const available = candidates.length ? candidates : samples.map((sample, index) => ({ sample, index }));
-    const selected = available[Math.floor(Math.random() * available.length)];
-    return {
-      sample: selected.sample,
-      index: selected.index,
-      sampleIdentity: sampleIdentity(selected.sample),
-      rate: randomRange(rateRange),
-      gain: randomRange(gainRange),
-    };
+    let index = Math.floor(Math.random() * (samples.length - (previous.index >= 0 && samples.length > 1 ? 1 : 0)));
+    if (samples.length > 1 && previous.index >= 0 && index >= previous.index) index += 1;
+    return { sample: samples[index], index, rate: randomRange(rateRange), gain: randomRange(gainRange) };
   }
 
   createVoice(sample, options) {
@@ -288,11 +267,7 @@ export class AudioSystem {
       ...options, bus, gain: (options.gain ?? 1) * selection.gain,
       rate: (options.rate ?? 1) * selection.rate,
     });
-    if (voice) this.pools.set(name, {
-      index: selection.index,
-      sampleIdentity: selection.sampleIdentity,
-      time: this.context.currentTime,
-    });
+    if (voice) this.pools.set(name, { index: selection.index, time: this.context.currentTime });
     return voice;
   }
 

@@ -16,7 +16,6 @@ const SKY_VERTEX_SHADER = /* glsl */`
   void main() {
     vSkyDirection = normalize(position);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    gl_Position.z = gl_Position.w;
   }
 `;
 
@@ -295,14 +294,14 @@ export function createSkylightSky({ scene = null, camera = null, radius = SKY_RA
     vertexShader: SKY_VERTEX_SHADER,
     fragmentShader: SKY_FRAGMENT_SHADER,
     side: THREE.BackSide,
-    depthTest: true,
+    depthTest: false,
     depthWrite: false,
     fog: false,
     toneMapped: true,
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = 'SkylightSkyDome';
-  mesh.renderOrder = 1000;
+  mesh.renderOrder = -1000;
   mesh.frustumCulled = false;
   mesh.userData.skylightSky = true;
   mesh.onBeforeRender = (_renderer, _scene, renderCamera) => {
