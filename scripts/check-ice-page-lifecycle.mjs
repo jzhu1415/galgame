@@ -7,6 +7,7 @@ import { TestElement, fire, noop } from './ice-lifecycle-test-utils.mjs';
 import { createIceChapterLayer, ROUTE_POINTS } from '../src/ice-pool/ice-chapter-layer.js';
 import { bindIceHoldButton } from '../src/ice-pool/ice-input.js';
 import { bindIceQualityPicker } from '../src/ice-pool/ice-quality-picker.js';
+import { createFogBoundary } from '../src/ice-pool/reference-fog.js';
 import { ICE_LAYOUT } from '../src/ice-pool/ice-progression.js';
 
 const source = readFileSync(new URL('../src/ice-pool/reference-map.js', import.meta.url), 'utf8');
@@ -22,6 +23,9 @@ function setup({ pendingQuality = false, storyPaused = false, menuPaused = false
   globalThis.window = Object.assign(new EventTarget(), { devicePixelRatio: 1, location: { origin: 'https://game.example' },
     parent: { postMessage: message => messages.push(message) }, matchMedia: () => ({ matches: false }) });
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(), canvas = new TestElement('canvas'), messages = [];
+  scene.fog = new THREE.FogExp2(0x78a8c4, .049);
+  const fogBoundary = createFogBoundary(scene, { chunkSize: 16, viewRadius: 1 });
+  fogBoundary.update(0, 0);
   const layer = createIceChapterLayer({ scene, camera, canvas, columnAt: () => ({ solid: false, level: 0, ceiling: 5 }) });
   layer.setInit({ found: [] }); layer.setMenuPaused(menuPaused || pendingQuality); layer.setStoryPaused(storyPaused);
   const welcome = new TestElement(), inputs = ['balanced', 'performance'].map(value => {
@@ -31,7 +35,7 @@ function setup({ pendingQuality = false, storyPaused = false, menuPaused = false
   const picker = bindIceQualityPicker({ container: welcome, inputs, canChoose: () => pendingQuality, onChoose: noop });
   picker.select('balanced');
   const button = new TestElement('button'), stick = new TestElement();
-  const input = new Function('window', 'firstQualityPicker', 'iceChapterLayer', 'bindIceHoldButton', 'touchStickZone', 'canvas', 'THREE', `
+  const input = new Function('window', 'firstQualityPicker', 'iceChapterLayer', 'bindIceHoldButton', 'touchStickZone', 'canvas', 'THREE', 'distanceFogBoundary', `
     const keys = new Set(), touchMove = new THREE.Vector2(), touchHoldResets = [];
     let touchRiseHeld=false, touchDiveHeld=false, jumpQueued=false, touchStickPointerId=null,
       touchStickCaptureTarget=null, touchLookPointerId=null, touchPlaying=${!pendingQuality && !menuPaused && !storyPaused};
@@ -43,7 +47,7 @@ function setup({ pendingQuality = false, storyPaused = false, menuPaused = false
         touchLookPointerId=4; canvas.setPointerCapture(4); },
       state: () => ({keys:keys.size, move:touchMove.length(), rise:touchRiseHeld, dive:touchDiveHeld, jump:jumpQueued,
         stick:touchStickPointerId, look:touchLookPointerId, playing:touchPlaying}) };
-  `)(window, picker, layer, bindIceHoldButton, stick, canvas, THREE);
+  `)(window, picker, layer, bindIceHoldButton, stick, canvas, THREE, fogBoundary);
   input.bind(button);
   return { scene, camera, canvas, layer, messages, welcome, inputs, picker, button, input };
 }
@@ -63,6 +67,7 @@ test('cached hide clears every ephemeral input, preserves the same clue layer an
       fire(window, 'pagehide', { persisted: true });
       assertReleased(input, button, canvas);
       assert(scene.children.includes(note), 'Cacheable navigation must retain clue groups');
+      assert(scene.children.some(child => child.name === 'distance-fog-boundary'), 'Cacheable navigation retains the fog surface');
       assert.equal(input.state().playing, true, 'Cacheable navigation must retain the gameplay mode');
       fire(window, 'pageshow', { persisted: true });
     }

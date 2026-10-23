@@ -8,5 +8,5 @@ tmp/
 scripts/gen.sh
 scripts/generate.mjs
 scripts/prompts.json
-# Separate Sites source checkout; shared game source stays in this repository.
+# Archived local deployment checkout; escape source is in SCML67/Escape-Naiwa.
 sites/naiwa-escape/

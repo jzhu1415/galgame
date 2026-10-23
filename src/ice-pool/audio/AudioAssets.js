@@ -59,6 +59,7 @@ export class AudioAssets {
     manifest = AUDIO_MANIFEST,
     dev = false,
     config = AUDIO_CONFIG,
+    onPoolReady = null,
     // Keep the native Window/Worker receiver. Storing fetch directly and then
     // calling this.fetcher() makes AudioAssets its receiver (Illegal invocation
     // in browsers), silently replacing real recordings with DEV placeholders.
@@ -68,6 +69,8 @@ export class AudioAssets {
     this.manifest = manifest ?? AUDIO_MANIFEST;
     this.dev = Boolean(dev);
     this.config = config ?? AUDIO_CONFIG;
+    this.onPoolReady = typeof onPoolReady === 'function' ? onPoolReady : null;
+    this.notifiedPools = new Set();
     this.fetcher = fetcher;
     this.placeholderEnabled = Boolean(this.dev && this.config.devPlaceholder);
 
@@ -123,44 +126,74 @@ export class AudioAssets {
   async loadAllInternal(generation) {
     const entries = [];
     const nextPools = new Map();
+    const poolEntries = new Map();
+    const entriesByUrl = new Map();
     for (const [name, definition] of Object.entries(this.manifest ?? {})) {
       nextPools.set(name, []);
+      poolEntries.set(name, []);
       if (!Array.isArray(definition?.samples)) continue;
-      for (const sample of definition.samples) {
+      for (const [index, sample] of definition.samples.entries()) {
         if (typeof sample?.url !== 'string' || !sample.url) continue;
-        entries.push({ name, definition, sample });
+        const entry = { name, definition, sample, index, published: null };
+        entries.push(entry);
+        poolEntries.get(name).push(entry);
+        if (!entriesByUrl.has(sample.url)) entriesByUrl.set(sample.url, []);
+        entriesByUrl.get(sample.url).push(entry);
       }
     }
 
     const urls = [...new Set(entries.map(entry => entry.sample.url))];
-    await this.loadUrlBatch(urls, generation);
-    if (!this.isCurrent(generation)) return;
-
-    const buffers = new Map();
-    for (const url of urls) buffers.set(url, await this.getRealBuffer(url, generation));
-    if (!this.isCurrent(generation)) return;
-
-    for (const entry of entries) {
-      let buffer = buffers.get(entry.sample.url);
-      let placeholder = false;
-      if (!buffer && this.placeholderEnabled) {
-        buffer = this.getPlaceholder(entry.sample.url, entry.sample, entry.definition.loop);
-        placeholder = Boolean(buffer);
+    const priorityPools = Array.isArray(this.config?.loading?.priorityPools)
+      ? this.config.loading.priorityPools : [];
+    const priorityUrlSet = new Set();
+    const priorityUrls = [];
+    const priorityDepth = Math.max(0, ...priorityPools.map(name => poolEntries.get(name)?.length ?? 0));
+    for (let sampleIndex = 0; sampleIndex < priorityDepth; sampleIndex += 1) {
+      for (const name of priorityPools) {
+        const url = poolEntries.get(name)?.[sampleIndex]?.sample.url;
+        if (!url || priorityUrlSet.has(url)) continue;
+        priorityUrlSet.add(url);
+        priorityUrls.push(url);
       }
-      if (!buffer) continue;
-      nextPools.get(entry.name).push({
-        buffer,
-        url: entry.sample.url,
-        loopStart: entry.sample.loopStart,
-        loopEnd: entry.sample.loopEnd,
-        placeholder,
-      });
     }
+    urls.splice(0, urls.length, ...priorityUrls, ...urls.filter(url => !priorityUrlSet.has(url)));
 
-    if (this.isCurrent(generation)) this.pools = nextPools;
+    this.pools = nextPools;
+    await this.loadUrlBatch(urls, generation, (url, realBuffer) => {
+      if (!this.isCurrent(generation)) return;
+      for (const entry of entriesByUrl.get(url) ?? []) {
+        let buffer = realBuffer;
+        if (!buffer && this.placeholderEnabled) {
+          buffer = this.getPlaceholder(url, entry.sample, entry.definition.loop);
+        }
+        if (buffer) {
+          entry.published = {
+            ...entry.sample,
+            buffer,
+            url,
+            loopStart: entry.sample.loopStart,
+            loopEnd: entry.sample.loopEnd,
+            placeholder: Boolean(!realBuffer),
+          };
+        }
+      }
+
+      const changedPools = new Set((entriesByUrl.get(url) ?? []).map(entry => entry.name));
+      for (const name of changedPools) {
+        const samples = poolEntries.get(name).filter(entry => entry.published)
+          .sort((a, b) => a.index - b.index).map(entry => entry.published);
+        nextPools.set(name, samples);
+        if (!samples.length || this.notifiedPools.has(name)) continue;
+        this.notifiedPools.add(name);
+        try { this.onPoolReady?.(name); } catch (error) {
+          console.warn(`[AudioAssets] Pool-ready callback failed (${errorText(error)}): ${name}`);
+        }
+      }
+    });
+    if (!this.isCurrent(generation)) return;
   }
 
-  async loadUrlBatch(urls, generation) {
+  async loadUrlBatch(urls, generation, onSettled) {
     if (!urls.length || !this.isCurrent(generation)) return;
     const configuredConcurrency = Number(this.config?.loading?.concurrency);
     const concurrency = Math.max(1, Math.floor(configuredConcurrency) || 1);
@@ -170,7 +203,9 @@ export class AudioAssets {
         const index = cursor;
         cursor += 1;
         if (index >= urls.length) return;
-        await this.getRealBuffer(urls[index], generation);
+        const url = urls[index];
+        const buffer = await this.getRealBuffer(url, generation);
+        if (this.isCurrent(generation)) onSettled?.(url, buffer);
       }
     };
     await Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, worker));
@@ -335,5 +370,7 @@ export class AudioAssets {
     this.placeholderBuffers.clear();
     this.pools.clear();
     this.loadAllPromise = null;
+    this.onPoolReady = null;
+    this.notifiedPools.clear();
   }
 }

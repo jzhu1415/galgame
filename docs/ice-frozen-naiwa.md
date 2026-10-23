@@ -6,7 +6,7 @@
 
 - 仓库：`https://github.com/jzhu1415/galgame`，远端提交 `17a2fc5`。
 - 实际取用：`assets/models/naiwa-h25-refined.glb`，1,828,384 字节，Git blob `9253564a3dfbe5afbf9d4e0822f061c336d1c81e`，保留原始二进制与顶点色。
-- 源制作记录：远端 `docs/frog-escape-naiwa-reference.md` 的 2026-10-15 精修段落。静态彩色网格含 30,454 顶点 / 60,876 三角面，不含外部纹理、骨架或动作。
+- 源制作记录：远端 [独立模型制作记录](https://github.com/SCML67/Escape-Naiwa/blob/main/docs/frog-escape-naiwa-reference.md) 的 2026-10-15 精修段落。静态彩色网格含 30,454 顶点 / 60,876 三角面，不含外部纹理、骨架或动作。
 - 本次没有生图、重新建模或新增身份参考；直接复用现有资产。Vite 将模型输出为带哈希的本地资源，不依赖运行时外站。
 
 ## 场景接入
