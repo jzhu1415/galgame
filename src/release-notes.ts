@@ -108,8 +108,8 @@ export const mainlineOctoberRelease = {
     {
       "tag": "STANDALONE ESCAPE",
       "title": {
-        "zh": "奶蛙致死的爱",
-        "en": "Naiwa’s Deadly Love"
+        "zh": "逃离奶蛙",
+        "en": "Escape Naiwa"
       },
       "body": {
         "zh": "在双层别墅、地下室和庭院中寻找线索、收集工具，躲避奶蛙的追捕。独立站仅加载逃脱游戏资源，支持中英文、手机触控、全屏和三档画质。",
@@ -123,8 +123,8 @@ export const mainlineOctoberRelease = {
         "en": "Enter Escape from the home page"
       },
       "body": {
-        "zh": "奶蛙 galgame 主页新增独立游戏窗口，简介为“奶蛙致死的爱”。入口附有玩法简介，原有章节、角色与制作时间线继续保留。",
-        "en": "The galgame home now has a separate Escape card, introduced as “Naiwa’s Deadly Love”, with a gameplay summary. Existing chapters, cast and production timeline remain available."
+        "zh": "奶蛙 galgame 主页新增独立游戏窗口，简介为“逃离奶蛙”。入口附有玩法简介，原有章节、角色与制作时间线继续保留。",
+        "en": "The galgame home now has a separate Escape card, introduced as “Escape Naiwa”, with a gameplay summary. Existing chapters, cast and production timeline remain available."
       }
     },
     {
@@ -175,15 +175,15 @@ export const mainlineOctoberRelease = {
 }
 
 export const latestRelease = {
-  "id": "2026-10-22-galgame-independent-escape-entry",
+  "id": "2026-10-22-galgame-escape-naiwa-name",
   "date": "2026-10-22",
   "title": {
     "zh": "奶之救赎 · 镜馆优化与独立游戏入口",
     "en": "Naiwa · Mirror hall improvements and a separate escape game"
   },
   "intro": {
-    "zh": "保留最新镜馆光影、音效加载与手机阅读改进。奶蛙致死的爱独立维护，仍可从主页介绍窗口进入。",
-    "en": "The latest mirror-hall rendering, progressive audio and mobile reading improvements are retained. Naiwa’s Deadly Love is maintained separately and remains accessible from the home introduction."
+    "zh": "保留最新镜馆光影、音效加载与手机阅读改进。逃离奶蛙独立维护，仍可从主页介绍窗口进入。",
+    "en": "The latest mirror-hall rendering, progressive audio and mobile reading improvements are retained. Escape Naiwa is maintained separately and remains accessible from the home introduction."
   },
   "items": [
     {
@@ -215,8 +215,8 @@ export const latestRelease = {
         "en": "Enter the standalone escape game from home"
       },
       "body": {
-        "zh": "主页保留奶蛙致死的爱的介绍与进入按钮，点击前往独立游戏网站。原有章节、镜馆、番外与存档继续保留。",
-        "en": "The home retains the Naiwa’s Deadly Love introduction and Play link, leading to its separate website. Chapters, the mirror hall, DLC and saves remain available."
+        "zh": "主页保留逃离奶蛙的介绍与进入按钮，点击前往独立游戏网站。原有章节、镜馆、番外与存档继续保留。",
+        "en": "The home retains the Escape Naiwa introduction and Play link, leading to its separate website. Chapters, the mirror hall, DLC and saves remain available."
       }
     },
     {
@@ -277,8 +277,8 @@ export const latestRelease = {
     {
       "tag": "STANDALONE ESCAPE",
       "title": {
-        "zh": "奶蛙致死的爱",
-        "en": "Naiwa’s Deadly Love"
+        "zh": "逃离奶蛙",
+        "en": "Escape Naiwa"
       },
       "body": {
         "zh": "在双层别墅、地下室和庭院中寻找线索、收集工具，躲避奶蛙的追捕。独立站仅加载逃脱游戏资源，支持中英文、手机触控、全屏和三档画质。",
@@ -292,8 +292,8 @@ export const latestRelease = {
         "en": "Enter Escape from the home page"
       },
       "body": {
-        "zh": "奶蛙 galgame 主页新增独立游戏窗口，简介为“奶蛙致死的爱”。入口附有玩法简介，原有章节、角色与制作时间线继续保留。",
-        "en": "The galgame home now has a separate Escape card, introduced as “Naiwa’s Deadly Love”, with a gameplay summary. Existing chapters, cast and production timeline remain available."
+        "zh": "奶蛙 galgame 主页新增独立游戏窗口，简介为“逃离奶蛙”。入口附有玩法简介，原有章节、角色与制作时间线继续保留。",
+        "en": "The galgame home now has a separate Escape card, introduced as “Escape Naiwa”, with a gameplay summary. Existing chapters, cast and production timeline remain available."
       }
     },
     {

@@ -4,7 +4,7 @@
 
 **[Play the demo](https://galgame-ashy.vercel.app)** · [Run locally](#run-locally)
 
-**[奶蛙致死的爱 · Naiwa’s Deadly Love](https://naiwa-deadly-love.starrymule6.chatgpt.site)** is a separate first-person horror escape game, maintained in [SCML67/Escape-Naiwa](https://github.com/SCML67/Escape-Naiwa). This repository retains its introduction and external entrance on the visual-novel home.
+**[逃离奶蛙 · Escape Naiwa](https://naiwa-deadly-love.starrymule6.chatgpt.site)** is a separate first-person horror escape game, maintained in [SCML67/Escape-Naiwa](https://github.com/SCML67/Escape-Naiwa). This repository retains its introduction and external entrance on the visual-novel home.
 
 ![Naiwa in a rainy alley](public/images/P02.webp)
 
