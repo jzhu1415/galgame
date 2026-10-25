@@ -130,19 +130,19 @@ const copy = {
 
 const fragmentStories = {
   zh: {
-    footage: { title: '被剪掉的一秒', art: ['chapter-02-cg-film-fragment', 'chapter-02-crash-memory', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
+    footage: { title: '被剪掉的一秒', art: ['chapter-02-cg-film-fragment', 'chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
       ['旁白', '胶片离开冰面，雨点在画格里倒着往上走。时间码停在两点十七分；跳过一格，人影已经跑进车道。'],
       ['肥嘟嘟', '我一直记得那盏红灯。你看，撞上去之前它灭了。为什么我一点印象都没有？'],
       ['旁白', '我把胶片对着灯叠起来。手甲亮起之前，车轮已经偏转；两帧之间少了一秒。'],
       ['旁白', '胶片边缘压着两道声纹，窄得几乎看不见。我拍下照片，留着跟别的线索对照。'],
     ] },
-    shard: { title: '镜片背面的人', art: ['chapter-02-cg-shattered-mirror', 'chapter-02-gauntlet', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-shattered-mirror'], lines: [
+    shard: { title: '镜片背面的人', art: ['chapter-02-cg-mirror-hair-close', 'chapter-02-gauntlet', 'chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-mirror-hair-close'], lines: [
       ['旁白', '镜片正面映出空走廊。背面的银层上粘着一根黑发，没有结霜，摸上去还是温的。'],
       ['旁白', '镜中闪过车门。奶霸的手甲抓住门把，却没抓住门后伸来的手。玻璃突然从中间裂开。'],
       ['肥嘟嘟', '我记得他站在那儿。再往前想，镜子就跳回撞上的那一刻。我试过很多次。'],
       ['旁白', '裂缝左边的时间码比右边早了三秒。我把镜片转来转去，也对不齐。'],
     ] },
-    echo: { title: '没有回声的心跳', art: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-shared-palm', 'chapter-02-ice-hall'], lines: [
+    echo: { title: '没有回声的心跳', art: ['chapter-02-cg-echo-record-close', 'chapter-02-cg-feidudu-recalls-close', 'chapter-02-cg-echo-record-close', 'chapter-02-ice-hall'], lines: [
       ['旁白', '我把蜡片贴近耳朵。两下心跳，一前一后；第二下撞上镜墙，什么回声也没有。'],
       ['肥嘟嘟', '“别信他”……等一下。先说这句话的是谁？我听着像我自己。'],
       ['旁白', '我又听了一遍。“别信他”三个字重在一起，后面的呼吸却分成两道。'],
@@ -150,19 +150,19 @@ const fragmentStories = {
     ] },
   },
   en: {
-    footage: { title: 'The Missing Second', art: ['chapter-02-cg-film-fragment', 'chapter-02-crash-memory', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
+    footage: { title: 'The Missing Second', art: ['chapter-02-cg-film-fragment', 'chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-film-fragment', 'chapter-02-cg-film-fragment'], lines: [
       ['Narration', 'I lifted the film from the ice. Rain ran upward in the frames. The timecode read 2:17; one frame later, a figure was already in the road.'],
       ['Fat Dudu', 'That light was red. Look, it goes out before the crash. Why don\'t I remember that?'],
       ['Narration', 'I held the frames against the light. The wheels had turned before the gauntlet flashed. There was a missing second between them.'],
       ['Narration', 'Two thin sound tracks ran along the edge of the film. I photographed them to compare with the other clues.'],
     ] },
-    shard: { title: 'The Other Side of the Glass', art: ['chapter-02-cg-shattered-mirror', 'chapter-02-gauntlet', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-shattered-mirror'], lines: [
+    shard: { title: 'The Other Side of the Glass', art: ['chapter-02-cg-mirror-hair-close', 'chapter-02-gauntlet', 'chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-mirror-hair-close'], lines: [
       ['Narration', 'The front of the lens reflected an empty corridor. A dark hair clung to the silver on the back. It felt warm against my finger.'],
       ['Narration', 'The car door flashed in the glass. Naiba\'s gauntlet caught the handle, but missed the hand reaching from inside. The lens split down the middle.'],
       ['Fat Dudu', 'I remember him standing there. Every time I try to look earlier, the mirror skips back to the impact. I\'ve tried.'],
       ['Narration', 'The timecodes on either side of the crack were three seconds apart. I turned the lens over, but they still didn\'t match.'],
     ] },
-    echo: { title: 'A Heartbeat Without an Echo', art: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-shared-palm', 'chapter-02-ice-hall'], lines: [
+    echo: { title: 'A Heartbeat Without an Echo', art: ['chapter-02-cg-echo-record-close', 'chapter-02-cg-feidudu-recalls-close', 'chapter-02-cg-echo-record-close', 'chapter-02-ice-hall'], lines: [
       ['Narration', 'I held the wax record to my ear and heard two heartbeats in turn. The second sounded against the mirror wall, with no echo.'],
       ['Fat Dudu', '“Don\'t trust him”… Wait. Who said it first? That sounds like me.'],
       ['Narration', 'I played it again. The voices said the words in perfect unison, but took their next breaths at different times.'],
@@ -386,8 +386,8 @@ export function mountChapterTwo(root: HTMLElement, initialLanguage: Language, on
     const artByPhase: Record<Phase, string[]> = {
       hospital: ['chapter-02-cg-ward-handover', 'chapter-02-journal', 'chapter-02-cg-monitor-attendant', 'chapter-02-hospital', 'chapter-02-cg-door-note', 'chapter-02-cg-ward-handover', 'chapter-02-cg-door-note', 'chapter-02-elevator'],
       threshold: ['chapter-02-elevator', 'chapter-02-cg-three-mirrors', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-three-mirrors', 'chapter-02-ice-hall'],
-      core: ['chapter-02-cg-cold-mirror', 'chapter-02-cg-film-fragment', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-cold-mirror', 'chapter-02-cg-shared-palm', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-shared-palm', 'chapter-02-cg-shattered-mirror'],
-      ending: ['chapter-02-cg-naishu-emerges', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-cg-dark-jewel', 'chapter-02-elevator'],
+      core: ['chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-film-fragment', 'chapter-02-cg-medicine-memory', 'chapter-02-cg-feidudu-afraid-close', 'chapter-02-cg-shared-palm', 'chapter-02-cg-dark-jewel', 'chapter-02-cg-naiba-warning-close', 'chapter-02-cg-gauntlet-tremor-close', 'chapter-02-cg-feidudu-recalls-close', 'chapter-02-cg-shattered-mirror'],
+      ending: ['chapter-02-cg-naishu-emerges', 'chapter-02-hospital', 'chapter-02-journal', 'chapter-02-cg-gauntlet-tremor-close', 'chapter-02-elevator'],
       map: [],
     }
     const showStaff = false // The new hospital CGs contain the staff; do not duplicate their portraits.

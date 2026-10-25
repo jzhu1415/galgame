@@ -1,0 +1,180 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-25",
+  "images": [
+    {
+      "id": "feidudu-afraid-close",
+      "refs": [
+        "references/second-layer-form-source.png",
+        "public/images/chapter-02-cg-cold-mirror.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Identity hard constraint, reference1: Fat Dudu in normal chapter2 form, smooth bright yellow pear body, pale belly, two unequal thick rounded long ear-like protrusions, big brown oval nose, white eye rings with BROWN irises, tiny short smooth hands, short thick curved yellow tail. No fur, whiskers, pink ears, black mask, blue eyes or clothing. Reference2 is location/lighting only. Tight three-quarter face and shoulders shot, unequal ear tips remain visible at top. Fat Dudu recounts the crash from behind thin icy glass: eyes looking sideways toward a reflected headlight streak, small mouth slightly open with uncertainty, tiny hands held close below face. Restrained worried expression, not slapstick. Frost only along edge of frame; face fully clear and well lit, not obscured by glass. No other character.",
+      "asset": "chapter-02-cg-feidudu-afraid-close",
+      "referenceRoles": [
+        {
+          "path": "references/second-layer-form-source.png",
+          "role": "original character identity"
+        },
+        {
+          "path": "public/images/chapter-02-cg-cold-mirror.webp",
+          "role": "location and continuity"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-5e8a1831-5050-4583-bffe-f062a6313423.png",
+      "usage": [
+        {
+          "phase": "core",
+          "line": 0
+        },
+        {
+          "phase": "core",
+          "line": 3
+        },
+        {
+          "fragment": "footage",
+          "line": 1
+        },
+        {
+          "fragment": "shard",
+          "line": 2
+        }
+      ]
+    },
+    {
+      "id": "feidudu-recalls-close",
+      "refs": [
+        "references/second-layer-form-source.png",
+        "public/images/chapter-02-cg-cold-mirror.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Identity hard constraint, reference1: Fat Dudu in normal chapter2 form, smooth bright yellow pear body, pale belly, two unequal thick rounded long ear-like protrusions, big brown oval nose, white eye rings with BROWN irises, tiny short smooth hands, short thick curved yellow tail. No fur, whiskers, pink ears, black mask, blue eyes or clothing. Reference2 is location/lighting only. Tight frontal face and upper belly close-up when Fat Dudu suddenly recognizes a voice and asks the player to wait. One tiny hand raised cautiously toward viewer, eyes lifting with recognition and fragile hope, slightly parted small mouth. Include both unequal rounded ear shapes. Ice wall fades behind with two soft fluorescent reflections, expressive face fills upper center, no other character.",
+      "asset": "chapter-02-cg-feidudu-recalls-close",
+      "referenceRoles": [
+        {
+          "path": "references/second-layer-form-source.png",
+          "role": "original character identity"
+        },
+        {
+          "path": "public/images/chapter-02-cg-cold-mirror.webp",
+          "role": "location and continuity"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-733f5b95-9043-4cc8-b9a5-1a935755d576.png",
+      "usage": [
+        {
+          "phase": "core",
+          "line": 8
+        },
+        {
+          "fragment": "echo",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "naiba-warning-close",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "public/images/chapter-02-cg-dark-jewel.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Identity hard constraint, reference1: Naiba smooth PURPLE pear body, cream belly, large GREEN eyes/black pupils, tiny simple mouth, no nose/ears/horns/clothing/armor. Bronze ornate jewel gauntlet only on anatomical RIGHT hand; dark charcoal bare left hand. Reference2 is location/lighting, reference3 (if present) crystal/gauntlet continuity only. Tight eye-level three-quarter close-up of Naiba's face and shoulder as he warns the player away from the blue thread. Green eyes focused straight at viewer, tense brow formed through soft body expression, tiny mouth mid-sentence. Bronze right gauntlet partly enters left edge with ice-blue crystal, one gem dark. Expression urgency mixed with regret, not rage. Broken mirror reflections softly blurred behind. Do not make a humanoid or add a brow ridge or human eyebrows.",
+      "asset": "chapter-02-cg-naiba-warning-close",
+      "referenceRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "role": "original character identity"
+        },
+        {
+          "path": "public/images/chapter-02-cg-dark-jewel.webp",
+          "role": "location and continuity"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-81aa767b-12f6-4da3-9b7f-174feecee917.png",
+      "usage": [
+        {
+          "phase": "core",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "id": "gauntlet-tremor-close",
+      "refs": [
+        "references/naiba-character-turnaround.png",
+        "public/images/chapter-02-cg-dark-jewel.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Identity hard constraint, reference1: Naiba smooth PURPLE pear body, cream belly, large GREEN eyes/black pupils, tiny simple mouth, no nose/ears/horns/clothing/armor. Bronze ornate jewel gauntlet only on anatomical RIGHT hand; dark charcoal bare left hand. Reference2 is location/lighting, reference3 (if present) crystal/gauntlet continuity only. Extreme detail shot of Naiba's RIGHT bronze jeweled hand clutching a jagged ice-blue crystal more tightly; right purple wrist enters frame. Most of character outside crop. Bronze fingertips strain against crystal, tiny water droplets, fine bright blue thread extends toward viewer. One small jewel clearly extinguished black among glowing other colors. A nearby broken mirror shows the same hand from a different angle. Gauntlet hand anatomy coherent, no additional hands. Tension conveyed through grip, no motion blur.",
+      "asset": "chapter-02-cg-gauntlet-tremor-close",
+      "referenceRoles": [
+        {
+          "path": "references/naiba-character-turnaround.png",
+          "role": "original character identity"
+        },
+        {
+          "path": "public/images/chapter-02-cg-dark-jewel.webp",
+          "role": "location and continuity"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-7e9cb76e-dff3-4cc1-a8a9-f31c2ea1c324.png",
+      "usage": [
+        {
+          "phase": "core",
+          "line": 7
+        },
+        {
+          "phase": "ending",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "mirror-hair-close",
+      "refs": [
+        "public/images/chapter-02-cg-cold-mirror.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Reference1 is environment and rendering only; no creatures in this shot. First-person macro detail: ordinary human male fingertips rotate a thick broken mirror lens above pale tiled pool edge. Back side silver coating faces camera with ONE thin dark human hair stuck to it, un-frosted patch beneath hair; rim has crystalline frost and wet chipped bevels. Narrow reflective edge catches empty tiled corridor, physical believable mirror silver instead of black glass. Hair and silver abrasion sharply resolved. No written codes or numerals.",
+      "asset": "chapter-02-cg-mirror-hair-close",
+      "referenceRoles": [
+        {
+          "path": "public/images/chapter-02-cg-cold-mirror.webp",
+          "role": "location and render style"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-0da44426-17d8-4bf9-9f4a-b2ffdc8d315c.png",
+      "usage": [
+        {
+          "fragment": "shard",
+          "line": 0
+        },
+        {
+          "fragment": "shard",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "echo-record-close",
+      "refs": [
+        "public/images/chapter-02-cg-cold-mirror.webp"
+      ],
+      "prompt": "Single cinematic visual novel CG, 16:9 landscape 1672x941. New CLOSE-UP composition, not a sheet or collage. Polished 3D animated film still matching scene reference, cold blue reflected light, gentle shallow depth of field. Keep important details in upper 70%, spare bottom for dialogue. No captions, text, UI, logos. Location: low flat tiled ceiling, pale square Poolrooms tiles, rectangular fluorescent lights, water and bright reflective ice mirrors; no fantasy castle. Reference1 is environment/rendering only, no creatures in this shot. New extreme close insert: ordinary human male hand holds a palm-sized translucent smoky gray wax recording disc near the side of his ear, only a small out-of-focus ear edge at far right, NO full face. Disc grooves visible in cold grazing fluorescent reflection, tiny ice crystals clinging at edge, blue light through its thin material. Mirror wall in background faintly doubles the disc reflection, quiet intimate listening mood, physical wax NOT shiny black vinyl, no labels/text or magical symbols.",
+      "asset": "chapter-02-cg-echo-record-close",
+      "referenceRoles": [
+        {
+          "path": "public/images/chapter-02-cg-cold-mirror.webp",
+          "role": "location and render style"
+        }
+      ],
+      "source": "/Users/claw/.codex/generated_images/01a0eb12-87f9-7aa0-ac15-816e3a0c10ef/exec-618d17fd-6b89-4d36-b2ec-a211357108bf.png",
+      "usage": [
+        {
+          "fragment": "echo",
+          "line": 0
+        },
+        {
+          "fragment": "echo",
+          "line": 2
+        }
+      ]
+    }
+  ]
+}

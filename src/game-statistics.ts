@@ -4,5 +4,5 @@ export const gameStatistics = {
   "storyNodes": 190,
   "dialogueLines": 643,
   "chineseCharacters": 19206,
-  "visualAssets": 162
+  "visualAssets": 168
 } as const

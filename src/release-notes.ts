@@ -174,7 +174,7 @@ export const mainlineOctoberRelease = {
   ]
 }
 
-export const latestRelease = {
+export const projectSeparationRelease = {
   "id": "2026-10-22-galgame-escape-naiwa-name",
   "date": "2026-10-22",
   "title": {
@@ -341,6 +341,19 @@ export const latestRelease = {
       }
     }
   ]
+}
+
+export const latestRelease = {
+  ...projectSeparationRelease,
+  id: '2026-10-25-chapter-two-closeups',
+  date: '2026-10-25',
+  title: { zh: '冰镜近景 · 表情与物证', en: 'Closer views inside the mirror hall' },
+  intro: { zh: '第二章新增六张特写，跟随对白看清肥嘟嘟的神情、奶霸的手甲与镜馆物证。此前的主线与镜馆更新继续保留。', en: 'Six new chapter-two close-ups follow the dialogue, bringing Fat Dudu’s expressions, Naiba’s gauntlet and the hall’s evidence into focus. Earlier main-story and mirror-hall updates remain included.' },
+  items: [
+    { tag: 'CHAPTER TWO CLOSE-UPS', title: { zh: '对白里的迟疑与回应', en: 'Hesitation and recognition' }, body: { zh: '肥嘟嘟回忆事故、想起声音，以及奶霸警告与攥紧晶片时切入对应特写。中英文剧情使用同一组画面，原有回放和存档继续适用。', en: 'Matching close-ups appear as Fat Dudu recalls the crash and recognizes a voice, and as Naiba gives a warning and tightens his grip on the crystal. Both languages share the sequence, with existing replay and saves retained.' } },
+    { tag: 'EVIDENCE DETAILS', title: { zh: '把物证拿近一点', en: 'A closer look at the evidence' }, body: { zh: '镜片背面的黑发与录音蜡片有了独立细节镜头，拾取后的碎片回忆随对白切换画面。每张新图沿用原始身份与镜馆参考。', en: 'The hair on the back of the mirror shard and the wax recording disc gain their own detail shots within the recovered memories. Each new frame uses the original identity and hall references.' } },
+    ...projectSeparationRelease.items,
+  ],
 }
 
 export const releaseSeenKey = 'naiwa-release-notes-seen-v1'

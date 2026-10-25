@@ -10,7 +10,7 @@
     "storyNodes": 190,
     "dialogueLines": 643,
     "chineseCharacters": 19206,
-    "visualAssets": 162
+    "visualAssets": 168
   },
   "sections": [
     {
@@ -86,9 +86,15 @@
     "images/chapter-02-cg-cold-mirror.webp",
     "images/chapter-02-cg-dark-jewel.webp",
     "images/chapter-02-cg-door-note.webp",
+    "images/chapter-02-cg-echo-record-close.webp",
+    "images/chapter-02-cg-feidudu-afraid-close.webp",
+    "images/chapter-02-cg-feidudu-recalls-close.webp",
     "images/chapter-02-cg-film-fragment.webp",
+    "images/chapter-02-cg-gauntlet-tremor-close.webp",
     "images/chapter-02-cg-medicine-memory.webp",
+    "images/chapter-02-cg-mirror-hair-close.webp",
     "images/chapter-02-cg-monitor-attendant.webp",
+    "images/chapter-02-cg-naiba-warning-close.webp",
     "images/chapter-02-cg-naishu-emerges.webp",
     "images/chapter-02-cg-shared-palm.webp",
     "images/chapter-02-cg-shattered-mirror.webp",
